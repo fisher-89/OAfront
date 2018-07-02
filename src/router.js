@@ -6,6 +6,7 @@ import dynamic from 'dva/dynamic';
 import { getRouterData } from './common/router';
 import Authorized from './utils/Authorized';
 import styles from './index.less';
+import App from './App';
 
 const { ConnectedRouter } = routerRedux;
 const { AuthorizedRoute } = Authorized;
@@ -16,7 +17,6 @@ dynamic.setDefaultLoadingComponent(() => {
 function RouterConfig({ history, app }) {
   const routerData = getRouterData(app);
   // const GetAceessToken = routerData['/passport/get_access_token'].component;
-  const BasicLayout = routerData['/'].component;
   const BlankLayout = routerData['/blank'].component;
   return (
     <LocaleProvider locale={zhCN}>
@@ -28,12 +28,7 @@ function RouterConfig({ history, app }) {
             authority={[]}
             redirectPath="/"
           />
-          <AuthorizedRoute
-            path="/"
-            render={props => <BasicLayout {...props} />}
-            authority={['token']}
-            redirectPath="/passport/refresh_access_token"
-          />
+          <App app={app} />
         </Switch>
       </ConnectedRouter>
     </LocaleProvider>

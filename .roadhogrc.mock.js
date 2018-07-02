@@ -6,7 +6,7 @@ import { getFakeChartData } from './mock/chart';
 import { getProfileBasicData } from './mock/profile';
 import { getProfileAdvancedData } from './mock/profile';
 import { getNotices } from './mock/notices';
-import { delay } from 'roadhog-api-doc';
+// import { delay } from 'roadhog-api-doc';
 
 // 是否禁用代理
 const noProxy = process.env.NO_PROXY === 'true';
@@ -210,4 +210,25 @@ export default !noProxy ? {
   'POST /oauth/(.*)': 'http://of.xigemall.com/oauth/',
 
   // 'POST /oauth/(.*)': 'http://192.168.20.238:8003/oauth/'
-} : delay(proxy, 1000);
+} : {
+
+    'GET /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',
+    'POST /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',
+    'PUT /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',
+    'PATCH /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',
+    'DELETE /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',
+
+    'GET /api/admin/(.*)': 'http://192.168.20.238:8007/admin/',
+    'POST /api/admin/(.*)': 'http://192.168.20.238:8007/admin/',
+    'PUT /api/admin/(.*)': 'http://192.168.20.238:8007/admin/',
+    'PATCH /api/admin/(.*)': 'http://192.168.20.238:8007/admin/',
+    'DELETE /api/admin/(.*)': 'http://192.168.20.238:8007/admin/',
+
+    /**
+     * 张博涵 ： 登录等。。
+     */
+    'GET /api/(.*)': 'http://192.168.20.238:8003/api/',
+    'POST /api/(.*)': 'http://192.168.20.238:8003/api/',
+    'POST /oauth/(.*)': 'http://192.168.20.238:8003/oauth/',
+  };
+

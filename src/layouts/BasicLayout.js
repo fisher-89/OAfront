@@ -83,8 +83,8 @@ class BasicLayout extends React.PureComponent {
   }
 
   componentWillMount() {
-    const userStorage = localStorage.getItem('oa-current-user') || null;
-    window.user = JSON.parse(userStorage) || undefined;
+    // const userStorage = localStorage.getItem('oa-current-user') || null;
+    // window.user = JSON.parse(userStorage) || undefined;
     this.fetchCurrentUser();
   }
 
@@ -105,16 +105,15 @@ class BasicLayout extends React.PureComponent {
         message: '请求错误:',
         description: '获取当前用户信息失败',
       });
-      return;
     }
 
-    if (nextProps.currentUser
-      !== this.props.currentUser
-      && Object.keys(nextProps.currentUser).length
-    ) {
-      localStorage.setItem('oa-current-user', JSON.stringify(nextProps.currentUser));
-      window.user = nextProps.currentUser;
-    }
+    // if (nextProps.currentUser
+    //   !== this.props.currentUser
+    //   && Object.keys(nextProps.currentUser).length
+    // ) {
+    //   localStorage.setItem('oa-current-user', JSON.stringify(nextProps.currentUser));
+    //   window.user = nextProps.currentUser;
+    // }
   }
 
   getPageTitle() {
