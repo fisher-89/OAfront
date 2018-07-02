@@ -21,9 +21,12 @@ const codeMessage = {
   504: '网关超时',
 };
 
+const errorCode = [400, 401, 422];
+
 function checkStatus(response) {
   const { status, url, statusText } = response;
-  if ((status >= 200 && status < 300) || status === 400 || status === 422) {
+
+  if ((status >= 200 && status < 300) || errorCode.includes(status)) {
     return response;
   }
   const errortext = codeMessage[status] || statusText;
