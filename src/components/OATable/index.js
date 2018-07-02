@@ -665,26 +665,21 @@ class OATable extends PureComponent {
     return (
       <Spin spinning={loading !== false} tip={`${loading}`}>
         <div className={styles.filterTable}>
-          <QueueAnim
-            type="left"
-            leaveReverse
-          >
-            <Operator
-              {...this.state}
-              key="hearderBoor"
-              multiOperator={multiOperator}
-              extraOperator={this.makeExtraOperator()}
-              fetchTableDataSource={this.fetchTableDataSource}
-              resetFilter={this.resetFilter}
-              clearSelectedRows={this.clearSelectedRows}
-            />
-            <Table
-              {...this.makeTableProps()}
-              key="table"
-              getBodyWrapper={this.getBodyWrapper}
-              onChange={this.pageChange}
-            />
-          </QueueAnim>
+          <Operator
+            {...this.state}
+            key="hearderBoor"
+            multiOperator={multiOperator}
+            extraOperator={this.makeExtraOperator()}
+            fetchTableDataSource={this.fetchTableDataSource}
+            resetFilter={this.resetFilter}
+            clearSelectedRows={this.clearSelectedRows}
+          />
+          <Table
+            {...this.makeTableProps()}
+            key="table"
+            getBodyWrapper={this.getBodyWrapper}
+            onChange={this.pageChange}
+          />
         </div>
       </Spin>
     );

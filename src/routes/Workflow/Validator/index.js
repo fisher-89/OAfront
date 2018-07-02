@@ -181,6 +181,7 @@ export default class Validator extends PureComponent {
         <OAModal
           form={form}
           formProps={{
+            loading,
             validateOnChange,
           }}
           visible={visible}
