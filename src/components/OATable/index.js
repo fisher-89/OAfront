@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { Table, Input, Icon, message, Button, Tooltip, Spin } from 'antd';
 import QueueAnim from 'rc-queue-anim';
+import { TweenOneGroup } from 'rc-tween-one';
+
 import { makerFilters } from '../../utils/utils';
 
 import TreeFilter from './treeFilter';
@@ -50,6 +52,27 @@ class OATable extends PureComponent {
       sorter: {},
       loading: false,
     };
+    this.enterAnim = [
+      {
+        opacity: 0, x: 30, backgroundColor: '#fffeee', duration: 0,
+      },
+      {
+        height: 0,
+        duration: 200,
+        type: 'from',
+        delay: 250,
+        ease: 'easeOutQuad',
+        onComplete: this.onEnd,
+      },
+      {
+        opacity: 1, x: 0, duration: 250, ease: 'easeOutQuad',
+      },
+      { delay: 1000, backgroundColor: '#fff' },
+    ];
+    this.leaveAnim = [
+      { duration: 250, opacity: 0 },
+      { height: 0, duration: 200, ease: 'easeOutQuad' },
+    ];
   }
 
   componentDidMount() {
@@ -57,6 +80,25 @@ class OATable extends PureComponent {
     if (!data || data.length === 0 || serverSide) {
       this.fetchTableDataSource();
     }
+  }
+
+  getBodyWrapper = (body) => {
+    // 切换分页去除动画;
+    if (this.currentPage !== this.newPage) {
+      this.currentPage = this.newPage;
+      return body;
+    }
+    return (
+      <TweenOneGroup
+        component="tbody"
+        className={body.props.className}
+        enter={this.enterAnim}
+        leave={this.leaveAnim}
+        appear={false}
+      >
+        {body.props.children}
+      </TweenOneGroup>
+    );
   }
 
   showTotal = (total, range) => {
@@ -639,6 +681,8 @@ class OATable extends PureComponent {
             <Table
               {...this.makeTableProps()}
               key="table"
+              getBodyWrapper={this.getBodyWrapper}
+              onChange={this.pageChange}
             />
           </QueueAnim>
         </div>
