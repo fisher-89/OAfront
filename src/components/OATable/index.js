@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import { Table, Input, Icon, message, Button, Tooltip, Spin } from 'antd';
-import QueueAnim from 'rc-queue-anim';
 import { TweenOneGroup } from 'rc-tween-one';
 
 import { makerFilters } from '../../utils/utils';
@@ -83,6 +82,7 @@ class OATable extends PureComponent {
   }
 
   getBodyWrapper = (body) => {
+    console.log(body);
     // 切换分页去除动画;
     if (this.currentPage !== this.newPage) {
       this.currentPage = this.newPage;
@@ -659,6 +659,10 @@ class OATable extends PureComponent {
     return operator;
   }
 
+  pageChange = (pagination) => {
+    this.newPage = pagination.current;
+  };
+
   render() {
     const { multiOperator } = this.props;
     const { loading } = this.state;
@@ -677,7 +681,9 @@ class OATable extends PureComponent {
           <Table
             {...this.makeTableProps()}
             key="table"
-            getBodyWrapper={this.getBodyWrapper}
+            components={{
+              body: this.getBodyWrapper,
+            }}
             onChange={this.pageChange}
           />
         </div>
