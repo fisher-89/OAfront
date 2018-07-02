@@ -27,7 +27,6 @@ export default class Form extends PureComponent {
   }
 
   handleSubmit = (params, onError) => {
-    console.log(params);
     const { dispatch } = this.props;
     dispatch({
       type: '',

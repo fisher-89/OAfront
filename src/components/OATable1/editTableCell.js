@@ -13,7 +13,6 @@ export default class EdiTableCell extends React.Component {
 
   handleChange = (e) => {
     const formItemValue = e.target ? e.target.value : e;
-    console.log(formItemValue);
     this.setState({ value: formItemValue });
   }
 
