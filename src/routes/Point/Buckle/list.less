@@ -1,0 +1,64 @@
+@import "/font/pms/iconfont.css";
+:global(.anticon) {
+  &::before {
+    /* stylelint-disable */
+    font-family: "anticon", "anticon-user" !important;
+  }
+}
+
+:global {
+  .nav-text {
+    font-weight: 600;
+  }
+  .actionContent {
+    padding: 5px 0;
+    border-bottom: 1px solid #e8e8e8;
+  }
+  .contentHeader {
+    background: rgb(255, 255, 255);
+    border-bottom: 1px solid #e8e8e8;
+    height: 43px;
+  }
+  .user-item {
+    width: 130px;
+    height: 130px;
+    text-align: center;
+  }
+  .user-list {
+    display: flex;
+    margin-top: 10px;
+    font-size: 12px;
+    border-bottom: 1px solid #e8e8e8;
+  }
+  .avata {
+    width: 45px;
+    height: 45px;
+    line-height: 45px;
+    text-align: center;
+    border-radius: 50%;
+    background: #40a9ff;
+    margin: 0 auto;
+    color: azure;
+  }
+  .task-view {
+    width: 100%;
+    .task-header,
+    .task-content {
+      border-bottom: 1px solid #e8e8e8;
+      padding-left: 10px;
+    }
+    .task-header {
+      height: 43px;
+      line-height: 43px;
+    }
+    .task-content .columbia {
+      padding: 20px;
+      font-size: 12px;
+    }
+    .task-edit {
+      margin-left: 10px;
+      cursor: pointer;
+      color: #1890ff;
+    }
+  }
+}

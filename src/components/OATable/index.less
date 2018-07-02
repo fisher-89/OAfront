@@ -1,0 +1,45 @@
+@import "~antd/lib/style/themes/default.less";
+
+.filterTable {
+  .filterTableOperator {
+    margin-bottom: 16px;
+    > * {
+      margin-right: 8px;
+    }
+  }
+  :global {
+    .ant-table-search-highlight {
+      color: #f50;
+    }
+    .ant-table {
+      th {
+        white-space: nowrap;
+      }
+      td {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .ant-table-footer {
+      text-align: right;
+    }
+    .ant-table-tree-filter {
+      .scroll-bar {
+        max-height: 300px;
+        overflow-y: scroll;
+      }
+      .table-filter-title {
+        border-bottom: 1px solid #ccc;
+        text-align: center;
+        min-height: 30px;
+        line-height: 30px;
+        span {
+          margin-top: -4px;
+          padding: 3px;
+        }
+      }
+    }
+  }
+}
