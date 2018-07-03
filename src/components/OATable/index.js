@@ -129,7 +129,7 @@ class OATable extends PureComponent {
       });
       params = {
         page: pagination.current,
-        pageSize: pagination.pageSize,
+        pagesize: pagination.pageSize,
         filters: {
           ...filterParam,
           ...searcherParam,
