@@ -128,7 +128,7 @@ export default class extends PureComponent {
           type="primary"
           onClick={() => this.handleAddStaffVisible(true)}
         >
-          添加员工证书
+          分配证书
         </Button>
       ));
     }
