@@ -149,7 +149,7 @@ export default class extends PureComponent {
   handleDelete = (id) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'point/fetchEvent',
+      type: 'point/deleteEvent',
       payload: { id },
     });
   }
