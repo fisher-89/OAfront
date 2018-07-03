@@ -5,8 +5,7 @@
     "private": true,
     "scripts": {
         "precommit": "npm run lint-staged",
-        "start": "export PORT=8101 && cross-env NODE_ENV=production ESLINT=none roadhog server",
-        "dev": "cross-env ESLINT=none roadhog dev",
+        "start": "cross-env ESLINT=none roadhog dev",
         "start:no-proxy": "cross-env NO_PROXY=true ESLINT=none roadhog dev",
         "build": "cross-env ESLINT=none roadhog build",
         "site": "roadhog-api-doc static && gh-pages -d dist",
