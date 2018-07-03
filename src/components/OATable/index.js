@@ -82,10 +82,10 @@ class OATable extends PureComponent {
   }
 
   getBodyWrapper = (body) => {
-    console.log(body);
+    const { pagination } = this.state;
     // 切换分页去除动画;
-    if (this.currentPage !== this.newPage) {
-      this.currentPage = this.newPage;
+    if (this.currentPage !== pagination.current) {
+      this.currentPage = pagination.current;
       return body;
     }
     return (
@@ -644,7 +644,7 @@ class OATable extends PureComponent {
     if (excelExport) {
       operator.push(
         <Tooltip key="download" title="导出数据">
-          <Button icon="download" onClick={this.handleExportExcel} >EXCEL导出</Button>
+          <Button icon="download" onClick={this.handleExportExcel}>EXCEL导出</Button>
         </Tooltip>
       );
     }
@@ -658,10 +658,6 @@ class OATable extends PureComponent {
     }
     return operator;
   }
-
-  pageChange = (pagination) => {
-    this.newPage = pagination.current;
-  };
 
   render() {
     const { multiOperator } = this.props;
@@ -684,7 +680,6 @@ class OATable extends PureComponent {
             components={{
               body: this.getBodyWrapper,
             }}
-            onChange={this.pageChange}
           />
         </div>
       </Spin>
