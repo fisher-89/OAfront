@@ -9,6 +9,7 @@ const defaultProps = {
   formProps: {},
   onChange: null,
   id: null,
+  loading: false,
   onSubmit: () => {
 
   },
@@ -58,10 +59,11 @@ export default class OAModal extends PureComponent {
   }
 
   makeOAFormProps = () => {
-    const { formProps, form, autoSave } = this.props;
+    const { formProps, form, autoSave, loading } = this.props;
     const response = {
       form,
       autoSave,
+      loading,
       ...formProps,
     };
     return response;

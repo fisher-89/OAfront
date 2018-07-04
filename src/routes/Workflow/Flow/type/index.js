@@ -159,6 +159,7 @@ export default class List extends PureComponent {
         <OAModal
           form={form}
           visible={visible}
+          loading={loading}
           onCancel={() => this.handleModalVisible(false)}
           afterClose={() => { this.setState({ editInfo: {} }); }}
           onSubmit={editInfo.id ? this.handleEditSubmit : this.handleAddSubmit}
