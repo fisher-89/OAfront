@@ -72,6 +72,7 @@ class OATable extends PureComponent {
       { duration: 250, opacity: 0 },
       { height: 0, duration: 200, ease: 'easeOutQuad' },
     ];
+    this.currentPage = 1;
   }
 
   componentDidMount() {
