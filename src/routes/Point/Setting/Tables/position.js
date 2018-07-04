@@ -11,9 +11,11 @@ const {
   OAModal,
 } = OAForm;
 const FormItem = OAForm.Item;
-@connect(({ point, loading }) => ({
+@connect(({ brand, point, loading }) => ({
+  brand: brand.brand,
   position: point.position,
   basePoint: point.base_position,
+  brandLoading: loading.effects['brand/fetchBrand'],
   pLoading: loading.effects['point/fetchPosition'],
   bLoading: loading.effects['point/fetchBase'],
   editLoading: loading.effects['point/editBase'],
@@ -31,8 +33,11 @@ export default class extends PureComponent {
   }
 
   componentDidMount() {
-    const { form, bindForm } = this.props;
+    const { form, bindForm, dispatch } = this.props;
     bindForm(form);
+    dispatch({
+      type: 'brand/fetchBrand',
+    });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -79,15 +84,18 @@ export default class extends PureComponent {
     const basePointId = data.map(item => item.id);
     const newData = dataSource.map((item) => {
       const bseIndex = basePointId.indexOf(item.id);
+      const brandId = item.brands.map(brand => brand.id);
       if (bseIndex !== -1) {
         return {
+          ...item,
           ...data[bseIndex],
+          brand_id: brandId,
           point: data[bseIndex].point.toString(),
         };
       }
       const temp = {
-        id: item.id,
-        name: item.name,
+        ...item,
+        brand_id: brandId,
         point: '0',
       };
       return temp;
@@ -163,23 +171,30 @@ export default class extends PureComponent {
   }
 
   makeColumns = () => {
+    const { brand } = this.props;
     const columns = [
       {
         title: '编号',
         dataIndex: 'id',
-        width: 200,
         searcher: true,
       },
       {
         title: '名称',
         dataIndex: 'name',
-        width: 200,
         searcher: true,
+      },
+      {
+        title: '职位',
+        dataIndex: 'brand_id',
+        filters: brand.map(item => ({ value: item.id, text: item.name })),
+        render: (_, { brands }) => {
+          const brandName = brands && brands.map(item => item.name);
+          return brandName ? brandName.join(',') : '';
+        },
       },
       {
         title: '固定积分得分',
         dataIndex: 'point',
-        width: 300,
         sorter: true,
         render: (value, record) => {
           return (
@@ -241,7 +256,6 @@ export default class extends PureComponent {
           columns={this.makeColumns()}
           data={dataSource}
           fetchDataSource={this.fetchDataSource}
-          scroll={{ y: 500 }}
           footer={() => error.map((item, index) => {
             const key = `${index}`;
             return (

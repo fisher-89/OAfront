@@ -3,10 +3,10 @@ import { query } from '../../services/department';
 const store = 'department';
 
 export default {
-  * fetchDepartment({ payload }, { call, put }) {
+  * fetchDepartment({ payload, update }, { call, put, select }) {
     try {
-      const result = yield select(model => model.department.department);
-      if (!result.length) {
+      const result = yield select(model => model[store][store]);
+      if (!result.length || update) {
         const { id } = payload;
         const params = {
           ...payload,

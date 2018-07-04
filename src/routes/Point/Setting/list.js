@@ -15,7 +15,7 @@ const { TabPane } = Tabs;
 export default class extends PureComponent {
   render() {
     return (
-      <Tabs>
+      <Tabs style={{ overflow: 'visible' }}>
         <TabPane tab="学历" key="1" forceRender>
           {
             customerAuthority(158) ?

@@ -63,8 +63,15 @@ export default class extends PureComponent {
         dataIndex: 'certificate_id',
         filters: certificate.map(item => ({ text: item.name, value: item.id })),
         render: (value) => {
-          const text = certificate.find(item => item.id === value);
-          return text ? text.name : '';
+          const { name } = certificate.find(item => item.id === value);
+          return name;
+        },
+      }, {
+        title: '分值',
+        dataIndex: 'certificate_id',
+        render: (value) => {
+          const { point } = certificate.find(item => item.id === value);
+          return point;
         },
       },
       {
@@ -80,7 +87,6 @@ export default class extends PureComponent {
         dataIndex: 'position_name',
         searcher: true,
       },
-
       {
         title: '部门',
         dataIndex: 'department_id',

@@ -26,7 +26,7 @@ const errorCode = [400, 401, 422];
 function checkStatus(response) {
   const { status, url, statusText } = response;
 
-  if ((status >= 200 && status < 300) || errorCode.includes(status)) {
+  if ((status >= 200 && status < 300) || errorCode.indexOf(status) !== -1) {
     return response;
   }
   const errortext = codeMessage[status] || statusText;

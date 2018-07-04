@@ -390,6 +390,10 @@ class OATable extends PureComponent {
 
   makeDefaultOnFilter = (key) => {
     return (value, record) => {
+      if (Array.isArray(record[key])) {
+        const able = record[key].find(item => item.toString() === value);
+        return able;
+      }
       return `${record[key]}` === `${value}`;
     };
   }
