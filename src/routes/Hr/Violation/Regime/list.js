@@ -10,7 +10,7 @@ import {
   Button,
 } from 'antd';
 import { Link } from 'dva/router';
-import OATable from '../../../../components/OATable1';
+import OATable from '../../../../components/OATable';
 
 @connect(({ violation, loading }) => ({
   regimeList: violation.regime,

@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { Link } from 'dva/router';
 import { Button, Tooltip, Divider } from 'antd';
 import moment from 'moment';
-import OATable from '../../../components/OATable1';
+import OATable from '../../../components/OATable';
 
 @connect(({ workflow, loading }) => ({
   list: workflow.form,

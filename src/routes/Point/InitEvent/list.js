@@ -51,8 +51,7 @@ export default class extends PureComponent {
 
   setTypeId = (typeId) => {
     this.setState({ typeId }, () => {
-      const { state: { pagination: { current, pageSize } } } = this.oatable;
-      this.fetchEvent({ pageSize, page: current, filters: '' });
+      this.oatable.fetchTableDataSource();
     });
   }
 
@@ -160,6 +159,16 @@ export default class extends PureComponent {
 
   makeColumns = () => {
     const { typeList } = this.props;
+    const active = [
+      {
+        value: 0,
+        text: '未激活',
+      },
+      {
+        value: 1,
+        text: '激活',
+      },
+    ];
     const columns = [
       {
         title: '编号',
@@ -219,14 +228,17 @@ export default class extends PureComponent {
       {
         title: '初审人',
         dataIndex: 'first_approver_name',
+        searcher: true,
       },
       {
         title: '终审人',
         dataIndex: 'final_approver_name',
+        searcher: true,
       },
       {
         title: '激活',
         dataIndex: 'is_active',
+        filters: active,
         render: isActive => (isActive ? '激活' : '未激活'),
       },
     ];

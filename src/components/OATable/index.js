@@ -123,7 +123,6 @@ class OATable extends PureComponent {
     if (serverSide) {
       const filterParam = {};
       const searcherParam = {};
-
       columns.forEach((column, index) => {
         const key = column.dataIndex || index;
         const filter = filters[key];

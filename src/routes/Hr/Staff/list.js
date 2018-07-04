@@ -20,7 +20,7 @@ import MoreSearch from './moreSearch';
 // import EditTransfer from './editTransfer';
 // import EditLeave from './editLeave';
 import request from '../../../utils/request';
-import OATable from '../../../components/OATable1';
+import OATable from '../../../components/OATable';
 
 import {
   getBrandAuthority,

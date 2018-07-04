@@ -212,6 +212,15 @@ export default !noProxy ? {
   // 'POST /oauth/(.*)': 'http://192.168.20.238:8003/oauth/'
 } : {
 
+    /**
+     * 刘勇  ： 工作流
+     */
+    'GET /api/workflow/(.*)': 'http://192.168.20.16:8009/admin/',
+    'POST /api/workflow/(.*)': 'http://192.168.20.16:8009/admin/',
+    'PUT /api/workflow/(.*)': 'http://192.168.20.16:8009/admin/',
+    'DELETE /api/workflow/(.*)': 'http://192.168.20.16:8009/admin/',
+
+
     'GET /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',
     'POST /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',
     'PUT /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',

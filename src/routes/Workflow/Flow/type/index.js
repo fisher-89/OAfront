@@ -9,7 +9,7 @@ import {
 } from 'antd';
 import moment from 'moment';
 
-import OATable from '../../../../components/OATable1';
+import OATable from '../../../../components/OATable';
 import OAForm from '../../../../components/OAForm';
 
 const { OAModal } = OAForm;
