@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Table, Input, Icon, message, Button, Tooltip, Spin } from 'antd';
-import { TweenOneGroup } from 'rc-tween-one';
+import QueueAnim from 'rc-queue-anim';
 
 import { makerFilters } from '../../utils/utils';
 
@@ -82,25 +82,34 @@ class OATable extends PureComponent {
     }
   }
 
-  getBodyWrapper = (body) => {
-    const { pagination } = this.state;
-    // 切换分页去除动画;
-    if (this.currentPage !== pagination.current) {
-      this.currentPage = pagination.current;
-      return body;
-    }
-    return (
-      <TweenOneGroup
-        component="tbody"
-        className={body.props.className}
-        enter={this.enterAnim}
-        leave={this.leaveAnim}
-        appear={false}
-      >
-        {body.props.children}
-      </TweenOneGroup>
-    );
+
+  onEnd = (e) => {
+    const dom = e.target;
+    dom.style.height = 'auto';
   }
+
+  // getBodyWrapper = (body) => {
+  //   // const { pagination } = this.state;
+  //   // // 切换分页去除动画;
+  //   // if (this.currentPage !== pagination.current) {
+  //   //   this.currentPage = pagination.current;
+  //   //   return body;
+  //   // }
+  //   return (
+  //     <QueueAnim
+  //       component="tbody"
+  //       // type={['right', 'left']}
+  //       // leaveReverse
+  //       className={body.className}
+  //     // enter={this.enterAnim}
+  //     // leave={this.leaveAnim}
+  //     // appear={false}
+  //     >
+  //       {body.children}
+  //     </QueueAnim>
+  //   );
+  // }
+
 
   showTotal = (total, range) => {
     const { filtered } = this.props;
@@ -666,22 +675,29 @@ class OATable extends PureComponent {
     return (
       <Spin spinning={loading !== false} tip={`${loading}`}>
         <div className={styles.filterTable}>
-          <Operator
-            {...this.state}
-            key="hearderBoor"
-            multiOperator={multiOperator}
-            extraOperator={this.makeExtraOperator()}
-            fetchTableDataSource={this.fetchTableDataSource}
-            resetFilter={this.resetFilter}
-            clearSelectedRows={this.clearSelectedRows}
-          />
-          <Table
-            {...this.makeTableProps()}
-            key="table"
-            components={{
-              body: this.getBodyWrapper,
-            }}
-          />
+          <QueueAnim type={['right', 'left']}>
+            <QueueAnim key="hearderBoor" type="top">
+              <Operator
+                {...this.state}
+
+                multiOperator={multiOperator}
+                extraOperator={this.makeExtraOperator()}
+                fetchTableDataSource={this.fetchTableDataSource}
+                resetFilter={this.resetFilter}
+                clearSelectedRows={this.clearSelectedRows}
+              />
+            </QueueAnim>
+            <QueueAnim key="table" type="bottom">
+              <Table
+                {...this.makeTableProps()}
+              // components={{
+              //   body: {
+              //     wrapper: this.getBodyWrapper,
+              //   },
+              // }}
+              />
+            </QueueAnim>
+          </QueueAnim>
         </div>
       </Spin>
     );

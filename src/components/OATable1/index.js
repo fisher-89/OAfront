@@ -78,6 +78,48 @@ export default class TableEnterLeave extends PureComponent {
         age: 18,
         address: 'London No.1 Lake Park',
       },
+      {
+        key: 5,
+        name: 'Jim Red',
+        age: 18,
+        address: 'London No.1 Lake Park',
+      },
+      {
+        key: 6,
+        name: 'Jim Red',
+        age: 18,
+        address: 'London No.1 Lake Park',
+      },
+      {
+        key: 7,
+        name: 'Jim Red',
+        age: 18,
+        address: 'London No.1 Lake Park',
+      },
+      {
+        key: 8,
+        name: 'Jim Red',
+        age: 18,
+        address: 'London No.1 Lake Park',
+      },
+      {
+        key: 9,
+        name: 'Jim Red',
+        age: 18,
+        address: 'London No.1 Lake Park',
+      },
+      {
+        key: 10,
+        name: 'Jim Red',
+        age: 18,
+        address: 'London No.1 Lake Park',
+      },
+      {
+        key: 11,
+        name: 'Jim Red',
+        age: 18,
+        address: 'London No.1 Lake Park',
+      },
     ];
     this.currentPage = 1;
     this.newPage = 1;

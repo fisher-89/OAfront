@@ -33,7 +33,7 @@ export default {
     notification.success({
       message: '添加成功',
     });
-    let dataState = Array.isArray(state[store]) ? [] : {};
+    let dataState = state[store];
     if (Array.isArray(state[store]) && state[store].length) {
       dataState = [...state[store]];
       dataState.push(data);

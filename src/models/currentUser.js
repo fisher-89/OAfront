@@ -8,16 +8,21 @@ export default {
   },
 
   effects: {
-    * fetchCurrent(_, { call, put }) {
+    * fetchCurrent(_, { call, put, select }) {
       try {
-        const response = yield call(queryCurrent);
-        if (response) {
-          yield put({
-            type: 'save',
-            payload: response,
-          });
+        const currentUser = yield select(state => state.currentUser.currentUser);
+        if (!Object.keys(currentUser).length) {
+          const response = yield call(queryCurrent);
+          if (response) {
+            yield put({
+              type: 'save',
+              payload: response,
+            });
+          }
         }
-      } catch (err) { return err; }
+      } catch (err) {
+        return err;
+      }
     },
   },
 

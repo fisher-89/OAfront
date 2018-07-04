@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Layout, Icon, notification } from 'antd';
+import { Layout, Icon } from 'antd';
 import DocumentTitle from 'react-document-title';
 import { connect } from 'dva';
 import { Route, Redirect, Switch, routerRedux } from 'dva/router';
@@ -83,11 +83,8 @@ class BasicLayout extends React.PureComponent {
   }
 
   componentWillMount() {
-    // const userStorage = localStorage.getItem('oa-current-user') || null;
-    // window.user = JSON.parse(userStorage) || undefined;
     this.fetchCurrentUser();
   }
-
 
   componentDidMount() {
     this.checkOauthPermission();
@@ -97,23 +94,6 @@ class BasicLayout extends React.PureComponent {
         isMobile: mobile,
       });
     });
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (!Object.keys(nextProps.currentUser).length && !nextProps.loginLoading) {
-      notification.error({
-        message: '请求错误:',
-        description: '获取当前用户信息失败',
-      });
-    }
-
-    // if (nextProps.currentUser
-    //   !== this.props.currentUser
-    //   && Object.keys(nextProps.currentUser).length
-    // ) {
-    //   localStorage.setItem('oa-current-user', JSON.stringify(nextProps.currentUser));
-    //   window.user = nextProps.currentUser;
-    // }
   }
 
   getPageTitle() {
@@ -276,9 +256,9 @@ class BasicLayout extends React.PureComponent {
   }
 }
 
-export default connect(({ currentUser, loading }) => ({
+export default connect(({ currentUser }) => ({
   currentUser: currentUser.currentUser,
-  loginLoading: loading.models.currentUser,
+  // loginLoading: loading.models.currentUser,
   // collapsed: global.collapsed,
   // fetchingNotices: loading.effects['global/fetchNotices'],
   // notices: global.notices,
