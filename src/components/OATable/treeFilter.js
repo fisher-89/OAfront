@@ -6,19 +6,20 @@ const { TreeNode } = Tree;
 export default class TreeFilter extends PureComponent {
   constructor(props) {
     super(props);
+    const treeData = this.markTreeData(props.treeFilters.data);
     this.state = {
       checkedKeys: {
         checked: [],
         halfChecked: [],
       },
       selectChild: false,
-      treeData: [],
+      treeData: treeData || [],
     };
   }
 
   componentWillReceiveProps(nextProps) {
     const { treeFilters: { data } } = nextProps;
-    if (data !== this.props.treeFilters.data && this.state.treeData.length === 0) {
+    if (data !== this.props.treeFilters.data) {
       const treeData = this.markTreeData(data);
       this.setState({ treeData });
     }

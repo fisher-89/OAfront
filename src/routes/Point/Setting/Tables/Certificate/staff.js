@@ -156,13 +156,10 @@ export default class extends PureComponent {
     return (
       <React.Fragment>
         <OATable
-          // serverSide
           loading={loading}
           columns={this.makeStaffColumns()}
           data={staff}
           rowKey={record => (`${record.staff_sn}-${record.certificate_id}`)}
-          // total={certificateStaff.total || 0}
-          // filtered={certificateStaff.filtered || 0}
           fetchDataSource={this.fetchStaffDataSource}
           multiOperator={this.makeMultiOperator()}
           extraOperator={extraOperator()}
