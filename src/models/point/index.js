@@ -4,6 +4,7 @@ import {
 import eventEffects from './event/event';
 import typeEffects from './event/type';
 import authEffects from './auth';
+import taskAuthEffects from './taskAuth';
 import finalEffects from './final';
 import baseEffects from './base';
 import logEffects from './log';
@@ -23,11 +24,13 @@ export default {
     pointLog: {},
     certificate: [],
     certificateStaff: [],
+    taskAuth: {},
   },
   effects: {
     ...eventEffects,
     ...typeEffects,
     ...authEffects,
+    ...taskAuthEffects,
     ...finalEffects,
     ...baseEffects,
     ...logEffects,

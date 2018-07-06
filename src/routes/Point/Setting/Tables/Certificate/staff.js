@@ -68,9 +68,9 @@ export default class extends PureComponent {
         },
       }, {
         title: '分值',
-        dataIndex: 'certificate_id',
-        render: (value) => {
-          const { point } = certificate.find(item => item.id === value);
+        dataIndex: 'point',
+        render: (_, record) => {
+          const { point } = certificate.find(item => item.id === record.certificate_id);
           return point;
         },
       },
@@ -160,7 +160,7 @@ export default class extends PureComponent {
           loading={loading}
           columns={this.makeStaffColumns()}
           data={staff}
-          rowKey={(record) => { return `${record.staff_sn}-${record.certificate_id}`; }}
+          rowKey={record => (`${record.staff_sn}-${record.certificate_id}`)}
           // total={certificateStaff.total || 0}
           // filtered={certificateStaff.filtered || 0}
           fetchDataSource={this.fetchStaffDataSource}

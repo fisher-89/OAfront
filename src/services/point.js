@@ -105,6 +105,36 @@ export async function deleteAuth(id) {
   });
 }
 
+/**
+ * 任务分配权限
+ */
+export async function fetchTaskAuth(params) {
+  return request('/api/pms/task/authority', {
+    method: 'GET',
+    body: params,
+  });
+}
+
+export async function addTaskAuth(params) {
+  return request('/api/pms/task/authority', {
+    method: 'POST',
+    body: params,
+  });
+}
+
+export async function editTaskAuth(params, id) {
+  return request(`/api/pms/task/authority/${id}`, {
+    method: 'PUT',
+    body: params,
+  });
+}
+
+export async function deleteTaskAuth(id) {
+  return request(`/api/pms/task/authority/${id}`, {
+    method: 'DELETE',
+  });
+}
+
 
 /** 终审人 */
 export async function fetchFinal(params, id) {

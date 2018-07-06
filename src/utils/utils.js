@@ -141,7 +141,15 @@ export function customerAuthority(authId) {
   let authAble = false;
   if (window.user && Object.keys(window.user).length) {
     const { authorities: { oa } } = window.user;
-    authAble = oa.indexOf(authId) !== -1;
+    if (Array.isArray(authId)) {
+      authId.forEach((id) => {
+        if (oa.indexOf(id) !== -1) {
+          authAble = true;
+        }
+      });
+    } else {
+      authAble = oa.indexOf(authId) !== -1;
+    }
   }
   return authAble;
 }

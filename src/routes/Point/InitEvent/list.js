@@ -113,25 +113,26 @@ export default class extends PureComponent {
 
   handleError = (error) => {
     const { onError, form: { setFields } } = this.props;
-    if (errors.point_a_max || errors.point_a_min) {
+    // console.log(error);
+    if (error.point_a_max || error.point_a_min) {
       let str = '';
-      if (errors.point_a_min) {
+      if (error.point_a_min) {
         str += error.point_a_min;
       }
 
-      if (errors.point_a_max) {
+      if (error.point_a_max) {
         str += error.point_a_max;
       }
       setFields({
         point_a: str,
       });
-    } else if (errors.point_b_max || errors.point_b_min) {
+    } else if (error.point_b_max || error.point_b_min) {
       let str = '';
-      if (errors.point_b_min) {
+      if (error.point_b_min) {
         str += error.point_b_min;
       }
 
-      if (errors.point_b_max) {
+      if (error.point_b_max) {
         str += error.point_b_max;
       }
       setFields({

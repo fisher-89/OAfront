@@ -138,56 +138,6 @@ export default !noProxy ? {
   'DELETE /api/workflow/(.*)': 'http://192.168.20.16:8009/admin/',
 
   /**
-   * 唐娇  ： 大爱
-   */
-  // 'POST /api/violation/(.*)': 'http://192.168.20.144:8001/api/',
-
-  /**
-   * 唐娇  ： 积分制
-   */
-  // 'POST /api/pms/(.*)': 'http://192.168.20.144:8003/admin/',
-  // 'GET /api/pms/(.*)': 'http://192.168.20.144:8003/admin/',
-  // 'PUT /api/pms/(.*)': 'http://192.168.20.144:8003/admin/',
-  // 'PATCH /api/pms/(.*)': 'http://192.168.20.144:8003/admin/',
-  // 'DELETE /api/pms/(.*)': 'http://192.168.20.144:8003/admin/',
-
-  /**
-   * 张卫  ： 积分制
-   */
-  // 'GET /api/admin/(.*)': 'http://PMS.test/admin/',
-  // 'POST /api/admin/(.*)': 'http://PMS.test/admin/',
-  // 'PUT /api/admin/(.*)': 'http://PMS.test/admin/',
-  // 'PATCH /api/admin/(.*)': 'http://PMS.test/admin/',
-  // 'DELETE /api/admin/(.*)': 'http://PMS.test/admin/',
-
-  /**
-    * 张博涵 ： 积分制
-    */
-
-
-  // 'GET /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',
-  // 'POST /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',
-  // 'PUT /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',
-  // 'PATCH /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',
-  // 'DELETE /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',
-
-  // 'GET /api/admin/(.*)': 'http://192.168.20.238:8007/admin/',
-  // 'POST /api/admin/(.*)': 'http://192.168.20.238:8007/admin/',
-  // 'PUT /api/admin/(.*)': 'http://192.168.20.238:8007/admin/',
-  // 'PATCH /api/admin/(.*)': 'http://192.168.20.238:8007/admin/',
-  // 'DELETE /api/admin/(.*)': 'http://192.168.20.238:8007/admin/',
-
-  /**
-   * 张博涵 ： 登录等。。
-   */
-  // 'GET /api/(.*)': 'http://192.168.20.238:8003/api/',
-  // 'POST /api/(.*)': 'http://192.168.20.238:8003/api/',
-  // 'POST /oauth/(.*)': 'http://192.168.20.238:8003/oauth/',
-
-
-
-
-  /**
    * 线上  积分制
    */
   'GET /api/pms/(.*)': 'http://120.79.121.158:8004/admin/',
@@ -208,8 +158,6 @@ export default !noProxy ? {
   'GET /api/(.*)': 'http://of.xigemall.com/api/',
   'POST /api/(.*)': 'http://of.xigemall.com/api/',
   'POST /oauth/(.*)': 'http://of.xigemall.com/oauth/',
-
-  // 'POST /oauth/(.*)': 'http://192.168.20.238:8003/oauth/'
 } : {
 
     /**
@@ -220,22 +168,46 @@ export default !noProxy ? {
     'PUT /api/workflow/(.*)': 'http://192.168.20.16:8009/admin/',
     'DELETE /api/workflow/(.*)': 'http://192.168.20.16:8009/admin/',
 
+    /**
+     * 唐娇  ： 大爱
+     */
+    'POST /api/violation/(.*)': 'http://192.168.20.144:8001/api/',
 
-    'GET /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',
-    'POST /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',
-    'PUT /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',
-    'PATCH /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',
-    'DELETE /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',
+    /**
+     * 唐娇  ： 积分制
+     */
+    'POST /api/pms/(.*)': 'http://192.168.20.144:8003/admin/',
+    'GET /api/pms/(.*)': 'http://192.168.20.144:8003/admin/',
+    'PUT /api/pms/(.*)': 'http://192.168.20.144:8003/admin/',
+    'PATCH /api/pms/(.*)': 'http://192.168.20.144:8003/admin/',
+    'DELETE /api/pms/(.*)': 'http://192.168.20.144:8003/admin/',
 
-    'GET /api/admin/(.*)': 'http://192.168.20.238:8007/admin/',
-    'POST /api/admin/(.*)': 'http://192.168.20.238:8007/admin/',
-    'PUT /api/admin/(.*)': 'http://192.168.20.238:8007/admin/',
-    'PATCH /api/admin/(.*)': 'http://192.168.20.238:8007/admin/',
-    'DELETE /api/admin/(.*)': 'http://192.168.20.238:8007/admin/',
+    /**
+     * 张卫  ： 积分制
+     */
+    'GET /api/admin/(.*)': 'http://PMS.test/admin/',
+    'POST /api/admin/(.*)': 'http://PMS.test/admin/',
+    'PUT /api/admin/(.*)': 'http://PMS.test/admin/',
+    'PATCH /api/admin/(.*)': 'http://PMS.test/admin/',
+    'DELETE /api/admin/(.*)': 'http://PMS.test/admin/',
+
 
     /**
      * 张博涵 ： 登录等。。
      */
+
+    // 'GET /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',
+    // 'POST /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',
+    // 'PUT /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',
+    // 'PATCH /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',
+    // 'DELETE /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',
+
+    // 'GET /api/admin/(.*)': 'http://192.168.20.238:8007/admin/',
+    // 'POST /api/admin/(.*)': 'http://192.168.20.238:8007/admin/',
+    // 'PUT /api/admin/(.*)': 'http://192.168.20.238:8007/admin/',
+    // 'PATCH /api/admin/(.*)': 'http://192.168.20.238:8007/admin/',
+    // 'DELETE /api/admin/(.*)': 'http://192.168.20.238:8007/admin/',
+
     'GET /api/(.*)': 'http://192.168.20.238:8003/api/',
     'POST /api/(.*)': 'http://192.168.20.238:8003/api/',
     'POST /oauth/(.*)': 'http://192.168.20.238:8003/oauth/',
