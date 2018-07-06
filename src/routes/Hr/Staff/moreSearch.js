@@ -104,9 +104,8 @@ class Search extends PureComponent {
           })(
             <Input type="hidden" />
           )}
-          <SearchTable
+          <SearchTable.Shop
             multiple
-            module="shop"
             name={{
               shop_sn: 'shop_sn',
             }}

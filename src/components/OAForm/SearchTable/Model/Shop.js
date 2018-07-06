@@ -125,12 +125,22 @@ export default class Shop extends PureComponent {
       total: shopTotal,
       index: 'shop_sn',
       loading: (shopLoading || brandLoading || departmentLoading),
-      fetchDataSource: this.fetchShop,
     };
 
     tableProps.columns = this.makeColumns();
     return tableProps;
   };
+
+  makeSearchTableProps = () => {
+    const response = {
+      ...this.props,
+      tableProps: {
+        ...this.makeShopProps(),
+        fetchDataSource: this.fetchShop,
+      },
+    };
+    return response;
+  }
 
   render() {
     return (

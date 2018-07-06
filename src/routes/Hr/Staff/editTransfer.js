@@ -155,8 +155,7 @@ export default class extends PureComponent {
         <Row>
           <Col {...fieldsBoxLayout}>
             <FormItem label="店铺编号" {...formItemLayout}>
-              <SearchTable
-                module="shop"
+              <SearchTable.Shop
                 name={{
                   shop_sn: 'shop_sn',
                 }}
