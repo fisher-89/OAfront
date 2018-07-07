@@ -39,7 +39,7 @@ export default class SearchTable extends PureComponent {
     const newValue = this.makeInitialValue(value);
     this.state = {
       visible: false,
-      pushValue: newValue,
+      value: newValue,
       modelStyle: props.modelStyle || defaultStyle,
     };
   }
@@ -48,18 +48,19 @@ export default class SearchTable extends PureComponent {
   componentWillReceiveProps(nextProps) {
     if (nextProps.value !== this.props.value) {
       const newValue = this.makeInitialValue(nextProps.value);
-      this.setState({ pushValue: newValue });
+      this.setState({ value: newValue });
     }
   }
 
   setTableValue = (changeValue) => {
     const { multiple } = this.props;
-    this.pushValue = multiple ? changeValue : changeValue[0];
     if (!multiple) {
-      this.setState({ pushValue: this.pushValue || [] }, () => {
+      this.setState({ value: changeValue[0] || [] }, () => {
         this.handleOk();
       });
+      return;
     }
+    this.pushValue = changeValue;
   };
 
   makeInitialValue = (value) => {
@@ -93,32 +94,32 @@ export default class SearchTable extends PureComponent {
 
   handleOk = () => {
     const { onChange, multiple, name } = this.props;
-    const { pushValue } = this.state;
+    const { value } = this.state;
     this.handleModelVisble(false);
     if (multiple) {
-      const value = [];
+      const newValue = [];
       this.pushValue.forEach((item, i) => {
-        value[i] = {};
+        newValue[i] = {};
         Object.keys(name).forEach((key) => {
-          value[i][key] = item[name[key]];
+          newValue[i][key] = item[name[key]];
         });
       });
-      this.setState({ pushValue: this.pushValue }, () => onChange(value));
+      this.setState({ value: [...newValue] }, () => onChange(newValue));
       return;
     }
-    const value = {};
+    const newValue = {};
     Object.keys(name).forEach((key) => {
-      value[key] = pushValue[name[key]];
+      newValue[key] = value[name[key]];
     });
-    onChange(value);
+    onChange(newValue);
   };
 
 
   makeSearchView = () => {
     const { multiple, placeholder, disabled, showName, tableProps } = this.props;
-    const { visible, pushValue } = this.state;
+    const { visible, value } = this.state;
     const commonProps = {
-      value: pushValue,
+      value,
       disabled,
       placeholder,
       showName,
@@ -129,7 +130,7 @@ export default class SearchTable extends PureComponent {
       <CheckBoxTag
         {...commonProps}
         setTagSelectedValue={(removeIndex) => {
-          const newValue = pushValue.filter((_, index) => index !== removeIndex);
+          const newValue = value.filter((_, index) => index !== removeIndex);
           this.setTableValue(newValue);
           this.handleOk();
         }}
@@ -148,13 +149,13 @@ export default class SearchTable extends PureComponent {
 
   render() {
     const { multiple, name, showName, title, tableProps } = this.props;
-    const { visible, modelStyle: { width }, pushValue } = this.state;
+    const { visible, modelStyle: { width }, value } = this.state;
     const footer = multiple ? null : { footer: null };
     let selectValue = [];
     if (multiple) {
-      selectValue = pushValue;
+      selectValue = [...value];
     } else {
-      selectValue = [pushValue[tableProps.index]] || [];
+      selectValue = [value[tableProps.index]] || [];
     }
     return (
       <div>
@@ -176,18 +177,16 @@ export default class SearchTable extends PureComponent {
               showName={showName}
               multiple={multiple}
               selectValue={selectValue}
-              fetchDataSource={this.fetchDataSource}
               setSelectedValue={this.setTableValue}
             />
           )}
-
         </Modal>
       </div>
     );
   }
 }
 SearchTable.defaultProps = {
-  title: '员工列表',
+  title: '列表',
   onChange: () => { },
 };
 SearchTable.Staff = Staff;

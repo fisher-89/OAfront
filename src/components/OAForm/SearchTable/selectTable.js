@@ -26,29 +26,24 @@ export default class SelectTable extends React.Component {
       data,
       index,
       multiple,
-      setSelectedValue,
     } = this.props;
     let { value } = this.state;
     if (multiple) {
       const valueKey = value.map(item => item[index]);
       const removeValIndex = valueKey.indexOf(selectedRows[index]);
       if (removeValIndex !== -1) {
-        value = value.filter((item, i) => i !== removeValIndex);
+        value = value.filter((_, i) => i !== removeValIndex);
       } else {
         data.forEach((item) => {
           if (item[index] === selectedRows[index]) {
-            const temp = this.makeValueKey(item);
-            value.push(temp);
+            value.push(item);
           }
         });
       }
     } else {
-      const temp = this.makeValueKey(selectedRows);
-      value = [temp];
+      value = [selectedRows];
     }
-    this.setState({ value: [...value] }, () => {
-      setSelectedValue(value);
-    });
+    this.handelChange('', value);
   };
 
   handleRow = (record) => {
@@ -65,7 +60,7 @@ export default class SelectTable extends React.Component {
     };
   };
 
-  handelChange = (selectKey, selectedRows) => {
+  handelChange = (_, selectedRows) => {
     const { setSelectedValue } = this.props;
     const value = [];
     selectedRows.forEach((item) => {
