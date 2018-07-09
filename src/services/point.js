@@ -176,6 +176,17 @@ export async function fetchPointLog(params) {
   });
 }
 
+/**
+ * 任务执行日志列表
+ * @param {filters} params
+ */
+export async function fetchCommadnLog(params) {
+  return request('/api/admin/commadn-logs', {
+    method: 'GET',
+    body: params,
+  });
+}
+
 
 /**  base-points 固定积分配置 * */
 

@@ -17,7 +17,7 @@ export default class extends React.PureComponent {
       tagsData = value.map((item, index) => {
         return {
           value: item[valueName],
-          label: item[showName],
+          label: item[showName] || '',
           key: index,
         };
       });
@@ -29,7 +29,6 @@ export default class extends React.PureComponent {
     };
     const color = this.props.disabled ? '#f5f5f5' : '#fff';
     const mouseStyle = this.props.disabled ? 'not-allowed' : 'pointer';
-
     const tags = tagsData.map((item) => {
       const tag = item.label;
       const isLongTag = tag.length > 20;

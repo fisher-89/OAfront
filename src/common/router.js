@@ -103,6 +103,10 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['point'], () => import('../routes/Point/Log')),
       authority: '156',
     },
+    '/point/commadn-log': {
+      component: dynamicWrapper(app, ['point'], () => import('../routes/Point/Commadn')),
+    },
+
 
     '/hr/staff': {
       component: dynamicWrapper(app, ['staffs', 'department', 'brand', 'position', 'shop'], () => import('../routes/Hr/Staff')),

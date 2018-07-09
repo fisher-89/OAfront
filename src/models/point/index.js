@@ -8,6 +8,7 @@ import taskAuthEffects from './taskAuth';
 import finalEffects from './final';
 import baseEffects from './base';
 import logEffects from './log';
+import commadnEffects from './commadn';
 import certificateEffects from './certificate';
 
 import indexReducers from '../reducers';
@@ -25,6 +26,7 @@ export default {
     certificate: [],
     certificateStaff: [],
     taskAuth: {},
+    commadnLog: {},
   },
   effects: {
     ...eventEffects,
@@ -34,6 +36,7 @@ export default {
     ...finalEffects,
     ...baseEffects,
     ...logEffects,
+    ...commadnEffects,
     ...certificateEffects,
   },
   reducers: {
