@@ -10,7 +10,6 @@ import './index.less';
 
 /**
  *  props {
- *     authority： false 是否开启权限
  *     multiple ： false 单选
  *     value : required
  *     name : 多选值 required  typeof 'object'

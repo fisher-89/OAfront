@@ -51,6 +51,7 @@ export default class extends PureComponent {
 
   setTypeId = (typeId) => {
     this.setState({ typeId }, () => {
+      this.oatable.state.pagination.current = 1;
       this.oatable.fetchTableDataSource();
     });
   }

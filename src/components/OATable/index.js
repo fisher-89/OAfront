@@ -503,6 +503,10 @@ class OATable extends PureComponent {
       const fieldsKey = Object.keys(item);
       Object.keys(exportFields).forEach((column) => {
         const columnValue = exportFields[column];
+        let renderValue;
+        if (columnValue.render) {
+          renderValue = columnValue.render(item[columnValue.dataIndex], item);
+        }
         if (fieldsKey.indexOf(columnValue.dataIndex) !== -1 && !columnValue.render) {
           temp[columnValue.dataIndex] = item[columnValue.dataIndex];
         } else if (columnValue.exportRender) {
@@ -510,9 +514,9 @@ class OATable extends PureComponent {
         } else if (
           fieldsKey.indexOf(columnValue.dataIndex) !== -1
           && columnValue.render
-          && typeof columnValue.render(item[column.dataIndex], item) === 'string'
+          && typeof renderValue === 'string'
         ) {
-          temp[columnValue.dataIndex] = columnValue.render(item[columnValue.dataIndex], item);
+          temp[columnValue.dataIndex] = renderValue;
         }
       });
       temp = Object.values(temp);
@@ -527,7 +531,7 @@ class OATable extends PureComponent {
     datas.sheetData.forEach((item) => {
       Object.keys(item).forEach((key) => {
         let str = item[key];
-        if (str.indexOf(',') !== -1) {
+        if (typeof str === 'string' && str.indexOf(',') !== -1) {
           str = str.replace(/,/ig, '，');
         }
         tableString += `${item[key]}\t,`;
