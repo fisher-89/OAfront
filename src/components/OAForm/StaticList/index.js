@@ -357,6 +357,7 @@ export default class List extends React.Component {
           </Button>
         </div>
         <Modal
+          destroyOnClose
           title={title || '信息'}
           visible={visible}
           onCancel={() => this.handleVisible(false)}
@@ -371,7 +372,7 @@ export default class List extends React.Component {
         >
           {this.renderFormItemByTree(children)}
         </Modal>
-      </React.Fragment >
+      </React.Fragment>
     );
   }
 }
@@ -384,4 +385,3 @@ List.defaultProps = {
   bodyStyle: { overflow: 'auto' },
   error: {},
 };
-
