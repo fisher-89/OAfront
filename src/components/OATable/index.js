@@ -531,7 +531,9 @@ class OATable extends PureComponent {
     datas.sheetData.forEach((item) => {
       Object.keys(item).forEach((key) => {
         let str = item[key];
-        str = str.replace(/,/ig, '，');
+        if (typeof str === 'string') {
+          str = str.replace(/,/ig, '，');
+        }
         tableString += `${str}\t,`;
       });
       tableString += '\n';
