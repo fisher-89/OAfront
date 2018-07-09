@@ -539,7 +539,7 @@ class OATable extends PureComponent {
       tableString += '\n';
     });
 
-    const uri = `data:application/vnd.ms-excel;charset=utf-8,\ufeff${encodeURIComponent(tableString)}`;
+    const uri = `data:application/csv;charset=utf-8,\ufeff${encodeURIComponent(tableString)}`;
     const link = document.createElement('a');
     link.href = uri;
     link.download = `${title}.xls`;
