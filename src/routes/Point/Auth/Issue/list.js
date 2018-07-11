@@ -50,20 +50,22 @@ export default class extends PureComponent {
   makeColumns = () => {
     const columns = [
       {
-        title: '编号',
-        dataIndex: 'id',
+        title: '员工号',
+        dataIndex: 'admin_sn',
+        searcher: true,
       },
       {
-        title: '组成员',
+        title: '管理员',
         dataIndex: 'admin_name',
-        render: (_, record) => {
-          const name = record.administrator.map(item => item.admin_name);
-          return name.join(',');
-        },
+        searcher: true,
       },
       {
-        title: '分组名称',
-        dataIndex: 'name',
+        title: '关联组',
+        dataIndex: 'groups',
+        render: (groups) => {
+          const names = groups.map(item => item.name);
+          return names.join(' ，');
+        },
       },
     ];
     if (customerAuthority([171, 170])) {
@@ -78,7 +80,7 @@ export default class extends PureComponent {
                 )}
                 <Divider type="vertical" />
                 {customerAuthority(170) && (
-                  <a onClick={() => this.handleDelete(rowData.id)}>删除</a>
+                  <a onClick={() => this.handleDelete(rowData.admin_sn)}>删除</a>
                 )}
               </Fragment>
             );
@@ -100,7 +102,7 @@ export default class extends PureComponent {
           style={{ marginLeft: '10px' }}
           onClick={() => this.handleModalVisible(true)}
         >
-          添加分组
+          添加管理
         </Button>
       ));
     }
@@ -124,13 +126,11 @@ export default class extends PureComponent {
           )
         }
         <OATable
-          serverSide
+          rowKey={record => (record.admin_sn)}
           loading={authLoading || deleteLoaing}
           extraOperator={this.makeExtraOperator()}
           columns={this.makeColumns()}
-          dataSource={taskAuth && taskAuth.data}
-          total={taskAuth && taskAuth.total}
-          filtered={taskAuth && taskAuth.filtered}
+          dataSource={taskAuth}
           fetchDataSource={this.fetchTaskAuth}
           scroll={{ x: 300 }}
         />

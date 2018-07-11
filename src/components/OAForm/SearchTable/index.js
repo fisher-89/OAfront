@@ -63,9 +63,9 @@ export default class SearchTable extends PureComponent {
   };
 
   makeInitialValue = (value) => {
-    const { name } = this.props;
+    const { name, multiple } = this.props;
     let newValue = [];
-    if (this.props.multiple) {
+    if (multiple) {
       newValue = value.map((item) => {
         const temp = {};
         Object.keys(name).forEach((key) => {

@@ -122,8 +122,8 @@ export async function addTaskAuth(params) {
   });
 }
 
-export async function editTaskAuth(params, id) {
-  return request(`/api/pms/task/authority/${id}`, {
+export async function editTaskAuth(params) {
+  return request('/api/pms/task/authority', {
     method: 'PUT',
     body: params,
   });

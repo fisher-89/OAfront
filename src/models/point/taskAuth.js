@@ -50,23 +50,23 @@ export default {
       const params = {
         ...payload,
       };
-      const { id } = payload;
-      delete params.id;
-      const response = yield call(editTaskAuth, params, id);
-      if (response.errors && onError) {
+      const response = yield call(editTaskAuth, params);
+      if (response.errors) {
         onError(response.errors);
       } else {
         yield put({
-          type: 'update',
+          type: 'updateTaskAuth',
           payload: {
             store,
-            id,
+            admin_sn: response.admin_sn,
             data: response,
           },
         });
         onSuccess(response);
       }
-    } catch (err) { return err; }
+    } catch (err) {
+      return err;
+    }
   },
   * deleteTaskAuth({ payload }, { call, put }) {
     try {

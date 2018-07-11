@@ -25,7 +25,7 @@ export default {
     pointLog: {},
     certificate: [],
     certificateStaff: [],
-    taskAuth: {},
+    taskAuth: [],
     commadnLog: {},
   },
   effects: {
@@ -41,6 +41,48 @@ export default {
   },
   reducers: {
     ...indexReducers,
+    updateTaskAuth(state, action) {
+      const { store, data } = action.payload;
+      const adminSn = action.payload.admin_sn;
+      if (data.message) {
+        notification.error({
+          message: data.message,
+        });
+        return;
+      }
+      notification.success({
+        message: '编辑成功',
+      });
+      const dataSource = Array.isArray(state[store]) ? state[store] : state[store].data;
+      let updated = false;
+      const newStore = dataSource.map((item) => {
+        if (parseInt(item.admin_sn, 0) === parseInt(adminSn, 0)) {
+          updated = true;
+          return data;
+        } else {
+          return item;
+        }
+      });
+      if (!updated) {
+        newStore.push(data);
+      }
+      return {
+        ...state,
+        [store]: newStore,
+      };
+    },
+    delete(state, action) {
+      const { store, id } = action.payload;
+      notification.success({
+        message: '删除成功',
+      });
+
+      const dataState = state[store].filter(item => item.admin_sn !== id);
+      return {
+        ...state,
+        [store]: dataState,
+      };
+    },
     deleteCertificateAndStaff(state, action) {
       const { store, id } = action.payload;
       notification.success({
@@ -48,13 +90,14 @@ export default {
       });
       const dataState = Array.isArray(state[store]) ? (
         state[store] ? state[store].filter(item => item.id !== id) : []
-      ) : (
-        state[store].data ? {
-          ...state[store],
-          total: state[store].total - 1,
-          data: state[store].data.filter(item => item.id !== id),
-        } : {}
-      );
+      ) :
+        (
+          state[store].data ? {
+            ...state[store],
+            total: state[store].total - 1,
+            data: state[store].data.filter(item => item.id !== id),
+          } : {}
+        );
       const certificateStaff = state.certificateStaff.filter(item => item.certificate_id !== id);
 
       return {
