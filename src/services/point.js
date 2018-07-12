@@ -286,3 +286,37 @@ export async function fetchEducation() {
   });
 }
 
+/**
+ * 奖扣指标列表 || 详情
+ */
+export async function fetchTargets(id) {
+  return request(`/api/pms/targets/${id}`, {
+    method: 'GET',
+  });
+}
+
+export async function addTargets(params) {
+  return request('/api/pms/targets', {
+    method: 'POST',
+    body: params,
+  });
+}
+
+export async function editTargets(params, id) {
+  return request(`/api/pms/targets/${id}`, {
+    method: 'PUT',
+    body: params,
+  });
+}
+
+export async function deleteTargets(id) {
+  return request(`/api/pms/targets/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+export async function editTargetsStaff(id) {
+  return request(`/api/pms/targets/${id}/staff`, {
+    method: 'PUT',
+  });
+}

@@ -10,8 +10,10 @@ import baseEffects from './base';
 import logEffects from './log';
 import commadnEffects from './commadn';
 import certificateEffects from './certificate';
+import targetsEffects from './targets';
 
 import indexReducers from '../reducers';
+import targetsReducers from './targets/reducers';
 
 export default {
   namespace: 'point',
@@ -27,6 +29,8 @@ export default {
     certificateStaff: [],
     taskAuth: [],
     commadnLog: {},
+    targets: [],
+    targetsDetails: {},
   },
   effects: {
     ...eventEffects,
@@ -38,9 +42,11 @@ export default {
     ...logEffects,
     ...commadnEffects,
     ...certificateEffects,
+    ...targetsEffects,
   },
   reducers: {
     ...indexReducers,
+    ...targetsReducers,
     updateTaskAuth(state, action) {
       const { store, data } = action.payload;
       const adminSn = action.payload.admin_sn;

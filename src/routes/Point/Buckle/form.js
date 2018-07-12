@@ -8,7 +8,10 @@ import OAForm from '../../../components/OAForm';
 const { OAModal } = OAForm;
 const FormItem = OAForm.Item;
 
-@connect()
+@connect(({ loading }) => ({
+  addLoading: loading.effects['point/addTargets'],
+  editLoading: loading.effects['point/editTargets'],
+}))
 @OAForm.Config
 @OAForm.create({
   onValuesChange(props, fields, allFields) {
@@ -29,7 +32,7 @@ export default class Form extends PureComponent {
   handleSubmit = (params, onError) => {
     const { dispatch } = this.props;
     dispatch({
-      type: '',
+      type: params.id ? 'point/editTargets' : 'point/addTargets',
       payload: params,
       onError,
       onSuccess: this.handleSuccess,
@@ -41,6 +44,9 @@ export default class Form extends PureComponent {
       form,
       onError,
       visible,
+      addLoading,
+      editLoading,
+      initialValue,
       form: { getFieldDecorator },
     } = this.props;
     const formItemLayout = {
@@ -52,11 +58,10 @@ export default class Form extends PureComponent {
         form={form}
         title="任务表单"
         visible={visible}
+        onError={onError}
+        loading={addLoading || editLoading}
         onSubmit={this.handleSubmit}
         onCancel={() => this.props.handleVisible(false)}
-        formProps={{
-          onError,
-        }}
       >
         <FormItem
           {...formItemLayout}
@@ -64,7 +69,7 @@ export default class Form extends PureComponent {
           required
         >
           {getFieldDecorator('name', {
-            initialValue: '',
+            initialValue: initialValue.name || '',
           })(
             <Input placeholder="请输入" />
           )}
@@ -73,8 +78,8 @@ export default class Form extends PureComponent {
           {...formItemLayout}
           label="奖分下限"
         >
-          {getFieldDecorator('awardBscore', {
-            initialValue: '',
+          {getFieldDecorator('point_b_awarding_target', {
+            initialValue: initialValue.point_b_awarding_target || '',
           })(
             <Input placeholder="请输入" />
           )}
@@ -83,8 +88,8 @@ export default class Form extends PureComponent {
           {...formItemLayout}
           label="扣分下限"
         >
-          {getFieldDecorator('cutBscore', {
-            initialValue: '',
+          {getFieldDecorator('point_b_deducting_target', {
+            initialValue: initialValue.point_b_deducting_target || '',
           })(
             <Input placeholder="请输入" />
           )}
@@ -93,8 +98,8 @@ export default class Form extends PureComponent {
           {...formItemLayout}
           label="奖扣比例"
         >
-          {getFieldDecorator('cutScale', {
-            initialValue: '',
+          {getFieldDecorator('deducting_percentage_target', {
+            initialValue: initialValue.deducting_percentage_target || '',
           })(
             <Input placeholder="请输入" addonAfter="%" />
           )}
@@ -103,18 +108,8 @@ export default class Form extends PureComponent {
           {...formItemLayout}
           label="奖扣人次"
         >
-          {getFieldDecorator('awardCutOnePoint', {
-            initialValue: '',
-          })(
-            <Input placeholder="请输入" />
-          )}
-        </FormItem>
-        <FormItem
-          {...formItemLayout}
-          label="未完成任务扣分"
-        >
-          {getFieldDecorator('uncompletedOnePoint', {
-            initialValue: '',
+          {getFieldDecorator('event_count_target', {
+            initialValue: initialValue.event_count_target || '',
           })(
             <Input placeholder="请输入" />
           )}
