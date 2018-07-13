@@ -478,7 +478,7 @@ export default class Flow extends React.PureComponent {
   };
 
   flowChartForm = () => {
-    const { formData } = this.state;
+    const { formData, formData: { steps } } = this.state;
     const departmentTree = markTreeData(this.props.department, { parentId: 'parent_id', value: 'id', lable: 'full_name' }, 0);
     const {
       form: { getFieldDecorator },
@@ -591,7 +591,26 @@ export default class Flow extends React.PureComponent {
             ],
             initialValue: formData.form_id,
           })(
-            <Select placeholder="请选择流程表单" disabled={this.state.formAble}>
+            <Select
+              placeholder="请选择流程表单"
+              disabled={this.state.formAble}
+              onChange={() => {
+                const newSteps = steps.map((item) => {
+                  return {
+                    ...item,
+                    hidden_fields: [],
+                    editable_fields: [],
+                    required_fields: [],
+                  };
+                });
+                this.setState({
+                  formData: {
+                    ...formData,
+                    steps: [...newSteps],
+                  },
+                });
+              }}
+            >
               <Option value={null}>---请选择---</Option>
               {formsOption}
             </Select>
