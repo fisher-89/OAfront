@@ -18,7 +18,7 @@ const FormItem = OAForm.Item;
   bLoading: loading.effects['point/fetchBase'],
   editLoading: loading.effects['point/editBase'],
 }))
-@OAForm.Config
+
 @OAForm.create()
 export default class extends PureComponent {
   constructor(props) {

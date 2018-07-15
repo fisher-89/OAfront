@@ -20,7 +20,7 @@ const FormItem = OAForm.Item;
   loading: loading.models.workflow,
 }))
 
-@OAForm.Config
+
 @OAForm.create({
   onValuesChange(props, changeValues) {
     Object.keys(changeValues).forEach(key => props.handleFieldsError(key));

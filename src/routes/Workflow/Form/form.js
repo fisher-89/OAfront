@@ -24,7 +24,7 @@ const { TabPane } = Tabs;
   validator: workflow.validator,
 }))
 
-@OAForm.Config
+
 @OAForm.create({
   onValuesChange(props, changeValues, allValues) {
     props.onChange(allValues);

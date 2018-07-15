@@ -16,7 +16,7 @@ const FormItem = OAForm.Item;
   certificateLoading: loading.effects['point/fetchCertificate'],
   addLoading: loading.effects['point/addCertificateAward'],
 }))
-@OAForm.Config
+
 @OAForm.create({
   onValuesChange(props, changeValues, allValues) {
     props.onChange(allValues);

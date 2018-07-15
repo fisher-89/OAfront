@@ -30,7 +30,7 @@ const { TabPane } = Tabs;
   fetching: loading.effects['staffs/fetchStaff'],
 }))
 
-@OAForm.Config
+
 @OAForm.create({
   onValuesChange(props, changeValues, allValues) {
     props.onChange(allValues);

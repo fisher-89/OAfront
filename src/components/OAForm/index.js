@@ -8,7 +8,7 @@ import {
 import OAModal from './modal';
 import Operator from './operator';
 import styles from './index.less';
-import Config from './Config';
+import create from './Create';
 import DatePicker from './DatePicker';
 import Address from './Address';
 import InputTags from './InputTags';
@@ -141,10 +141,9 @@ OAForm.DatePicker = DatePicker;
 OAForm.Address = Address;
 OAForm.InputTags = InputTags;
 OAForm.SearchTable = SearchTable;
-OAForm.create = Form.create;
+OAForm.create = create;
 OAForm.defaultProps = defaultProps;
 OAForm.FormList = FormList;
 OAForm.List = StaticList;
-OAForm.Config = Config;
 OAForm.TreeSelect = TreeSelect;
 

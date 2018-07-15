@@ -31,7 +31,7 @@ const {
   addLoading: loading.effects['point/addEvent'],
   editLoading: loading.effects['point/editEvent'],
 }))
-@OAForm.Config
+
 @OAForm.create(({
   onValuesChange(props, fields) {
     Object.keys(fields).forEach(key => props.handleFieldsError(key));

@@ -21,7 +21,7 @@ const {
   updateLoading: loading.effects['violation/updateRegime'],
   addLoading: loading.effects['violation/addRegime'],
 }))
-@OAForm.Config
+
 @OAForm.create({
   onValuesChange(props, fields, allValues) {
     props.onChange(allValues);

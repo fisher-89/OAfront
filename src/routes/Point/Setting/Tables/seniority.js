@@ -14,7 +14,7 @@ const FormItem = OAForm.Item;
     editLoading: loading.effects['point/editBaseForm'],
   };
 })
-@OAForm.Config
+
 @OAForm.create()
 export default class extends PureComponent {
   componentDidMount() {

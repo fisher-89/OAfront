@@ -16,7 +16,7 @@ const FormItem = OAForm.Item;
   addLoading: loading.effects['point/addFinal'],
   editLoading: loading.effects['point/editFinal'],
 }))
-@OAForm.Config
+
 @OAForm.create({
   onValuesChange(props, changeValues, allValues) {
     props.onChange(allValues);

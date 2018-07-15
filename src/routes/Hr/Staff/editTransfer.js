@@ -19,7 +19,7 @@ const { Option } = Select;
   positionLoading: loading.models.position,
 }))
 
-@OAForm.Config
+
 @OAForm.create({
   onValuesChange(props, changeValues, allValues) {
     props.onChange(allValues);

@@ -9,7 +9,7 @@ const { OAModal } = OAForm;
 const FormItem = OAForm.Item;
 
 @connect()
-@OAForm.Config
+
 @OAForm.create({
   onValuesChange(props, fields, allFields) {
     props.onChange(allFields);

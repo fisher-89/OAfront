@@ -14,7 +14,7 @@ const FormItem = OAForm.Item;
 @connect(({ loading }) => ({
   loading: loading.effects['point/addType'],
 }))
-@OAForm.Config
+
 @OAForm.create({
   onValuesChange(props, changeValue) {
     Object.keys(changeValue).forEach(key => props.handleFieldsError(key));

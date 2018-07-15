@@ -11,7 +11,7 @@ const FormItem = OAFrom.Item;
 const { DatePicker } = OAFrom;
 const { Option } = Select;
 
-@OAForm.Config
+
 @OAForm.create({
   onValuesChange(props, changeValues, allValues) {
     props.onChange(allValues);

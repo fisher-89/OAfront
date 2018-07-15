@@ -24,7 +24,7 @@ const { OAModal } = OAForm;
   regimeList: violation.regime,
   regimeLoading: loading.effects['violation/fetchRegime'],
 }))
-@OAForm.Config
+
 @OAForm.create({
   onValuesChange(props, fields) {
     Object.keys(fields).forEach(key => props.handleFieldsError(key));

@@ -15,7 +15,7 @@ const { TextArea } = Input;
   addLoading: loading.effects['point/addCertificate'],
   editLoading: loading.effects['point/editCertificate'],
 }))
-@OAForm.Config
+
 @OAForm.create({
   onValuesChange(props, changeValues, allValues) {
     props.onChange(allValues);
