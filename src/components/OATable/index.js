@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Table, Input, Icon, message, Button, Tooltip, Spin } from 'antd';
-import { TweenOneGroup } from 'rc-tween-one';
+import QueueAnim from 'rc-queue-anim';
 
 import { makerFilters } from '../../utils/utils';
 
@@ -72,6 +72,7 @@ class OATable extends PureComponent {
       { duration: 250, opacity: 0 },
       { height: 0, duration: 200, ease: 'easeOutQuad' },
     ];
+    this.currentPage = 1;
   }
 
   componentDidMount() {
@@ -81,25 +82,34 @@ class OATable extends PureComponent {
     }
   }
 
-  getBodyWrapper = (body) => {
-    const { pagination } = this.state;
-    // 切换分页去除动画;
-    if (this.currentPage !== pagination.current) {
-      this.currentPage = pagination.current;
-      return body;
-    }
-    return (
-      <TweenOneGroup
-        component="tbody"
-        className={body.props.className}
-        enter={this.enterAnim}
-        leave={this.leaveAnim}
-        appear={false}
-      >
-        {body.props.children}
-      </TweenOneGroup>
-    );
+
+  onEnd = (e) => {
+    const dom = e.target;
+    dom.style.height = 'auto';
   }
+
+  // getBodyWrapper = (body) => {
+  //   // const { pagination } = this.state;
+  //   // // 切换分页去除动画;
+  //   // if (this.currentPage !== pagination.current) {
+  //   //   this.currentPage = pagination.current;
+  //   //   return body;
+  //   // }
+  //   return (
+  //     <QueueAnim
+  //       component="tbody"
+  //       // type={['right', 'left']}
+  //       // leaveReverse
+  //       className={body.className}
+  //     // enter={this.enterAnim}
+  //     // leave={this.leaveAnim}
+  //     // appear={false}
+  //     >
+  //       {body.children}
+  //     </QueueAnim>
+  //   );
+  // }
+
 
   showTotal = (total, range) => {
     const { filtered } = this.props;
@@ -113,7 +123,6 @@ class OATable extends PureComponent {
     if (serverSide) {
       const filterParam = {};
       const searcherParam = {};
-
       columns.forEach((column, index) => {
         const key = column.dataIndex || index;
         const filter = filters[key];
@@ -381,6 +390,10 @@ class OATable extends PureComponent {
 
   makeDefaultOnFilter = (key) => {
     return (value, record) => {
+      if (Array.isArray(record[key])) {
+        const able = record[key].find(item => item.toString() === value);
+        return able;
+      }
       return `${record[key]}` === `${value}`;
     };
   }
@@ -490,6 +503,10 @@ class OATable extends PureComponent {
       const fieldsKey = Object.keys(item);
       Object.keys(exportFields).forEach((column) => {
         const columnValue = exportFields[column];
+        let renderValue;
+        if (columnValue.render) {
+          renderValue = columnValue.render(item[columnValue.dataIndex], item);
+        }
         if (fieldsKey.indexOf(columnValue.dataIndex) !== -1 && !columnValue.render) {
           temp[columnValue.dataIndex] = item[columnValue.dataIndex];
         } else if (columnValue.exportRender) {
@@ -497,9 +514,9 @@ class OATable extends PureComponent {
         } else if (
           fieldsKey.indexOf(columnValue.dataIndex) !== -1
           && columnValue.render
-          && typeof columnValue.render(item[column.dataIndex], item) === 'string'
+          && typeof renderValue === 'string'
         ) {
-          temp[columnValue.dataIndex] = columnValue.render(item[columnValue.dataIndex], item);
+          temp[columnValue.dataIndex] = renderValue;
         }
       });
       temp = Object.values(temp);
@@ -514,15 +531,15 @@ class OATable extends PureComponent {
     datas.sheetData.forEach((item) => {
       Object.keys(item).forEach((key) => {
         let str = item[key];
-        if (str.indexOf(',') !== -1) {
+        if (typeof str === 'string') {
           str = str.replace(/,/ig, '，');
         }
-        tableString += `${item[key]}\t,`;
+        tableString += `${str}\t,`;
       });
       tableString += '\n';
     });
 
-    const uri = `data:application/vnd.ms-excel;charset=utf-8,\ufeff${encodeURIComponent(tableString)}`;
+    const uri = `data:application/csv;charset=utf-8,\ufeff${encodeURIComponent(tableString)}`;
     const link = document.createElement('a');
     link.href = uri;
     link.download = `${title}.xls`;
@@ -665,22 +682,29 @@ class OATable extends PureComponent {
     return (
       <Spin spinning={loading !== false} tip={`${loading}`}>
         <div className={styles.filterTable}>
-          <Operator
-            {...this.state}
-            key="hearderBoor"
-            multiOperator={multiOperator}
-            extraOperator={this.makeExtraOperator()}
-            fetchTableDataSource={this.fetchTableDataSource}
-            resetFilter={this.resetFilter}
-            clearSelectedRows={this.clearSelectedRows}
-          />
-          <Table
-            {...this.makeTableProps()}
-            key="table"
-            components={{
-              body: this.getBodyWrapper,
-            }}
-          />
+          <QueueAnim type={['right', 'left']}>
+            <QueueAnim key="hearderBoor" type="top">
+              <Operator
+                {...this.state}
+
+                multiOperator={multiOperator}
+                extraOperator={this.makeExtraOperator()}
+                fetchTableDataSource={this.fetchTableDataSource}
+                resetFilter={this.resetFilter}
+                clearSelectedRows={this.clearSelectedRows}
+              />
+            </QueueAnim>
+            <QueueAnim key="table" type="bottom">
+              <Table
+                {...this.makeTableProps()}
+              // components={{
+              //   body: {
+              //     wrapper: this.getBodyWrapper,
+              //   },
+              // }}
+              />
+            </QueueAnim>
+          </QueueAnim>
         </div>
       </Spin>
     );

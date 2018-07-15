@@ -28,7 +28,7 @@ function RouterConfig({ history, app }) {
             authority={[]}
             redirectPath="/"
           />
-          <App app={app} />
+          <App app={app} history={history} />
         </Switch>
       </ConnectedRouter>
     </LocaleProvider>

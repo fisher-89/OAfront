@@ -141,7 +141,15 @@ export function customerAuthority(authId) {
   let authAble = false;
   if (window.user && Object.keys(window.user).length) {
     const { authorities: { oa } } = window.user;
-    authAble = oa.indexOf(authId) !== -1;
+    if (Array.isArray(authId)) {
+      authId.forEach((id) => {
+        if (oa.indexOf(id) !== -1) {
+          authAble = true;
+        }
+      });
+    } else {
+      authAble = oa.indexOf(authId) !== -1;
+    }
   }
   return authAble;
 }
@@ -300,3 +308,47 @@ export function markTreeData(data = [], { value, lable, parentId }, pid = null) 
   });
   return tree;
 }
+
+/**
+ * 获取url参数对象
+ * @param {参数名称} name
+ */
+export function getUrlString(name) {
+  const reg = new RegExp(`(^|&)${name}=([^&]*)(&|$)`, 'i');
+  const r = window.location.search.substr(1).match(reg);
+  if (r != null) return unescape(r[2]);
+  return null;
+}
+
+/**
+ * 去重
+ * @param {参数} array
+ */
+export function unique(array = []) {
+  const newArr = [];
+  array.forEach((item) => {
+    if (newArr.indexOf(item) === -1) {
+      newArr.push(item);
+    }
+  });
+  return newArr;
+}
+
+
+/**
+ * 数组交集
+ * @param {数组1} a
+ * @param {数组2} b
+ */
+export function intersect(a = [], b = []) {
+  const result = [];
+  b.forEach((temp) => {
+    a.forEach((item) => {
+      if (temp === item) {
+        result.push(temp);
+      }
+    });
+  });
+  return unique(result);
+}
+

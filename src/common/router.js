@@ -87,6 +87,10 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['point'], () => import('../routes/Point/Auth/Group')),
       authority: '145',
     },
+    '/point/auth/issue': {
+      component: dynamicWrapper(app, ['point'], () => import('../routes/Point/Auth/Issue')),
+      authority: '168',
+    },
     '/point/final': {
       component: dynamicWrapper(app, ['point'], () => import('../routes/Point/Final')),
       authority: '149',
@@ -99,6 +103,10 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['point'], () => import('../routes/Point/Log')),
       authority: '156',
     },
+    '/point/commadn-log': {
+      component: dynamicWrapper(app, ['point'], () => import('../routes/Point/Commadn')),
+    },
+
 
     '/hr/staff': {
       component: dynamicWrapper(app, ['staffs', 'department', 'brand', 'position', 'shop'], () => import('../routes/Hr/Staff')),

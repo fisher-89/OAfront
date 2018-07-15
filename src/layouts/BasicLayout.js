@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Layout, Icon, notification } from 'antd';
+import { Layout, Icon, message } from 'antd';
 import DocumentTitle from 'react-document-title';
 import { connect } from 'dva';
 import { Route, Redirect, Switch, routerRedux } from 'dva/router';
@@ -83,11 +83,8 @@ class BasicLayout extends React.PureComponent {
   }
 
   componentWillMount() {
-    // const userStorage = localStorage.getItem('oa-current-user') || null;
-    // window.user = JSON.parse(userStorage) || undefined;
     this.fetchCurrentUser();
   }
-
 
   componentDidMount() {
     this.checkOauthPermission();
@@ -97,23 +94,6 @@ class BasicLayout extends React.PureComponent {
         isMobile: mobile,
       });
     });
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (!Object.keys(nextProps.currentUser).length && !nextProps.loginLoading) {
-      notification.error({
-        message: '请求错误:',
-        description: '获取当前用户信息失败',
-      });
-    }
-
-    // if (nextProps.currentUser
-    //   !== this.props.currentUser
-    //   && Object.keys(nextProps.currentUser).length
-    // ) {
-    //   localStorage.setItem('oa-current-user', JSON.stringify(nextProps.currentUser));
-    //   window.user = nextProps.currentUser;
-    // }
   }
 
   getPageTitle() {
@@ -132,19 +112,19 @@ class BasicLayout extends React.PureComponent {
     });
   }
 
-  // handleMenuCollapse = (collapsed) => {
-  //   this.props.dispatch({
-  //     type: 'global/changeLayoutCollapsed',
-  //     payload: collapsed,
-  //   });
-  // }
-  // handleNoticeClear = (type) => {
-  //   message.success(`清空了${type}`);
-  //   this.props.dispatch({
-  //     type: 'global/clearNotices',
-  //     payload: type,
-  //   });
-  // }
+  handleMenuCollapse = (collapsed) => {
+    this.props.dispatch({
+      type: 'global/changeLayoutCollapsed',
+      payload: collapsed,
+    });
+  }
+  handleNoticeClear = (type) => {
+    message.success(`清空了${type}`);
+    this.props.dispatch({
+      type: 'global/clearNotices',
+      payload: type,
+    });
+  }
   handleMenuClick = ({ key }) => {
     if (key === 'logout') {
       this.props.dispatch({
@@ -152,13 +132,13 @@ class BasicLayout extends React.PureComponent {
       });
     }
   }
-  // handleNoticeVisibleChange = (visible) => {
-  //   if (visible) {
-  //     this.props.dispatch({
-  //       type: 'global/fetchNotices',
-  //     });
-  //   }
-  // }
+  handleNoticeVisibleChange = (visible) => {
+    if (visible) {
+      this.props.dispatch({
+        type: 'global/fetchNotices',
+      });
+    }
+  }
 
   checkOauthPermission() {
     if (localStorage.getItem('OA_access_token')
@@ -179,7 +159,7 @@ class BasicLayout extends React.PureComponent {
 
   render() {
     const {
-      currentUser, routerData, match, location,
+      currentUser, routerData, match, location, collapsed, notices,
     } = this.props;
     const layout = (
       <Layout>
@@ -190,7 +170,7 @@ class BasicLayout extends React.PureComponent {
           // you will be forced to jump to the 403 interface without permission
           Authorized={Authorized}
           menuData={getMenuData()}
-          // collapsed={collapsed}
+          collapsed={collapsed}
           location={location}
           isMobile={this.state.isMobile}
           onCollapse={this.handleMenuCollapse}
@@ -200,8 +180,8 @@ class BasicLayout extends React.PureComponent {
             logo={logo}
             currentUser={currentUser}
             // fetchingNotices={fetchingNotices}
-            // notices={notices}
-            // collapsed={collapsed}
+            notices={notices}
+            collapsed={collapsed}
             isMobile={this.state.isMobile}
             onNoticeClear={this.handleNoticeClear}
             onCollapse={this.handleMenuCollapse}
@@ -276,10 +256,10 @@ class BasicLayout extends React.PureComponent {
   }
 }
 
-export default connect(({ currentUser, loading }) => ({
+export default connect(({ currentUser, global, loading }) => ({
   currentUser: currentUser.currentUser,
-  loginLoading: loading.models.currentUser,
-  // collapsed: global.collapsed,
-  // fetchingNotices: loading.effects['global/fetchNotices'],
-  // notices: global.notices,
+  // loginLoading: loading.models.currentUser,
+  collapsed: global.collapsed,
+  fetchingNotices: loading.effects['global/fetchNotices'],
+  notices: global.notices,
 }))(BasicLayout);

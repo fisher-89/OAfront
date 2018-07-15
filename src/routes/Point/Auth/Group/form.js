@@ -59,7 +59,6 @@ export default class extends PureComponent {
       labelCol: { span: 6 },
       wrapperCol: { span: 18 },
     };
-
     return (
       <OAModal
         title="权限分组表单"
@@ -102,7 +101,7 @@ export default class extends PureComponent {
                   department_full_name: 'full_name',
                 }}
                 dataSource={{
-                  data: department,
+                  data: [...department],
                   parentValue: 0,
                   fields: { value: 'id', parentId: 'parent_id', lable: 'full_name' },
                 }}

@@ -105,6 +105,36 @@ export async function deleteAuth(id) {
   });
 }
 
+/**
+ * 任务分配权限
+ */
+export async function fetchTaskAuth(params) {
+  return request('/api/pms/task/authority', {
+    method: 'GET',
+    body: params,
+  });
+}
+
+export async function addTaskAuth(params) {
+  return request('/api/pms/task/authority', {
+    method: 'POST',
+    body: params,
+  });
+}
+
+export async function editTaskAuth(params) {
+  return request('/api/pms/task/authority', {
+    method: 'PUT',
+    body: params,
+  });
+}
+
+export async function deleteTaskAuth(id) {
+  return request(`/api/pms/task/authority/${id}`, {
+    method: 'DELETE',
+  });
+}
+
 
 /** 终审人 */
 export async function fetchFinal(params, id) {
@@ -141,6 +171,17 @@ export async function deleteFinal(id) {
  */
 export async function fetchPointLog(params) {
   return request('/api/pms/point-log', {
+    method: 'GET',
+    body: params,
+  });
+}
+
+/**
+ * 任务执行日志列表
+ * @param {filters} params
+ */
+export async function fetchCommadnLog(params) {
+  return request('/api/admin/commadn-logs', {
     method: 'GET',
     body: params,
   });
@@ -245,3 +286,37 @@ export async function fetchEducation() {
   });
 }
 
+/**
+ * 奖扣指标列表 || 详情
+ */
+export async function fetchTargets(id) {
+  return request(`/api/pms/targets/${id}`, {
+    method: 'GET',
+  });
+}
+
+export async function addTargets(params) {
+  return request('/api/pms/targets', {
+    method: 'POST',
+    body: params,
+  });
+}
+
+export async function editTargets(params, id) {
+  return request(`/api/pms/targets/${id}`, {
+    method: 'PUT',
+    body: params,
+  });
+}
+
+export async function deleteTargets(id) {
+  return request(`/api/pms/targets/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+export async function editTargetsStaff(id) {
+  return request(`/api/pms/targets/${id}/staff`, {
+    method: 'PUT',
+  });
+}

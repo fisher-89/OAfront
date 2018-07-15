@@ -10,7 +10,7 @@ import {
 import district from '../../../../public/district.json';
 
 import OAForm from '../../../components/OAForm';
-import OATableSearch from '../../../components/OATable1/search';
+import OATableSearch from '../../../components/OATable/search';
 
 const { SearchTable } = OAForm;
 const FormItem = OAForm.Item;
@@ -104,9 +104,8 @@ class Search extends PureComponent {
           })(
             <Input type="hidden" />
           )}
-          <SearchTable
+          <SearchTable.Shop
             multiple
-            module="shop"
             name={{
               shop_sn: 'shop_sn',
             }}

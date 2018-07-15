@@ -6,14 +6,12 @@ import {
 import { connect } from 'dva';
 
 import OATable from '../../../../components/OATable';
-import AuthForm from './form';
+import TaskAuthForm from './form';
 import { customerAuthority } from '../../../../utils/utils';
-@connect(({ point, department, loading }) => ({
-  auth: point.auth,
-  authLoading: loading.effects['point/fetchAuth'],
-  deleteLoaing: loading.effects['point/deleteAuth'],
-  department: department.department,
-  departLoading: loading.department,
+@connect(({ point, loading }) => ({
+  taskAuth: point.taskAuth,
+  authLoading: loading.effects['point/fetchTaskAuth'],
+  deleteLoaing: loading.effects['point/deleteTaskAuth'],
 }))
 export default class extends PureComponent {
   state = {
@@ -26,9 +24,9 @@ export default class extends PureComponent {
     dispatch({ type: 'department/fetchDepartment', payload: {} });
   }
 
-  fetchAuth = (params) => {
+  fetchTaskAuth = (params) => {
     const { dispatch } = this.props;
-    dispatch({ type: 'point/fetchAuth', payload: params });
+    dispatch({ type: 'point/fetchTaskAuth', payload: params });
   }
 
   handleModalVisible = (flag) => {
@@ -36,64 +34,53 @@ export default class extends PureComponent {
   }
 
   handleEdit = (data) => {
-    this.setState({ editInfo: data }, () => this.handleModalVisible(true));
+    this.setState({
+      editInfo: {
+        ...data,
+        auth: { group_id: data.id, name: data.name },
+      },
+    }, () => this.handleModalVisible(true));
   }
 
   handleDelete = (id) => {
     const { dispatch } = this.props;
-    dispatch({ type: 'point/deleteAuth', payload: { id } });
+    dispatch({ type: 'point/deleteTaskAuth', payload: { id } });
   }
 
   makeColumns = () => {
-    const { department } = this.props;
     const columns = [
       {
-        title: '编号',
-        dataIndex: 'id',
+        title: '员工号',
+        dataIndex: 'admin_sn',
         searcher: true,
       },
       {
-        title: '分组名称',
-        dataIndex: 'name',
+        title: '管理员',
+        dataIndex: 'admin_name',
         searcher: true,
       },
       {
-        title: '组部门',
-        dataIndex: 'departments.department_id',
-        treeFilters: {
-          title: 'full_name',
-          value: 'id',
-          parentId: 'parent_id',
-          data: department.map(item => item),
-        },
-        render: (_, recode) => {
-          const name = recode.departments.map(item => item.department_full_name);
-          return name.join(',');
-        },
-      },
-      {
-        title: '组成员',
-        dataIndex: 'staff.staff_name',
-        searcher: true,
-        render: (_, recode) => {
-          const name = recode.staff.map(item => item.staff_name);
-          return name.join(',');
+        title: '关联组',
+        dataIndex: 'groups',
+        render: (groups) => {
+          const names = groups.map(item => item.name);
+          return names.join(' ，');
         },
       },
     ];
-    if (customerAuthority(147) || customerAuthority(148)) {
+    if (customerAuthority([171, 170])) {
       columns.push(
         {
           title: '操作',
           render: (rowData) => {
             return (
               <Fragment>
-                {customerAuthority(147) && (
+                {customerAuthority(171) && (
                   <a onClick={() => this.handleEdit(rowData)}>编辑</a>
                 )}
                 <Divider type="vertical" />
-                {customerAuthority(148) && (
-                  <a onClick={() => this.handleDelete(rowData.id)}>删除</a>
+                {customerAuthority(170) && (
+                  <a onClick={() => this.handleDelete(rowData.admin_sn)}>删除</a>
                 )}
               </Fragment>
             );
@@ -106,7 +93,7 @@ export default class extends PureComponent {
 
   makeExtraOperator = () => {
     const extra = [];
-    if (customerAuthority(146)) {
+    if (customerAuthority(169)) {
       extra.push((
         <Button
           icon="plus"
@@ -115,7 +102,7 @@ export default class extends PureComponent {
           style={{ marginLeft: '10px' }}
           onClick={() => this.handleModalVisible(true)}
         >
-          添加分组
+          添加管理
         </Button>
       ));
     }
@@ -123,14 +110,14 @@ export default class extends PureComponent {
   }
 
   render() {
-    const { auth, departLoading, authLoading, deleteLoaing } = this.props;
+    const { taskAuth, authLoading, deleteLoaing } = this.props;
     const { visible, editInfo } = this.state;
     return (
       <React.Fragment>
         {
-          (customerAuthority(146) || customerAuthority(147)) &&
+          (customerAuthority([169, 171])) &&
           (
-            <AuthForm
+            <TaskAuthForm
               initialValue={editInfo}
               visible={visible}
               onCancel={() => { this.setState({ editInfo: {} }); }}
@@ -138,16 +125,13 @@ export default class extends PureComponent {
             />
           )
         }
-
         <OATable
-          serverSide
-          loading={authLoading || departLoading || deleteLoaing}
+          rowKey={record => (record.admin_sn)}
+          loading={authLoading || deleteLoaing}
           extraOperator={this.makeExtraOperator()}
           columns={this.makeColumns()}
-          dataSource={auth && auth.data}
-          total={auth && auth.total}
-          filtered={auth && auth.filtered}
-          fetchDataSource={this.fetchAuth}
+          dataSource={taskAuth}
+          fetchDataSource={this.fetchTaskAuth}
           scroll={{ x: 300 }}
         />
       </React.Fragment>

@@ -63,8 +63,15 @@ export default class extends PureComponent {
         dataIndex: 'certificate_id',
         filters: certificate.map(item => ({ text: item.name, value: item.id })),
         render: (value) => {
-          const text = certificate.find(item => item.id === value);
-          return text ? text.name : '';
+          const { name } = certificate.find(item => item.id === value);
+          return name;
+        },
+      }, {
+        title: '分值',
+        dataIndex: 'point',
+        render: (_, record) => {
+          const { point } = certificate.find(item => item.id === record.certificate_id);
+          return point;
         },
       },
       {
@@ -80,7 +87,6 @@ export default class extends PureComponent {
         dataIndex: 'position_name',
         searcher: true,
       },
-
       {
         title: '部门',
         dataIndex: 'department_id',
@@ -150,13 +156,10 @@ export default class extends PureComponent {
     return (
       <React.Fragment>
         <OATable
-          // serverSide
           loading={loading}
           columns={this.makeStaffColumns()}
           data={staff}
-          rowKey={(record) => { return `${record.staff_sn}-${record.certificate_id}`; }}
-          // total={certificateStaff.total || 0}
-          // filtered={certificateStaff.filtered || 0}
+          rowKey={record => (`${record.staff_sn}-${record.certificate_id}`)}
           fetchDataSource={this.fetchStaffDataSource}
           multiOperator={this.makeMultiOperator()}
           extraOperator={extraOperator()}

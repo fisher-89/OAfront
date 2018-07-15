@@ -26,29 +26,24 @@ export default class SelectTable extends React.Component {
       data,
       index,
       multiple,
-      setSelectedValue,
     } = this.props;
     let { value } = this.state;
     if (multiple) {
       const valueKey = value.map(item => item[index]);
       const removeValIndex = valueKey.indexOf(selectedRows[index]);
       if (removeValIndex !== -1) {
-        value = value.filter((item, i) => i !== removeValIndex);
+        value = value.filter((_, i) => i !== removeValIndex);
       } else {
         data.forEach((item) => {
           if (item[index] === selectedRows[index]) {
-            const temp = this.makeValueKey(item);
-            value.push(temp);
+            value.push(item);
           }
         });
       }
     } else {
-      const temp = this.makeValueKey(selectedRows);
-      value = [temp];
+      value = [selectedRows];
     }
-    this.setState({ value: [...value] }, () => {
-      setSelectedValue(value);
-    });
+    this.handelChange('', value);
   };
 
   handleRow = (record) => {
@@ -65,7 +60,7 @@ export default class SelectTable extends React.Component {
     };
   };
 
-  handelChange = (selectKey, selectedRows) => {
+  handelChange = (_, selectedRows) => {
     const { setSelectedValue } = this.props;
     const value = [];
     selectedRows.forEach((item) => {
@@ -86,31 +81,31 @@ export default class SelectTable extends React.Component {
     return temp;
   };
 
-  dotFieldsValue = (data, parentKey) => {
-    let response = {};
-    Object.keys(data || {}).forEach((key) => {
-      const value = data[key];
-      const newKey = parentKey === undefined ? key : `${parentKey}.${key}`;
-      if (Array.isArray(value)) {
-        if (typeof value[0] === 'object') {
-          response = {
-            ...response,
-            ...this.dotFieldsValue(value, newKey),
-          };
-        } else {
-          response[newKey] = value;
-        }
-      } else if (typeof value === 'object') {
-        response = {
-          ...response,
-          ...this.dotFieldsValue(value, newKey),
-        };
-      } else {
-        response[newKey] = value;
-      }
-    });
-    return response;
-  }
+  // dotFieldsValue = (data, parentKey) => {
+  //   let response = {};
+  //   Object.keys(data || {}).forEach((key) => {
+  //     const value = data[key];
+  //     const newKey = parentKey === undefined ? key : `${parentKey}.${key}`;
+  //     if (Array.isArray(value)) {
+  //       if (typeof value[0] === 'object') {
+  //         response = {
+  //           ...response,
+  //           ...this.dotFieldsValue(value, newKey),
+  //         };
+  //       } else {
+  //         response[newKey] = value;
+  //       }
+  //     } else if (typeof value === 'object') {
+  //       response = {
+  //         ...response,
+  //         ...this.dotFieldsValue(value, newKey),
+  //       };
+  //     } else {
+  //       response[newKey] = value;
+  //     }
+  //   });
+  //   return response;
+  // }
 
   render() {
     const {
@@ -121,7 +116,6 @@ export default class SelectTable extends React.Component {
       fetchDataSource,
       total,
       index,
-
     } = this.props;
 
     const { value } = this.state;
@@ -132,15 +126,15 @@ export default class SelectTable extends React.Component {
         selectedRowKeys: value.map(item => item[index]),
       },
     } : {};
-    const dataSource = data && data.map((item) => {
-      return this.dotFieldsValue(item);
-    });
+    // const dataSource = data && data.map((item) => {
+    //   return this.dotFieldsValue(item);
+    // });
     return (
       <div style={{ cursor: this.state.cursor }}>
         <OATable
           {...selection}
           columns={columns}
-          data={dataSource}
+          data={data}
           total={total}
           loading={loading}
           fetchDataSource={fetchDataSource}

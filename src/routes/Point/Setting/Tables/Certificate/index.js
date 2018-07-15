@@ -162,8 +162,7 @@ export default class extends PureComponent {
               </Menu.Item>
             </Menu>
           </Sider>
-          <Layout>
-
+          <Layout style={{ height: 500 }}>
             <Content style={{ background: '#fff', padding: 5 }}>
               {menuKey === '0' ? (
                 <OATable

@@ -17,7 +17,7 @@ export default class extends React.PureComponent {
       tagsData = value.map((item, index) => {
         return {
           value: item[valueName],
-          label: item[showName],
+          label: item[showName] || '',
           key: index,
         };
       });
@@ -29,12 +29,11 @@ export default class extends React.PureComponent {
     };
     const color = this.props.disabled ? '#f5f5f5' : '#fff';
     const mouseStyle = this.props.disabled ? 'not-allowed' : 'pointer';
-
-    const tags = tagsData.map((item) => {
+    const tags = tagsData.map((item, index) => {
       const tag = item.label;
       const isLongTag = tag.length > 20;
-      const key = `tag${item.value}`;
-      const TooltipKey = `${tag}-${item.value}`;
+      const key = `tag${item.value}-${index}`;
+      // const TooltipKey = `${tag}-${item.value}`;
       const tagElem = (
         <Tag
           key={key}
@@ -45,7 +44,7 @@ export default class extends React.PureComponent {
           {isLongTag ? `${tag.slice(0, 20)}...` : tag}
         </Tag>
       );
-      return isLongTag ? <Tooltip title={tag} key={TooltipKey}>{tagElem}</Tooltip> : tagElem;
+      return isLongTag ? <Tooltip title={tag} key={key}>{tagElem}</Tooltip> : tagElem;
     });
 
     return (

@@ -51,8 +51,8 @@ export default class extends PureComponent {
 
   setTypeId = (typeId) => {
     this.setState({ typeId }, () => {
-      const { state: { pagination: { current, pageSize } } } = this.oatable;
-      this.fetchEvent({ pageSize, page: current, filters: '' });
+      this.oatable.state.pagination.current = 1;
+      this.oatable.fetchTableDataSource();
     });
   }
 
@@ -114,25 +114,26 @@ export default class extends PureComponent {
 
   handleError = (error) => {
     const { onError, form: { setFields } } = this.props;
-    if (errors.point_a_max || errors.point_a_min) {
+    // console.log(error);
+    if (error.point_a_max || error.point_a_min) {
       let str = '';
-      if (errors.point_a_min) {
+      if (error.point_a_min) {
         str += error.point_a_min;
       }
 
-      if (errors.point_a_max) {
+      if (error.point_a_max) {
         str += error.point_a_max;
       }
       setFields({
         point_a: str,
       });
-    } else if (errors.point_b_max || errors.point_b_min) {
+    } else if (error.point_b_max || error.point_b_min) {
       let str = '';
-      if (errors.point_b_min) {
+      if (error.point_b_min) {
         str += error.point_b_min;
       }
 
-      if (errors.point_b_max) {
+      if (error.point_b_max) {
         str += error.point_b_max;
       }
       setFields({
@@ -160,6 +161,16 @@ export default class extends PureComponent {
 
   makeColumns = () => {
     const { typeList } = this.props;
+    const active = [
+      {
+        value: 0,
+        text: '未激活',
+      },
+      {
+        value: 1,
+        text: '激活',
+      },
+    ];
     const columns = [
       {
         title: '编号',
@@ -219,14 +230,17 @@ export default class extends PureComponent {
       {
         title: '初审人',
         dataIndex: 'first_approver_name',
+        searcher: true,
       },
       {
         title: '终审人',
         dataIndex: 'final_approver_name',
+        searcher: true,
       },
       {
         title: '激活',
         dataIndex: 'is_active',
+        filters: active,
         render: isActive => (isActive ? '激活' : '未激活'),
       },
     ];

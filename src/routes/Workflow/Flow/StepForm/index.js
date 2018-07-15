@@ -87,7 +87,6 @@ export default class StepForm extends React.PureComponent {
       editData: editData || [],
       dataCommit: data || { ...stepDefaultValue },
       staff: [],
-      departmentTree: [],
     };
   }
 
@@ -101,12 +100,7 @@ export default class StepForm extends React.PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { department, staffInfo } = nextProps;
-    if (department !== this.props.department && this.state.departmentTree.length === 0) {
-      const departmentTree = [];
-      this.markDepartmentTree(department, departmentTree);
-      this.setState({ departmentTree });
-    }
+    const { staffInfo } = nextProps;
     if (staffInfo !== this.props.staffInfo) {
       const key = this.state.dataCommit.approvers.staff;
       const staff = [];
@@ -336,6 +330,7 @@ export default class StepForm extends React.PureComponent {
       hiddenData,
       roles,
       fields,
+      department,
     } = this.props;
     const {
       hiddenFields,
@@ -343,11 +338,12 @@ export default class StepForm extends React.PureComponent {
       editData,
       requireFields,
       dataCommit,
-      departmentTree,
     } = this.state;
     const disVisible = editFields.data.length === 0 ? 'none' : 'block';
     const editVisible = editData.length === 0 ? 'none' : 'block';
     const { getFieldDecorator } = this.props.form;
+    const departmentTree = [];
+    this.markDepartmentTree(department, departmentTree);
     return (
       <Form
         id="addTypeForm"

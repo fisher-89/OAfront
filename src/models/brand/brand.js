@@ -3,9 +3,13 @@ import { fetchBrand } from '../../services/brand';
 const store = 'brand';
 
 export default {
-  * fetchBrand(_, { call, put }) {
+  * fetchBrand({ update }, { call, put, select }) {
     try {
-      const response = yield call(fetchBrand);
+      let response;
+      response = yield select(model => model[store][store]);
+      if (!response.length || update) {
+        response = yield call(fetchBrand);
+      }
       yield put({
         type: 'save',
         payload: {
@@ -13,6 +17,8 @@ export default {
           data: response,
         },
       });
-    } catch (err) { return err; }
+    } catch (err) {
+      return err;
+    }
   },
 };

@@ -75,8 +75,7 @@ export function fineInfo(regimeList, handleFinePrice) {
       <FormItem
         label="店铺代码"
       >
-        <SearchTable
-          module="shop"
+        <SearchTable.Shop
           name={{
             criminal_shop_sn: 'shop_sn',
           }}

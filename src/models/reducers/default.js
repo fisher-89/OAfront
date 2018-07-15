@@ -42,10 +42,8 @@ export default {
       message: '添加成功',
     });
     let dataState = [];
-    if (state[store].length) {
-      dataState = [...state[store]];
-      dataState.push(data);
-    }
+    dataState = [...state[store]];
+    dataState.push(data);
     return {
       ...state,
       [store]: dataState,

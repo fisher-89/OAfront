@@ -86,7 +86,6 @@ export default class Flow extends React.PureComponent {
       flowId,
       formData,
       formAble,
-      departmentTree: [],
       staff: [],
     };
   }
@@ -116,11 +115,7 @@ export default class Flow extends React.PureComponent {
       this.fetchForm({ id: formData.form_id });
       this.setState({ formData });
     }
-    const { department, staffInfo } = nextProps;
-    if (department !== this.props.department) {
-      const departmentTree = markTreeData(department, { parentId: 'parent_id', value: 'id', lable: 'full_name' }, 0);
-      this.setState({ departmentTree });
-    }
+    const { staffInfo } = nextProps;
 
     const key = this.state.formData.flows_has_staff;
     if (staffInfo !== this.props.staffInfo && nextProps.staffInfo[`${key}`]) {
@@ -483,7 +478,8 @@ export default class Flow extends React.PureComponent {
   };
 
   flowChartForm = () => {
-    const { formData, departmentTree } = this.state;
+    const { formData, formData: { steps } } = this.state;
+    const departmentTree = markTreeData(this.props.department, { parentId: 'parent_id', value: 'id', lable: 'full_name' }, 0);
     const {
       form: { getFieldDecorator },
       formsList,
@@ -595,7 +591,26 @@ export default class Flow extends React.PureComponent {
             ],
             initialValue: formData.form_id,
           })(
-            <Select placeholder="请选择流程表单" disabled={this.state.formAble}>
+            <Select
+              placeholder="请选择流程表单"
+              disabled={this.state.formAble}
+              onChange={() => {
+                const newSteps = steps.map((item) => {
+                  return {
+                    ...item,
+                    hidden_fields: [],
+                    editable_fields: [],
+                    required_fields: [],
+                  };
+                });
+                this.setState({
+                  formData: {
+                    ...formData,
+                    steps: [...newSteps],
+                  },
+                });
+              }}
+            >
               <Option value={null}>---请选择---</Option>
               {formsOption}
             </Select>

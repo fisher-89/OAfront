@@ -9,7 +9,7 @@ import {
 } from 'antd';
 import moment from 'moment';
 
-import OATable from '../../../../components/OATable1';
+import OATable from '../../../../components/OATable';
 import OAForm from '../../../../components/OAForm';
 
 const { OAModal } = OAForm;
@@ -159,6 +159,7 @@ export default class List extends PureComponent {
         <OAModal
           form={form}
           visible={visible}
+          loading={loading}
           onCancel={() => this.handleModalVisible(false)}
           afterClose={() => { this.setState({ editInfo: {} }); }}
           onSubmit={editInfo.id ? this.handleEditSubmit : this.handleAddSubmit}

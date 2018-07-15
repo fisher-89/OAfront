@@ -3,9 +3,13 @@ import { fetchPosition } from '../../services/position';
 const store = 'position';
 
 export default {
-  * fetchPosition(_, { call, put }) {
+  * fetchPosition({ update }, { call, put, select }) {
     try {
-      const response = yield call(fetchPosition);
+      let response;
+      response = yield select(model => model[store][store]);
+      if (!response.length || update) {
+        response = yield call(fetchPosition);
+      }
       yield put({
         type: 'save',
         payload: {

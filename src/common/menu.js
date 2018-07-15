@@ -47,6 +47,11 @@ const menuData = [
         authority: '156',
       },
       {
+        name: '任务执行日志',
+        path: 'commadn-log',
+        // authority: '156',
+      },
+      {
         name: '基础分配置',
         path: 'base-points',
         authority: '157',
