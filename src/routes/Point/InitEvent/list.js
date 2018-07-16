@@ -195,6 +195,9 @@ export default class extends PureComponent {
       {
         title: 'A分范围',
         dataIndex: 'point_a_between',
+        exportRender: (record) => {
+          return `${record.point_a_min}-${record.point_a_max}`;
+        },
         render: (_, record) => {
           return `${record.point_a_min}-${record.point_a_max}`;
         },
@@ -207,6 +210,9 @@ export default class extends PureComponent {
       {
         title: 'B分范围',
         dataIndex: 'point_b_between',
+        exportRender: (record) => {
+          return `${record.point_b_min}-${record.point_b_max}`;
+        },
         render: (_, record) => {
           return `${record.point_b_min}-${record.point_b_max}`;
         },
