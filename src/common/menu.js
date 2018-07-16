@@ -1,4 +1,3 @@
-
 const menuData = [
   {
     name: '首页',
@@ -40,6 +39,11 @@ const menuData = [
         name: '终审人',
         path: 'final',
         authority: '149',
+      },
+      {
+        name: '事件日志',
+        path: 'event-logs',
+        authority: '',
       },
       {
         name: '积分日志',

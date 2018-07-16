@@ -74,6 +74,20 @@ export async function sorterType(params) {
   });
 }
 
+/* 事件日志 */
+export async function fetchEventLog(params) {
+  return request('/api/pms/event-logs', {
+    method: 'GET',
+    body: params,
+  });
+}
+
+export async function revokeEventLog(params, id) {
+  return request(`/api/pms/event-logs/${id}/revoke`, {
+    method: 'POST',
+    body: params,
+  });
+}
 
 /** permissions 权限分组 */
 

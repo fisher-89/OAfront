@@ -34,12 +34,14 @@ export default class extends PureComponent {
     const { brand, department } = this.props;
 
     const brandFilters = brand.map(item => ({ text: item.name, value: item.id }));
+    const sources = { 0: '系统', 1: '基础', 2: '奖扣', 3: '任务', 4: '考勤', 5: '日志' };
 
     const columns = [
       {
         title: '编号',
         dataIndex: 'id',
         searcher: true,
+        sorter: true,
       },
       {
         title: '标题',
@@ -90,6 +92,10 @@ export default class extends PureComponent {
       {
         title: '积分来源',
         dataIndex: 'source_id',
+        render: (id) => {
+          return sources[id];
+        },
+        filters: sources,
       },
       {
         title: '初审人',

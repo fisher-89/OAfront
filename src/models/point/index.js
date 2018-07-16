@@ -3,6 +3,7 @@ import {
 } from 'antd';
 import eventEffects from './event/event';
 import typeEffects from './event/type';
+import eventLogEffects from './eventLog';
 import authEffects from './auth';
 import taskAuthEffects from './taskAuth';
 import finalEffects from './final';
@@ -35,6 +36,7 @@ export default {
   effects: {
     ...eventEffects,
     ...typeEffects,
+    ...eventLogEffects,
     ...authEffects,
     ...taskAuthEffects,
     ...finalEffects,
