@@ -77,7 +77,7 @@ export default class OAForm extends PureComponent {
   }
 
   handleOnError = (error, message) => {
-    if (Object.keys(error).length) {
+    if (error && Object.keys(error).length) {
       Object.keys(error).forEach((i) => {
         this.props.form.setFields({
           [i]: { errors: [new Error(error[i][0])] },
