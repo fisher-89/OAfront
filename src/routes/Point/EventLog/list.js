@@ -41,6 +41,16 @@ export default class extends PureComponent {
         sorter: true,
       },
       {
+        title: '参与人',
+        dataIndex: 'participant.staff_name',
+        searcher: true,
+        render: (_, rowData) => {
+          return rowData.participant.map(
+            participant => `${participant.staff_name}(A:${participant.point_a * participant.count} B:${participant.point_b * participant.count})`
+          ).join(';');
+        },
+      },
+      {
         title: '状态',
         dataIndex: 'status_id',
         filters: stateList,
