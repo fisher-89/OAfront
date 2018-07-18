@@ -37,6 +37,16 @@ export default class extends PureComponent {
         searcher: true,
       },
       {
+        title: '执行时间',
+        dataIndex: 'created_at',
+        sort: true,
+      },
+      {
+        title: '完成时间',
+        dataIndex: 'updated_at',
+        sort: true,
+      },
+      {
         title: '描述',
         dataIndex: 'description',
       },
