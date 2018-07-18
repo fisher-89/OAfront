@@ -101,7 +101,7 @@ export const getRouterData = (app) => {
     },
     '/point/event-logs': {
       component: dynamicWrapper(app, ['point'], () => import('../routes/Point/EventLog')),
-      authority: '',
+      authority: '172',
     },
     '/point/log': {
       component: dynamicWrapper(app, ['point'], () => import('../routes/Point/Log')),

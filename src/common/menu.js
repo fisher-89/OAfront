@@ -43,7 +43,7 @@ const menuData = [
       {
         name: '事件日志',
         path: 'event-logs',
-        authority: '',
+        authority: '172',
       },
       {
         name: '积分日志',

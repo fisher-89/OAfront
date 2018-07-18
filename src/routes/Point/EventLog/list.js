@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import RevokeForm from './revokeForm';
+import { customerAuthority } from '../../../utils/utils';
 
 import OATable from '../../../components/OATable';
 
@@ -76,9 +77,10 @@ export default class extends PureComponent {
       {
         title: '操作',
         render: (rowData) => {
-          return rowData.status_id === 2 ? (
-            <a onClick={() => this.showRevokeForm(rowData)}>作废</a>
-          ) : '';
+          return rowData.status_id === 2 ?
+            (customerAuthority(173) && (
+              <a onClick={() => this.showRevokeForm(rowData)}>作废</a>
+            )) : '';
         },
       },
     ];
