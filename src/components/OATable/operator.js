@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Button, Dropdown, Icon, Menu, Tooltip } from 'antd';
+import { Button, Dropdown, Menu, Tooltip } from 'antd';
 import styles from './index.less';
 
 class Operator extends PureComponent {
@@ -32,38 +32,55 @@ class Operator extends PureComponent {
       filters,
       multiOperator,
       extraOperator,
-      fetchTableDataSource, resetFilter, clearSelectedRows,
+      extraOperatorRight,
+      fetchTableDataSource,
+      resetFilter,
+      // clearSelectedRows,
+      sync,
     } = this.props;
     const hasFilter = Object.keys(filters)
       .filter(key => filters[key] && filters[key].length)
       .length > 0;
     return (
-      <div className={styles.filterTableOperator} style={{ display: 'flex' }}>
-        {extraOperator || null}
-        <Tooltip title="数据同步">
-          <Button
-            icon="sync"
-            onClick={() => {
-            fetchTableDataSource();
+      <div style={{ display: 'flex' }}>
+        <div
+          className={styles.filterTableOperator}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            flexGrow: 1,
           }}
-          />
-        </Tooltip>
-        {
-          (Object.keys(sorter).length > 0 || hasFilter) &&
-          (<Button onClick={() => resetFilter()}>清空筛选</Button>)
-        }
-        {
-          selectedRows.length > 0 && multiOperator && (
-            <span>
-              <Dropdown overlay={this.makeMultiOperator()} trigger={['click']}>
-                <Button>
-                  批量操作 <Icon type="down" />
-                </Button>
-              </Dropdown>
-              <Button style={{ margin: '0 8px' }} type="danger" onClick={() => clearSelectedRows()}>清空选择</Button>
-            </span>
-          )
-        }
+        >
+          {extraOperator || null}
+          {sync && (
+            <Tooltip title="数据同步">
+              <Button
+                icon="sync"
+                onClick={() => {
+                  fetchTableDataSource();
+                }}
+              />
+            </Tooltip>
+          )}
+          {
+            (Object.keys(sorter).length > 0 || hasFilter) &&
+            (<Button onClick={() => resetFilter()}>清空筛选</Button>)
+          }
+          {
+            selectedRows.length > 0 && multiOperator && (
+              <React.Fragment>
+                <Dropdown overlay={this.makeMultiOperator()} trigger={['click']}>
+                  <Button icon="menu-fold" style={{ fontSize: '12px' }}>
+                    批量操作
+                  </Button>
+                </Dropdown>
+              </React.Fragment>
+            )
+          }
+        </div>
+        <div className={styles.filterTableOperator} style={{ alignSelf: 'flex-end' }}>
+          {extraOperatorRight || null}
+        </div>
       </div>
     );
   }

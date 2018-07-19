@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Icon } from 'antd';
+import { Input } from 'antd';
 import './tableCell.less';
 
 export default class EditableCell extends React.PureComponent {
@@ -30,38 +30,29 @@ export default class EditableCell extends React.PureComponent {
   }
 
   edit = () => {
-    this.setState({ editable: true });
+    this.setState({ editable: true }, () => {
+      this.input.input.focus();
+    });
   }
 
   render() {
     const { value, editable } = this.state;
-    const { type } = this.props;
+    const { type, style } = this.props;
     return (
-      <div className="editable-cell">
+      <div className="editable-cell" onClick={this.edit}>
         {
           editable ? (
             <Input
               {...{ type } || null}
+              ref={(e) => { this.input = e; }}
               value={value}
               onChange={this.handleChange}
               onPressEnter={this.check}
-              suffix={
-                <Icon
-                  type="check"
-                  className="editable-cell-icon-check"
-                  onClick={this.check}
-                />
-              }
+              onBlur={this.check}
+              style={{ ...style }}
             />
           ) : (
-            <div style={{ paddingRight: 24 }}>
-              {value}
-              <Icon
-                type="edit"
-                className="editable-cell-icon"
-                onClick={this.edit}
-              />
-            </div>
+              value
             )
         }
       </div>

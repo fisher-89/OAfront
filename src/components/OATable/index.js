@@ -21,12 +21,15 @@ import request from '../../utils/request';
 const defaultProps = {
   multiOperator: null,
   extraOperator: null,
+  extraOperatorRight: null,
   serverSide: false,
   excelExport: null,
   excelInto: null,
   excelTemplate: null,
   extraExportFields: [],
   filtered: 0,
+  sync: true,
+  tableVisible: true,
   fetchDataSource: () => {
     // message.error('请设置fetchDataSource');
   },
@@ -82,7 +85,6 @@ class OATable extends PureComponent {
     }
   }
 
-
   onEnd = (e) => {
     const dom = e.target;
     dom.style.height = 'auto';
@@ -112,8 +114,8 @@ class OATable extends PureComponent {
 
 
   showTotal = (total, range) => {
-    const { filtered } = this.props;
-    return `显示 ${range[0]} - ${range[1]} 项 , 共 ${filtered} 项 (由 ${total} 项结果过滤)`;
+    // const { filtered } = this.props;
+    return <div style={{ color: '#969696' }}>{`显示 ${range[0]} - ${range[1]} 项 , 共 ${total} 项`}</div>;
   }
 
   fetchTableDataSource = (fetch) => {
@@ -477,13 +479,13 @@ class OATable extends PureComponent {
       dataSource: data,
       onChange: this.handleTableChange,
       size: 'middle',
-      bordered: true,
-      scroll: { x: true },
-      ...this.props,
+      bordered: false,
+      // scroll: { x: true },
       pagination: {
         ...pagination,
         ...this.props.pagination,
       },
+      ...this.props,
       rowSelection: newRowSelection,
       columns: this.mapColumns(),
     };
@@ -677,33 +679,34 @@ class OATable extends PureComponent {
   }
 
   render() {
-    const { multiOperator } = this.props;
+    const { multiOperator, tableVisible, extraOperatorRight, sync } = this.props;
     const { loading } = this.state;
     return (
       <Spin spinning={loading !== false} tip={`${loading}`}>
         <div className={styles.filterTable}>
-          <QueueAnim type={['right', 'left']}>
-            <QueueAnim key="hearderBoor" type="top">
-              <Operator
-                {...this.state}
-
-                multiOperator={multiOperator}
-                extraOperator={this.makeExtraOperator()}
-                fetchTableDataSource={this.fetchTableDataSource}
-                resetFilter={this.resetFilter}
-                clearSelectedRows={this.clearSelectedRows}
-              />
-            </QueueAnim>
-            <QueueAnim key="table" type="bottom">
+          <QueueAnim type={['right', 'left']} >
+            <Operator
+              {...this.state}
+              sync={sync}
+              key="Operator"
+              multiOperator={multiOperator}
+              extraOperator={this.makeExtraOperator()}
+              extraOperatorRight={extraOperatorRight}
+              fetchTableDataSource={this.fetchTableDataSource}
+              resetFilter={this.resetFilter}
+              clearSelectedRows={this.clearSelectedRows}
+            />
+            {(tableVisible === true) && (
               <Table
                 {...this.makeTableProps()}
+                key="table"
               // components={{
               //   body: {
               //     wrapper: this.getBodyWrapper,
               //   },
               // }}
               />
-            </QueueAnim>
+            )}
           </QueueAnim>
         </div>
       </Spin>
