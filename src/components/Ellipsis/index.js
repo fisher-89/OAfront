@@ -24,7 +24,7 @@ const EllipsisText = ({ text, length, tooltip, ...other }) => {
   }
 
   if (tooltip) {
-    return <Tooltip title={text}><span>{displayText}{tail}</span></Tooltip>;
+    return <Tooltip placement="topLeft" arrowPointAtCenter title={text}><span>{displayText}{tail}</span></Tooltip>;
   }
 
   return (
@@ -168,12 +168,17 @@ export default class Ellipsis extends Component {
     if (isSupportLineClamp) {
       const style = `#${id}{-webkit-line-clamp:${lines};}`;
       return (
-        <div id={id} className={cls} {...restProps}>
+        <React.Fragment>
           <style>{style}</style>
           {
-            tooltip ? (<Tooltip title={children}>{children}</Tooltip>) : children
+            tooltip ? (
+              <Tooltip placement="topLeft" arrowPointAtCenter title={children}>
+                <div id={id} className={cls} {...restProps}>{children}</div>
+              </Tooltip>
+            ) : (<div id={id} className={cls} {...restProps}>children</div>)
           }
-        </div>);
+        </React.Fragment>
+      );
     }
 
     const childNode = (
@@ -198,7 +203,7 @@ export default class Ellipsis extends Component {
         >
           {
             tooltip ? (
-              <Tooltip title={text}>{childNode}</Tooltip>
+              <Tooltip placement="topLeft" arrowPointAtCenter title={text}>{childNode}</Tooltip>
             ) : childNode
           }
           <div className={styles.shadow} ref={this.handleShadowChildren}>{children}</div>
