@@ -166,19 +166,15 @@ export default class Ellipsis extends Component {
 
     // support document.body.style.webkitLineClamp
     if (isSupportLineClamp) {
-      const style = `#${id}{-webkit-line-clamp:${lines};}`;
-      return (
-        <React.Fragment>
+      const style = `#${id}{-webkit-line-clamp:${lines};-webkit-box-orient: vertical;}`;
+      const lineClampBox = (
+        <div id={id} className={cls} {...restProps}>
           <style>{style}</style>
-          {
-            tooltip ? (
-              <Tooltip placement="topLeft" arrowPointAtCenter title={children}>
-                <div id={id} className={cls} {...restProps}>{children}</div>
-              </Tooltip>
-            ) : (<div id={id} className={cls} {...restProps}>children</div>)
-          }
-        </React.Fragment>
-      );
+          {children}
+        </div>);
+      return tooltip ? (
+        <Tooltip placement="topLeft" arrowPointAtCenter title={children}>{lineClampBox}</Tooltip>
+      ) : lineClampBox;
     }
 
     const childNode = (
