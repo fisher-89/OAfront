@@ -6,7 +6,7 @@ import { customerAuthority } from '../../../utils/utils';
 import OATable from '../../../components/OATable';
 import Ellipsis from '../../../components/Ellipsis';
 
-const stateList = { 0: '待初审', 1: '待终审', 2: '已通过', '-1': '已驳回', '-2': '已撤回', '-3': '已作废' };
+const stateList = { 0: '待初审', 1: '待终审', 2: '已通过', '-1': '已驳回', '-2': '已撤回', '-3': '已撤销' };
 
 @connect(({ point, loading }) => ({
   log: point.eventLog,
@@ -81,7 +81,7 @@ export default class extends PureComponent {
         render: (rowData) => {
           return rowData.status_id === 2 ?
             (customerAuthority(173) && (
-              <a onClick={() => this.showRevokeForm(rowData)}>作废</a>
+              <a onClick={() => this.showRevokeForm(rowData)}>撤销</a>
             )) : '';
         },
       },

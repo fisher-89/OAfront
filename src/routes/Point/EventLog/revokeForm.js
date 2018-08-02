@@ -49,7 +49,7 @@ export default class extends PureComponent {
     return (
       <OAModal
         form={form}
-        title="作废事件"
+        title="撤销事件"
         visible={visible}
         onSubmit={this.handleSubmit}
         onCancel={() => onCancel(false)}
