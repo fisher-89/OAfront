@@ -4,6 +4,7 @@ import RevokeForm from './revokeForm';
 import { customerAuthority } from '../../../utils/utils';
 
 import OATable from '../../../components/OATable';
+import Ellipsis from '../../../components/Ellipsis';
 
 const stateList = { 0: '待初审', 1: '待终审', 2: '已通过', '-1': '已驳回', '-2': '已撤回', '-3': '已作废' };
 
@@ -43,12 +44,13 @@ export default class extends PureComponent {
       },
       {
         title: '参与人',
-        dataIndex: 'participant.staff_name',
+        dataIndex: 'participants.staff_name',
         searcher: true,
         render: (_, rowData) => {
-          return rowData.participant.map(
+          const text = rowData.participants.map(
             participant => `${participant.staff_name}(A:${participant.point_a * participant.count} B:${participant.point_b * participant.count})`
           ).join(';');
+          return <Ellipsis tooltip lines={1} style={{ width: 300 }}>{text}</Ellipsis>;
         },
       },
       {
