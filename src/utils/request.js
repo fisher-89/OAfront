@@ -62,6 +62,7 @@ function checkStatus(response) {
  * @return {object}           An object containing either "data" or "err"
  */
 export default async function request(url, options) {
+  console.log('request');
   let urlParam = url;
   const defaultOptions = {
     credentials: 'same-origin',
@@ -105,6 +106,7 @@ export default async function request(url, options) {
       }
       paramsArray.push(`${key}=${param}`);
     });
+    delete newOptions.body;
     if (url.search(/\?/) === -1 && paramsArray.length > 0) {
       urlParam += `?${paramsArray.join('&')}`;
     } else if (paramsArray.length > 0) {
@@ -127,5 +129,6 @@ export default async function request(url, options) {
   // .catch((e) => {
   //   exception(e);
   // });
+  console.log(result);
   return result;
 }
