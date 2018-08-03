@@ -12,9 +12,7 @@ export async function query() {
 }
 
 export async function queryCurrent() {
-  const response = request('/api/current-user').catch(() => {
-    return undefined;
-  });
+  const response = request('/api/current-user');
   return response;
 }
 

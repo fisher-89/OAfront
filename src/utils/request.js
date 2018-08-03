@@ -70,6 +70,10 @@ export default async function request(url, options) {
   const newOptions = {
     ...defaultOptions,
     ...options,
+    headers: {
+      Accept: 'application/json',
+      ...(options && options.headers),
+    },
   };
 
   const accessToken = localStorage.getItem('OA_access_token');
@@ -88,7 +92,6 @@ export default async function request(url, options) {
 
   if (newOptions.method === 'POST' || newOptions.method === 'PUT' || newOptions.method === 'PATCH') {
     newOptions.headers = {
-      Accept: 'application/json',
       'Content-Type': 'application/json; charset=utf-8',
       ...newOptions.headers,
     };
