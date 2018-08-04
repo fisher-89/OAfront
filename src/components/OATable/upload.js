@@ -31,7 +31,7 @@ export default class extends React.Component {
 
   render() {
     const { handleBeforeUpload, uri, children } = this.props;
-    const accessToken = localStorage.getItem(`${TOKEN_PREFIX}access_token`);
+    const accessToken = localStorage.getItem(`OA_access_token`);
     const props = {
       action: '',
       onChange: this.handleChange,
@@ -59,7 +59,7 @@ export default class extends React.Component {
 
     return (
       <Upload {...props} fileList={this.state.fileList}>
-        <Button icon="upload" >{children}</Button>
+        <Button icon="upload">{children}</Button>
       </Upload>
     );
   }
