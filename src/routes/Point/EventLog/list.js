@@ -34,7 +34,7 @@ export default class extends PureComponent {
       },
       {
         title: '标题',
-        dataIndex: 'event_name',
+        dataIndex: 'title',
         searcher: true,
       },
       {
@@ -43,12 +43,12 @@ export default class extends PureComponent {
         sorter: true,
       },
       {
-        title: '参与人',
-        dataIndex: 'participants.staff_name',
+        title: '事件',
+        dataIndex: 'logs.id',
         searcher: true,
         render: (_, rowData) => {
-          const text = rowData.participants.map(
-            participant => `${participant.staff_name}(A:${participant.point_a * participant.count} B:${participant.point_b * participant.count})`
+          const text = rowData.logs.map(
+            log => `${log.event_name}`
           ).join(';');
           return <Ellipsis tooltip lines={1} style={{ width: 300 }}>{text}</Ellipsis>;
         },
