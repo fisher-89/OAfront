@@ -16,7 +16,6 @@ const FormItem = OAForm.Item;
   addLoading: loading.effects['point/addTaskAuth'],
   editLoading: loading.effects['point/editTaskAuth'],
 }))
-@OAForm.Config
 @OAForm.create({
   onValuesChange(props, changeValues, allValues) {
     props.onChange(allValues);

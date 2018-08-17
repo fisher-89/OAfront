@@ -114,31 +114,28 @@ export default class extends PureComponent {
 
   handleError = (error) => {
     const { onError, form: { setFields } } = this.props;
-    // console.log(error);
     if (error.point_a_max || error.point_a_min) {
       let str = '';
       if (error.point_a_min) {
-        str += error.point_a_min;
+        str += error.point_a_min[0];
       }
 
       if (error.point_a_max) {
-        str += error.point_a_max;
+        str += ` ~ ${error.point_a_max[0]}`;
       }
-      setFields({
-        point_a: str,
-      });
-    } else if (error.point_b_max || error.point_b_min) {
+      setFields({ point_a: { errors: [new Error(str)] } });
+    }
+
+    if (error.point_b_max || error.point_b_min) {
       let str = '';
       if (error.point_b_min) {
-        str += error.point_b_min;
+        str += error.point_b_min[0];
       }
 
       if (error.point_b_max) {
-        str += error.point_b_max;
+        str += ` ~ ${error.point_b_max[0]}`;
       }
-      setFields({
-        point_b: str,
-      });
+      setFields({ point_b: { errors: [new Error(str)] } });
     }
     onError(error);
   }
@@ -408,209 +405,209 @@ export default class extends PureComponent {
             fetchDataSource={this.fetchEvent}
             scroll={{ x: 300 }}
             {
-              ...excelAction
+            ...excelAction
             }
           />
         </Col>
         {(customerAuthority(139) || customerAuthority(143))
-        && (
-          <OAModal
-            form={form}
-            visible={visible}
-            width={600}
-            title="事件表单"
-            onCancel={() => this.handleModalVisible()}
-            onSubmit={this.handleSubmit}
-            afterClose={() => this.setState({ editInfo: {} })}
-            onError={this.handleError}
-            formProps={{
-              loading: addLoading || editLoading,
-            }}
-          >
-            {
-              editInfo.id ? (
-                getFieldDecorator('id', {
-                  initialValue: editInfo.id,
-                })(
-                  <Input placeholder="请输入" type="hidden" />
-                )
-              ) : null
-            }
-            <FormItem {...formItemLayout} label="事件类型" required>
-              {getFieldDecorator('type_id', {
-                initialValue: editInfo.type_id ? editInfo.type_id.toString() : null,
-              })(
-                <TreeSelect
-                  placeholder="请选择"
-                  treeDefaultExpandAll
-                  treeData={treeData}
-                />
-              )}
-            </FormItem>
-            <FormItem {...formItemLayout} label="事件名称" required>
-              {getFieldDecorator('name', {
-                initialValue: editInfo.name || '',
-              })(
-                <Input placeholder="请输入" />
-              )}
-            </FormItem>
-
-            <FormItem required {...formItemLayout} label="A分默认值">
-              {getFieldDecorator('point_a_default', {
-                initialValue: isEdit ? editInfo.point_a_default.toString() : '',
-              })(
-                <InputNumber placeholder="请输入" style={{ width: '100%' }} />
-              )}
-            </FormItem>
-            <FormItem required {...formItemLayout} label="B分默认值">
-              {getFieldDecorator('point_b_default', {
-                initialValue: isEdit ? editInfo.point_b_default.toString() : '',
-              })(
-                <InputNumber placeholder="请输入" style={{ width: '100%' }} />
-              )}
-            </FormItem>
-
-            <FormItem {...formItemLayout} label="A分" required>
-              {getFieldDecorator('point_a', {
-                initialValue: {
-                  min: isEdit ? editInfo.point_a_min.toString() : '',
-                  max: isEdit ? editInfo.point_a_max.toString() : '',
-                },
-              })(
-                <InputRange />
-              )}
-            </FormItem>
-
-            <FormItem {...formItemLayout} label="b分" required>
-              {getFieldDecorator('point_b', {
-                initialValue: {
-                  min: isEdit ? editInfo.point_b_min.toString() : '',
-                  max: isEdit ? editInfo.point_b_max.toString() : '',
-                },
-              })(
-                <InputRange />
-              )}
-            </FormItem>
-
-            <FormItem
-              {...formItemLayout}
-              label="抄送人"
+          && (
+            <OAModal
+              form={form}
+              visible={visible}
+              width={600}
+              title="事件表单"
+              onCancel={() => this.handleModalVisible()}
+              onSubmit={this.handleSubmit}
+              afterClose={() => this.setState({ editInfo: {} })}
+              onError={this.handleError}
+              formProps={{
+                loading: addLoading || editLoading,
+              }}
             >
-              {getFieldDecorator('default_cc_addressees', {
-                initialValue: editInfo.default_cc_addressees || [],
-              })(
-                <SearchTable.Staff
-                  multiple
-                  name={{
-                    staff_sn: 'staff_sn',
-                    staff_name: 'realname',
-                  }}
-                  showName="realname"
-                  placeholder="请选择员工"
-                />
-              )}
-            </FormItem>
+              {
+                editInfo.id ? (
+                  getFieldDecorator('id', {
+                    initialValue: editInfo.id,
+                  })(
+                    <Input placeholder="请输入" type="hidden" />
+                  )
+                ) : null
+              }
+              <FormItem {...formItemLayout} label="事件类型" required>
+                {getFieldDecorator('type_id', {
+                  initialValue: editInfo.type_id ? editInfo.type_id.toString() : null,
+                })(
+                  <TreeSelect
+                    placeholder="请选择"
+                    treeDefaultExpandAll
+                    treeData={treeData}
+                  />
+                )}
+              </FormItem>
+              <FormItem {...formItemLayout} label="事件名称" required>
+                {getFieldDecorator('name', {
+                  initialValue: editInfo.name || '',
+                })(
+                  <Input placeholder="请输入" />
+                )}
+              </FormItem>
 
-            <Row>
-              <Col span={14}>
-                <FormItem
-                  {
+              <FormItem required {...formItemLayout} label="A分默认值">
+                {getFieldDecorator('point_a_default', {
+                  initialValue: isEdit ? editInfo.point_a_default.toString() : '',
+                })(
+                  <InputNumber placeholder="请输入" style={{ width: '100%' }} />
+                )}
+              </FormItem>
+              <FormItem required {...formItemLayout} label="B分默认值">
+                {getFieldDecorator('point_b_default', {
+                  initialValue: isEdit ? editInfo.point_b_default.toString() : '',
+                })(
+                  <InputNumber placeholder="请输入" style={{ width: '100%' }} />
+                )}
+              </FormItem>
+
+              <FormItem {...formItemLayout} label="A分" required>
+                {getFieldDecorator('point_a', {
+                  initialValue: {
+                    min: isEdit ? editInfo.point_a_min.toString() : '',
+                    max: isEdit ? editInfo.point_a_max.toString() : '',
+                  },
+                })(
+                  <InputRange />
+                )}
+              </FormItem>
+
+              <FormItem {...formItemLayout} label="b分" required>
+                {getFieldDecorator('point_b', {
+                  initialValue: {
+                    min: isEdit ? editInfo.point_b_min.toString() : '',
+                    max: isEdit ? editInfo.point_b_max.toString() : '',
+                  },
+                })(
+                  <InputRange />
+                )}
+              </FormItem>
+
+              <FormItem
+                {...formItemLayout}
+                label="抄送人"
+              >
+                {getFieldDecorator('default_cc_addressees', {
+                  initialValue: editInfo.default_cc_addressees || [],
+                })(
+                  <SearchTable.Staff
+                    multiple
+                    name={{
+                      staff_sn: 'staff_sn',
+                      staff_name: 'realname',
+                    }}
+                    showName="realname"
+                    placeholder="请选择员工"
+                  />
+                )}
+              </FormItem>
+
+              <Row>
+                <Col span={14}>
+                  <FormItem
+                    {
                     ...{
                       labelCol: { span: 10 },
                       wrapperCol: { span: 14 },
                     }
-                  }
-                  label="初审人"
-                >
-                  {getFieldDecorator('first_approver', {
-                    initialValue: {
-                      first_approver_sn: editInfo.first_approver_sn || '',
-                      first_approver_name: editInfo.first_approver_name || '',
-                    },
-                  })(
-                    <SearchTable.Staff
-                      name={{
-                        first_approver_sn: 'staff_sn',
-                        first_approver_name: 'realname',
-                      }}
-                      showName="realname"
-                      placeholder="请选择员工"
-                    />
-                  )}
-                </FormItem>
-              </Col>
-              <Col span={4}>
-                <FormItem
-                  {
+                    }
+                    label="初审人"
+                  >
+                    {getFieldDecorator('first_approver', {
+                      initialValue: {
+                        first_approver_sn: editInfo.first_approver_sn || '',
+                        first_approver_name: editInfo.first_approver_name || '',
+                      },
+                    })(
+                      <SearchTable.Staff
+                        name={{
+                          first_approver_sn: 'staff_sn',
+                          first_approver_name: 'realname',
+                        }}
+                        showName="realname"
+                        placeholder="请选择员工"
+                      />
+                    )}
+                  </FormItem>
+                </Col>
+                <Col span={4}>
+                  <FormItem
+                    {
                     ...{
                       labelCol: { span: 16 },
                       wrapperCol: { span: 8 },
                     }
-                  }
-                  label="锁定"
-                >
-                  {getFieldDecorator('first_approver_locked', {
-                    initialValue: editInfo.first_approver_locked === 1 || false,
-                    valuePropName: 'checked',
-                  })(
-                    <Switch />
-                  )}
-                </FormItem>
-              </Col>
-            </Row>
+                    }
+                    label="锁定"
+                  >
+                    {getFieldDecorator('first_approver_locked', {
+                      initialValue: editInfo.first_approver_locked === 1 || false,
+                      valuePropName: 'checked',
+                    })(
+                      <Switch />
+                    )}
+                  </FormItem>
+                </Col>
+              </Row>
 
-            <Row>
-              <Col span={14}>
-                <FormItem
-                  {
+              <Row>
+                <Col span={14}>
+                  <FormItem
+                    {
                     ...{
                       labelCol: { span: 10 },
                       wrapperCol: { span: 14 },
                     }
-                  }
+                    }
 
-                  label="终审人"
-                >
-                  {getFieldDecorator('final_approver', {
-                    initialValue: {
-                      final_approver_sn: editInfo.final_approver_sn || '',
-                      final_approver_name: editInfo.final_approver_name || '',
-                    },
-                  })(
-                    <SearchTable {...this.makeSearchStaffProps()} />
-                  )}
-                </FormItem>
-              </Col>
-              <Col span={4}>
-                <FormItem
-                  {
+                    label="终审人"
+                  >
+                    {getFieldDecorator('final_approver', {
+                      initialValue: {
+                        final_approver_sn: editInfo.final_approver_sn || '',
+                        final_approver_name: editInfo.final_approver_name || '',
+                      },
+                    })(
+                      <SearchTable {...this.makeSearchStaffProps()} />
+                    )}
+                  </FormItem>
+                </Col>
+                <Col span={4}>
+                  <FormItem
+                    {
                     ...{
                       labelCol: { span: 16 },
                       wrapperCol: { span: 8 },
                     }
-                  }
-                  label="锁定"
-                >
-                  {getFieldDecorator('final_approver_locked', {
-                    initialValue: editInfo.final_approver_locked === 1 || false,
-                    valuePropName: 'checked',
-                  })(
-                    <Switch />
-                  )}
-                </FormItem>
-              </Col>
-            </Row>
+                    }
+                    label="锁定"
+                  >
+                    {getFieldDecorator('final_approver_locked', {
+                      initialValue: editInfo.final_approver_locked === 1 || false,
+                      valuePropName: 'checked',
+                    })(
+                      <Switch />
+                    )}
+                  </FormItem>
+                </Col>
+              </Row>
 
-            <FormItem {...formItemLayout} label="激活">
-              {getFieldDecorator('is_active', {
-                initialValue: editInfo.is_active === 1 || true,
-                valuePropName: 'checked',
-              })(
-                <Switch />
-              )}
-            </FormItem>
-          </OAModal>
-        )
+              <FormItem {...formItemLayout} label="激活">
+                {getFieldDecorator('is_active', {
+                  initialValue: editInfo.is_active === 1 || true,
+                  valuePropName: 'checked',
+                })(
+                  <Switch />
+                )}
+              </FormItem>
+            </OAModal>
+          )
         }
       </Row>
     );
