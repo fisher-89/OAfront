@@ -1,19 +1,17 @@
 import React, { PureComponent } from 'react';
-import { Table, Input, Icon, message, Button, Tooltip, Spin } from 'antd';
-import QueueAnim from 'rc-queue-anim';
-
+// import ReactDOM from 'react-dom';
+import classNames from 'classnames';
+import moment from 'moment';
+import { connect } from 'dva';
+import { Table, Input, Icon, message, Button, Tooltip } from 'antd';
+import Ellipsis from '../Ellipsis';
 import { makerFilters } from '../../utils/utils';
-
 import TreeFilter from './treeFilter';
 import DateFilter from './dateFilter';
 import RangeFilter from './rangeFilter';
-
 import Operator from './operator';
 import TableUpload from './upload';
-
 import EdiTableCell from './editTableCell';
-import EditableCell from './editableRow';
-
 import styles from './index.less';
 import request from '../../utils/request';
 
@@ -29,12 +27,16 @@ const defaultProps = {
   extraExportFields: [],
   filtered: 0,
   sync: true,
+  operatorVisble: true,
   tableVisible: true,
+  autoScroll: false,
   fetchDataSource: () => {
     // message.error('请设置fetchDataSource');
   },
 };
-
+@connect(({ table }) => ({
+  table,
+}))
 class OATable extends PureComponent {
   constructor(props) {
     super(props);
@@ -54,34 +56,26 @@ class OATable extends PureComponent {
       sorter: {},
       loading: false,
     };
-    this.enterAnim = [
-      {
-        opacity: 0, x: 30, backgroundColor: '#fffeee', duration: 0,
-      },
-      {
-        height: 0,
-        duration: 200,
-        type: 'from',
-        delay: 250,
-        ease: 'easeOutQuad',
-        onComplete: this.onEnd,
-      },
-      {
-        opacity: 1, x: 0, duration: 250, ease: 'easeOutQuad',
-      },
-      { delay: 1000, backgroundColor: '#fff' },
-    ];
-    this.leaveAnim = [
-      { duration: 250, opacity: 0 },
-      { height: 0, duration: 200, ease: 'easeOutQuad' },
-    ];
-    this.currentPage = 1;
   }
 
   componentDidMount() {
     const { data, serverSide } = this.props;
     if (!data || data.length === 0 || serverSide) {
       this.fetchTableDataSource();
+    }
+    // this.bodyHeiht = document.body.clientHeight;
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { rowSelection, multiOperator } = nextProps;
+    if (
+      multiOperator && multiOperator.length > 0
+      &&
+      rowSelection
+      && JSON.stringify(rowSelection) !== JSON.stringify(this.props.rowSelection)
+    ) {
+      const { selectedRowKeys, selectedRows } = rowSelection;
+      this.setState({ selectedRowKeys, selectedRows });
     }
   }
 
@@ -90,38 +84,16 @@ class OATable extends PureComponent {
     dom.style.height = 'auto';
   }
 
-  // getBodyWrapper = (body) => {
-  //   // const { pagination } = this.state;
-  //   // // 切换分页去除动画;
-  //   // if (this.currentPage !== pagination.current) {
-  //   //   this.currentPage = pagination.current;
-  //   //   return body;
-  //   // }
-  //   return (
-  //     <QueueAnim
-  //       component="tbody"
-  //       // type={['right', 'left']}
-  //       // leaveReverse
-  //       className={body.className}
-  //     // enter={this.enterAnim}
-  //     // leave={this.leaveAnim}
-  //     // appear={false}
-  //     >
-  //       {body.children}
-  //     </QueueAnim>
-  //   );
-  // }
-
 
   showTotal = (total, range) => {
-    // const { filtered } = this.props;
     return <div style={{ color: '#969696' }}>{`显示 ${range[0]} - ${range[1]} 项 , 共 ${total} 项`}</div>;
   }
 
-  fetchTableDataSource = (fetch) => {
+  fetchTableDataSource = (fetch, update = false) => {
     const { fetchDataSource, columns, serverSide } = this.props;
     const { filters, pagination, sorter } = this.state;
     let params = {};
+    let urlPath = {};
     if (serverSide) {
       const filterParam = {};
       const searcherParam = {};
@@ -149,10 +121,13 @@ class OATable extends PureComponent {
       if (sorter.field) {
         params.sort = `${sorter.field}-${sorter.order === 'ascend' ? 'asc' : 'desc'}`;
       }
-      params = makerFilters(params);
+      urlPath = makerFilters(params);
     }
     if (!fetch) {
-      fetchDataSource(params);
+      if (!serverSide && update) {
+        params.update = update;
+      }
+      fetchDataSource(urlPath, params);
     } else {
       return params;
     }
@@ -169,7 +144,11 @@ class OATable extends PureComponent {
         response.sorter = column.sorter === true ? this.makeDefaultSorter(key) : column.sorter;
       }
       response.filteredValue = filters[key] || null;
-      response.sortOrder = sorter.columnKey === key && sorter.order;
+      if (!sorter.field && column.defaultSortOrder) {
+        sorter.field = key;
+        sorter.order = column.sortOrder || column.defaultSortOrder;
+      }
+      response.sortOrder = sorter.field === key && sorter.order;
       if (column.searcher) {
         Object.assign(response, this.makeSearchFilterOption(key, column));
         response.render = response.render || this.makeDefaultSearchRender(key);
@@ -182,6 +161,21 @@ class OATable extends PureComponent {
       } else if (column.rangeFilters) {
         Object.assign(response, this.makeRangeFilterOption(key, column));
       }
+      if (column.dataIndex !== undefined && !column.render) {
+        const { tooltip } = column;
+        const render = (text) => {
+          let viewText = text;
+          if (column.searcher) {
+            viewText = this.makeDefaultSearchRender(key)(text);
+          }
+          return (
+            <Ellipsis tooltip={tooltip || false} lines={1}>
+              {viewText}
+            </Ellipsis>
+          );
+        };
+        response.render = render;
+      }
       return response;
     });
   }
@@ -189,8 +183,11 @@ class OATable extends PureComponent {
   makeSearchFilterOption = (key, column) => {
     const { filtered, filters, filterDropdownVisible } = this.state;
     const { serverSide } = this.props;
+    const cls = classNames({
+      [styles['table-filter-active']]: filtered.indexOf(key) !== -1,
+    });
     const searchFilterOption = {
-      filterIcon: <Icon type="search" style={{ color: filtered.indexOf(key) !== -1 ? '#108ee9' : '' }} />,
+      filterIcon: <Icon type="search" className={cls} />,
       filterDropdown: (
         <Input.Search
           ref={(ele) => {
@@ -244,8 +241,11 @@ class OATable extends PureComponent {
   makeDateFilterOption = (key, column) => {
     const { filterDropdownVisible, filtered } = this.state;
     const { serverSide } = this.props;
+    const cls = classNames({
+      [styles['table-filter-active']]: filtered.indexOf(key) !== -1,
+    });
     const dateFilterOption = {
-      filterIcon: <Icon type="clock-circle-o" style={{ color: filtered.indexOf(key) !== -1 ? '#108ee9' : '' }} />,
+      filterIcon: <Icon type="clock-circle-o" className={cls} />,
       filterDropdown: (
         <DateFilter
           onSearchTime={this.handleDateFilter(key)}
@@ -268,12 +268,15 @@ class OATable extends PureComponent {
 
   makeRangeFilterOption = (key, column) => {
     const { filterDropdownVisible, filtered } = this.state;
-
     const { serverSide } = this.props;
+    const cls = classNames({
+      [styles['table-filter-active']]: filtered.indexOf(key) !== -1,
+    });
     const rangeFilterOption = {
-      filterIcon: <Icon type="filter" style={{ color: filtered.indexOf(key) !== -1 ? '#108ee9' : '' }} />,
+      filterIcon: <Icon type="filter" className={cls} />,
       filterDropdown: (
         <RangeFilter
+          width={260}
           onSearchRange={this.handleRangeFilter(key)}
         />
       ),
@@ -391,28 +394,42 @@ class OATable extends PureComponent {
   }
 
   makeDefaultOnFilter = (key) => {
-    return (value, record) => {
-      if (Array.isArray(record[key])) {
-        const able = record[key].find(item => item.toString() === value);
+    return (value) => {
+      const { serverSide } = this.props;
+      if (serverSide) return true;
+      const valueInfo = eval(`arguments[1].${key}`);
+      if (Array.isArray(valueInfo)) {
+        const able = valueInfo.find(item => item.toString() === value);
         return able;
       }
-      return `${record[key]}` === `${value}`;
+      return `${valueInfo}` === `${value}`;
     };
   }
 
   makeDefaultOnRangeFilter = (key) => {
-    return ({ min, max }, record) => min <= record[key] && max >= record[key];
+    const valueInfo = eval(`arguments[1].${key}`);
+    return ({ min, max }) => min <= valueInfo && max >= valueInfo;
   }
 
 
   makeDefaultOnSearch = (key) => {
-    return (value, record) => {
-      return `${record[key]}`.match(new RegExp(value, 'gi'));
+    return (value) => {
+      const valueInfo = eval(`arguments[1].${key}`);
+      return `${valueInfo}`.match(new RegExp(value, 'gi'));
     };
   }
 
   makeDefaultSorter = (key) => {
-    return (a, b) => a[key] - b[key];
+    return () => {
+      let a = eval(`arguments[0].${key}`);
+      let b = eval(`arguments[1].${key}`);
+
+      if (moment(a).isValid() && moment(b).isValid()) {
+        a = moment(a).valueOf();
+        b = moment(b).valueOf();
+      }
+      return parseFloat(a) - parseFloat(b);
+    };
   }
 
   makeDefaultSearchRender = (key) => {
@@ -436,13 +453,23 @@ class OATable extends PureComponent {
     };
   }
 
-  resetFilter = () => {
+  resetFilter = (key) => {
     const { serverSide } = this.props;
+    const { filters, searchers, filtered } = this.state;
+    if (key && filters[key]) {
+      delete filters[key];
+    } else if (key && searchers[key]) {
+      delete searchers[key];
+    }
+    let newFiltered = [];
+    if (key) {
+      newFiltered = filtered.filter(item => item !== key);
+    }
     this.setState({
-      filters: {},
-      searchers: {},
-      filtered: [],
-      sorter: {},
+      filters: key ? filters : {},
+      searchers: key ? searchers : {},
+      filtered: newFiltered,
+      // sorter: {},
     }, () => {
       if (serverSide) {
         this.fetchTableDataSource();
@@ -465,7 +492,15 @@ class OATable extends PureComponent {
 
   makeTableProps = () => {
     const { pagination, selectedRowKeys } = this.state;
-    const { multiOperator, data, serverSide, total, rowSelection } = this.props;
+    const {
+      multiOperator,
+      data,
+      serverSide,
+      total,
+      rowSelection,
+      loading,
+    } = this.props;
+
     if (serverSide) {
       pagination.total = total;
     }
@@ -480,15 +515,17 @@ class OATable extends PureComponent {
       onChange: this.handleTableChange,
       size: 'middle',
       bordered: false,
-      // scroll: { x: true },
+      scroll: {},
       pagination: {
         ...pagination,
         ...this.props.pagination,
       },
       ...this.props,
+      loading: loading || this.state.loading,
       rowSelection: newRowSelection,
       columns: this.mapColumns(),
     };
+
     Object.keys(defaultProps).forEach((key) => {
       delete response[key];
     });
@@ -577,72 +614,9 @@ class OATable extends PureComponent {
 
   handleExcelTemplate = () => {
     const { excelTemplate } = this.props;
-    // this.excelLoading('下载中...');
-    // const a = document.createElement('a');
     location.href = excelTemplate;
-    // a.target = '_blank';
-    // a.click();
-    // request(`${excelTemplate}`, {
-    //   method: 'GET',
-    // }).then((res) => {
-    //   res.blob().then((blob) => {
-    //     this.excelLoading(false);
-    //     const url = window.URL.createObjectURL(blob);
-    //     let filename = res.headers.get('Content-Disposition');
-    //     filename = decodeURI(filename);
-    //     filename = filename.match(/filename="(.+)"/);
-    //     [, filename] = filename;
-    //     const a = document.createElement('a');
-    //     a.href = url;
-    //     a.download = filename;
-    //     a.click();
-    //   });
-    // });
   }
 
-  // handleUploadOnchange = (e) => {
-  //   const { files } = e.target;
-  //   if (!this.handleBeforeUpload(files[0])) return;
-  //   const fileReader = new FileReader();
-  //   fileReader.onload = (ev) => {
-  //     const data = ev.target.result;
-  //     let persons = [];
-  //     const workbook = XLSX.read(data, {
-  //       type: 'binary',
-  //     });
-  //     Object.keys(workbook.Sheets).forEach((sheet) => {
-  //       const fromTo = workbook.Sheets[sheet]['!ref'];
-  //       if (fromTo) {
-  //         persons = persons.concat(XLSX.utils.sheet_to_json(workbook.Sheets[sheet]));
-  //       }
-  //     });
-  //     if (!persons.length) {
-  //       message.error('不能上传空的excel文件!');
-  //     } else {
-  //       // const header = Object.values(persons[0]);
-  //       // persons = persons.filter((item, index) => index !== 0);
-  //       // persons = persons.map((item) => {
-  //       //   const temp = {};
-  //       //   const value = Object.values(item);
-  //       //   header.forEach((key, index) => {
-  //       //     if (value[index]) {
-  //       //       temp[key] = value[index];
-  //       //     }
-  //       //   });
-  //       //   return temp;
-  //       // });
-  //       const { excelInto } = this.props;
-  //       this.excelLoading('导入中...');
-  //       request(`${excelInto}`, {
-  //         method: 'POST',
-  //         body: persons,
-  //       }).then((response) => {
-  //         this.excelLoading(false);
-  //       });
-  //     }
-  //   };
-  //   fileReader.readAsBinaryString(files[0]);
-  // }
 
   makeExtraOperator = () => {
     const { extraOperator, excelInto, excelExport, excelTemplate } = this.props;
@@ -679,43 +653,54 @@ class OATable extends PureComponent {
   }
 
   render() {
-    const { multiOperator, tableVisible, extraOperatorRight, sync } = this.props;
-    const { loading } = this.state;
+    const {
+      multiOperator,
+      tableVisible,
+      extraOperatorRight,
+      sync,
+      columns,
+      operatorVisble,
+    } = this.props;
+    const filterColumns = columns.map((item) => {
+      const temp = { title: item.title, dataIndex: item.dataIndex };
+      if (item.filters) {
+        temp.filterData = item.filters;
+      }
+      if (item.treeFilters) {
+        temp.filterData = item.treeFilters;
+      }
+      return temp;
+    });
     return (
-      <Spin spinning={loading !== false} tip={`${loading}`}>
-        <div className={styles.filterTable}>
-          <QueueAnim type={['right', 'left']} >
-            <Operator
-              {...this.state}
-              sync={sync}
-              key="Operator"
-              multiOperator={multiOperator}
-              extraOperator={this.makeExtraOperator()}
-              extraOperatorRight={extraOperatorRight}
-              fetchTableDataSource={this.fetchTableDataSource}
-              resetFilter={this.resetFilter}
-              clearSelectedRows={this.clearSelectedRows}
-            />
-            {(tableVisible === true) && (
-              <Table
-                {...this.makeTableProps()}
-                key="table"
-              // components={{
-              //   body: {
-              //     wrapper: this.getBodyWrapper,
-              //   },
-              // }}
-              />
-            )}
-          </QueueAnim>
-        </div>
-      </Spin>
+      <div
+        className={styles.filterTable}
+      >
+        {operatorVisble && (
+          <Operator
+            {...this.state}
+            sync={sync}
+            key="Operator"
+            filterColumns={filterColumns || []}
+            multiOperator={multiOperator}
+            extraOperator={this.makeExtraOperator()}
+            extraOperatorRight={extraOperatorRight}
+            fetchTableDataSource={() => { this.fetchTableDataSource(null, true); }}
+            resetFilter={this.resetFilter}
+            clearSelectedRows={this.clearSelectedRows}
+          />
+        )}
+        {(tableVisible === true) && (
+          <Table
+            {...this.makeTableProps()}
+            key="table"
+          />
+        )}
+      </div>
     );
   }
 }
 
 OATable.EdiTableCell = EdiTableCell;
-OATable.EditableCell = EditableCell;
 OATable.defaultProps = defaultProps;
 
 export default OATable;

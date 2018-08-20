@@ -34,12 +34,13 @@ export default class extends PureComponent {
   };
 
   render() {
-    const { onSearchRange } = this.props;
+    const { onSearchRange, width } = this.props;
     const { value } = this.state;
     return (
-      <div className="ant-table-filter-dropdown">
+      <div className="ant-table-filter-dropdown" style={{ width: 260 }}>
         <InputRange
           value={value[0]}
+          width={width}
           onChange={this.onChange}
           addonAfter={<Button type="primary" onClick={() => onSearchRange(value)} >确定</Button>}
         />

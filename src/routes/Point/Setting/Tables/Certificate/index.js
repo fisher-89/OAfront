@@ -75,7 +75,7 @@ export default class extends PureComponent {
       {
         title: '基础分',
         dataIndex: 'point',
-        rangeFilters: true,
+        // rangeFilters: true,
       },
     ];
     if (customerAuthority(162) || customerAuthority(161)) {

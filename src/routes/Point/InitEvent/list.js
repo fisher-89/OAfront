@@ -10,32 +10,27 @@ import {
   Switch,
 } from 'antd';
 import { connect } from 'dva';
-import OAForm from '../../../components/OAForm';
+import OAForm, {
+  OAModal,
+  SearchTable,
+} from '../../../components/OAForm1';
 import OATable from '../../../components/OATable';
 import InputRange from '../../../components/InputRange';
 import EventTree from './eventTree';
 import { markTreeData, customerAuthority } from '../../../utils/utils';
 
 const FormItem = OAForm.Item;
-const {
-  OAModal,
-  SearchTable,
-} = OAForm;
-
+@OAForm.create()
 @connect(({ point, loading }) => ({
   result: point.event,
   typeList: point.type,
   final: point.final,
   fLoading: loading.effects['point/fetchFinal'],
   tableLoading: loading.effects['point/fetchEvent'],
-  addLoading: loading.effects['point/addEvent'],
-  editLoading: loading.effects['point/editEvent'],
-}))
-
-@OAForm.create(({
-  onValuesChange(props, fields) {
-    Object.keys(fields).forEach(key => props.handleFieldsError(key));
-  },
+  loading: (
+    loading.effects['point/addEvent'] ||
+    loading.effects['point/editEvent']
+  ),
 }))
 export default class extends PureComponent {
   state = {
@@ -85,7 +80,7 @@ export default class extends PureComponent {
     this.setState({ editInfo: rowData }, () => this.handleModalVisible(true));
   }
 
-  handleSubmit = (params, onError) => {
+  handleSubmit = (params) => {
     const { dispatch } = this.props;
     const response = {
       ...params,
@@ -107,37 +102,32 @@ export default class extends PureComponent {
     dispatch({
       type: response.id ? 'point/editEvent' : 'point/addEvent',
       payload: response,
-      onError,
+      onError: this.handleError,
       onSuccess: this.handleSuccess,
     });
   }
 
-  handleError = (error) => {
+  handleError = (err) => {
     const { onError, form: { setFields } } = this.props;
-    if (error.point_a_max || error.point_a_min) {
-      let str = '';
-      if (error.point_a_min) {
-        str += error.point_a_min[0];
+    onError(err, (errors, values) => {
+      const aErr = [];
+      if (errors.point_a_min) {
+        aErr.push(errors.point_a_min.errors[0]);
       }
+      if (errors.point_a_max) {
+        aErr.push(errors.point_a_max.errors[0]);
+      }
+      if (aErr.length) setFields({ point_a: { errors: aErr, value: values.point_a } });
 
-      if (error.point_a_max) {
-        str += ` ~ ${error.point_a_max[0]}`;
+      const bErr = [];
+      if (errors.point_b_max) {
+        bErr.push(errors.point_b_min.errors[0]);
       }
-      setFields({ point_a: { errors: [new Error(str)] } });
-    }
-
-    if (error.point_b_max || error.point_b_min) {
-      let str = '';
-      if (error.point_b_min) {
-        str += error.point_b_min[0];
+      if (errors.point_b_max) {
+        bErr.push(errors.point_b_max.errors[0]);
       }
-
-      if (error.point_b_max) {
-        str += ` ~ ${error.point_b_max[0]}`;
-      }
-      setFields({ point_b: { errors: [new Error(str)] } });
-    }
-    onError(error);
+      if (bErr.length) setFields({ point_b: { errors: bErr, value: values.point_b } });
+    });
   }
 
   handleSuccess = () => {
@@ -326,7 +316,7 @@ export default class extends PureComponent {
         final_approver_name: 'staff_name',
       },
       title: '终审人列表',
-      showName: 'staff_name',
+      showName: 'final_approver_name',
       placeholder: '请选择员工',
       tableProps: {
         index: 'staff_sn',
@@ -343,12 +333,10 @@ export default class extends PureComponent {
 
   render() {
     const {
-      form,
-      addLoading,
-      editLoading,
       tableLoading,
       result,
       typeList,
+      validateFields,
       form: { getFieldDecorator },
     } = this.props;
     const { visible, editInfo } = this.state;
@@ -357,18 +345,7 @@ export default class extends PureComponent {
       wrapperCol: { span: 14 },
     };
     const treeData = markTreeData(typeList, { parentId: 'parent_id', value: 'id', lable: 'name' });
-    // const defaultStaffAddress = [];
     const isEdit = Object.keys(editInfo).length !== 0;
-    // if (isEdit && editInfo.default_cc_addressees) {
-    //   editInfo.default_cc_addressees.forEach((item) => {
-    //     const staff = item.split('=');
-    //     const [staffSn, staffName] = staff.length === 2 ? staff : ['', ''];
-    //     defaultStaffAddress.push({
-    //       staff_sn: staffSn,
-    //       staff_name: staffName,
-    //     });
-    //   });
-    // }
     const excelAction = {};
     if (customerAuthority(140)) {
       excelAction.excelInto = 'http://192.168.20.144:8003/admin/events/import';
@@ -412,17 +389,13 @@ export default class extends PureComponent {
         {(customerAuthority(139) || customerAuthority(143))
           && (
             <OAModal
-              form={form}
-              visible={visible}
               width={600}
               title="事件表单"
+              visible={visible}
+              style={{ top: 30 }}
               onCancel={() => this.handleModalVisible()}
-              onSubmit={this.handleSubmit}
+              onSubmit={validateFields(this.handleSubmit)}
               afterClose={() => this.setState({ editInfo: {} })}
-              onError={this.handleError}
-              formProps={{
-                loading: addLoading || editLoading,
-              }}
             >
               {
                 editInfo.id ? (
@@ -441,6 +414,8 @@ export default class extends PureComponent {
                     placeholder="请选择"
                     treeDefaultExpandAll
                     treeData={treeData}
+                    getPopupContainer={trrger => (trrger)}
+                    dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                   />
                 )}
               </FormItem>
@@ -502,7 +477,7 @@ export default class extends PureComponent {
                       staff_sn: 'staff_sn',
                       staff_name: 'realname',
                     }}
-                    showName="realname"
+                    showName="staff_name"
                     placeholder="请选择员工"
                   />
                 )}
@@ -530,7 +505,7 @@ export default class extends PureComponent {
                           first_approver_sn: 'staff_sn',
                           first_approver_name: 'realname',
                         }}
-                        showName="realname"
+                        showName="first_approver_name"
                         placeholder="请选择员工"
                       />
                     )}

@@ -6,20 +6,14 @@ import {
 } from 'antd';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
-import OAForm from '../../../components/OAForm';
+import OAForm, { OAModal } from '../../../components/OAForm1';
 import { markTreeData } from '../../../utils/utils';
 
-const { OAModal } = OAForm;
 const FormItem = OAForm.Item;
+@OAForm.create()
 @connect(({ loading }) => ({
   loading: loading.effects['point/addType'],
 }))
-
-@OAForm.create({
-  onValuesChange(props, changeValue) {
-    Object.keys(changeValue).forEach(key => props.handleFieldsError(key));
-  },
-})
 export default class extends PureComponent {
   componentDidMount() {
     const { form, bindForm } = this.props;
@@ -32,8 +26,8 @@ export default class extends PureComponent {
   }
 
 
-  handleSubmit = (values, onError) => {
-    const { dispatch } = this.props;
+  handleSubmit = (values) => {
+    const { dispatch, onError } = this.props;
     dispatch({
       type: values.id ? 'point/editType' : 'point/addType',
       payload: values,
@@ -44,29 +38,28 @@ export default class extends PureComponent {
 
   render() {
     const {
-      onError,
       visible,
       form,
       initialValue,
       onCancel,
       onClose,
       treeData,
-      loading,
+      validateFields,
       form: { getFieldDecorator },
     } = this.props;
     const newTreeData = markTreeData(treeData, { value: 'id', lable: 'name', parentId: 'parent_id' }, null);
+    const formItemLayout = {
+      labelCol: { span: 6 },
+      wrapperCol: { span: 16 },
+    };
     return (
       <OAModal
         form={form}
         title="事件类型表单"
         visible={visible}
-        onSubmit={this.handleSubmit}
+        onSubmit={validateFields(this.handleSubmit)}
         onCancel={() => onCancel(false)}
         afterClose={onClose}
-        formProps={{
-          onError,
-          loading,
-        }}
       >
         {initialValue.id ? getFieldDecorator('id', {
           initialValue: initialValue.id,
@@ -76,6 +69,7 @@ export default class extends PureComponent {
 
         <FormItem
           label="名称"
+          {...formItemLayout}
         >
           {getFieldDecorator('name', {
             initialValue: initialValue.name || '',
@@ -91,6 +85,7 @@ export default class extends PureComponent {
         </FormItem>
         <FormItem
           label="上级分类"
+          {...formItemLayout}
         >
           {getFieldDecorator('parent_id', initialValue.parent_id ? {
             initialValue: initialValue.parent_id.toString(),
@@ -105,6 +100,7 @@ export default class extends PureComponent {
         </FormItem>
         <FormItem
           label="排序"
+          {...formItemLayout}
         >
           {getFieldDecorator('sort', {
             initialValue: initialValue.sort || 99,

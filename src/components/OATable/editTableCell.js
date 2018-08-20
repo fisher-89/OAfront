@@ -1,5 +1,7 @@
 import React from 'react';
 import { Input } from 'antd';
+import 'ant-design-pro/dist/ant-design-pro.css';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import './tableCell.less';
 
 export default class EditableCell extends React.PureComponent {
@@ -17,15 +19,35 @@ export default class EditableCell extends React.PureComponent {
     }
   }
 
+  makeInputValue = (newValue) => {
+    let value = newValue;
+    const { range, type } = this.props;
+    if (type === 'number' && range) {
+      if (parseFloat(value) < range.min) {
+        value = range.min;
+      }
+      if (parseFloat(value) > range.max) {
+        value = range.max;
+      }
+    }
+    const numberValue = parseFloat(value);
+    if (Math.floor(numberValue) === numberValue) {
+      value = Number(value);
+    }
+    return value;
+  }
+
   handleChange = (e) => {
     const { value } = e.target;
-    this.setState({ value });
+    this.setState({ value: this.makeInputValue(value) });
   }
 
   check = () => {
     this.setState({ editable: false });
-    if (this.props.onChange) {
-      this.props.onChange(this.state.value);
+    const { onChange } = this.props;
+    if (onChange) {
+      const { value } = this.state;
+      onChange(this.makeInputValue(value));
     }
   }
 
@@ -37,7 +59,13 @@ export default class EditableCell extends React.PureComponent {
 
   render() {
     const { value, editable } = this.state;
-    const { type, style } = this.props;
+    const { type, style, range } = this.props;
+    let content = value;
+    if (type === 'number' && range) {
+      if (parseFloat(value) < range.min || parseFloat(value) > range.max) {
+        content = <span style={{ color: 'red' }}>{value}</span>;
+      }
+    }
     return (
       <div className="editable-cell" onClick={this.edit}>
         {
@@ -51,8 +79,11 @@ export default class EditableCell extends React.PureComponent {
               onBlur={this.check}
               style={{ ...style }}
             />
-          ) : (
-              value
+          ) :
+            (
+              <Ellipsis lines={1}>
+                {content}
+              </Ellipsis>
             )
         }
       </div>

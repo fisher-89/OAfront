@@ -6,7 +6,8 @@ const { TreeNode } = Tree;
 export default class TreeFilter extends PureComponent {
   constructor(props) {
     super(props);
-    const treeData = this.markTreeData(props.treeFilters.data);
+    const { treeFilters: { parentVal } } = this.props;
+    const treeData = this.markTreeData(props.treeFilters.data, parentVal);
     this.state = {
       checkedKeys: {
         checked: [],
@@ -18,16 +19,20 @@ export default class TreeFilter extends PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { treeFilters: { data } } = nextProps;
+    const { treeFilters: { data, parentVal } } = nextProps;
     if (data !== this.props.treeFilters.data) {
-      const treeData = this.markTreeData(data);
+      const treeData = this.markTreeData(data, parentVal);
       this.setState({ treeData });
     }
   }
 
-  markTreeData = (data, pid = 0) => {
+  markTreeData = (data, pId) => {
     const tree = [];
     const { treeFilters: { parentId, title, value } } = this.props;
+    let pid = pId;
+    if (pId === undefined) {
+      pid = 0;
+    }
     data.forEach((item) => {
       if (item[parentId] === pid) {
         const temp = {
@@ -98,7 +103,7 @@ export default class TreeFilter extends PureComponent {
             onChange={this.handleSwitchOnChange}
           />
         </div>
-        <div className="scroll-bar">
+        <div className="scroll-bar" style={{ maxHeight: 208 }}>
           <Tree
             checkable
             checkStrictly={!selectChild}

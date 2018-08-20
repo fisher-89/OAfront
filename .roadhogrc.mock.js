@@ -163,11 +163,11 @@ export default !noProxy ? {
     /**
      * 刘勇  ： 工作流
      */
-    'GET /api/workflow/(.*)': 'http://192.168.20.16:8009/admin/',
-    'POST /api/workflow/(.*)': 'http://192.168.20.16:8009/admin/',
-    'PUT /api/workflow/(.*)': 'http://192.168.20.16:8009/admin/',
-    'DELETE /api/workflow/(.*)': 'http://192.168.20.16:8009/admin/',
-
+    'GET /api/workflow/(.*)': 'http://112.74.177.132:8006/admin/',
+    'POST /api/workflow/(.*)': 'http://112.74.177.132:8006/admin/',
+    'PUT /api/workflow/(.*)': 'http://112.74.177.132:8006/admin/',
+    'DELETE /api/workflow/(.*)': 'http://112.74.177.132:8006/admin/',
+    
     /**
      * 唐娇  ： 大爱
      */
@@ -176,40 +176,26 @@ export default !noProxy ? {
     /**
      * 唐娇  ： 积分制
      */
-    'POST /api/pms/(.*)': 'http://192.168.20.144:8003/admin/',
-    'GET /api/pms/(.*)': 'http://192.168.20.144:8003/admin/',
-    'PUT /api/pms/(.*)': 'http://192.168.20.144:8003/admin/',
-    'PATCH /api/pms/(.*)': 'http://192.168.20.144:8003/admin/',
-    'DELETE /api/pms/(.*)': 'http://192.168.20.144:8003/admin/',
+    'POST /api/pms/(.*)': 'http://112.74.177.132:8009/admin/',
+    'GET /api/pms/(.*)': 'http://112.74.177.132:8009/admin/',
+    'PUT /api/pms/(.*)': 'http://112.74.177.132:8009/admin/',
+    'PATCH /api/pms/(.*)': 'http://112.74.177.132:8009/admin/',
+    'DELETE /api/pms/(.*)': 'http://112.74.177.132:8009/admin/',
 
     /**
      * 张卫  ： 积分制
      */
-    'GET /api/admin/(.*)': 'http://PMS.test/admin/',
-    'POST /api/admin/(.*)': 'http://PMS.test/admin/',
-    'PUT /api/admin/(.*)': 'http://PMS.test/admin/',
-    'PATCH /api/admin/(.*)': 'http://PMS.test/admin/',
-    'DELETE /api/admin/(.*)': 'http://PMS.test/admin/',
+    'GET /api/admin/(.*)': 'http://112.74.177.132:8009/admin/',
+    'POST /api/admin/(.*)': 'http://112.74.177.132:8009/admin/',
+    'PUT /api/admin/(.*)': 'http://112.74.177.132:8009/admin/',
+    'PATCH /api/admin/(.*)': 'http://112.74.177.132:8009/admin/',
+    'DELETE /api/admin/(.*)': 'http://112.74.177.132:8009/admin/',
 
-
-    /**
-     * 张博涵 ： 登录等。。
-     */
-
-    // 'GET /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',
-    // 'POST /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',
-    // 'PUT /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',
-    // 'PATCH /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',
-    // 'DELETE /api/pms/(.*)': 'http://192.168.20.238:8007/admin/',
-
-    // 'GET /api/admin/(.*)': 'http://192.168.20.238:8007/admin/',
-    // 'POST /api/admin/(.*)': 'http://192.168.20.238:8007/admin/',
-    // 'PUT /api/admin/(.*)': 'http://192.168.20.238:8007/admin/',
-    // 'PATCH /api/admin/(.*)': 'http://192.168.20.238:8007/admin/',
-    // 'DELETE /api/admin/(.*)': 'http://192.168.20.238:8007/admin/',
-
-    'GET /api/(.*)': 'http://192.168.20.238:8003/api/',
-    'POST /api/(.*)': 'http://192.168.20.238:8003/api/',
-    'POST /oauth/(.*)': 'http://192.168.20.238:8003/oauth/',
+    // 'GET /api/(.*)': 'http://192.168.20.238:8003/api/',
+    // 'POST /api/(.*)': 'http://192.168.20.238:8003/api/',
+    // 'POST /oauth/(.*)': 'http://192.168.20.238:8003/oauth/',
+    
+    'POST /oauth/(.*)': 'http://112.74.177.132:8002/oauth/',
+    'GET /api/(.*)': 'http://112.74.177.132:8002/api/',
   };
 

@@ -3,35 +3,25 @@ import {
   Input,
 } from 'antd';
 import { connect } from 'dva';
-import OAForm from '../../../../components/OAForm';
-
-const {
+import OAForm, {
   OAModal,
   TreeSelect,
   SearchTable,
-} = OAForm;
+} from '../../../../components/OAForm1';
+
 const FormItem = OAForm.Item;
 
+@OAForm.create()
 @connect(({ department, loading }) => ({
   department: department.department,
-  addLoading: loading.effects['point/addAuth'],
-  editLoading: loading.effects['point/editAuth'],
+  loading: (
+    loading.effects['point/addAuth'] ||
+    loading.effects['point/editAuth']
+  ),
 }))
-
-@OAForm.create({
-  onValuesChange(props, changeValues, allValues) {
-    props.onChange(allValues);
-    Object.keys(changeValues).forEach(key => props.handleFieldsError(key));
-  },
-})
 export default class extends PureComponent {
-  componentDidMount() {
-    const { bindForm, form } = this.props;
-    bindForm(form);
-  }
-
-  handleSubmit = (params, onError) => {
-    const { dispatch } = this.props;
+  handleSubmit = (params) => {
+    const { dispatch, onError } = this.props;
     dispatch({
       type: params.id ? 'point/editAuth' : 'point/addAuth',
       payload: params,
@@ -42,36 +32,26 @@ export default class extends PureComponent {
 
   render() {
     const {
-      form,
       form: { getFieldDecorator },
-      autoSave,
-      onError,
       handleVisible,
       visible,
       department,
-      addLoading,
-      editLoading,
       initialValue,
       onCancel,
+      validateFields,
     } = this.props;
     const info = { ...initialValue };
     const formItemLayout = {
       labelCol: { span: 6 },
-      wrapperCol: { span: 18 },
+      wrapperCol: { span: 16 },
     };
     return (
       <OAModal
         title="权限分组表单"
         visible={visible}
-        autoSave={autoSave}
-        onSubmit={this.handleSubmit}
+        onSubmit={validateFields(this.handleSubmit)}
         onCancel={() => handleVisible(false)}
         afterClose={onCancel}
-        form={form}
-        formProps={{
-          loading: addLoading || editLoading,
-          onError,
-        }}
       >
         {info.id ? (getFieldDecorator('id', {
           initialValue: info.id,
@@ -124,8 +104,7 @@ export default class extends PureComponent {
                   staff_sn: 'staff_sn',
                   staff_name: 'realname',
                 }}
-                showName="realname"
-                placeholder="请选择员工"
+                showName="staff_name"
               />
             )
           }

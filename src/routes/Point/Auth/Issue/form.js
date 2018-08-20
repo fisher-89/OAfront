@@ -1,31 +1,26 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import OAForm from '../../../../components/OAForm';
-
-const {
+import OAForm, {
   OAModal,
   SearchTable,
-} = OAForm;
+} from '../../../../components/OAForm1';
+
 const FormItem = OAForm.Item;
 
+@OAForm.create()
 @connect(({ point, department, loading }) => ({
   auth: point.auth,
   department: department.department,
+  loading: (
+    loading.effects['point/addTaskAuth'] ||
+    loading.effects['point/editTaskAuth']
+  ),
   departLoading: loading.department,
   authLoading: loading.effects['point/fetchAuth'],
-  addLoading: loading.effects['point/addTaskAuth'],
-  editLoading: loading.effects['point/editTaskAuth'],
 }))
-@OAForm.create({
-  onValuesChange(props, changeValues, allValues) {
-    props.onChange(allValues);
-    Object.keys(changeValues).forEach(key => props.handleFieldsError(key));
-  },
-})
 export default class extends PureComponent {
   componentDidMount() {
-    const { bindForm, form, dispatch } = this.props;
-    bindForm(form);
+    const { dispatch } = this.props;
     dispatch({ type: 'department/fetchDepartment', payload: {} });
   }
 
@@ -34,33 +29,29 @@ export default class extends PureComponent {
     dispatch({ type: 'point/fetchAuth', payload: params });
   }
 
-  handleError = (errs) => {
+  handleError = (errors) => {
     const { onError, form: { setFields } } = this.props;
-    if (errs.admin_sn || errs.admin_name) {
-      const errOBJ = new Error(
-        (errs.admin_sn && errs.admin_sn[0]) || (errs.admin_name && errs.admin_name[0])
-      );
+    onError(errors, (error, values) => {
       setFields({
         admin: {
-          errors: [errOBJ],
+          ...error.admin_name,
+          value: values.admin,
         },
       });
-    }
-    onError(errs);
+    });
   }
 
-  handleSubmit = (params, onError) => {
+  handleSubmit = (params) => {
     const { dispatch, initialValue, handleVisible } = this.props;
     const newParams = {
       ...params,
       ...params.admin,
     };
     delete newParams.admin;
-
     dispatch({
       type: initialValue.admin_sn ? 'point/editTaskAuth' : 'point/addTaskAuth',
       payload: newParams,
-      onError,
+      onError: this.handleError,
       onSuccess: () => handleVisible(false),
     });
   }
@@ -109,68 +100,52 @@ export default class extends PureComponent {
   makeSearchAuthProps = () => {
     const { auth, authLoading, departLoading } = this.props;
     const response = {
-      name: {
-        id: 'id',
-        name: 'name',
-      },
-      title: '权限分组',
-      showName: 'name',
-      placeholder: '请选择',
-      tableProps: {
-        index: 'id',
-        columns: this.makeColumns(),
-        data: auth && auth.data,
-        total: auth && auth.total,
-        loading: authLoading || departLoading,
-        fetchDataSource: this.fetchAuth,
-      },
+      index: 'id',
+      columns: this.makeColumns(),
+      data: auth && auth.data,
+      total: auth && auth.total,
+      loading: authLoading || departLoading,
+      fetchDataSource: this.fetchAuth,
     };
     return response;
   }
 
   render() {
     const {
-      form,
       form: { getFieldDecorator },
       handleVisible,
       visible,
-      addLoading,
-      editLoading,
       initialValue,
       onCancel,
+      validateFields,
     } = this.props;
     const info = { ...initialValue };
     const formItemLayout = {
       labelCol: { span: 6 },
-      wrapperCol: { span: 18 },
+      wrapperCol: { span: 12 },
     };
     return (
       <OAModal
         title="权限分组表单"
         visible={visible}
-        onError={this.handleError}
-        onSubmit={this.handleSubmit}
+        onSubmit={validateFields(this.handleSubmit)}
         onCancel={() => handleVisible(false)}
         afterClose={onCancel}
-        form={form}
-        formProps={{
-          loading: addLoading || editLoading,
-        }}
       >
         <FormItem {...formItemLayout} label="员工" required>
           {
             getFieldDecorator('admin', {
-              initialValue: {
+              initialValue: info.admin_sn ? {
                 admin_sn: info.admin_sn || '',
                 admin_name: info.admin_name || '',
-              },
+              } : {},
             })(
               <SearchTable.Staff
                 name={{
                   admin_sn: 'staff_sn',
                   admin_name: 'realname',
                 }}
-                showName="realname"
+                showName="admin_name"
                 placeholder="请选择员工"
               />
             )
@@ -181,7 +156,13 @@ export default class extends PureComponent {
             getFieldDecorator('groups', {
               initialValue: info.groups || [],
             })(
-              <SearchTable {...this.makeSearchAuthProps()} multiple />
+              <SearchTable
+                multiple
+                title="权限分组"
+                showName="name"
+                name={{ id: 'id', name: 'name' }}
+                tableProps={this.makeSearchAuthProps()}
+              />
             )
           }
         </FormItem>

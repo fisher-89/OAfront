@@ -26,24 +26,24 @@ export default {
     } catch (err) { return err; }
   },
   * addTaskAuth({ payload, onSuccess, onError }, { call, put }) {
-    try {
-      const params = {
-        ...payload,
-      };
-      const response = yield call(addTaskAuth, params);
-      if (response.errors && onError) {
-        onError(response.errors);
-      } else {
-        yield put({
-          type: 'add',
-          payload: {
-            store,
-            data: response,
-          },
-        });
-        onSuccess(response);
-      }
-    } catch (err) { return err; }
+    // try {
+    const params = {
+      ...payload,
+    };
+    const response = yield call(addTaskAuth, params);
+    if (response.errors && onError) {
+      onError(response.errors);
+    } else {
+      yield put({
+        type: 'add',
+        payload: {
+          store,
+          data: response,
+        },
+      });
+      onSuccess(response);
+    }
+    // } catch (err) { return err; }
   },
   * editTaskAuth({ payload, onSuccess, onError }, { call, put }) {
     try {

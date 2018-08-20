@@ -118,7 +118,6 @@ export default class Flow extends PureComponent {
           loading={loading}
           data={list}
           fetchDataSource={this.fetchTable}
-          // serverSide={true}
           extraOperator={extraOperator}
           columns={columns}
           multiOperator={multiOperator}

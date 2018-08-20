@@ -309,16 +309,6 @@ export function markTreeData(data = [], { value, lable, parentId }, pid = null) 
   return tree;
 }
 
-/**
- * 获取url参数对象
- * @param {参数名称} name
- */
-export function getUrlString(name) {
-  const reg = new RegExp(`(^|&)${name}=([^&]*)(&|$)`, 'i');
-  const r = window.location.search.substr(1).match(reg);
-  if (r != null) return unescape(r[2]);
-  return null;
-}
 
 /**
  * 去重
@@ -350,5 +340,186 @@ export function intersect(a = [], b = []) {
     });
   });
   return unique(result);
+}
+
+/**
+ * 获取url参数对象
+ * @param {参数名称} name
+ */
+export function getUrlString(name) {
+  const reg = new RegExp(`(^|&)${name}=([^&]*)(&|$)`, 'i');
+  const r = window.location.search.substr(1).match(reg);
+  if (r != null) return unescape(r[2]);
+  return null;
+}
+
+/**
+ * 重组属性值
+ * @param {名} name
+ * @param {读取值}} value
+ * @param {多选}} multiple
+ */
+export function makeInitialValue(name, value, multiple = false) {
+  if (!name) return value;
+  let newValue = [];
+  if (multiple) {
+    newValue = value.map((item) => {
+      const temp = {};
+      Object.keys(name).forEach((key) => {
+        if (item[key]) {
+          temp[name[key]] = item[key];
+        }
+      });
+      return temp;
+    });
+  } else {
+    newValue = {};
+    Object.keys(name).forEach((key) => {
+      if (value[key]) {
+        newValue[name[key]] = value[key];
+      }
+    });
+  }
+  return newValue;
+}
+
+/**
+ *
+ * @param {属性}} name
+ * @param {值} value
+ * @param {单选多选} multiple
+ */
+export function dontInitialValue(name, value, multiple = false) {
+  if (!name) return value;
+  let newValue;
+  if (multiple) {
+    newValue = [];
+    value.forEach((item, i) => {
+      newValue[i] = {};
+      Object.keys(name).forEach((key) => {
+        newValue[i][key] = item[name[key]];
+      });
+    });
+  } else {
+    newValue = {};
+    Object.keys(name).forEach((key) => {
+      newValue[key] = value[name[key]];
+    });
+  }
+  return newValue;
+}
+
+
+/**
+ * 屏幕高度，是否大屏
+ */
+export function getClientRatio() {
+  const { height } = document.body.getBoundingClientRect();
+  return {
+    height,
+    isBigRatio: height > 660,
+  };
+}
+/**
+ * 弹窗高度
+ */
+export function getModalToAndHeight() {
+  const { height, isBigRatio } = getClientRatio();
+  const style = {};
+  const maxHeight = 600;
+  const minTo = 30;
+  if (isBigRatio) {
+    style.height = maxHeight;
+    style.top = (height - maxHeight) / 2;
+  } else {
+    style.height = height - (minTo * 2);
+    style.top = minTo;
+  }
+  return style;
+}
+/**
+ * 弹窗内容高度
+ */
+export function getModalBodyHeight() {
+  const { height } = getModalToAndHeight();
+  const modalTitleHeight = 40;
+  const bodyHeight = height - modalTitleHeight;
+  return bodyHeight;
+}
+
+/**
+ * 弹窗内表格高度
+ */
+export function getTableBodyHeight(footerAble) {
+  const modalBodyHeight = getModalBodyHeight();
+  const tableHeader = 46;
+  const tableeExtarHegiht = 60;
+  const tablePaginatiopnBottom = 35;
+  const footer = footerAble ? 50 : 0;
+  return modalBodyHeight - (tableHeader + tableeExtarHegiht + tablePaginatiopnBottom + footer);
+}
+
+/**
+ * 获取id的所有上级数据
+ * @param {数据源} data
+ * @param {查找的id} id
+ */
+export function findTreeParent(data, id, key = 'id', pid = 'parent_id') {
+  const result = [];
+  const findData = data.find((item) => {
+    return item[key] === id;
+  });
+  if (!findData || !id) return result;
+  result.push(findData);
+  let perantItem = [];
+  perantItem = findTreeParent(data, findData[pid], key, pid);
+  return result.concat(perantItem);
+}
+
+/**
+ * 容器容纳字数
+ * @param {容器宽度} width
+ * @param {字数} fontSize
+ */
+export function countViewFontSize(width, fontSize) {
+  return Math.floor(width / fontSize);
+}
+/**
+ * str 截取字符串
+ * width 容器宽度
+ * fontSize 字数
+ */
+export function getLetfEllipsis(str, width, fontSize) {
+  const numberStr = countViewFontSize(width, fontSize);
+  if (str.length < numberStr) return str;
+  return `...${str.substr(-numberStr + 3)}`;
+}
+/**
+ * 表单错误
+ * @param {错误异常} temp
+ * @param {是否生成错误} isUnicode
+ */
+export function unicodeFieldsError(temp, isUnicode = true, values) {
+  if (!isUnicode) return temp;
+  const fieldsValue = { ...temp };
+  const params = {};
+  Object.keys(fieldsValue).forEach((key) => {
+    const value = fieldsValue[key];
+    let fieldsValueMd = params;
+    const keyGroup = key.split('.');
+    keyGroup.forEach((item, index) => {
+      if (index === keyGroup.length - 1) {
+        if (Object.hasOwnProperty.call(values, item)) {
+          fieldsValueMd[item] = { value: values[item], errors: [new Error(value[0])] };
+        } else {
+          fieldsValueMd[item] = { errors: [new Error(value[0])] };
+        }
+      } else {
+        fieldsValueMd[item] = fieldsValueMd[item] || {};
+        fieldsValueMd = fieldsValueMd[item];
+      }
+    });
+  });
+  return params;
 }
 

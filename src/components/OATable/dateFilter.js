@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react';
-
 import { DatePicker } from 'antd';
 
 const { RangePicker } = DatePicker;
@@ -47,11 +46,13 @@ export default class extends PureComponent {
   render() {
     const { dateFilterVisible } = this.props;
     const { date } = this.state;
+    const dateFormat = 'YYYY-MM-DD';
     return (
       <div className="ant-table-filter-dropdown">
         <RangePicker
+          format={dateFormat}
           open={dateFilterVisible}
-          value={date}
+          defaultValue={date}
           renderExtraFooter={this.makeExtraFooter}
           getCalendarContainer={(trigger) => {
             return trigger;
