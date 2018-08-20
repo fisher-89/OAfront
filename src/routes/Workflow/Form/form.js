@@ -9,7 +9,7 @@ import {
   Tooltip,
   InputNumber,
 } from 'antd';
-import OAForm from '../../../components/OAForm1';
+import OAForm from '../../../components/OAForm';
 import FieldList from './fieldList';
 
 const FormItem = OAForm.Item;

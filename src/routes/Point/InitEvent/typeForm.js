@@ -6,7 +6,7 @@ import {
 } from 'antd';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
-import OAForm, { OAModal } from '../../../components/OAForm1';
+import OAForm, { OAModal } from '../../../components/OAForm';
 import { markTreeData } from '../../../utils/utils';
 
 const FormItem = OAForm.Item;

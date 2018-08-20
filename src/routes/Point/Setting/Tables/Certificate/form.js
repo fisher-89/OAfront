@@ -4,7 +4,7 @@ import {
   InputNumber,
 } from 'antd';
 import { connect } from 'dva';
-import OAForm, { OAModal } from '../../../../../components/OAForm1';
+import OAForm, { OAModal } from '../../../../../components/OAForm';
 
 const FormItem = OAForm.Item;
 const { TextArea } = Input;

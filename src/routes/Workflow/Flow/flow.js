@@ -17,7 +17,7 @@ import {
   notification,
 } from 'antd';
 import FlowChart from '../../../components/FlowChart';
-import SearchTable from '../../../components/OAForm1/SearchTable';
+import SearchTable from '../../../components/OAForm/SearchTable';
 import { markTreeData } from '../../../utils/utils';
 import StepForm from './StepForm';
 

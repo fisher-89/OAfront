@@ -6,7 +6,7 @@ import { connect } from 'dva';
 import OAForm, {
   OAModal,
   SearchTable,
-} from '../../../../../components/OAForm1';
+} from '../../../../../components/OAForm';
 
 const { Option } = Select;
 const FormItem = OAForm.Item;

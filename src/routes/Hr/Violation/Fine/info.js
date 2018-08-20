@@ -9,7 +9,7 @@ import {
 import OAForm, {
   SearchTable,
   DatePicker,
-} from '../../../../components/OAForm1';
+} from '../../../../components/OAForm';
 
 const FormItem = OAForm.Item;
 const { Option } = Select;

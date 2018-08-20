@@ -6,7 +6,7 @@ import { connect } from 'dva';
 import OATable from '../../../../components/OATable';
 import OAForm, {
   OAModal,
-} from '../../../../components/OAForm1';
+} from '../../../../components/OAForm';
 
 const { EdiTableCell } = OATable;
 const FormItem = OAForm.Item;

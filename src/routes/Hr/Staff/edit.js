@@ -12,7 +12,7 @@ import {
   Switch,
   Button,
 } from 'antd';
-import OAForm, { SearchTable, Address, DatePicker } from '../../../components/OAForm1';
+import OAForm, { SearchTable, Address, DatePicker } from '../../../components/OAForm';
 import FooterToolbar from '../../../components/FooterToolbar';
 import RelativeList from './relativeList';
 

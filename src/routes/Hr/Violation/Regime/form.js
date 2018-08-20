@@ -5,7 +5,7 @@ import {
   Tabs,
 } from 'antd';
 import { connect } from 'dva';
-import OAForm, { InputTags } from '../../../../components/OAForm1';
+import OAForm, { InputTags } from '../../../../components/OAForm';
 import Floated from './floated';
 
 const { TabPane } = Tabs;

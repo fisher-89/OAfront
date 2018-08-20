@@ -1,6 +1,6 @@
 import React from 'react';
 import OAModal from '../modal';
-import SelectTable from '../../OAForm1/SearchTable/selectTable';
+import SelectTable from '../../OAForm/SearchTable/selectTable';
 import { makeInitialValue, dontInitialValue, getTableBodyHeight } from '../../../utils/utils';
 
 const defaultProps = {

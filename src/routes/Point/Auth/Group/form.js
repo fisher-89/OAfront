@@ -7,7 +7,7 @@ import OAForm, {
   OAModal,
   TreeSelect,
   SearchTable,
-} from '../../../../components/OAForm1';
+} from '../../../../components/OAForm';
 
 const FormItem = OAForm.Item;
 

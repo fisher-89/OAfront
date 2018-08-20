@@ -9,7 +9,7 @@ import {
 import OAForm, {
   InputTags,
   List,
-} from '../../../components/OAForm1';
+} from '../../../components/OAForm';
 import TagInput from '../../../components/TagInput';
 
 const FormItem = OAForm.Item;

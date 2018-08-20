@@ -10,7 +10,7 @@ import {
 } from 'antd';
 
 import OATable from '../../../components/OATable';
-import OAForm, { OAModal } from '../../../components/OAForm1';
+import OAForm, { OAModal } from '../../../components/OAForm';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 
 const editableValidatorTypes = [

@@ -10,7 +10,7 @@ import {
   Select,
 } from 'antd';
 import { connect } from 'dva';
-import OAForm, { InputTags, SearchTable } from '../../../../components/OAForm1';
+import OAForm, { InputTags, SearchTable } from '../../../../components/OAForm';
 
 const FormItem = OAForm.Item;
 const RadioGroup = Radio.Group;

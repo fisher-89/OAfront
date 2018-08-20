@@ -5,7 +5,7 @@ import {
   Row,
   Col,
 } from 'antd';
-import OAForm, { List } from '../../../../components/OAForm1';
+import OAForm, { List } from '../../../../components/OAForm';
 
 const FormItem = OAForm.Item;
 

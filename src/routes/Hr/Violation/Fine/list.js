@@ -6,7 +6,7 @@ import { connect } from 'dva';
 import { Tooltip, Icon, Divider, Button, Tag } from 'antd';
 
 import OATable from '../../../../components/OATable';
-import OAForm, { OAModal } from '../../../../components/OAForm1';
+import OAForm, { OAModal } from '../../../../components/OAForm';
 import { makePositionData } from '../../../../utils/utils';
 
 // const FormItem = OAForm.Item;

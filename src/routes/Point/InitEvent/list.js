@@ -13,7 +13,7 @@ import { connect } from 'dva';
 import OAForm, {
   OAModal,
   SearchTable,
-} from '../../../components/OAForm1';
+} from '../../../components/OAForm';
 import OATable from '../../../components/OATable';
 import InputRange from '../../../components/InputRange';
 import EventTree from './eventTree';

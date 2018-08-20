@@ -5,7 +5,7 @@ import {
   Switch,
 } from 'antd';
 
-import OAFrom, { DatePicker } from '../../../components/OAForm1';
+import OAFrom, { DatePicker } from '../../../components/OAForm';
 
 const FormItem = OAFrom.Item;
 const { Option } = Select;

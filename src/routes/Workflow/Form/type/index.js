@@ -10,7 +10,7 @@ import {
 import moment from 'moment';
 
 import OATable from '../../../../components/OATable';
-import OAForm, { OAModal } from '../../../../components/OAForm1';
+import OAForm, { OAModal } from '../../../../components/OAForm';
 
 const FormItem = OAForm.Item;
 

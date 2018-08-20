@@ -4,7 +4,7 @@ import {
   Button,
 } from 'antd';
 import { connect } from 'dva';
-import OAForm from '../../../../components/OAForm1';
+import OAForm from '../../../../components/OAForm';
 
 const FormItem = OAForm.Item;
 

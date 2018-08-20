@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import OAForm, {
   OAModal,
   SearchTable,
-} from '../../../../components/OAForm1';
+} from '../../../../components/OAForm';
 
 const FormItem = OAForm.Item;
 

@@ -9,7 +9,7 @@ import {
 } from 'antd';
 import district from '../../../../public/district.json';
 
-import OAForm, { SearchTable } from '../../../components/OAForm1';
+import OAForm, { SearchTable } from '../../../components/OAForm';
 import OATableSearch from '../../../components/OATable/search';
 
 const FormItem = OAForm.Item;

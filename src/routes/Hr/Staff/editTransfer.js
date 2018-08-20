@@ -4,7 +4,7 @@ import { Input, Select, Row, Col, Button } from 'antd';
 
 import { makePositionData } from '../../../utils/utils';
 
-import OAFrom, { SearchTable, DatePicker } from '../../../components/OAForm1';
+import OAFrom, { SearchTable, DatePicker } from '../../../components/OAForm';
 
 const FormItem = OAFrom.Item;
 // const { SearchTable, DatePicker } = OAFrom;

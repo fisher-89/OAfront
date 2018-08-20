@@ -4,7 +4,7 @@ import {
   Col,
   Select,
 } from 'antd';
-import OAForm, { SearchTable, FormList } from '../../../components/OAForm1';
+import OAForm, { SearchTable, FormList } from '../../../components/OAForm';
 
 const { Option } = Select;
 const FormItem = OAForm.Item;
