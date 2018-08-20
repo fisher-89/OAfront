@@ -5,10 +5,10 @@ import {
   Row,
   Col,
 } from 'antd';
-import OAForm from '../../../../components/OAForm';
+import OAForm, { FormList } from '../../../../components/OAForm1';
 
 const FormItem = OAForm.Item;
-@OAForm.FormList
+@FormList
 export default class Floated extends React.Component {
   render() {
     const {

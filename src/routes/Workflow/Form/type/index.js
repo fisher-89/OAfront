@@ -10,22 +10,19 @@ import {
 import moment from 'moment';
 
 import OATable from '../../../../components/OATable';
-import OAForm from '../../../../components/OAForm';
+import OAForm, { OAModal } from '../../../../components/OAForm1';
 
-const { OAModal } = OAForm;
 const FormItem = OAForm.Item;
 
 @connect(({ workflow, loading }) => ({
   list: workflow.formType,
-  loading: loading.models.workflow,
+  tableLoading: loading.effects['workflow/fetchFormType'],
+  loading: (
+    loading.effects['workflow/addFormType'] ||
+    loading.effects['workflow/editFormType']
+  ),
 }))
-
-
-@OAForm.create({
-  onValuesChange(props, changeValues) {
-    Object.keys(changeValues).forEach(key => props.handleFieldsError(key));
-  },
-})
+@OAForm.create()
 export default class List extends PureComponent {
   state = {
     editInfo: {},
@@ -88,8 +85,8 @@ export default class List extends PureComponent {
     });
   }
 
-  handleAddSubmit = (params, onError) => {
-    const { dispatch } = this.props;
+  handleAddSubmit = (params) => {
+    const { dispatch, onError } = this.props;
     dispatch({
       type: 'workflow/addFormType',
       payload: {
@@ -100,7 +97,7 @@ export default class List extends PureComponent {
     });
   }
 
-  handleEditSubmit = (params, onError) => {
+  handleEditSubmit = (params) => {
     // ly修改start
     const newParams = { ...params };
     if (params.sort === undefined || params.sort === '') {
@@ -108,7 +105,7 @@ export default class List extends PureComponent {
       newParams.sort = 0;
     }
     // ly修改end
-    const { dispatch } = this.props;
+    const { dispatch, onError } = this.props;
     dispatch({
       type: 'workflow/editFormType',
       payload: {
@@ -136,7 +133,8 @@ export default class List extends PureComponent {
     const {
       list,
       loading,
-      form,
+      tableLoading,
+      validateFields,
       form: { getFieldDecorator },
     } = this.props;
 
@@ -149,19 +147,18 @@ export default class List extends PureComponent {
     return (
       <React.Fragment>
         <OATable
-          loading={loading}
+          loading={tableLoading}
           data={list}
           fetchDataSource={this.fetchFormType}
           columns={columns}
           extraOperator={extraOperator}
         />
         <OAModal
-          form={form}
           visible={visible}
           loading={loading}
           onCancel={() => this.handleModalVisible(false)}
           afterClose={() => { this.setState({ editInfo: {} }); }}
-          onSubmit={editInfo.id ? this.handleEditSubmit : this.handleAddSubmit}
+          onSubmit={validateFields(editInfo.id ? this.handleEditSubmit : this.handleAddSubmit)}
         >
           {getFieldDecorator('id', {
             initialValue: editInfo.id || '',
@@ -170,6 +167,7 @@ export default class List extends PureComponent {
           )}
           <FormItem
             label="名称"
+            required
           >
             {getFieldDecorator('name', {
               initialValue: editInfo.name || '',

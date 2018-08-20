@@ -4,32 +4,21 @@ import {
   InputNumber,
 } from 'antd';
 import { connect } from 'dva';
-import OAForm from '../../../../../components/OAForm';
+import OAForm, { OAModal } from '../../../../../components/OAForm1';
 
-const {
-  OAModal,
-} = OAForm;
 const FormItem = OAForm.Item;
 const { TextArea } = Input;
+
 @connect(({ loading }) => ({
-  addLoading: loading.effects['point/addCertificate'],
-  editLoading: loading.effects['point/editCertificate'],
+  loading: (
+    loading.effects['point/addCertificate'] ||
+    loading.effects['point/editCertificate']
+  ),
 }))
-
-@OAForm.create({
-  onValuesChange(props, changeValues, allValues) {
-    props.onChange(allValues);
-    Object.keys(changeValues).forEach(key => props.handleFieldsError(key));
-  },
-})
+@OAForm.create()
 export default class extends PureComponent {
-  componentDidMount() {
-    const { bindForm, form } = this.props;
-    bindForm(form);
-  }
-
-  handleSubmit = (params, onError) => {
-    const { dispatch } = this.props;
+  handleSubmit = (params) => {
+    const { dispatch, onError } = this.props;
     dispatch({
       type: params.id ? 'point/editCertificate' : 'point/addCertificate',
       payload: params,
@@ -40,34 +29,26 @@ export default class extends PureComponent {
 
   render() {
     const {
-      form,
       form: { getFieldDecorator },
       handleVisible,
       visible,
-      addLoading,
-      editLoading,
       initialValue,
       onCancel,
-      onError,
+      validateFields,
     } = this.props;
     const info = { ...initialValue };
     const formItemLayout = {
       labelCol: { span: 6 },
-      wrapperCol: { span: 18 },
+      wrapperCol: { span: 14 },
     };
-
     return (
       <OAModal
         title="证书表单"
         visible={visible}
-        onSubmit={this.handleSubmit}
+        loading={this.props.loading}
+        onSubmit={validateFields(this.handleSubmit)}
         onCancel={() => handleVisible(false)}
         afterClose={onCancel}
-        form={form}
-        formProps={{
-          loading: addLoading || editLoading,
-          onError,
-        }}
       >
         {info.id ? (getFieldDecorator('id', {
           initialValue: info.id,
@@ -84,7 +65,6 @@ export default class extends PureComponent {
             )
           }
         </FormItem>
-
 
         <FormItem {...formItemLayout} label="描述">
           {

@@ -6,12 +6,11 @@ import {
   Col,
   InputNumber,
 } from 'antd';
-import OAForm from '../../../components/OAForm';
-import TagInput from '../../../components/TagInput';
-
-const {
+import OAForm, {
   InputTags,
-} = OAForm;
+  List,
+} from '../../../components/OAForm1';
+import TagInput from '../../../components/TagInput';
 
 const FormItem = OAForm.Item;
 const { Option } = Select;
@@ -121,7 +120,7 @@ export default class FieldList extends React.Component {
     });
     return (
       <React.Fragment>
-        <OAForm.List
+        <List
           sorter
           width={700}
           height={600}
@@ -227,7 +226,7 @@ export default class FieldList extends React.Component {
           >
             <InputTags name="default_value" placeholder="请输入" fields={fields} value="" />
           </FormItem>
-        </OAForm.List>
+        </List>
       </React.Fragment>
     );
   }

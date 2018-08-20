@@ -3,38 +3,26 @@ import {
   Select,
 } from 'antd';
 import { connect } from 'dva';
-import OAForm from '../../../../../components/OAForm';
-
-const {
+import OAForm, {
   OAModal,
   SearchTable,
-} = OAForm;
+} from '../../../../../components/OAForm1';
+
 const { Option } = Select;
 const FormItem = OAForm.Item;
+
+
 @connect(({ point, loading }) => ({
   certificate: point.certificate,
-  certificateLoading: loading.effects['point/fetchCertificate'],
-  addLoading: loading.effects['point/addCertificateAward'],
+  loading: (
+    loading.effects['point/fetchCertificate'] ||
+    loading.effects['point/addCertificateAward']
+  ),
 }))
-
-@OAForm.create({
-  onValuesChange(props, changeValues, allValues) {
-    props.onChange(allValues);
-    Object.keys(changeValues).forEach(key => props.handleFieldsError(key));
-  },
-})
+@OAForm.create()
 export default class extends PureComponent {
-  componentDidMount() {
-    const { bindForm, form } = this.props;
-    bindForm(form);
-  }
-
-  handleError = (error) => {
-    return error;
-  }
-
   handleSubmit = (params) => {
-    const { dispatch } = this.props;
+    const { dispatch, onError } = this.props;
     const { staff, certificateId } = params;
     const body = [];
     staff.forEach((item) => {
@@ -48,22 +36,19 @@ export default class extends PureComponent {
     dispatch({
       type: 'point/addCertificateAward',
       payload: { data: body },
-      onError: this.handleError,
+      onError,
       onSuccess: () => this.props.handleVisible(false),
     });
   }
 
   render() {
     const {
-      form,
+      validateFields,
       form: { getFieldDecorator },
       handleVisible,
       visible,
-      addLoading,
-      certificateLoading,
       certificate,
       onCancel,
-      onError,
     } = this.props;
 
     const formItemLayout = {
@@ -75,14 +60,10 @@ export default class extends PureComponent {
       <OAModal
         title="员工证书表单"
         visible={visible}
-        onSubmit={this.handleSubmit}
+        loading={this.props.loading}
+        onSubmit={validateFields(this.handleSubmit)}
         onCancel={() => handleVisible(false)}
         afterClose={onCancel}
-        form={form}
-        formProps={{
-          loading: addLoading || certificateLoading,
-          onError,
-        }}
       >
         <FormItem {...formItemLayout} label="员工" required>
           {

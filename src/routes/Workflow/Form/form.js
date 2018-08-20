@@ -9,7 +9,7 @@ import {
   Tooltip,
   InputNumber,
 } from 'antd';
-import OAForm from '../../../components/OAForm';
+import OAForm from '../../../components/OAForm1';
 import FieldList from './fieldList';
 
 const FormItem = OAForm.Item;
@@ -25,12 +25,7 @@ const { TabPane } = Tabs;
 }))
 
 
-@OAForm.create({
-  onValuesChange(props, changeValues, allValues) {
-    props.onChange(allValues);
-    Object.keys(changeValues).forEach(key => props.handleFieldsError(key));
-  },
-})
+@OAForm.create()
 @withRouter
 class addForm extends PureComponent {
   constructor(props) {
@@ -51,11 +46,6 @@ class addForm extends PureComponent {
     }
     this.fetchFormType();
     this.fetchValidator();
-  }
-
-  componentDidMount() {
-    const { form, bindForm } = this.props;
-    bindForm(form);
   }
 
   componentWillReceiveProps(newProps) {
@@ -98,14 +88,14 @@ class addForm extends PureComponent {
     }
   }
 
-  handleAddSubmit = (params, onError) => {
+  handleAddSubmit = (params) => {
     // ly修改排序start
     const newParams = { ...params };
     if (params.sort === undefined || params.sort === '') {
       newParams.sort = 0;
     }
     // ly 修改排序end
-    const { dispatch } = this.props;
+    const { dispatch, onError } = this.props;
     dispatch({
       type: 'workflow/addForm',
       payload: {
@@ -116,14 +106,14 @@ class addForm extends PureComponent {
     });
   }
 
-  handleEditSubmit = (params, onError) => {
+  handleEditSubmit = (params) => {
     // ly修改排序start
     const newParams = { ...params };
     if (params.sort === undefined || params.sort === '') {
       newParams.sort = 0;
     }
     // ly 修改排序end
-    const { dispatch } = this.props;
+    const { dispatch, onError } = this.props;
     const { formId } = this.state;
     dispatch({
       type: 'workflow/editForm',
@@ -178,7 +168,7 @@ class addForm extends PureComponent {
       formType,
       fetching,
       submitting,
-      form,
+      validateFields,
       form: {
         getFieldDecorator,
       },
@@ -223,10 +213,8 @@ class addForm extends PureComponent {
     };
     return (
       <OAForm
-        form={form}
         onSubmitBtn
-        onSubmit={isEdit ? this.handleEditSubmit : this.handleAddSubmit}
-        onError={this.props.onError}
+        onSubmit={validateFields(isEdit ? this.handleEditSubmit : this.handleAddSubmit)}
         loading={(fetching || submitting) === true}
       >
         <Tabs

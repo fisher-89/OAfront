@@ -5,7 +5,7 @@ import {
   Row,
   Col,
 } from 'antd';
-import OAForm from '../../../../components/OAForm';
+import OAForm, { List } from '../../../../components/OAForm1';
 
 const FormItem = OAForm.Item;
 
@@ -34,7 +34,7 @@ export default class Floated extends React.Component {
     };
     return (
       <React.Fragment>
-        <OAForm.List
+        <List
           onChange={this.props.onChange}
           initialValue={this.props.value}
           sorter
@@ -79,7 +79,7 @@ export default class Floated extends React.Component {
               </Col>
             </Row>
           </FormItem>
-        </OAForm.List>
+        </List>
       </React.Fragment>
     );
   }

@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { Spin } from 'antd';
 import OAForm from './index';
 import OAModal from '../OAModal';
 import Operator from './operator';
@@ -38,23 +39,25 @@ export default class Modal extends PureComponent {
   }
 
   render() {
-    const { children, localBackUpKey, savelocalBackUp } = this.props;
+    const { children, localBackUpKey, savelocalBackUp, loading } = this.props;
     return (
       <OAModal {...this.makeModalProps()}>
-        {(savelocalBackUp) && (
-          <Operator
-            autoSave
-            ref={(e) => {
-              this.opertor = e;
-            }}
-            localBackUpKey={localBackUpKey}
-            savelocalBackUp={this.props.savelocalBackUp}
-            getlocalBackUp={this.props.getlocalBackUp}
-          />
-        )}
-        <OAForm {...this.makeOAFormProps()}>
-          {children}
-        </OAForm>
+        <Spin spinning={loading || false}>
+          {(savelocalBackUp) && (
+            <Operator
+              autoSave
+              ref={(e) => {
+                this.opertor = e;
+              }}
+              localBackUpKey={localBackUpKey}
+              savelocalBackUp={this.props.savelocalBackUp}
+              getlocalBackUp={this.props.getlocalBackUp}
+            />
+          )}
+          <OAForm {...this.makeOAFormProps()}>
+            {children}
+          </OAForm>
+        </Spin>
       </OAModal>
     );
   }

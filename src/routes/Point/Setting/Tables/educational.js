@@ -4,12 +4,11 @@ import {
 } from 'antd';
 import { connect } from 'dva';
 import OATable from '../../../../components/OATable';
-import OAForm from '../../../../components/OAForm';
+import OAForm, {
+  OAModal,
+} from '../../../../components/OAForm1';
 
 const { EdiTableCell } = OATable;
-const {
-  OAModal,
-} = OAForm;
 const FormItem = OAForm.Item;
 @connect(({ point, loading }) => ({
   education: point.education,
@@ -28,11 +27,6 @@ export default class extends PureComponent {
       error: [],
       visible: false,
     };
-  }
-
-  componentDidMount() {
-    const { form, bindForm } = this.props;
-    bindForm(form);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -204,16 +198,18 @@ export default class extends PureComponent {
 
   render() {
     const { dataSource, visible, error } = this.state;
-    const { form: { getFieldDecorator }, form, bLoading, eLoading, editLoading } = this.props;
+    const {
+      form: { getFieldDecorator }, validateFields, bLoading, eLoading, editLoading,
+    } = this.props;
     return (
       <React.Fragment>
         <OAModal
-          form={form}
           title="批量修改积分配置"
           visible={visible}
+          loading={this.props.loading}
           afterClose={() => { this.rowId = null; }}
           onCancel={() => this.handleModalVisible(false)}
-          onSubmit={this.handleSubmit}
+          onSubmit={validateFields(this.handleSubmit)}
         >
           <FormItem
             {...{

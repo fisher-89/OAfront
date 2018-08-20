@@ -17,7 +17,7 @@ import {
   notification,
 } from 'antd';
 import FlowChart from '../../../components/FlowChart';
-import SearchTable from '../../../components/OAForm/SearchTable/index';
+import SearchTable from '../../../components/OAForm1/SearchTable';
 import { markTreeData } from '../../../utils/utils';
 import StepForm from './StepForm';
 
@@ -467,6 +467,7 @@ export default class Flow extends React.PureComponent {
         disabled={this.state.formAble}
         onChange={(value) => {
           this.setState({
+            staff: value,
             formData: {
               ...formData,
               flows_has_staff: value.map(item => item.staff_sn),
@@ -531,7 +532,6 @@ export default class Flow extends React.PureComponent {
     };
     const flowsDepartments = formData.flows_has_departments.map(item => item.toString());
     return (
-
       <Form
         onSubmit={this.affirmFlow}
       >

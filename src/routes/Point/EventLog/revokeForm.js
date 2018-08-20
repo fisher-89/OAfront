@@ -3,31 +3,21 @@ import {
   Input,
 } from 'antd';
 import { connect } from 'dva';
-import OAForm from '../../../components/OAForm';
+import OAForm, { OAModal } from '../../../components/OAForm1';
 
-const { OAModal } = OAForm;
 const FormItem = OAForm.Item;
 @connect(({ loading }) => ({
   loading: loading.effects['point/addType'],
 }))
-@OAForm.create({
-  onValuesChange(props, changeValue) {
-    Object.keys(changeValue).forEach(key => props.handleFieldsError(key));
-  },
-})
+@OAForm.create()
 export default class extends PureComponent {
-  componentDidMount() {
-    const { form, bindForm } = this.props;
-    bindForm(form);
-  }
-
   handleOnSuccess = () => {
     this.props.onCancel();
   }
 
 
-  handleSubmit = (values, onError) => {
-    const { dispatch } = this.props;
+  handleSubmit = (values) => {
+    const { dispatch, onError } = this.props;
     dispatch({
       type: 'point/revokeEventLog',
       payload: values,
@@ -39,19 +29,18 @@ export default class extends PureComponent {
   render() {
     const {
       visible,
-      form,
       initialValue,
       onCancel,
       onClose,
       loading,
+      validateFields,
       form: { getFieldDecorator },
     } = this.props;
     return (
       <OAModal
-        form={form}
         title="撤销事件"
         visible={visible}
-        onSubmit={this.handleSubmit}
+        onSubmit={validateFields(this.handleSubmit)}
         onCancel={() => onCancel(false)}
         afterClose={onClose}
         loading={loading}

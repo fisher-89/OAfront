@@ -7,7 +7,6 @@ import OAForm, {
 
 const FormItem = OAForm.Item;
 
-@OAForm.create()
 @connect(({ point, department, loading }) => ({
   auth: point.auth,
   department: department.department,
@@ -18,6 +17,7 @@ const FormItem = OAForm.Item;
   departLoading: loading.department,
   authLoading: loading.effects['point/fetchAuth'],
 }))
+@OAForm.create()
 export default class extends PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
@@ -128,6 +128,7 @@ export default class extends PureComponent {
       <OAModal
         title="权限分组表单"
         visible={visible}
+        loading={this.props.loading}
         onSubmit={validateFields(this.handleSubmit)}
         onCancel={() => handleVisible(false)}
         afterClose={onCancel}

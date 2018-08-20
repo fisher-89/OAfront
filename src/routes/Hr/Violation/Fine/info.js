@@ -1,19 +1,17 @@
 import React, { Fragment } from 'react';
 import {
-  Form,
   Switch,
   Row,
   Col,
   Select,
   Input,
 } from 'antd';
-import OAForm from '../../../../components/OAForm';
-
-const FormItem = Form.Item;
-const {
+import OAForm, {
   SearchTable,
   DatePicker,
-} = OAForm;
+} from '../../../../components/OAForm1';
+
+const FormItem = OAForm.Item;
 const { Option } = Select;
 
 export function fineInfo(regimeList, handleFinePrice) {

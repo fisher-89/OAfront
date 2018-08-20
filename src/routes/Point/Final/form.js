@@ -4,42 +4,30 @@ import {
   InputNumber,
 } from 'antd';
 import { connect } from 'dva';
-import OAForm from '../../../components/OAForm';
-
-const {
+import OAForm, {
   OAModal,
   SearchTable,
-} = OAForm;
+} from '../../../components/OAForm1';
+
 const FormItem = OAForm.Item;
 
 @connect(({ loading }) => ({
-  addLoading: loading.effects['point/addFinal'],
-  editLoading: loading.effects['point/editFinal'],
+  loading: (
+    loading.effects['point/addFinal'] ||
+    loading.effects['point/editFinal']
+  ),
 }))
-
-@OAForm.create({
-  onValuesChange(props, changeValues, allValues) {
-    props.onChange(allValues);
-    Object.keys(changeValues).forEach(key => props.handleFieldsError(key));
-  },
-})
+@OAForm.create()
 export default class extends PureComponent {
-  componentDidMount() {
-    const { bindForm, form } = this.props;
-    bindForm(form);
-  }
-
   handleError = (error) => {
     const { onError, form: { setFields } } = this.props;
-    if (error.staff_sn || error.staff_name) {
-      setFields({
-        staff: `${error.staff_sn ? error.staff_sn : ''}   ${error.staff_name ? error.staff_name : ''}`,
-      });
-    }
-    onError(error);
+    onError(error, (err, values) => {
+      const errors = err.staff_name || err.staff_sn;
+      setFields({ staff: { ...errors, value: values.staff } });
+    });
   }
 
-  handleSubmit = (params, onError) => {
+  handleSubmit = (params) => {
     const { dispatch } = this.props;
     const body = {
       ...params,
@@ -49,40 +37,33 @@ export default class extends PureComponent {
     dispatch({
       type: params.id ? 'point/editFinal' : 'point/addFinal',
       payload: body,
-      onError,
+      onError: this.handleError,
       onSuccess: () => this.props.handleVisible(false),
     });
   }
 
   render() {
     const {
-      form,
-      form: { getFieldDecorator },
       handleVisible,
       visible,
-      addLoading,
-      editLoading,
       initialValue,
       onCancel,
+      validateFields,
+      form: { getFieldDecorator },
     } = this.props;
     const info = { ...initialValue };
     const formItemLayout = {
       labelCol: { span: 6 },
-      wrapperCol: { span: 18 },
+      wrapperCol: { span: 16 },
     };
-
     return (
       <OAModal
         title="终审人表单"
         visible={visible}
-        onSubmit={this.handleSubmit}
+        loading={this.props.loading}
+        onSubmit={validateFields(this.handleSubmit)}
         onCancel={() => handleVisible(false)}
         afterClose={onCancel}
-        form={form}
-        formProps={{
-          loading: addLoading || editLoading,
-          onError: this.handleError,
-        }}
       >
         {info.id ? (getFieldDecorator('id', {
           initialValue: info.id,
@@ -100,7 +81,7 @@ export default class extends PureComponent {
                   staff_sn: 'staff_sn',
                   staff_name: 'realname',
                 }}
-                showName="realname"
+                showName="staff_name"
                 placeholder="请选择员工"
               />
             )

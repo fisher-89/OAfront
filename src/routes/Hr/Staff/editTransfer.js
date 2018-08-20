@@ -4,10 +4,10 @@ import { Input, Select, Row, Col, Button } from 'antd';
 
 import { makePositionData } from '../../../utils/utils';
 
-import OAFrom from '../../../components/OAForm';
+import OAFrom, { SearchTable, DatePicker } from '../../../components/OAForm1';
 
 const FormItem = OAFrom.Item;
-const { SearchTable, DatePicker } = OAFrom;
+// const { SearchTable, DatePicker } = OAFrom;
 const { Option } = Select;
 
 @connect(({ brand, department, position, loading }) => ({
@@ -20,17 +20,12 @@ const { Option } = Select;
 }))
 
 
-@OAForm.create({
-  onValuesChange(props, changeValues, allValues) {
-    props.onChange(allValues);
-    Object.keys(changeValues).forEach(key => props.handleFieldsError(key));
-  },
-})
+@OAForm.create()
 export default class extends PureComponent {
   constructor(props) {
     super(props);
-    const { position, form, bindForm } = props;
-    bindForm(form);
+    const { position } = props;
+    // bindForm(form);
     this.state = {
       position: position || [],
       // positionId: staffInfo.position_id,

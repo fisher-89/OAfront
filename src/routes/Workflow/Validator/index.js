@@ -10,7 +10,7 @@ import {
 } from 'antd';
 
 import OATable from '../../../components/OATable';
-import OAForm from '../../../components/OAForm';
+import OAForm, { OAModal } from '../../../components/OAForm1';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 
 const editableValidatorTypes = [
@@ -26,18 +26,17 @@ const validatorTypes = [
 
 const { Option } = Select;
 
-const { OAModal } = OAForm;
 const FormItem = OAForm.Item;
 @connect(({ workflow, loading }) => ({
   list: workflow.validator,
-  loading: loading.models.workflow,
+  tableLoading: loading.effects['workflow/fetchValidator'],
+  loading: (
+    loading.effects['workflow/addValidator'] ||
+    loading.effects['workflow/editValidator']
+  ),
 }))
 
-@OAForm.create({
-  onValuesChange(props, fields) {
-    Object.keys(fields).forEach(key => props.handleFieldsError(key));
-  },
-})
+@OAForm.create()
 export default class Validator extends PureComponent {
   state = {
     visible: false,
@@ -71,10 +70,6 @@ export default class Validator extends PureComponent {
     ],
   };
 
-  componentDidMount() {
-    const { form, bindForm } = this.props;
-    bindForm(form);
-  }
 
   fetchTable = (params) => {
     const { dispatch } = this.props;
@@ -95,8 +90,8 @@ export default class Validator extends PureComponent {
     });
   }
 
-  handleAddSubmit = (params, onError) => {
-    const { dispatch } = this.props;
+  handleAddSubmit = (params) => {
+    const { dispatch, onError } = this.props;
     dispatch({
       type: 'workflow/addValidator',
       payload: {
@@ -111,8 +106,8 @@ export default class Validator extends PureComponent {
     this.handleAddModalVisible();
   }
 
-  handleEditSubmit = (params, onError) => {
-    const { dispatch } = this.props;
+  handleEditSubmit = (params) => {
+    const { dispatch, onError } = this.props;
     dispatch({
       type: 'workflow/editValidator',
       payload: {
@@ -145,8 +140,8 @@ export default class Validator extends PureComponent {
     const {
       list,
       loading,
-      form,
-      validateOnChange,
+      tableLoading,
+      validateFields,
       form: { getFieldDecorator },
     } = this.props;
     const {
@@ -165,11 +160,12 @@ export default class Validator extends PureComponent {
         </Tooltip>
       ),
     ];
+    const sbFunc = editInfo.id ? this.handleEditSubmit : this.handleAddSubmit;
     return (
       <PageHeaderLayout>
         <Card bordered={false}>
           <OATable
-            loading={loading}
+            loading={tableLoading}
             data={list}
             fetchDataSource={this.fetchTable}
             columns={columns}
@@ -179,16 +175,12 @@ export default class Validator extends PureComponent {
           />
         </Card>
         <OAModal
-          form={form}
-          formProps={{
-            loading,
-            validateOnChange,
-          }}
           visible={visible}
           title="验证规则"
+          loading={loading}
           onCancel={() => this.handleModalVisible(false)}
           afterClose={() => { this.setState({ editInfo: {} }); }}
-          onSubmit={editInfo.id ? this.handleEditSubmit : this.handleAddSubmit}
+          onSubmit={validateFields(sbFunc)}
         >
           {getFieldDecorator('id', {
             initialValue: editInfo.id || '',

@@ -1,6 +1,6 @@
 import { Form } from 'antd';
 import OAModal from './modal';
-import Create from './Config';
+import create from './Config';
 import DatePicker from './DatePicker';
 import Address from './Address';
 import InputTags from './InputTags';
@@ -10,7 +10,7 @@ import List from './StaticList';
 import TreeSelect from './TreeSelect';
 
 const formCreate = Form.create;
-Form.create = Create(formCreate);
+Form.create = create(formCreate);
 
 export default Form;
 export {

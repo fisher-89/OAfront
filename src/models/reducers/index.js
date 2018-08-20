@@ -34,10 +34,10 @@ export default {
       message: '添加成功',
     });
     let dataState = state[store];
-    if (Array.isArray(state[store]) && state[store].length) {
+    if (Array.isArray(state[store])) {
       dataState = [...state[store]];
       dataState.push(data);
-    } else if (state[store].data && state[store].data.length > 0) {
+    } else if (state[store].data) {
       dataState = { ...state[store] };
       dataState.data = [...state[store].data];
       dataState.data.push(data);
@@ -109,13 +109,14 @@ export default {
 
     const dataState = Array.isArray(state[store]) ? (
       state[store] ? state[store].filter(item => item.id !== id) : []
-    ) : (
-      state[store].data ? {
-        ...state[store],
-        total: state[store].total - 1,
-        data: state[store].data.filter(item => item.id !== id),
-      } : {}
-    );
+    ) :
+      (
+        state[store].data ? {
+          ...state[store],
+          total: state[store].total - 1,
+          data: state[store].data.filter(item => item.id !== id),
+        } : {}
+      );
     return {
       ...state,
       [store]: dataState,

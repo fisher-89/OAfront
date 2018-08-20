@@ -6,10 +6,9 @@ import { connect } from 'dva';
 import { Tooltip, Icon, Divider, Button, Tag } from 'antd';
 
 import OATable from '../../../../components/OATable';
-import OAForm from '../../../../components/OAForm';
+import OAForm, { OAModal } from '../../../../components/OAForm1';
 import { makePositionData } from '../../../../utils/utils';
 
-const { OAModal } = OAForm;
 // const FormItem = OAForm.Item;
 
 @connect(({ violation, brand, department, position, loading }) => ({
@@ -25,11 +24,7 @@ const { OAModal } = OAForm;
   regimeLoading: loading.effects['violation/fetchRegime'],
 }))
 
-@OAForm.create({
-  onValuesChange(props, fields) {
-    Object.keys(fields).forEach(key => props.handleFieldsError(key));
-  },
-})
+@OAForm.create()
 export default class extends PureComponent {
   state = {
     filterPosition: [],
@@ -38,8 +33,7 @@ export default class extends PureComponent {
   };
 
   componentDidMount() {
-    const { dispatch, form, bindForm } = this.props;
-    bindForm(form);
+    const { dispatch } = this.props;
     dispatch({ type: 'violation/fetchRegime', payload: {} });
     dispatch({ type: 'brand/fetchBrand' });
     dispatch({ type: 'position/fetchPosition' });

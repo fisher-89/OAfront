@@ -4,12 +4,11 @@ import {
   Col,
   Select,
 } from 'antd';
-import OAForm from '../../../components/OAForm';
+import OAForm, { SearchTable, FormList } from '../../../components/OAForm1';
 
 const { Option } = Select;
 const FormItem = OAForm.Item;
-const { SearchTable } = OAForm;
-@OAForm.FormList
+@FormList
 export default class extends PureComponent {
   render() {
     const fieldsBoxLayout = {

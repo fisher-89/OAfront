@@ -1,25 +1,26 @@
 import React, { PureComponent } from 'react';
 import {
   Input,
+  Button,
 } from 'antd';
 import { connect } from 'dva';
-import OAForm from '../../../../components/OAForm';
+import OAForm from '../../../../components/OAForm1';
 
 const FormItem = OAForm.Item;
 
 @connect(({ point, loading }) => {
   return {
     basePoint: point.base_seniority,
-    bLoading: loading.effects['point/fetchBase'],
-    editLoading: loading.effects['point/editBaseForm'],
+    loading: (
+      loading.effects['point/editBaseForm'] ||
+      loading.effects['point/fetchBase']
+    ),
   };
 })
-
 @OAForm.create()
 export default class extends PureComponent {
   componentDidMount() {
-    const { form, bindForm, dispatch } = this.props;
-    bindForm(form);
+    const { dispatch } = this.props;
     dispatch({
       type: 'point/fetchBase',
       payload: {
@@ -28,7 +29,7 @@ export default class extends PureComponent {
     });
   }
 
-  handleSubmit = (values, onError) => {
+  handleSubmit = (values) => {
     const params = Object.keys(values).map((name) => {
       return {
         name,
@@ -36,7 +37,7 @@ export default class extends PureComponent {
       };
     });
     if (params.length) {
-      const { dispatch } = this.props;
+      const { dispatch, onError } = this.props;
       dispatch({
         type: 'point/editBaseForm',
         payload: { data: params },
@@ -46,13 +47,9 @@ export default class extends PureComponent {
   }
 
   makeOAFormProps = () => {
-    const { form, onError, editLoading, bLoading } = this.props;
+    const { validateFields } = this.props;
     const response = {
-      form,
-      onError,
-      loading: bLoading || editLoading,
-      onSubmit: this.handleSubmit,
-      onSubmitBtn: 'default',
+      onSubmit: validateFields(this.handleSubmit),
     };
     return response;
   }
@@ -63,6 +60,18 @@ export default class extends PureComponent {
     const formItemLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 10 },
+    };
+    const tailFormItemLayout = {
+      wrapperCol: {
+        xs: {
+          span: 24,
+          offset: 0,
+        },
+        sm: {
+          span: 16,
+          offset: 8,
+        },
+      },
     };
     const info = {};
     if (basePoint) {
@@ -97,6 +106,9 @@ export default class extends PureComponent {
               <Input type="number" placeholder="请输入" style={{ width: '100%' }} />
             )
           }
+        </FormItem>
+        <FormItem {...tailFormItemLayout}>
+          <Button type="primary" htmlType="submit">保存</Button>
         </FormItem>
       </OAForm>
     );

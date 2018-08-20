@@ -27,11 +27,13 @@ export default formCreate => option => (Componet) => {
     }
 
     getlocalBackUp = (value) => {
+      if (!this.form) return;
       const { setFieldsValue } = this.form;
       setFieldsValue(value);
     }
 
     savelocalBackUp = () => {
+      if (!this.form) return;
       const { getFieldsValue } = this.form;
       return getFieldsValue();
     }
@@ -41,6 +43,7 @@ export default formCreate => option => (Componet) => {
     }
 
     handleFieldsError = (name) => {
+      if (!this.form) return;
       const { setFields, getFieldError } = this.form;
       if (getFieldError(name)) {
         setFields({ [name]: {} });
@@ -68,6 +71,7 @@ export default formCreate => option => (Componet) => {
     }
 
     handleOnError = (error, callback, isUnicode) => {
+      if (!this.form) return;
       const { setFields, getFieldsValue } = this.form;
       const values = getFieldsValue();
       const errResult = unicodeFieldsError(error, isUnicode, { ...values });
@@ -87,6 +91,7 @@ export default formCreate => option => (Componet) => {
     handleSubmit = (callback) => {
       return (e) => {
         if (e) e.preventDefault();
+        if (!this.form) return;
         this.form.validateFieldsAndScroll((err, values) => {
           if (!err) {
             callback(values);
@@ -104,15 +109,14 @@ export default formCreate => option => (Componet) => {
 
     makeNewFormComponetProps = () => {
       const respone = {
-        ...this.props,
         bindAutoSave: this.bindAutoSave,
         bindModalAutoSave: this.bindModalAutoSave,
         setFiedError: this.handleFieldsError,
         onChange: this.handleOnChange,
         validateFields: this.handleSubmit,
         onError: this.handleOnError,
+        ...this.props,
       };
-      delete respone.loading;
       respone.validatorRequired = { validator: this.validatorRequired };
       return respone;
     }

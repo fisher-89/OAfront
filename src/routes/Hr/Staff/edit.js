@@ -12,12 +12,11 @@ import {
   Switch,
   Button,
 } from 'antd';
-import OAForm from '../../../components/OAForm';
+import OAForm, { SearchTable, Address, DatePicker } from '../../../components/OAForm1';
 import FooterToolbar from '../../../components/FooterToolbar';
 import RelativeList from './relativeList';
 
 const FormItem = OAForm.Item;
-const { SearchTable, Address, DatePicker } = OAForm;
 
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
@@ -31,17 +30,12 @@ const { TabPane } = Tabs;
 }))
 
 
-@OAForm.create({
-  onValuesChange(props, changeValues, allValues) {
-    props.onChange(allValues);
-    Object.keys(changeValues).forEach(key => props.handleFieldsError(key));
-  },
-})
+@OAForm.create()
 export default class EditStaff extends PureComponent {
   constructor(props) {
     super(props);
-    const { form, bindForm } = this.props;
-    bindForm(form);
+    // const { form, bindForm } = this.props;
+    // bindForm(form);
     const staffSn = props.match.params.staff_sn;
     const isEdit = staffSn !== undefined;
     this.state = {

@@ -10,22 +10,20 @@ import {
 import moment from 'moment';
 
 import OATable from '../../../../components/OATable';
-import OAForm from '../../../../components/OAForm';
+import OAForm, { OAModal } from '../../../../components/OAForm1';
 
-const { OAModal } = OAForm;
 const FormItem = OAForm.Item;
 
 @connect(({ workflow, loading }) => ({
   list: workflow.flowType,
-  loading: loading.models.workflow,
+  tableLoading: loading.effects['workflow/fetchFlowType'],
+  loading: (
+    loading.effects['workflow/addFlowType'] ||
+    loading.effects['workflow/editFlowType']
+  ),
 }))
 
-
-@OAForm.create({
-  onValuesChange(props, changeValues) {
-    Object.keys(changeValues).forEach(key => props.handleFieldsError(key));
-  },
-})
+@OAForm.create()
 export default class List extends PureComponent {
   state = {
     editInfo: {},
@@ -59,10 +57,6 @@ export default class List extends PureComponent {
     ],
   }
 
-  componentDidMount() {
-    const { form, bindForm } = this.props;
-    bindForm(form);
-  }
 
   fetchFlowType = (params) => {
     const { dispatch } = this.props;
@@ -88,19 +82,17 @@ export default class List extends PureComponent {
     });
   }
 
-  handleAddSubmit = (params, onError) => {
-    const { dispatch } = this.props;
+  handleAddSubmit = (params) => {
+    const { dispatch, onError } = this.props;
     dispatch({
       type: 'workflow/addFlowType',
-      payload: {
-        ...params,
-      },
+      payload: params,
       onSuccess: this.handleSuccess,
       onError,
     });
   }
 
-  handleEditSubmit = (params, onError) => {
+  handleEditSubmit = (params) => {
     // ly修改start
     const newParams = { ...params };
     if (params.sort === undefined || params.sort === '') {
@@ -108,12 +100,10 @@ export default class List extends PureComponent {
       newParams.sort = 0;
     }
     // ly修改end
-    const { dispatch } = this.props;
+    const { dispatch, onError } = this.props;
     dispatch({
       type: 'workflow/editFlowType',
-      payload: {
-        ...newParams,
-      },
+      payload: newParams,
       onSuccess: this.handleSuccess,
       onError,
     });
@@ -136,7 +126,8 @@ export default class List extends PureComponent {
     const {
       list,
       loading,
-      form,
+      tableLoading,
+      validateFields,
       form: { getFieldDecorator },
     } = this.props;
 
@@ -145,33 +136,30 @@ export default class List extends PureComponent {
         <Button type="primary" icon="plus" onClick={() => this.handleModalVisible(true)} />
       </Tooltip>,
     ];
-
+    const submitFunc = editInfo.id ? this.handleEditSubmit : this.handleAddSubmit;
     return (
       <React.Fragment>
         <OATable
-          loading={loading}
           data={list}
+          loading={tableLoading}
           fetchDataSource={this.fetchFlowType}
           columns={columns}
           extraOperator={extraOperator}
         // serverSide={true}
         />
         <OAModal
-          form={form}
           visible={visible}
           loading={loading}
           onCancel={() => this.handleModalVisible(false)}
           afterClose={() => { this.setState({ editInfo: {} }); }}
-          onSubmit={editInfo.id ? this.handleEditSubmit : this.handleAddSubmit}
+          onSubmit={validateFields(submitFunc)}
         >
           {getFieldDecorator('id', {
             initialValue: editInfo.id || '',
           })(
             <Input type="hidden" />
           )}
-          <FormItem
-            label="名称"
-          >
+          <FormItem label="名称" required>
             {getFieldDecorator('name', {
               initialValue: editInfo.name || '',
             })(
@@ -191,7 +179,7 @@ export default class List extends PureComponent {
             )}
           </FormItem>
         </OAModal>
-      </React.Fragment>
+      </React.Fragment >
     );
   }
 }

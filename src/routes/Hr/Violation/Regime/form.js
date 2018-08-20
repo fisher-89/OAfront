@@ -5,15 +5,12 @@ import {
   Tabs,
 } from 'antd';
 import { connect } from 'dva';
-import OAForm from '../../../../components/OAForm';
+import OAForm, { InputTags } from '../../../../components/OAForm1';
 import Floated from './floated';
 
 const { TabPane } = Tabs;
 
 const FormItem = OAForm.Item;
-const {
-  InputTags,
-} = OAForm;
 
 @connect(({ violation, loading }) => ({
   details: violation.regimeDetails,
@@ -22,17 +19,10 @@ const {
   addLoading: loading.effects['violation/addRegime'],
 }))
 
-@OAForm.create({
-  onValuesChange(props, fields, allValues) {
-    props.onChange(allValues);
-    Object.keys(fields).forEach(key => props.handleFieldsError(key));
-  },
-})
+@OAForm.create()
 export default class RegimeForm extends React.PureComponent {
   constructor(props) {
     super(props);
-    const { form, bindForm } = this.props;
-    bindForm(form);
     const id = props.match.params.id ? props.match.params.id : null;
     this.state = {
       info: {},

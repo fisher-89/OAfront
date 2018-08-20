@@ -10,10 +10,10 @@ import OAForm, { OAModal } from '../../../components/OAForm1';
 import { markTreeData } from '../../../utils/utils';
 
 const FormItem = OAForm.Item;
-@OAForm.create()
 @connect(({ loading }) => ({
   loading: loading.effects['point/addType'],
 }))
+@OAForm.create()
 export default class extends PureComponent {
   componentDidMount() {
     const { form, bindForm } = this.props;

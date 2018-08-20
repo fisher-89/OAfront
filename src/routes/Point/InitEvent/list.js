@@ -20,7 +20,7 @@ import EventTree from './eventTree';
 import { markTreeData, customerAuthority } from '../../../utils/utils';
 
 const FormItem = OAForm.Item;
-@OAForm.create()
+
 @connect(({ point, loading }) => ({
   result: point.event,
   typeList: point.type,
@@ -32,6 +32,7 @@ const FormItem = OAForm.Item;
     loading.effects['point/editEvent']
   ),
 }))
+@OAForm.create()
 export default class extends PureComponent {
   state = {
     visible: false,
@@ -393,6 +394,7 @@ export default class extends PureComponent {
               title="事件表单"
               visible={visible}
               style={{ top: 30 }}
+              loading={this.props.loading}
               onCancel={() => this.handleModalVisible()}
               onSubmit={validateFields(this.handleSubmit)}
               afterClose={() => this.setState({ editInfo: {} })}

@@ -14,9 +14,10 @@ const { TabPane } = Tabs;
 
 export default class extends PureComponent {
   render() {
+    const style = { maxHeight: 650, overflowY: 'scroll' };
     return (
-      <Tabs style={{ overflow: 'visible' }}>
-        <TabPane tab="学历" key="1" forceRender>
+      <Tabs style={{ overflow: 'visible' }} defaultActiveKey="4">
+        <TabPane tab="学历" key="1" forceRender style={style}>
           {
             customerAuthority(158) ?
               (
@@ -24,7 +25,7 @@ export default class extends PureComponent {
               ) : '暂无权限'
           }
         </TabPane>
-        <TabPane tab="职位" key="2" forceRender>
+        <TabPane tab="职位" key="2" forceRender style={style}>
           {
             customerAuthority(158) ?
               (
@@ -33,7 +34,7 @@ export default class extends PureComponent {
           }
 
         </TabPane>
-        <TabPane tab="工龄" key="3" forceRender>
+        <TabPane tab="工龄" key="3" forceRender style={style}>
           {
             customerAuthority(158) ?
               (
@@ -41,7 +42,7 @@ export default class extends PureComponent {
               ) : '暂无权限'
           }
         </TabPane>
-        <TabPane tab="证书" key="4" forceRender>
+        <TabPane tab="证书" key="4" forceRender style={style}>
           {
             customerAuthority(159) ?
               (

@@ -31,6 +31,6 @@ export default class OAModal extends React.PureComponent {
 }
 OAModal.defaultProps = {
   title: '',
-  width: 800,
+  width: 600,
   titleStyle: {},
 };

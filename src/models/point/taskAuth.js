@@ -79,7 +79,7 @@ export default {
         });
       } else {
         yield put({
-          type: 'delete',
+          type: 'deleteTaskStaffAuth',
           payload: {
             store,
             id,

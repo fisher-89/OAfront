@@ -79,7 +79,7 @@ export default {
         [store]: newStore,
       };
     },
-    delete(state, action) {
+    deleteTaskStaffAuth(state, action) {
       const { store, id } = action.payload;
       notification.success({
         message: '删除成功',

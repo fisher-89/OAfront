@@ -4,12 +4,11 @@ import {
 } from 'antd';
 import { connect } from 'dva';
 import OATable from '../../../../components/OATable';
-import OAForm from '../../../../components/OAForm';
+import OAForm, {
+  OAModal,
+} from '../../../../components/OAForm1';
 
 const { EdiTableCell } = OATable;
-const {
-  OAModal,
-} = OAForm;
 const FormItem = OAForm.Item;
 @connect(({ brand, point, loading }) => ({
   brand: brand.brand,
@@ -20,7 +19,6 @@ const FormItem = OAForm.Item;
   bLoading: loading.effects['point/fetchBase'],
   editLoading: loading.effects['point/editBase'],
 }))
-
 @OAForm.create()
 export default class extends PureComponent {
   constructor(props) {
@@ -142,7 +140,6 @@ export default class extends PureComponent {
     const { basePoint } = this.props;
     const dataSource = this.makeFilterDataSource(basePoint);
     this.setState({ dataSource: [...dataSource] });
-
     const columns = this.makeColumns();
     if (error) {
       const errMessage = [];
@@ -220,16 +217,18 @@ export default class extends PureComponent {
 
   render() {
     const { dataSource, visible, error } = this.state;
-    const { form: { getFieldDecorator }, form, bLoading, eLoading, editLoading } = this.props;
+    const {
+      form: { getFieldDecorator }, validateFields, bLoading, eLoading, editLoading,
+    } = this.props;
     return (
       <React.Fragment>
         <OAModal
-          form={form}
           title="批量修改积分配置"
           visible={visible}
+          loading={this.props.loading}
           afterClose={() => { this.rowId = null; }}
           onCancel={() => this.handleModalVisible(false)}
-          onSubmit={this.handleSubmit}
+          onSubmit={validateFields(this.handleSubmit)}
         >
           <FormItem
             {...{

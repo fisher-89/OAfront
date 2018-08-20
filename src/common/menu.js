@@ -34,6 +34,7 @@ const menuData = [
       {
         name: '奖扣指标',
         path: 'buckleIndex',
+        hideInMenu: true,
       },
       {
         name: '终审人',

@@ -5,25 +5,14 @@ import {
   Switch,
 } from 'antd';
 
-import OAFrom from '../../../components/OAForm';
+import OAFrom, { DatePicker } from '../../../components/OAForm1';
 
 const FormItem = OAFrom.Item;
-const { DatePicker } = OAFrom;
 const { Option } = Select;
 
 
-@OAForm.create({
-  onValuesChange(props, changeValues, allValues) {
-    props.onChange(allValues);
-    Object.keys(changeValues).forEach(key => props.handleFieldsError(key));
-  },
-})
+@OAForm.create()
 export default class extends PureComponent {
-  componentDidMount() {
-    const { form, bindForm } = this.props;
-    bindForm(form);
-  }
-
   handleSubmitSuccess = (e) => {
     return e;
   };

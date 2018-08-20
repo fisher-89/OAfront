@@ -10,10 +10,9 @@ import {
   Select,
 } from 'antd';
 import { connect } from 'dva';
-import OAForm from '../../../../components/OAForm';
+import OAForm, { InputTags, SearchTable } from '../../../../components/OAForm1';
 
-const { InputTags, SearchTable } = OAForm;
-const FormItem = Form.Item;
+const FormItem = OAForm.Item;
 const RadioGroup = Radio.Group;
 const RadioButton = Radio.Button;
 const { Option } = Select;
@@ -293,6 +292,7 @@ export default class StepForm extends React.PureComponent {
         disabled={this.state.formAble}
         onChange={(value) => {
           this.setState({
+            staff: value,
             dataCommit: {
               ...dataCommit,
               approvers: { ...dataCommit.approvers, staff: value.map(item => item.staff_sn) },

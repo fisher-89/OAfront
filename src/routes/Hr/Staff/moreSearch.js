@@ -9,10 +9,9 @@ import {
 } from 'antd';
 import district from '../../../../public/district.json';
 
-import OAForm from '../../../components/OAForm';
+import OAForm, { SearchTable } from '../../../components/OAForm1';
 import OATableSearch from '../../../components/OATable/search';
 
-const { SearchTable } = OAForm;
 const FormItem = OAForm.Item;
 @OAForm.create()
 class Search extends PureComponent {
