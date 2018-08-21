@@ -1,8 +1,6 @@
 import React, { PureComponent } from 'react';
-// import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import moment from 'moment';
-import { connect } from 'dva';
 import { Table, Input, Icon, message, Button, Tooltip } from 'antd';
 import Ellipsis from '../Ellipsis';
 import { makerFilters } from '../../utils/utils';
@@ -34,9 +32,7 @@ const defaultProps = {
     // message.error('请设置fetchDataSource');
   },
 };
-@connect(({ table }) => ({
-  table,
-}))
+
 class OATable extends PureComponent {
   constructor(props) {
     super(props);
@@ -63,7 +59,6 @@ class OATable extends PureComponent {
     if (!data || data.length === 0 || serverSide) {
       this.fetchTableDataSource();
     }
-    // this.bodyHeiht = document.body.clientHeight;
   }
 
   componentWillReceiveProps(nextProps) {
@@ -83,7 +78,6 @@ class OATable extends PureComponent {
     const dom = e.target;
     dom.style.height = 'auto';
   }
-
 
   showTotal = (total, range) => {
     return <div style={{ color: '#969696' }}>{`显示 ${range[0]} - ${range[1]} 项 , 共 ${total} 项`}</div>;
@@ -516,11 +510,11 @@ class OATable extends PureComponent {
       size: 'middle',
       bordered: false,
       scroll: {},
+      ...this.props,
       pagination: {
         ...pagination,
         ...this.props.pagination,
       },
-      ...this.props,
       loading: loading || this.state.loading,
       rowSelection: newRowSelection,
       columns: this.mapColumns(),
@@ -686,7 +680,6 @@ class OATable extends PureComponent {
             extraOperatorRight={extraOperatorRight}
             fetchTableDataSource={() => { this.fetchTableDataSource(null, true); }}
             resetFilter={this.resetFilter}
-            clearSelectedRows={this.clearSelectedRows}
           />
         )}
         {(tableVisible === true) && (
