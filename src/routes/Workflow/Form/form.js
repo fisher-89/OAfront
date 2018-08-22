@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import { withRouter } from 'dva/router';
 import {
   Tabs,
+  Button,
   Input,
   Icon,
   Select,
@@ -10,6 +11,7 @@ import {
   InputNumber,
 } from 'antd';
 import OAForm from '../../../components/OAForm';
+import FooterToolbar from '../../../components/FooterToolbar';
 import FieldList from './fieldList';
 
 const FormItem = OAForm.Item;
@@ -23,7 +25,6 @@ const { TabPane } = Tabs;
   formType: workflow.formType,
   validator: workflow.validator,
 }))
-
 
 @OAForm.create()
 @withRouter
@@ -159,9 +160,9 @@ class addForm extends PureComponent {
   }
 
 
-  handleFieldListOnChange = (listData, name) => {
-    this.props.handleFieldsError(name);
-  }
+  // handleFieldListOnChange = (listData, name) => {
+  //   this.props.handleFieldsError(name);
+  // }
 
   render() {
     const {
@@ -215,7 +216,7 @@ class addForm extends PureComponent {
       <OAForm
         // onSubmitBtn
         onSubmit={validateFields(isEdit ? this.handleEditSubmit : this.handleAddSubmit)}
-        // loading={(fetching || submitting) === true}
+      // loading={(fetching || submitting) === true}
       >
         <Tabs
           tabPosition="left"
@@ -290,8 +291,8 @@ class addForm extends PureComponent {
               })(
                 <FieldList
                   validator={validator}
-                  // error={fieldsError.fields || {}}
-                  onChange={listData => this.handleFieldListOnChange(listData, 'fields')}
+                // error={fieldsError.fields || {}}
+                // onChange={listData => this.handleFieldListOnChange(listData, 'fields')}
                 />
               )}
             </FormItem>
@@ -333,8 +334,9 @@ class addForm extends PureComponent {
                   })(
                     <FieldList
                       validator={validator}
-                      // error={fieldsError.grids || {}}
-                      onChange={listData => this.handleFieldListOnChange(listData, `grids.${index}.fields`)}
+                    // error={fieldsError.grids || {}}
+                    // onChange={listData => this.h
+                    // andleFieldListOnChange(listData, `grids.${index}.fields`)}
                     />
                   )}
                 </FormItem>
@@ -342,6 +344,9 @@ class addForm extends PureComponent {
             );
           })}
         </Tabs>
+        <FooterToolbar>
+          <Button type="primary" htmlType="submit">提交</Button>
+        </FooterToolbar>
       </OAForm>
     );
   }

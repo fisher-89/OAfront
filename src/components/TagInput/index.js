@@ -92,7 +92,6 @@ export default class TagInput extends PureComponent {
   }
 }
 TagInput.defaultProps = {
-  value: [],
   onChange: () => { },
 };
 

@@ -3,12 +3,16 @@ import { fetchValidator, addValidator, editValidator, deleteValidator } from '..
 const store = 'validator';
 
 export default {
-  * fetchValidator({ payload }, { call, put }) {
+  * fetchValidator({ payload, update }, { call, put, select }) {
     try {
       const params = {
         ...payload,
       };
-      const response = yield call(fetchValidator, params);
+      let response;
+      response = yield select(model => model.workflow[store]);
+      if (!response.length || update) {
+        response = yield call(fetchValidator, params);
+      }
       yield put({
         type: 'save',
         payload: {

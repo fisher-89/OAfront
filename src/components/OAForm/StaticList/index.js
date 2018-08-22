@@ -1,15 +1,7 @@
 import React from 'react';
 import {
   Icon,
-  Modal,
   Button,
-  Input,
-  Checkbox,
-  Select,
-  Radio,
-  Switch,
-  Form,
-  InputNumber,
   Tooltip,
 } from 'antd';
 import { DragDropContext } from 'react-dnd';
@@ -17,11 +9,6 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import update from 'immutability-helper';
 
 import CustomerCard from '../FormList/Drag';
-import SearchTable from '../SearchTable';
-import Address from '../Address';
-import DatePicker from '../DatePicker';
-import InputTags from '../InputTags';
-import TagInput from '../../TagInput';
 /**
  * 列表控件 弹窗形式
  * config:{
@@ -59,31 +46,6 @@ export default class List extends React.Component {
     }
   }
 
-  decorateFormItemDeftultValue = (children, data) => {
-    return React.Children.map(children, (item) => {
-      const { type } = item;
-      if (
-        type === Input ||
-        type === InputNumber ||
-        type === Input.TextArea ||
-        type === Checkbox ||
-        type === DatePicker ||
-        type === Select ||
-        type === Radio ||
-        type === Switch ||
-        type === Input.Search ||
-        type === SearchTable ||
-        type === Address ||
-        type === InputTags ||
-        type === TagInput
-      ) {
-        data.push(item);
-      } else if (React.isValidElement(item) && item.props.children) {
-        this.decorateFormItemDeftultValue(item.props.children, data);
-      }
-    });
-  }
-
   dotDataSource = (initialValue) => {
     const newValue = initialValue.map((item, index) => {
       return {
@@ -95,34 +57,6 @@ export default class List extends React.Component {
     return newValue;
   }
 
-  handleOnChange = (e, formItemName) => {
-    const value = e && e.target ? e.target.value : e;
-    const { dataInfo } = this.state;
-    this.setState({
-      dataInfo: {
-        ...dataInfo,
-        [formItemName]: value,
-      },
-    });
-  }
-
-  makeFormItemElementProps = (item, isReadOnly) => {
-    let newProps = {};
-    if (isReadOnly) {
-      newProps = {
-        disabled: true,
-        readOnly: true,
-      };
-    } else {
-      newProps.onChange = (e) => {
-        this.handleOnChange(e, item.props.name);
-      };
-    }
-    const { dataInfo } = this.state;
-    newProps.value = dataInfo[item.props.name];
-    return newProps;
-  }
-
 
   handleEditItem = (id) => {
     const { dataSource } = this.state;
@@ -132,13 +66,14 @@ export default class List extends React.Component {
     }, () => this.handleVisible(true));
   }
 
-  handleOk = () => {
-    const { dataInfo, dataSource } = this.state;
-    if (Object.keys(dataInfo).length === 0) {
+  handleOk = (params) => {
+    const { dataSource } = this.state;
+    if (Object.keys(params).length === 0) {
       this.handleVisible(false);
       return;
     }
-    let newDataSource = dataSource;
+    const dataInfo = { ...params };
+    let newDataSource = [...dataSource];
     if (dataInfo.onlyId) {
       newDataSource = dataSource.map((item) => {
         let newItem = item;
@@ -153,10 +88,10 @@ export default class List extends React.Component {
       newDataSource.push(dataInfo);
     }
     this.setState({
+      visible: false,
       dataSource: [...newDataSource],
     }, () => {
-      this.handleVisible(false);
-      const value = this.state.dataSource.map((item) => {
+      const value = [...this.state.dataSource].map((item) => {
         const temp = { ...item };
         delete temp.onlyId;
         return temp;
@@ -173,38 +108,6 @@ export default class List extends React.Component {
     }, () => {
       this.handleVisible(false);
       this.props.onChange(this.state.dataSource);
-    });
-  }
-
-  decorateFormItemByTree = (children, isReadOnly) => {
-    return React.Children.map(children, (item) => {
-      const { type } = item;
-      if (
-        type === Input ||
-        type === InputNumber ||
-        type === Input.TextArea ||
-        type === Checkbox ||
-        type === DatePicker ||
-        type === Select ||
-        type === Radio ||
-        type === Switch ||
-        type === Input.Search ||
-        type === SearchTable ||
-        type === Address ||
-        type === InputTags ||
-        type === TagInput
-      ) {
-        const newProps = this.makeFormItemElementProps(item, isReadOnly);
-        return React.cloneElement(item, newProps);
-      } else if (React.isValidElement(item) && item.props.children) {
-        const decoratedChildren = this.decorateFormItemByTree(
-          item.props.children,
-          isReadOnly
-        );
-        return React.cloneElement(item, null, decoratedChildren);
-      } else {
-        return item;
-      }
     });
   }
 
@@ -254,16 +157,13 @@ export default class List extends React.Component {
   makeListContent = () => {
     const { dataSource } = this.state;
     const {
-      children,
       sorter,
       listItemContent,
       error,
     } = this.props;
     const list = dataSource.map((value, i) => {
       const errorObj = typeof error[i] === 'object' ? error[i] : {};
-      const form = listItemContent ?
-        listItemContent(value, errorObj) :
-        this.renderFormItemByTree(children, value, true);
+      const form = listItemContent(value, errorObj);
       const key = i;
       const content = (
         <div
@@ -305,37 +205,31 @@ export default class List extends React.Component {
     return list;
   }
 
-
-  renderFormItemByTree = (children, isReadOnly) => {
-    return React.Children.map(children, (item) => {
-      if (item.type === Form.Item) {
-        return (
-          <Form.Item {...item.props} >
-            {this.decorateFormItemByTree(item.props.children, isReadOnly)}
-          </Form.Item>
-        );
-      } else if (React.isValidElement(item) && item.props.children) {
-        return React.cloneElement(
-          item,
-          null,
-          this.renderFormItemByTree(item.props.children, isReadOnly)
-        );
-      } else {
-        return item;
-      }
-    });
+  makeModalComponet = () => {
+    const { title, width, zIndex, bodyStyle, height, error } = this.props;
+    const { visible, dataInfo, dataSource } = this.state;
+    const response = {
+      error,
+      dataSource,
+      initialValue: dataInfo,
+      config: {
+        width,
+        zIndex,
+        visible,
+        onOk: this.handleOk,
+        destroyOnClose: true,
+        title: title || '表单',
+        bodyStyle: { ...bodyStyle, height },
+        onCancel: () => this.handleVisible(false),
+        afterClose: () => this.setState({ dataInfo: {} }),
+      },
+    };
+    return response;
   }
 
+
   render() {
-    const { visible } = this.state;
-    const {
-      children,
-      title,
-      width,
-      zIndex,
-      bodyStyle,
-      height,
-    } = this.props;
+    const { Component } = this.props;
     return (
       <React.Fragment>
         {this.makeListContent()}
@@ -343,12 +237,7 @@ export default class List extends React.Component {
           <Button
             type="dashed"
             onClick={() => {
-              const formItem = [];
-              this.decorateFormItemDeftultValue(children, formItem);
               const dataInfo = {};
-              formItem.forEach((item) => {
-                dataInfo[item.props.name] = item.props.value;
-              });
               this.setState({ dataInfo }, () => this.handleVisible(true));
             }}
             style={{ width: '60%' }}
@@ -356,22 +245,7 @@ export default class List extends React.Component {
             <Icon type="plus" /> 添加
           </Button>
         </div>
-        <Modal
-          destroyOnClose
-          title={title || '信息'}
-          visible={visible}
-          onCancel={() => this.handleVisible(false)}
-          onOk={this.handleOk}
-          afterClose={() => { this.setState({ dataInfo: {} }); }}
-          width={width}
-          zIndex={zIndex}
-          bodyStyle={{
-            ...bodyStyle,
-            ...({ height }),
-          }}
-        >
-          {this.renderFormItemByTree(children)}
-        </Modal>
+        <Component {...this.makeModalComponet()} />
       </React.Fragment>
     );
   }
