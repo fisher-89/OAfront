@@ -166,14 +166,14 @@ class addForm extends PureComponent {
   render() {
     const {
       formType,
-      fetching,
-      submitting,
+      // fetching,
+      // submitting,
       validateFields,
       form: {
         getFieldDecorator,
       },
       validator,
-      fieldsError,
+      // fieldsError,
       formVal,
     } = this.props;
     const {
@@ -213,9 +213,9 @@ class addForm extends PureComponent {
     };
     return (
       <OAForm
-        onSubmitBtn
+        // onSubmitBtn
         onSubmit={validateFields(isEdit ? this.handleEditSubmit : this.handleAddSubmit)}
-        loading={(fetching || submitting) === true}
+        // loading={(fetching || submitting) === true}
       >
         <Tabs
           tabPosition="left"
@@ -290,7 +290,7 @@ class addForm extends PureComponent {
               })(
                 <FieldList
                   validator={validator}
-                  error={fieldsError.fields || {}}
+                  // error={fieldsError.fields || {}}
                   onChange={listData => this.handleFieldListOnChange(listData, 'fields')}
                 />
               )}
@@ -333,7 +333,7 @@ class addForm extends PureComponent {
                   })(
                     <FieldList
                       validator={validator}
-                      error={fieldsError.grids || {}}
+                      // error={fieldsError.grids || {}}
                       onChange={listData => this.handleFieldListOnChange(listData, `grids.${index}.fields`)}
                     />
                   )}

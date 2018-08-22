@@ -20,10 +20,10 @@ const FormItem = OAForm.Item;
 @OAForm.create()
 export default class extends PureComponent {
   handleError = (error) => {
-    const { onError, form: { setFields } } = this.props;
-    onError(error, (err, values) => {
-      const errors = err.staff_name || err.staff_sn;
-      setFields({ staff: { ...errors, value: values.staff } });
+    const { onError } = this.props;
+    onError(error, {
+      staff_name: 'staff',
+      staff_sn: 'staff',
     });
   }
 

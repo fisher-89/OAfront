@@ -30,14 +30,9 @@ export default class extends PureComponent {
   }
 
   handleError = (errors) => {
-    const { onError, form: { setFields } } = this.props;
-    onError(errors, (error, values) => {
-      setFields({
-        admin: {
-          ...error.admin_name,
-          value: values.admin,
-        },
-      });
+    const { onError } = this.props;
+    onError(errors, {
+      admin_name: 'admin',
     });
   }
 

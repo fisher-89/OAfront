@@ -70,21 +70,39 @@ export default formCreate => option => (Componet) => {
       };
     }
 
-    handleOnError = (error, callback, isUnicode) => {
-      if (!this.form) return;
-      const { setFields, getFieldsValue } = this.form;
-      const values = getFieldsValue();
-      const errResult = unicodeFieldsError(error, isUnicode, { ...values });
+    disposeErrorResult = (errResult, extraConfig, values) => {
       const customErr = {};
       const formError = {};
+      const { setFields } = this.form;
       Object.keys(errResult).forEach((name) => {
         if (!Object.hasOwnProperty.call(errResult[name], 'value')) {
-          customErr[name] = errResult[name];
+          if (extraConfig && extraConfig[name] && values[extraConfig[name]]) {
+            setFields({
+              [extraConfig[name]]: {
+                ...errResult[name],
+                value: values[extraConfig[name]],
+              },
+            });
+          } else {
+            customErr[name] = errResult[name];
+          }
         } else {
           formError[name] = errResult[name];
         }
       });
-      if (callback && Object.keys(customErr).length) callback(customErr, values, error);
+      return {
+        customErr,
+        formError,
+      };
+    }
+
+    handleOnError = (error, extraConfig = {}, callback, isUnicode) => {
+      if (!this.form) return;
+      const { setFields, getFieldsValue } = this.form;
+      const values = getFieldsValue();
+      const errResult = unicodeFieldsError(error, isUnicode, { ...values });
+      const { customErr, formError } = this.disposeErrorResult(errResult, extraConfig, values);
+      if (Object.keys(customErr).length && callback) callback(customErr, values, error);
       if (Object.keys(formError).length) setFields(formError);
     }
 
@@ -94,7 +112,7 @@ export default formCreate => option => (Componet) => {
         if (!this.form) return;
         this.form.validateFieldsAndScroll((err, values) => {
           if (!err) {
-            callback(values);
+            callback(values, this.handleOnError);
           }
         });
       };
