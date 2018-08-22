@@ -111,10 +111,10 @@ export default class extends PureComponent {
   handleError = (err) => {
     const { onError } = this.props;
     onError(err, {
-      point_a_min: 'point_a',
       point_a_max: 'point_a',
-      point_b_min: 'point_b',
+      point_a_min: 'point_a',
       point_b_max: 'point_b',
+      point_b_min: 'point_b',
     });
   }
 
