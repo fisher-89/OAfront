@@ -5,18 +5,7 @@ import {
 import PropTypes from 'prop-types';
 import { findDOMNode } from 'react-dom';
 import { DragSource, DropTarget } from 'react-dnd';
-
-const style = {
-  border: '1px dashed gray',
-  padding: '0.5rem 1rem',
-  marginBottom: '1rem',
-  backgroundColor: 'white',
-  display: 'flex',
-};
-
-const handleStyle = {
-  cursor: 'move',
-};
+import styles from '../index.less';
 
 const cardSource = {
   beginDrag(props) {
@@ -78,14 +67,16 @@ export default class Card extends Component {
     } = this.props;
     const opacity = isDragging ? 0 : 1;
     return connectDropTarget(
-      <div style={{ ...style, opacity }}>
-        {
-          connectDragSource(
-            <div>
-              <Icon type="bars" style={{ fontSize: '24px', ...handleStyle }} />
-            </div>
-          )
-        }
+      <div className={styles.rectangle} style={{ opacity }}>
+        <div className={styles.header}>
+          {
+            connectDragSource(
+              <div className={styles.dragIcon}>
+                <Icon type="bars" />
+              </div>
+            )
+          }
+        </div>
         {content}
       </div>
     );

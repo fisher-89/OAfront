@@ -7,7 +7,7 @@ import {
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import update from 'immutability-helper';
-
+import ItemView from './itemView';
 import CustomerCard from '../FormList/Drag';
 /**
  * 列表控件 弹窗形式
@@ -158,39 +158,14 @@ export default class List extends React.Component {
     const { dataSource } = this.state;
     const {
       sorter,
-      listItemContent,
-      error,
+      // listItemContent,
+      // error,
     } = this.props;
     const list = dataSource.map((value, i) => {
-      const errorObj = typeof error[i] === 'object' ? error[i] : {};
-      const form = listItemContent(value, errorObj);
-      const key = i;
-      const content = (
-        <div
-          key={key}
-          style={{
-            flexGrow: 1,
-            display: 'flex',
-            ...(!sorter ? {
-              borderBottom: '1px solid #ccc',
-              marginTop: '8px',
-              paddingBottom: '8px',
-            } : null),
-          }}
-        >
-          <div style={{ flexGrow: 1 }}>
-            {form}
-          </div>
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            paddingLeft: '10px',
-          }}
-          >
-            {this.makeButtom(value.onlyId)}
-          </div>
-        </div>
-      );
+      // const errorObj = typeof error[i] === 'object' ? error[i] : {};
+      // const form = listItemContent(value, errorObj);
+      // const key = i;
+      const content = <ItemView />;
       const result = sorter ? (
         <CustomerCard
           key={value.onlyId}

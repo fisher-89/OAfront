@@ -89,6 +89,13 @@ class addForm extends PureComponent {
     }
   }
 
+  handleOnError = (errors) => {
+    const { onError } = this.props;
+    onError(errors, (err) => {
+      console.log(err);
+    });
+  }
+
   handleAddSubmit = (params) => {
     // ly修改排序start
     const newParams = { ...params };
@@ -96,14 +103,14 @@ class addForm extends PureComponent {
       newParams.sort = 0;
     }
     // ly 修改排序end
-    const { dispatch, onError } = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: 'workflow/addForm',
       payload: {
         ...newParams,
       },
       onSuccess: this.handleSubmitSuccess,
-      onError,
+      onError: this.handleOnError,
     });
   }
 
@@ -114,7 +121,7 @@ class addForm extends PureComponent {
       newParams.sort = 0;
     }
     // ly 修改排序end
-    const { dispatch, onError } = this.props;
+    const { dispatch } = this.props;
     const { formId } = this.state;
     dispatch({
       type: 'workflow/editForm',
@@ -123,7 +130,7 @@ class addForm extends PureComponent {
         id: formId,
       },
       onSuccess: this.handleSubmitSuccess,
-      onError,
+      onError: this.handleOnError,
     });
   }
 
@@ -174,7 +181,6 @@ class addForm extends PureComponent {
         getFieldDecorator,
       },
       validator,
-      // fieldsError,
       formVal,
     } = this.props;
     const {

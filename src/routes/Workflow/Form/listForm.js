@@ -60,7 +60,7 @@ export default class extends React.PureComponent {
               {
                 getFieldDecorator('name', {
                   initialValue: initialValue.name || '',
-                  rules: [{ required: true, message: '必填项!' }],
+                  // rules: [{ required: true, message: '必填项!' }],
                 })(
                   <Input placeholder="请输入" />
                 )

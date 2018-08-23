@@ -76,7 +76,7 @@ export default formCreate => option => (Componet) => {
       const { setFields } = this.form;
       Object.keys(errResult).forEach((name) => {
         if (!Object.hasOwnProperty.call(errResult[name], 'value')) {
-          if (extraConfig && extraConfig[name] && values[extraConfig[name]]) {
+          if (typeof extraConfig === 'object' && extraConfig && extraConfig[name] && values[extraConfig[name]]) {
             setFields({
               [extraConfig[name]]: {
                 ...errResult[name],
@@ -102,7 +102,8 @@ export default formCreate => option => (Componet) => {
       const values = getFieldsValue();
       const errResult = unicodeFieldsError(error, isUnicode, { ...values });
       const { customErr, formError } = this.disposeErrorResult(errResult, extraConfig, values);
-      if (Object.keys(customErr).length && callback) callback(customErr, values, error);
+      if (typeof extraConfig === 'function') extraConfig(customErr, values, error);
+      if (callback) callback(customErr, values, error);
       if (Object.keys(formError).length) setFields(formError);
     }
 

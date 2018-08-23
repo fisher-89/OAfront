@@ -500,7 +500,6 @@ export function getLetfEllipsis(str, width, fontSize) {
  * @param {是否生成错误} isUnicode
  */
 export function unicodeFieldsError(temp, isUnicode = true, values) {
-  if (!isUnicode) return temp;
   const fieldsValue = { ...temp };
   const params = {};
   Object.keys(fieldsValue).forEach((key) => {
@@ -510,9 +509,11 @@ export function unicodeFieldsError(temp, isUnicode = true, values) {
     keyGroup.forEach((item, index) => {
       if (index === keyGroup.length - 1) {
         if (Object.hasOwnProperty.call(values, item)) {
-          fieldsValueMd[item] = { value: values[item], errors: [new Error(value[0])] };
+          fieldsValueMd[item] = isUnicode ?
+            { value: values[item], errors: [new Error(value[0])] } : value;
         } else {
-          fieldsValueMd[item] = { errors: [new Error(value[0])] };
+          fieldsValueMd[item] = isUnicode ?
+            { errors: [new Error(value[0])] } : value;
         }
       } else {
         fieldsValueMd[item] = fieldsValueMd[item] || {};

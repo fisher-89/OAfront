@@ -11,23 +11,27 @@ import ListForm from './listForm';
 
 const FormItem = OAForm.Item;
 
+const fieldsBoxLayout = { xs: 24, lg: 12 };
+const fieldsTypes = [
+  { value: 'text', text: '文本' },
+  { value: 'int', text: '数字' },
+  { value: 'date', text: '日期' },
+  { value: 'datetime', text: '日期时间' },
+  { value: 'time', text: '时间' },
+  { value: 'array', text: '数组' },
+  { value: 'file', text: '文件' },
+];
+
 export default class FieldList extends React.Component {
   makeContent = (value, error) => {
     const { validator } = this.props;
-    const fieldsBoxLayout = { xs: 24, lg: 12 };
-    const fieldsTypes = [
-      { value: 'text', text: '文本' },
-      { value: 'int', text: '数字' },
-      { value: 'date', text: '日期' },
-      { value: 'datetime', text: '日期时间' },
-      { value: 'time', text: '时间' },
-      { value: 'array', text: '数组' },
-      { value: 'file', text: '文件' },
-    ];
+
     let message = '';
     message = Object.keys(error).map((key) => {
       return error[key].join(',');
     });
+    console.log(message);
+
     const [valueType] = fieldsTypes.filter((item) => {
       return item.value === value.type;
     });
