@@ -15,6 +15,7 @@ import targetsEffects from './targets';
 
 import indexReducers from '../reducers';
 import targetsReducers from './targets/reducers';
+import attendanceEffects from "./attendance";
 
 export default {
   namespace: 'point',
@@ -32,6 +33,7 @@ export default {
     commadnLog: {},
     targets: [],
     targetsDetails: {},
+    attendance: {},
   },
   effects: {
     ...eventEffects,
@@ -45,6 +47,7 @@ export default {
     ...commadnEffects,
     ...certificateEffects,
     ...targetsEffects,
+    ...attendanceEffects,
   },
   reducers: {
     ...indexReducers,

@@ -201,6 +201,27 @@ export async function fetchCommadnLog(params) {
   });
 }
 
+/**
+ * 考勤统计列表
+ * @param {filters} params
+ */
+export async function fetchAttendance(params) {
+  return request("/api/pms/schedule", {
+    method: "GET",
+    body: params
+  });
+}
+
+/**
+ * 编辑考勤
+ * @param {filters} params
+ */
+export async function editAttendance(params, id) {
+  return request(`/api/pms/schedule/${id}`, {
+    method: "POST",
+    body: params
+  });
+}
 
 /**  base-points 固定积分配置 * */
 

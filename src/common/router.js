@@ -110,6 +110,9 @@ export const getRouterData = (app) => {
     '/point/commadn-log': {
       component: dynamicWrapper(app, ['point'], () => import('../routes/Point/Commadn')),
     },
+    "/point/attendance": {
+      component: dynamicWrapper(app, ["point"], () => import("../routes/Point/Attendance")),
+    },
 
 
     '/hr/staff': {

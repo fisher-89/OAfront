@@ -32,6 +32,10 @@ const menuData = [
         ],
       },
       {
+        name: "考勤管理",
+        path: "attendance"
+      },
+      {
         name: '奖扣指标',
         path: 'buckleIndex',
         hideInMenu: true,
