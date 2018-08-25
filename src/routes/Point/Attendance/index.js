@@ -1,9 +1,9 @@
-import React, { PureComponent } from "react";
-import { Route, Switch } from "dva/router";
-import { Card } from "antd";
-import PageHeaderLayout from "../../../layouts/PageHeaderLayout";
-import { getRoutes } from "../../../utils/utils";
-import ListComponent from "./list";
+import React, { PureComponent } from 'react';
+import { Route, Switch } from 'dva/router';
+import { Card } from 'antd';
+import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
+import { getRoutes } from '../../../utils/utils';
+import ListComponent from './list';
 
 export default class extends PureComponent {
   render() {
