@@ -59,42 +59,53 @@ export default class extends PureComponent {
       {
         title: "编号",
         dataIndex: "staff_sn",
-        searcher: true
+        searcher: true,
       },
       {
         title: "姓名",
         dataIndex: "staff_name",
-        searcher: true
+        searcher: true,
+      },
+      {
+        title: "统计日期",
+        dataIndex: "workDate",
+        searcher: true,
+        render: val => val.slice(0, 10),
       },
       {
         title: "上班时间",
         dataIndex: "userOnTime",
-        render: val => (val ? val : "缺卡")
+        render: val => (val ? val : "缺卡"),
       },
       {
         title: "下班时间",
         dataIndex: "userOffTime",
-        render: val => (val ? val : "缺卡")
+        render: val => (val ? val : "缺卡"),
       },
       {
-        title: "工作时长(分)",
-        dataIndex: "worktime"
+        title: "工作时长",
+        dataIndex: "worktime",
+        render: val => (val / 60).toFixed(2),
       },
       {
-        title: "加班时长(分)",
-        dataIndex: "overtime"
+        title: "请假时长",
+        dataIndex: "leavetime",
+        render: val => (val / 60).toFixed(2),
       },
       {
-        title: "迟到时长(分)",
-        dataIndex: "latetime"
+        title: "加班时长",
+        dataIndex: "overtime",
+        render: val => (val / 60).toFixed(2),
       },
       {
-        title: "请假时长(分)",
-        dataIndex: "leavetime"
+        title: "迟到时长",
+        dataIndex: "latetime",
+        render: val => (val / 60).toFixed(2),
       },
       {
-        title: "早退时长(分)",
-        dataIndex: "earlytime"
+        title: "早退时长",
+        dataIndex: "earlytime",
+        render: val => (val / 60).toFixed(2),
       }
     ];
     if (customerAuthority(143)) {
@@ -162,6 +173,8 @@ export default class extends PureComponent {
                   : {}
               )(
                 <DatePicker
+                  showTime={{ format: 'HH:mm' }}
+                  format={'YYYY-MM-DD h:mm:ss'}
                   style={{
                     width: "100%"
                   }}
@@ -179,6 +192,8 @@ export default class extends PureComponent {
                   : {}
               )(
                 <DatePicker
+                  showTime={{ format: 'HH:mm' }}
+                  format={'YYYY-MM-DD h:mm:ss'}
                   style={{
                     width: "100%"
                   }}
