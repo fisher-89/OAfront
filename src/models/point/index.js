@@ -15,7 +15,7 @@ import targetsEffects from './targets';
 
 import indexReducers from '../reducers';
 import targetsReducers from './targets/reducers';
-import attendanceEffects from "./attendance";
+import attendanceEffects from './attendance';
 
 export default {
   namespace: 'point',
