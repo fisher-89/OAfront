@@ -21,7 +21,7 @@ export default {
   *editAttendance({ payload, onSuccess, onError }, { call, post }) {
     try {
       const params = {
-        ...payload
+        ...payload,
       };
       const { id } = payload;
       delete params.id;
@@ -42,5 +42,5 @@ export default {
     } catch (err) {
       return err;
     }
-  }
+  },
 };
