@@ -4,6 +4,33 @@ const menuData = [
     icon: 'dashboard',
     path: '/',
   }, {
+    name: '财务',
+    path: 'finance',
+    icon: '',
+    authority: '33',
+    children: [{
+      name: '报销',
+      path: 'reimbursement',
+      authority: '33',
+      children: [
+        {
+          name: '报销审核',
+          path: 'accountant',
+          authority: '34',
+        },
+        {
+          name: '报销转账',
+          path: 'cashier',
+          authority: '135',
+        },
+        {
+          name: '查看报销',
+          path: 'auditor',
+          authority: '35',
+        },
+      ],
+    }],
+  }, {
     name: '积分制系统',
     path: 'point',
     icon: 'point-system',
@@ -32,8 +59,8 @@ const menuData = [
         ],
       },
       {
-        name: "考勤管理",
-        path: "attendance"
+        name: '考勤管理',
+        path: 'attendance',
       },
       {
         name: '奖扣指标',
@@ -58,7 +85,7 @@ const menuData = [
       {
         name: '任务执行日志',
         path: 'commadn-log',
-        // authority: '156',
+        authority: '136',
       },
       {
         name: '基础分配置',
@@ -70,10 +97,12 @@ const menuData = [
     name: '人事系统',
     icon: 'team',
     path: 'hr',
+    authority: '36',
     children: [
       {
         name: '员工管理',
         path: 'staff',
+        authority: '37',
       }, {
         name: '编辑员工',
         path: 'staff/edit/:staff_sn',
@@ -82,6 +111,7 @@ const menuData = [
       {
         name: '大爱',
         path: 'violation',
+        authority: '76',
         children: [
           {
             name: '大爱查询',
@@ -113,10 +143,12 @@ const menuData = [
     name: '工作流配置',
     icon: 'form',
     path: 'workflow',
+    authority: '51',
     children: [
       {
         name: '流程管理',
         path: 'flow',
+        authority: '100',
       },
       {
         name: '流程分类',

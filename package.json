@@ -5,8 +5,8 @@
     "private": true,
     "scripts": {
         "precommit": "npm run lint-staged",
-        "start": "set PORT=8101 && cross-env ESLINT=none roadhog dev",
-        "start:no-proxy": "set PORT=8101 && cross-env NO_PROXY=true ESLINT=none roadhog dev",
+        "start": "cross-env ESLINT=none roadhog dev",
+        "start:no-proxy": "cross-env NO_PROXY=true ESLINT=none roadhog dev",
         "build": "cross-env ESLINT=none roadhog build",
         "site": "roadhog-api-doc static && gh-pages -d dist",
         "analyze": "cross-env ANALYZE=true roadhog build",
@@ -45,6 +45,7 @@
         "qs": "^6.5.0",
         "rc-drawer-menu": "^0.5.0",
         "rc-queue-anim": "^1.5.0",
+        "rc-viewer": "^0.0.9",
         "react": "^16.2.0",
         "react-container-query": "^0.9.1",
         "react-dnd": "^2.6.0",
