@@ -206,9 +206,9 @@ export async function fetchCommadnLog(params) {
  * @param {filters} params
  */
 export async function fetchAttendance(params) {
-  return request("/api/pms/schedule", {
-    method: "GET",
-    body: params
+  return request('/api/pms/schedule', {
+    method: 'GET',
+    body: params,
   });
 }
 
@@ -218,8 +218,8 @@ export async function fetchAttendance(params) {
  */
 export async function editAttendance(params, id) {
   return request(`/api/pms/schedule/${id}`, {
-    method: "POST",
-    body: params
+    method: 'POST',
+    body: params,
   });
 }
 

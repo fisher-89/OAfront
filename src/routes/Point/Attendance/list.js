@@ -1,43 +1,43 @@
-import React, { PureComponent } from "react";
-import { connect } from "dva";
-import { Input, InputNumber } from "antd";
+import React, { PureComponent } from 'react';
+import { connect } from 'dva';
+import { Input, InputNumber } from 'antd';
 
-import OATable from "../../../components/OATable";
-import { customerAuthority } from "../../../utils/utils";
+import OATable from '../../../components/OATable';
+import { customerAuthority } from '../../../utils/utils';
 
-import OAForm, { OAModal, DatePicker } from "../../../components/OAForm";
+import OAForm, { OAModal, DatePicker } from '../../../components/OAForm';
 
 const FormItem = OAForm.Item;
 
 @connect(({ point, loading }) => ({
   log: point.attendance,
-  fetchLoading: loading.effects["point/fetchAttendance"]
+  fetchLoading: loading.effects['point/fetchAttendance'],
 }))
 @OAForm.create()
 export default class extends PureComponent {
   state = {
     visible: false,
-    editInfo: {}
+    editInfo: {},
   };
 
-  fetchAttendance = params => {
+  fetchAttendance = (params) => {
     const { dispatch } = this.props;
-    dispatch({ type: "point/fetchAttendance", payload: params });
+    dispatch({ type: 'point/fetchAttendance', payload: params });
   };
 
-  handleSubmit = params => {
+  handleSubmit = (params) => {
     const { dispatch } = this.props;
     const response = { ...params };
 
     dispatch({
-      type: "point/editAttendance",
+      type: 'point/editAttendance',
       payload: response,
       onError: this.handleError,
-      onSuccess: this.handleSuccess
+      onSuccess: this.handleSuccess,
     });
   };
 
-  handleError = err => {
+  handleError = (err) => {
     const { onError } = this.props;
     onError(err);
   };
@@ -46,72 +46,74 @@ export default class extends PureComponent {
     this.handleModalVisible(false);
   };
 
-  handleEdit = rowData => {
+  handleEdit = (rowData) => {
     this.setState({ editInfo: rowData }, () => this.handleModalVisible(true));
   };
 
-  handleModalVisible = flag => {
+  handleModalVisible = (flag) => {
     this.setState({ visible: !!flag });
   };
 
   makeColumns = () => {
     const columns = [
       {
-        title: "编号",
-        dataIndex: "staff_sn",
+        title: '编号',
+        dataIndex: 'staff_sn',
         searcher: true,
       },
       {
-        title: "姓名",
-        dataIndex: "staff_name",
+        title: '姓名',
+        dataIndex: 'staff_name',
         searcher: true,
       },
       {
-        title: "统计日期",
-        dataIndex: "workDate",
+        title: '统计日期',
+        dataIndex: 'workDate',
         searcher: true,
-        render: val => val.slice(0, 10),
+        render: (val) => {
+          return val.slice(0, 10);
+        },
       },
       {
-        title: "上班时间",
-        dataIndex: "userOnTime",
-        render: val => (val ? val : "缺卡"),
+        title: '上班时间',
+        dataIndex: 'userOnTime',
+        render: val => val || '缺卡',
       },
       {
-        title: "下班时间",
-        dataIndex: "userOffTime",
-        render: val => (val ? val : "缺卡"),
+        title: '下班时间',
+        dataIndex: 'userOffTime',
+        render: val => val || '缺卡',
       },
       {
-        title: "工作时长",
-        dataIndex: "worktime",
+        title: '工作时长',
+        dataIndex: 'worktime',
         render: val => (val / 60).toFixed(2),
       },
       {
-        title: "请假时长",
-        dataIndex: "leavetime",
+        title: '请假时长',
+        dataIndex: 'leavetime',
         render: val => (val / 60).toFixed(2),
       },
       {
-        title: "加班时长",
-        dataIndex: "overtime",
+        title: '加班时长',
+        dataIndex: 'overtime',
         render: val => (val / 60).toFixed(2),
       },
       {
-        title: "迟到时长",
-        dataIndex: "latetime",
+        title: '迟到时长',
+        dataIndex: 'latetime',
         render: val => (val / 60).toFixed(2),
       },
       {
-        title: "早退时长",
-        dataIndex: "earlytime",
+        title: '早退时长',
+        dataIndex: 'earlytime',
         render: val => (val / 60).toFixed(2),
-      }
+      },
     ];
     if (customerAuthority(143)) {
       columns.push({
-        title: "操作",
-        render: rowData => {
+        title: '操作',
+        render: (rowData) => {
           return (
             <React.Fragment>
               {customerAuthority(143) && (
@@ -119,7 +121,7 @@ export default class extends PureComponent {
               )}
             </React.Fragment>
           );
-        }
+        },
       });
     }
     return columns;
@@ -130,7 +132,7 @@ export default class extends PureComponent {
     const { visible, editInfo } = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
-      wrapperCol: { span: 14 }
+      wrapperCol: { span: 14 },
     };
     const isEdit = Object.keys(editInfo).length !== 0;
     const { log, fetchLoading } = this.props;
@@ -158,105 +160,97 @@ export default class extends PureComponent {
             afterClose={() => this.setState({ editInfo: {} })}
           >
             {editInfo.id
-              ? getFieldDecorator("id", {
-                  initialValue: editInfo.id
+              ? getFieldDecorator('id', {
+                  initialValue: editInfo.id,
                 })(<Input type="hidden" />)
               : null}
 
             <FormItem {...formItemLayout} label="上班时间">
               {getFieldDecorator(
-                "userOnTime",
+                'userOnTime',
                 editInfo.userOnTime
-                  ? {
-                      initialValue: editInfo.userOnTime
-                    }
+                  ? { initialValue: editInfo.userOnTime }
                   : {}
               )(
                 <DatePicker
                   showTime={{ format: 'HH:mm' }}
-                  format={'YYYY-MM-DD h:mm:ss'}
-                  style={{
-                    width: "100%"
-                  }}
+                  format="YYYY-MM-DD h:mm:ss"
+                  style={{ width: '100%' }}
                 />
               )}
             </FormItem>
 
             <FormItem {...formItemLayout} label="下班时间">
               {getFieldDecorator(
-                "userOffTime",
+                'userOffTime',
                 editInfo.userOffTime
-                  ? {
-                      initialValue: editInfo.userOffTime
-                    }
+                  ? { initialValue: editInfo.userOffTime }
                   : {}
               )(
                 <DatePicker
                   showTime={{ format: 'HH:mm' }}
-                  format={'YYYY-MM-DD h:mm:ss'}
-                  style={{
-                    width: "100%"
-                  }}
+                  format="YYYY-MM-DD h:mm:ss"
+                  style={{ width: '100%' }}
                 />
               )}
             </FormItem>
 
             <FormItem {...formItemLayout} label="工作时长">
-              {getFieldDecorator("worktime", {
-                initialValue: isEdit ? editInfo.worktime.toString() : ""
+              {getFieldDecorator('worktime', {
+                initialValue: isEdit ? editInfo.worktime.toString() : '',
               })(
                 <InputNumber
                   min={0}
                   placeholder="请输入"
-                  style={{ width: "100%" }}
+                  style={{ width: '100%' }}
                 />
               )}
             </FormItem>
 
             <FormItem {...formItemLayout} label="加班时长">
-              {getFieldDecorator("overtime", {
-                initialValue: isEdit ? editInfo.overtime.toString() : ""
+              {getFieldDecorator('overtime', {
+                initialValue: isEdit ? editInfo.overtime.toString() : '',
               })(
                 <InputNumber
                   min={0}
                   placeholder="请输入"
-                  style={{ width: "100%" }}
+                  style={{ width: '100%' }}
                 />
               )}
             </FormItem>
 
             <FormItem {...formItemLayout} label="请假时长">
-              {getFieldDecorator("leavetime", {
-                initialValue: isEdit ? editInfo.leavetime.toString() : ""
+              {getFieldDecorator('leavetime', {
+                initialValue: isEdit ? editInfo.leavetime.toString() : '',
               })(
                 <InputNumber
                   min={0}
                   placeholder="请输入"
-                  style={{ width: "100%" }}
+                  style={{ width: '100%' }}
                 />
               )}
             </FormItem>
 
             <FormItem {...formItemLayout} label="迟到时长">
-              {getFieldDecorator("latetime", {
-                initialValue: isEdit ? editInfo.latetime.toString() : ""
+              {getFieldDecorator('latetime', {
+                initialValue: isEdit ? editInfo.latetime.toString() : '',
               })(
                 <InputNumber
                   min={0}
                   placeholder="请输入"
-                  style={{ width: "100%" }}
+                  style={{ width: '100%' }}
                 />
               )}
             </FormItem>
 
             <FormItem {...formItemLayout} label="早退时长">
-              {getFieldDecorator("earlytime", {
-                initialValue: isEdit ? editInfo.earlytime.toString() : ""
+              {getFieldDecorator('earlytime', {
+                initialValue: isEdit ? editInfo.earlytime.toString() : '',
               })(
                 <InputNumber
                   min={0}
                   placeholder="请输入"
-                  style={{ width: "100%" }}
+                  style={{ width: '100%' }}
                 />
               )}
             </FormItem>
