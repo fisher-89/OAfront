@@ -1,0 +1,53 @@
+@import "~antd/lib/style/themes/default.less";
+
+.detailClose {
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 10;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  transition: color .3s;
+  color: @text-color-secondary;
+  outline: 0;
+  padding: 0;
+
+  span {
+    display: block;
+    font-style: normal;
+    vertical-align: baseline;
+    text-align: center;
+    text-transform: none;
+    text-rendering: auto;
+    width: 56px;
+    height: 56px;
+    line-height: 56px;
+    font-size: @font-size-lg;
+
+    &:before {
+      content: "\e633";
+      display: block;
+      font-family: "anticon" !important;
+    }
+  }
+}
+
+.expensesTable {
+  :global {
+    .ant-table-thead > tr > th {
+      background-color: #fafafa;
+    }
+
+    .ant-table-tbody > tr:nth-of-type(odd) {
+      background-color: #f7f9fc;
+    }
+
+    .ant-table-tbody > tr:nth-of-type(even) {
+      background-color: #f7f9fc;
+    }
+  }
+}
