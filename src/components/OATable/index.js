@@ -510,15 +510,19 @@ class OATable extends PureComponent {
       size: 'middle',
       bordered: false,
       scroll: {},
+      pagination,
       ...this.props,
-      pagination: {
-        ...pagination,
-        ...this.props.pagination,
-      },
       loading: loading || this.state.loading,
       rowSelection: newRowSelection,
       columns: this.mapColumns(),
     };
+
+    if (this.props.pagination && typeof this.props.pagination === 'object') {
+      response.pagination = {
+        ...pagination,
+        ...this.props.pagination,
+      };
+    }
 
     Object.keys(defaultProps).forEach((key) => {
       delete response[key];
@@ -678,7 +682,9 @@ class OATable extends PureComponent {
             multiOperator={multiOperator}
             extraOperator={this.makeExtraOperator()}
             extraOperatorRight={extraOperatorRight}
-            fetchTableDataSource={() => { this.fetchTableDataSource(null, true); }}
+            fetchTableDataSource={() => {
+              this.fetchTableDataSource(null, true);
+            }}
             resetFilter={this.resetFilter}
           />
         )}

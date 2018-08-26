@@ -75,18 +75,18 @@ export const getRouterData = (app) => {
     '/dashboard/analysis': {
       component: dynamicWrapper(app, ['point'], () => import('../routes/Dashboard/Analysis')),
     },
-    // '/finance/reimbursement/accountant': {
-    //   component: dynamicWrapper(app, ['reimbursement'], () => import('../routes/Finance/Reimbursement/Accountant')),
-    //   authority: '34',
-    // },
-    // '/finance/reimbursement/cashier': {
-    //   component: dynamicWrapper(app, ['reimbursement'], () => import('../routes/Finance/Reimbursement/Cashier')),
-    //   authority: '135',
-    // },
-    // '/finance/reimbursement/auditor': {
-    //   component: dynamicWrapper(app, ['reimbursement'], () => import('../routes/Finance/Reimbursement/Auditor')),
-    //   authority: '35',
-    // },
+    '/finance/reimbursement/accountant': {
+      component: dynamicWrapper(app, ['reimbursement'], () => import('../routes/Finance/Reimbursement/Accountant')),
+      authority: '34',
+    },
+    '/finance/reimbursement/cashier': {
+      component: dynamicWrapper(app, ['reimbursement'], () => import('../routes/Finance/Reimbursement/Cashier')),
+      authority: '135',
+    },
+    '/finance/reimbursement/auditor': {
+      component: dynamicWrapper(app, ['reimbursement'], () => import('../routes/Finance/Reimbursement/Auditor')),
+      authority: '35',
+    },
     '/point/initEvent': {
       component: dynamicWrapper(app, ['point'], () => import('../routes/Point/InitEvent')),
       authority: '137',
