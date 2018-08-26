@@ -1,6 +1,6 @@
-import { editAttendance, fetchAttendance } from "../../services/point";
+import { editAttendance, fetchAttendance } from '../../services/point';
 
-const store = "attendance";
+const store = 'attendance';
 
 export default {
   *fetchAttendance({ payload }, { call, put }) {
@@ -8,20 +8,20 @@ export default {
       const params = payload;
       const response = yield call(fetchAttendance, params);
       yield put({
-        type: "save",
+        type: 'save',
         payload: {
           store,
-          data: response
-        }
+          data: response,
+        },
       });
     } catch (err) {
       return err;
     }
   },
-  *editAttendance({ payload, onSuccess, onError }, { call, put }) {
+  *editAttendance({ payload, onSuccess, onError }, { call, post }) {
     try {
       const params = {
-        ...payload
+        ...payload,
       };
       const { id } = payload;
       delete params.id;
@@ -29,18 +29,18 @@ export default {
       if (response.errors && onError) {
         onError(response.errors);
       } else {
-        yield put({
-          type: "update",
+        yield post({
+          type: 'update',
           payload: {
             store,
             id,
-            data: response
-          }
+            data: response,
+          },
         });
         onSuccess(response);
       }
     } catch (err) {
       return err;
     }
-  }
+  },
 };

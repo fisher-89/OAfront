@@ -40,19 +40,20 @@ function checkStatus(response) {
   throw error;
 }
 
-// const exception = (e) => {
-//   const { dispatch } = store;
-//   const status = e.name;
-//   if (status === 403) {
-//     dispatch(routerRedux.push('/exception/403'));
-//   }
-//   if (status <= 504 && status >= 500) {
-//     dispatch(routerRedux.push('/exception/500'));
-//   }
-//   if (status >= 404 && status < 422) {
-//     dispatch(routerRedux.push('/exception/404'));
-//   }
-// };
+function notificateErrorMessage(promise) {
+  promise.then((body) => {
+    if (body.message) {
+      notification.error({
+        message: body.message,
+        description: `请求错误 ${response.status}: ${response.url}`,
+      });
+    } else {
+      notification.error({
+        message: `请求错误 ${response.status}: ${response.url}`,
+      });
+    }
+  });
+}
 
 /**
  * Requests a URL, returning a promise.
@@ -62,7 +63,6 @@ function checkStatus(response) {
  * @return {object}           An object containing either "data" or "err"
  */
 export default async function request(url, options) {
-  // console.log('request');
   let urlParam = url;
   const defaultOptions = {
     credentials: 'same-origin',
@@ -121,14 +121,14 @@ export default async function request(url, options) {
       if (response.headers.get('content-type') === 'application/vnd.ms-excel; charset=UTF-8') {
         return response;
       }
+      if (response.status === 400) {
+        const promise = response.json();
+        notificateErrorMessage(promise);
+      }
       if (response.status === 204) {
         return response.text();
       }
       return response.json();
     });
-  // .catch((e) => {
-  //   exception(e);
-  // });
-  // console.log(result);
   return result;
 }
