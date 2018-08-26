@@ -229,9 +229,10 @@ class addForm extends PureComponent {
         sm: { span: 12 },
       },
     };
-    const formError = getFieldsError(['name', 'form_type_id', 'fields']);
-    const errColor = (formError.name || formError.form_type_id || formError.fields || listError.fields) && { style: { color: 'red' } };
-    const gridsError = listError.grids || {};
+    const formError = getFieldsError(['name', 'form_type_id', 'fields', 'grids']);
+    const errColor =
+      (formError.name || formError.form_type_id || formError.fields || listError.fields) && { style: { color: 'red' } };
+    const gridsError = listError.grids || formError.grids || {};
     return (
       <OAForm onSubmit={validateFields(isEdit ? this.handleEditSubmit : this.handleAddSubmit)}>
         <Tabs
@@ -317,11 +318,15 @@ class addForm extends PureComponent {
             </FormItem>
           </TabPane>
           {panes.map((pane, index) => {
+            let colorAble = false;
+            Object.keys(gridsError[index] || {}).forEach((key) => {
+              colorAble = !!gridsError[index][key];
+            });
             return (
               <TabPane
                 tab={(
                   <span>
-                    <span {...gridsError[index] && { style: { color: 'red' } }}>{pane.title}</span>
+                    <span {...(colorAble && { style: { color: 'red' } })}>{pane.title}</span>
                     <Icon type="close" onClick={e => this.removeTabs(pane.key, e)} />
                   </span>
                 )}
@@ -347,6 +352,7 @@ class addForm extends PureComponent {
                 <FormItem label="字段" {...formItemLayout}>
                   {getFieldDecorator(`grids.${index}.fields`, {
                     initialValue: grids && grids[index] ? grids[index].fields : [],
+                    rules: [validatorRequired],
                   })(
                     <FieldList
                       validator={validator}
