@@ -326,7 +326,9 @@ class addForm extends PureComponent {
           {panes.map((pane, index) => {
             let colorAble = false;
             Object.keys(gridsError[index] || {}).forEach((key) => {
-              colorAble = !!gridsError[index][key];
+              if (gridsError[index][key] !== undefined) {
+                colorAble = true;
+              }
             });
             const filedsError = gridsError[index] || {};
             return (

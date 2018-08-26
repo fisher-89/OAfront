@@ -47,23 +47,21 @@ export default class Shop extends PureComponent {
       {
         title: '编号',
         dataIndex: 'shop_sn',
+        width: 100,
         sorter: true,
         searcher: true,
       },
       {
         title: '店铺',
         dataIndex: 'name',
+        width: 200,
         searcher: true,
-        render: val => (
-          <Tooltip title={val} placement="right">
-            {val.length > 9 ? `${val.substr(0, 9)}...` : val}
-          </Tooltip>
-        ),
       },
       {
         title: '品牌',
         align: 'center',
         dataIndex: 'brand_id',
+        width: 100,
         filters: access ? brandFilters : brand.map(item => ({ text: item.name, value: item.id })),
         render: (val) => {
           const data = brand && brand.filter(item => item.id === val)[0];
@@ -72,6 +70,7 @@ export default class Shop extends PureComponent {
       }, {
         title: '部门',
         dataIndex: 'department_id',
+        width: 200,
         treeFilters: {
           title: 'full_name',
           value: 'id',
@@ -155,8 +154,9 @@ Shop.defaultProps = {
   disabled: false,
   name: {},
   showName: '',
-  title: '',
+  title: '店铺',
   placeholder: '请选择',
   filters: {},
+  width: 800,
   onChange: () => { },
 };

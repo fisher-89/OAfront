@@ -253,7 +253,7 @@ Staff.defaultProps = {
   disabled: false,
   name: {},
   showName: '',
-  title: '员工选择',
+  title: '员工',
   placeholder: '请选择员工',
   filters: { content: 'status_id>=0;', status: [1, 2, 3] },
   width: 800,

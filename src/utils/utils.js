@@ -159,7 +159,7 @@ export function customerAuthority(authId) {
  * 验证品牌权限
  */
 export function getBrandAuthority(brandId) {
-  if (Object.keys(window.user).length) {
+  if (window.user && Object.keys(window.user).length) {
     const availableBrands = window.user.authorities.available_brands;
     if (availableBrands.indexOf(brandId) !== -1) {
       return true;
@@ -172,7 +172,7 @@ export function getBrandAuthority(brandId) {
  * 验证部门权限
  */
 export function getDepartmentAuthority(departmentId) {
-  if (Object.keys(window.user).length) {
+  if (window.user && Object.keys(window.user).length) {
     const availableDepartments = window.user.authorities.available_departments;
     if (availableDepartments.indexOf(departmentId) !== -1) {
       return true;

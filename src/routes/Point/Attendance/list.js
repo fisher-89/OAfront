@@ -69,7 +69,7 @@ export default class extends PureComponent {
       {
         title: '统计日期',
         dataIndex: 'workDate',
-        searcher: true,
+        sorter: true,
         render: (val) => {
           return val.slice(0, 10);
         },
@@ -77,35 +77,42 @@ export default class extends PureComponent {
       {
         title: '上班时间',
         dataIndex: 'userOnTime',
+        sorter: true,
         render: val => val || '缺卡',
       },
       {
         title: '下班时间',
+        sorter: true,
         dataIndex: 'userOffTime',
         render: val => val || '缺卡',
       },
       {
         title: '工作时长',
+        sorter: true,
         dataIndex: 'worktime',
         render: val => (val / 60).toFixed(2),
       },
       {
         title: '请假时长',
+        sorter: true,
         dataIndex: 'leavetime',
         render: val => (val / 60).toFixed(2),
       },
       {
         title: '加班时长',
+        sorter: true,
         dataIndex: 'overtime',
         render: val => (val / 60).toFixed(2),
       },
       {
         title: '迟到时长',
+        sorter: true,
         dataIndex: 'latetime',
         render: val => (val / 60).toFixed(2),
       },
       {
         title: '早退时长',
+        sorter: true,
         dataIndex: 'earlytime',
         render: val => (val / 60).toFixed(2),
       },

@@ -109,7 +109,7 @@ export default class extends React.PureComponent {
     return (
       <FormItem label={labelValue.region_level} {...fieldsItemLayout}>
         {getFieldDecorator('region_level', {
-          initialValue: initialValue.region_level || null,
+          initialValue: `${initialValue.region_level}` || null,
         })(
           <RadioGroup>
             <Radio value="3">省/市/区</Radio>
@@ -131,17 +131,17 @@ export default class extends React.PureComponent {
         value: 'id',
         lable: 'full_name',
       }, 0);
-    return (
+    return departmentTree && (
       <FormItem label={labelValue.oa_id} {...fieldsItemLayout}>
         {getFieldDecorator('oa_id', {
-          initialValue: initialValue.oa_id || [],
+          initialValue: initialValue.oa_id,
         })(
           <TreeSelect
             multiple
             allowClear
             placeholder="请选择部门"
             treeData={departmentTree}
-            getPopupContainer={triggerNode => triggerNode}
+            getPopupContainer={triggerNode => (triggerNode)}
             dropdownStyle={{ maxHeight: '300px', overflow: 'auto' }}
           />
         )}
@@ -301,8 +301,14 @@ export default class extends React.PureComponent {
                   initialValue: initialValue.type || [],
                   rules: [validatorRequired],
                 })(
-                  <Select getPopupContainer={triggerNode => triggerNode} placeholder="请选择" style={{ width: '100%' }} >
-                    {fieldsTypes.map(item => <Option key={item.value}>{item.text}</Option>)}
+                  <Select
+                    placeholder="请选择"
+                    style={{ width: '100%' }}
+                    getPopupContainer={triggerNode => (triggerNode)}
+                  >
+                    {fieldsTypes.map(item => (
+                      <Option key={item.value} value={item.value}>{item.text}</Option>
+                    ))}
                   </Select>
                 )
               }
@@ -367,7 +373,12 @@ export default class extends React.PureComponent {
                 getFieldDecorator('validator_id', {
                   initialValue: initialValue.validator_id || [],
                 })(
-                  <Select mode="multiple" style={{ width: '100%' }} placeholder="请选择" >
+                  <Select
+                    mode="multiple"
+                    style={{ width: '100%' }}
+                    placeholder="请选择"
+                    getPopupContainer={triggerNode => (triggerNode)}
+                  >
                     {
                       validator.map(item => (
                         <Option key={item.id} value={item.id}>{item.name}</Option>
