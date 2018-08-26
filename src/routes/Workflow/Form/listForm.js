@@ -80,7 +80,21 @@ export default class extends React.PureComponent {
 
   handleOk = (value) => {
     const { initialValue, config: { onOk } } = this.props;
-    onOk({ ...initialValue, ...value });
+    const isCheckbox = value.is_checkbox ? 1 : 0;
+    let oaId = value.oa_id || [];
+    if (value.type === 'staff') {
+      oaId = value.oa_id.map(item => (item.staff_sn));
+    } else if (value.type === 'shop') {
+      oaId = value.oa_id.map(item => (item.shop_sn));
+    }
+    onOk({
+      condition: '',
+      region_level: null,
+      ...initialValue,
+      ...value,
+      is_checkbox: isCheckbox,
+      oa_id: oaId,
+    });
   }
 
   fetchDepartment = () => {
@@ -138,16 +152,17 @@ export default class extends React.PureComponent {
   renderStaff = () => {
     const { labelValue } = this;
     const { initialValue, form: { getFieldDecorator } } = this.props;
+    const oaId = (initialValue.oa_id || []).map(item => ({ staff_sn: item }));
     return (
       <FormItem label={labelValue.oa_id} {...fieldsItemLayout}>
         {getFieldDecorator('oa_id', {
-          initialValue: initialValue.oa_id || [],
+          initialValue: oaId,
         })(
           <SearchTable.Staff
             multiple
-            showName="realname"
+            showName="staff_sn"
             placeholder="请选择"
-            name={{ staff_sn: 'staff_sn', realname: 'realname' }}
+            name={{ staff_sn: 'staff_sn' }}
           />
         )}
       </FormItem>
@@ -157,16 +172,17 @@ export default class extends React.PureComponent {
   renderShop = () => {
     const { labelValue } = this;
     const { initialValue, form: { getFieldDecorator } } = this.props;
+    const oaId = (initialValue.oa_id || []).map(item => ({ shop_sn: item }));
     return (
       <FormItem label={labelValue.oa_id} {...fieldsItemLayout}>
         {getFieldDecorator('oa_id', {
-          initialValue: initialValue.oa_id || [],
+          initialValue: oaId,
         })(
           <SearchTable.Shop
             multiple
-            showName="shop_name"
+            showName="shop_sn"
             placeholder="请选择"
-            name={{ shop_sn: 'shop_sn', shop_name: 'shop_name' }}
+            name={{ shop_sn: 'shop_sn' }}
           />
         )}
       </FormItem>

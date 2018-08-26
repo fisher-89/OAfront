@@ -122,6 +122,7 @@ class addForm extends PureComponent {
       gridsError[`grids.${index}.fields`] = `grids[${index}].fields`;
     });
     onError(errors, gridsError, (err) => {
+      console.log(err);
       this.setState({ listError: err });
     });
   }
@@ -327,6 +328,7 @@ class addForm extends PureComponent {
             Object.keys(gridsError[index] || {}).forEach((key) => {
               colorAble = !!gridsError[index][key];
             });
+            const filedsError = gridsError[index] || {};
             return (
               <TabPane
                 tab={(
@@ -361,7 +363,7 @@ class addForm extends PureComponent {
                   })(
                     <FieldList
                       validator={validator}
-                      error={gridsError[index] || {}}
+                      error={filedsError.fields || {}}
                       onChange={(_, key) => this.fieldListChange(key, 'grids')}
                     />
                   )}
