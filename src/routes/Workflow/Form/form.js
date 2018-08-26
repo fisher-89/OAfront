@@ -19,8 +19,13 @@ const { Option } = Select;
 const { TabPane } = Tabs;
 
 @connect(({ loading, workflow }) => ({
-  submitting: loading.effects['workflow/addForm'],
-  fetching: loading.effects['workflow/fetchForm'],
+  loading: (
+    loading.effects['workflow/addForm'] ||
+    loading.effects['workflow/fetchForm'] ||
+    loading.effects['workflow/fetchFormType'] ||
+    loading.effects['workflow/fetchValidator'] ||
+    loading.effects['workflow/editForm']
+  ),
   formVal: workflow.formDetails,
   formType: workflow.formType,
   validator: workflow.validator,

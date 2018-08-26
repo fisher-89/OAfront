@@ -21,7 +21,7 @@ export default class FieldList extends React.Component {
     }
     const staticObject = {};
     Object.keys(labelText).forEach((key) => {
-      if (Object.hasOwnProperty.call(valueTemp, key)) {
+      if (valueTemp[key]) {
         staticObject[labelText[key]] = { value: valueTemp[key] };
       }
     });

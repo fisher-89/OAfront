@@ -1,10 +1,7 @@
 import request from '../utils/request';
 
-export async function query(param, id) {
-  return request(`/api/departments/${id}`, {
+export async function query() {
+  return request('/api/departments', {
     method: 'GET',
-    body: {
-      ...param,
-    },
   });
 }

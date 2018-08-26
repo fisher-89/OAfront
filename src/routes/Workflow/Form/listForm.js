@@ -5,16 +5,22 @@ import {
   Select,
   Row,
   Col,
+  Switch,
+  Radio,
+  TreeSelect,
   InputNumber,
 } from 'antd';
 import OAForm, {
   InputTags,
   OAModal,
+  SearchTable,
 } from '../../../components/OAForm';
 import TagInput from '../../../components/TagInput';
+import { markTreeData } from '../../../utils/utils';
 
 const FormItem = OAForm.Item;
 const { Option } = Select;
+const RadioGroup = Radio.Group;
 
 const fieldsBoxLayout = { span: 12 };
 const fieldsItemLayout = {
@@ -30,6 +36,7 @@ export const fieldsTypes = [
   { value: 'time', text: '时间' },
   { value: 'array', text: '数组' },
   { value: 'file', text: '文件' },
+  { value: 'region', text: '地区' },
   { value: 'department', text: '部门控件' },
   { value: 'staff', text: '员工控件' },
   { value: 'shop', text: '店铺控件' },
@@ -39,6 +46,10 @@ export const labelText = {
   name: '名称',
   key: '键名',
   type: '字段类型',
+  is_checkbox: '是否多选',
+  condition: '条件',
+  region_level: '地区级数',
+  oa_id: '关联编号',
   scale: '小数位数',
   min: '最小值',
   max: '最大值',
@@ -49,10 +60,11 @@ export const labelText = {
 };
 
 
-@connect(({ workflow, loading }) => ({
+@connect(({ department, workflow, loading }) => ({
   loading: (
     loading.effects['workflow/fetchValidator']
   ),
+  department: department.department,
   validator: workflow.validator,
 }))
 @OAForm.create()
@@ -71,6 +83,162 @@ export default class extends React.PureComponent {
     onOk({ ...initialValue, ...value });
   }
 
+  fetchDepartment = () => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'department/fetchDepartment' });
+  };
+
+
+  renderRegion = () => {
+    const { labelValue } = this;
+    const { initialValue, form: { getFieldDecorator } } = this.props;
+    return (
+      <FormItem label={labelValue.region_level} {...fieldsItemLayout}>
+        {getFieldDecorator('region_level', {
+          initialValue: initialValue.region_level || null,
+        })(
+          <RadioGroup>
+            <Radio value="3">省/市/区</Radio>
+            <Radio value="2">省/市</Radio>
+            <Radio value="1">省</Radio>
+          </RadioGroup>
+        )}
+      </FormItem>
+    );
+  }
+
+  renderDepartment = () => {
+    const { labelValue } = this;
+    const { department } = this.props;
+    const { initialValue, form: { getFieldDecorator } } = this.props;
+    const departmentTree = markTreeData(
+      department, {
+        parentId: 'parent_id',
+        value: 'id',
+        lable: 'full_name',
+      }, 0);
+    return (
+      <FormItem label={labelValue.oa_id} {...fieldsItemLayout}>
+        {getFieldDecorator('oa_id', {
+          initialValue: initialValue.oa_id || [],
+        })(
+          <TreeSelect
+            multiple
+            allowClear
+            placeholder="请选择部门"
+            treeData={departmentTree}
+            getPopupContainer={triggerNode => triggerNode}
+            dropdownStyle={{ maxHeight: '300px', overflow: 'auto' }}
+          />
+        )}
+      </FormItem>
+    );
+  }
+
+  renderStaff = () => {
+    const { labelValue } = this;
+    const { initialValue, form: { getFieldDecorator } } = this.props;
+    return (
+      <FormItem label={labelValue.oa_id} {...fieldsItemLayout}>
+        {getFieldDecorator('oa_id', {
+          initialValue: initialValue.oa_id || [],
+        })(
+          <SearchTable.Staff
+            multiple
+            showName="realname"
+            placeholder="请选择"
+            name={{ staff_sn: 'staff_sn', realname: 'realname' }}
+          />
+        )}
+      </FormItem>
+    );
+  }
+
+  renderShop = () => {
+    const { labelValue } = this;
+    const { initialValue, form: { getFieldDecorator } } = this.props;
+    return (
+      <FormItem label={labelValue.oa_id} {...fieldsItemLayout}>
+        {getFieldDecorator('oa_id', {
+          initialValue: initialValue.oa_id || [],
+        })(
+          <SearchTable.Shop
+            multiple
+            showName="shop_name"
+            placeholder="请选择"
+            name={{ shop_sn: 'shop_sn', shop_name: 'shop_name' }}
+          />
+        )}
+      </FormItem>
+    );
+  }
+
+  renderCheckBoxExtar = () => {
+    const { initialValue, form: { getFieldDecorator } } = this.props;
+    const { labelValue } = this;
+    return (
+      <FormItem label={labelValue.is_checkbox} {...fieldsItemLayout}>
+        {
+          getFieldDecorator('is_checkbox', {
+            initialValue: initialValue.is_checkbox === 1 || false,
+            valuePropName: 'checked',
+          })(
+            <Switch />
+          )
+        }
+      </FormItem>
+    );
+  }
+
+  renderStaffCondition = () => {
+    const { initialValue, form: { getFieldDecorator } } = this.props;
+    const { labelValue } = this;
+    return (
+      <FormItem label={labelValue.condition} {...fieldsItemLayout}>
+        {
+          getFieldDecorator('condition', {
+            initialValue: initialValue.condition || '',
+          })(
+            <Input placeholder="请输入" />
+          )
+        }
+      </FormItem>
+    );
+  }
+
+  renderTypeComponent = () => {
+    const { form: { getFieldValue } } = this.props;
+    const typeValue = getFieldValue('type');
+    let render;
+    let extarRender = [];
+    switch (typeValue) {
+      case 'region':
+        render = this.renderRegion();
+        break;
+      case 'department':
+        this.fetchDepartment();
+        render = this.renderDepartment();
+        extarRender = [this.renderCheckBoxExtar()];
+        break;
+      case 'staff':
+        render = this.renderStaff();
+        extarRender = [this.renderCheckBoxExtar(), this.renderStaffCondition()];
+        break;
+      case 'shop':
+        render = this.renderShop();
+        extarRender = [this.renderCheckBoxExtar()];
+        break;
+      default:
+        break;
+    }
+    return render ? (
+      [
+        ...extarRender,
+        render,
+      ]
+    ) : [];
+  }
+
   render() {
     const {
       initialValue, validator, dataSource, form, validateFields, validatorRequired,
@@ -82,8 +250,9 @@ export default class extends React.PureComponent {
     const modalProps = { ...this.props.config };
     delete modalProps.onOK;
     const { labelValue } = this;
+
     return (
-      <OAModal {...modalProps} onSubmit={validateFields(this.handleOk)}>
+      <OAModal {...modalProps} width={950} onSubmit={validateFields(this.handleOk)}>
         <Row>
           <Col {...fieldsBoxLayout}>
             <FormItem label={labelValue.name} {...fieldsItemLayout}>
@@ -116,13 +285,21 @@ export default class extends React.PureComponent {
                   initialValue: initialValue.type || [],
                   rules: [validatorRequired],
                 })(
-                  <Select placeholder="请选择" style={{ width: '100%' }} >
+                  <Select getPopupContainer={triggerNode => triggerNode} placeholder="请选择" style={{ width: '100%' }} >
                     {fieldsTypes.map(item => <Option key={item.value}>{item.text}</Option>)}
                   </Select>
                 )
               }
             </FormItem>
           </Col>
+          {this.renderTypeComponent().map((item, index) => {
+            const key = `key-${index}`;
+            return (
+              <Col {...fieldsBoxLayout} key={key}>
+                {item}
+              </Col>
+            );
+          })}
           <Col {...fieldsBoxLayout}>
             <FormItem label={labelValue.scale} {...fieldsItemLayout}>
               {
