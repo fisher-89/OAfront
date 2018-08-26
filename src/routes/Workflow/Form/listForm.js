@@ -21,7 +21,8 @@ const fieldsItemLayout = {
   labelCol: { xs: { span: 24 }, sm: { span: 8 } },
   wrapperCol: { xs: { span: 24 }, lg: { span: 12 } },
 };
-const fieldsTypes = [
+
+export const fieldsTypes = [
   { value: 'text', text: '文本' },
   { value: 'int', text: '数字' },
   { value: 'date', text: '日期' },
@@ -29,7 +30,24 @@ const fieldsTypes = [
   { value: 'time', text: '时间' },
   { value: 'array', text: '数组' },
   { value: 'file', text: '文件' },
+  { value: 'department', text: '部门控件' },
+  { value: 'staff', text: '员工控件' },
+  { value: 'shop', text: '店铺控件' },
 ];
+
+export const labelText = {
+  name: '名称',
+  key: '键名',
+  type: '字段类型',
+  scale: '小数位数',
+  min: '最小值',
+  max: '最大值',
+  options: '可选值',
+  validator_id: '验证规则',
+  default_value: '默认值',
+  description: '描述',
+};
+
 
 @connect(({ workflow, loading }) => ({
   loading: (
@@ -39,28 +57,40 @@ const fieldsTypes = [
 }))
 @OAForm.create()
 export default class extends React.PureComponent {
+  componentWillReceiveProps(nextProps) {
+    const { error, onError } = nextProps;
+    if (Object.keys(error).length && error !== this.props.error) {
+      onError(error, false);
+    }
+  }
+
+  labelValue = labelText;
+
   handleOk = (value) => {
     const { initialValue, config: { onOk } } = this.props;
     onOk({ ...initialValue, ...value });
   }
 
   render() {
-    const { initialValue, validator, dataSource, form, validateFields } = this.props;
+    const {
+      initialValue, validator, dataSource, form, validateFields, validatorRequired,
+    } = this.props;
     const { getFieldDecorator } = form;
     const fields = dataSource.map((item) => {
       return { key: item.key, name: item.name };
     });
     const modalProps = { ...this.props.config };
     delete modalProps.onOK;
+    const { labelValue } = this;
     return (
       <OAModal {...modalProps} onSubmit={validateFields(this.handleOk)}>
         <Row>
           <Col {...fieldsBoxLayout}>
-            <FormItem label="名称" {...fieldsItemLayout}>
+            <FormItem label={labelValue.name} {...fieldsItemLayout}>
               {
                 getFieldDecorator('name', {
                   initialValue: initialValue.name || '',
-                  // rules: [{ required: true, message: '必填项!' }],
+                  rules: [validatorRequired],
                 })(
                   <Input placeholder="请输入" />
                 )
@@ -68,11 +98,11 @@ export default class extends React.PureComponent {
             </FormItem>
           </Col>
           <Col {...fieldsBoxLayout}>
-            <FormItem label="键名" {...fieldsItemLayout}>
+            <FormItem label={labelValue.key} {...fieldsItemLayout}>
               {
                 getFieldDecorator('key', {
                   initialValue: initialValue.key || '',
-                  rules: [{ required: true, message: '必填项!' }],
+                  rules: [validatorRequired],
                 })(
                   <Input placeholder="请输入" />
                 )
@@ -80,11 +110,11 @@ export default class extends React.PureComponent {
             </FormItem>
           </Col>
           <Col {...fieldsBoxLayout}>
-            <FormItem label="字段类型" {...fieldsItemLayout}>
+            <FormItem label={labelValue.type} {...fieldsItemLayout}>
               {
                 getFieldDecorator('type', {
                   initialValue: initialValue.type || [],
-                  rules: [{ required: true, message: '必填项!' }],
+                  rules: [validatorRequired],
                 })(
                   <Select placeholder="请选择" style={{ width: '100%' }} >
                     {fieldsTypes.map(item => <Option key={item.value}>{item.text}</Option>)}
@@ -94,7 +124,7 @@ export default class extends React.PureComponent {
             </FormItem>
           </Col>
           <Col {...fieldsBoxLayout}>
-            <FormItem label="小数位数" {...fieldsItemLayout}>
+            <FormItem label={labelValue.scale} {...fieldsItemLayout}>
               {
                 getFieldDecorator('scale', {
                   initialValue: initialValue.scale || 0,
@@ -105,7 +135,7 @@ export default class extends React.PureComponent {
             </FormItem>
           </Col>
           <Col {...fieldsBoxLayout}>
-            <FormItem label="最小值" {...fieldsItemLayout}>
+            <FormItem label={labelValue.min} {...fieldsItemLayout}>
               {
                 getFieldDecorator('min', {
                   initialValue: initialValue.min || '',
@@ -116,7 +146,7 @@ export default class extends React.PureComponent {
             </FormItem>
           </Col>
           <Col {...fieldsBoxLayout}>
-            <FormItem label="最大值" {...fieldsItemLayout}>
+            <FormItem label={labelValue.max} {...fieldsItemLayout}>
               {
                 getFieldDecorator('max', {
                   initialValue: initialValue.max || '',
@@ -127,7 +157,7 @@ export default class extends React.PureComponent {
             </FormItem>
           </Col>
           <Col {...fieldsBoxLayout}>
-            <FormItem label="可选值" {...fieldsItemLayout}>
+            <FormItem label={labelValue.options} {...fieldsItemLayout}>
               {
                 getFieldDecorator('options', {
                   initialValue: initialValue.options || [],
@@ -139,10 +169,7 @@ export default class extends React.PureComponent {
           </Col>
 
           <Col {...fieldsBoxLayout}>
-            <FormItem
-              label="验证规则"
-              {...fieldsItemLayout}
-            >
+            <FormItem label={labelValue.validator_id} {...fieldsItemLayout}>
               {
                 getFieldDecorator('validator_id', {
                   initialValue: initialValue.validator_id || [],
@@ -160,7 +187,7 @@ export default class extends React.PureComponent {
           </Col>
           <Col span={24}>
             <FormItem
-              label="默认值"
+              label={labelValue.default_value}
               labelCol={{ xs: { span: 24 }, sm: { span: 8 }, lg: { span: 4 } }}
               wrapperCol={{ xs: { span: 24 }, sm: { span: 16 }, lg: { span: 18 } }}
             >
@@ -175,7 +202,7 @@ export default class extends React.PureComponent {
           </Col>
           <Col span={24}>
             <FormItem
-              label="描述"
+              label={labelValue.description}
               labelCol={{ xs: { span: 24 }, sm: { span: 8 }, lg: { span: 4 } }}
               wrapperCol={{ xs: { span: 24 }, sm: { span: 16 }, lg: { span: 18 } }}
             >

@@ -15,7 +15,7 @@ import { getRoutes } from '../utils/utils';
 import Authorized from '../utils/Authorized';
 import { getMenuData } from '../common/menu';
 import logo from '../assets/logo.svg';
-import './BasiclLayout.less';
+import styles from './BasiclLayout.less';
 
 const { Content } = Layout;
 const { AuthorizedRoute } = Authorized;
@@ -162,7 +162,7 @@ class BasicLayout extends React.PureComponent {
       currentUser, routerData, match, location, collapsed, notices,
     } = this.props;
     const layout = (
-      <Layout>
+      <Layout className={styles.content}>
         <SiderMenu
           logo={logo}
           // 不带Authorized参数的情况下如果没有权限,会强制跳到403界面

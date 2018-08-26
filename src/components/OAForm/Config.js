@@ -1,19 +1,52 @@
 import React from 'react';
-import { Spin } from 'antd';
+import { Spin, message } from 'antd';
 import Operator from './operator';
 import Create from './Create';
-import { unicodeFieldsError } from '../../utils/utils';
+import { unicodeFieldsError, dotFieldsValue } from '../../utils/utils';
 
 import './message.less';
 import styles from './index.less';
 
+function getFieldsName(fields) {
+  const changeFields = dotFieldsValue(fields);
+  const nameKey = Object.keys(changeFields);
+  const rule = /(\.name)$/;
+  const dirty = /(\.dirty)$/;
+  const key = nameKey.find(item => rule.test(item) && item.indexOf('value') === -1);
+  const dirtyKey = nameKey.find(item => dirty.test(item) && item.indexOf('value') === -1);
+  return dirtyKey !== undefined ? changeFields[key] : undefined;
+}
+
+function getFieldsValueKey(name) {
+  const names = name.split('.');
+  let executeStr = '';
+  const point = /(\.)$/;
+  names.forEach((key) => {
+    const newKey = parseInt(key, 10);
+    if (isNaN(newKey)) {
+      executeStr += `${key}.`;
+    } else {
+      executeStr = executeStr.replace(point, '');
+      executeStr += `[${newKey}].`;
+    }
+  });
+  return executeStr.replace(point, '');
+}
+
+
 export default formCreate => option => (Componet) => {
   const newOption = {
     ...option,
-    onValuesChange(props, fieldValue, allValues) {
+    onFieldsChange(props, fields) {
+      const name = getFieldsName(fields);
+      if (name) {
+        const newName = getFieldsValueKey(name);
+        const fieldsKey = eval(`fields.${newName}`);
+        if (fieldsKey && fieldsKey.value) props.setFiedError(name, fieldsKey.value);
+      }
+    },
+    onValuesChange(props, _, allValues) {
       props.onChange(allValues, props.index);
-      const [name] = Object.keys(fieldValue);
-      props.setFiedError(name);
     },
   };
   const { localBackUpKey } = option || {};
@@ -42,12 +75,13 @@ export default formCreate => option => (Componet) => {
       this.setState({ autoSave, localSave });
     }
 
-    handleFieldsError = (name) => {
+    handleFieldsError = (name, value) => {
       if (!this.form) return;
       const { setFields, getFieldError } = this.form;
-      if (getFieldError(name)) {
-        setFields({ [name]: {} });
-      }
+      const fieldsErrors = getFieldError(name);
+      if (fieldsErrors && value) {
+        setFields({ [name]: { value } });
+      } else if (value === null) { setFields({ [name]: {} }); }
     }
 
     handleOnChange = (changedFields, index) => {
@@ -70,22 +104,34 @@ export default formCreate => option => (Componet) => {
       };
     }
 
-    disposeErrorResult = (errResult, extraConfig, values) => {
-      const customErr = {};
-      const formError = {};
+    makeExtraError = (errResult, extraConfig, _, name) => {
       const { setFields } = this.form;
+      const index = extraConfig[name];
+      const value = eval(`arguments[2].${index}`);
+      const customErr = {};
+      if (
+        extraConfig &&
+        extraConfig[name] &&
+        value !== undefined &&
+        typeof extraConfig === 'object'
+      ) {
+        const key = extraConfig[name].replace(/(\[)|(\]\.)/g, '.');
+        setFields({ [key]: { ...errResult[name], value } });
+      } else {
+        customErr[name] = errResult[name];
+      }
+      return customErr;
+    }
+
+    disposeErrorResult = (errResult, extraConfig, values) => {
+      let customErr = {};
+      const formError = {};
       Object.keys(errResult).forEach((name) => {
         if (!Object.hasOwnProperty.call(errResult[name], 'value')) {
-          if (typeof extraConfig === 'object' && extraConfig && extraConfig[name] && values[extraConfig[name]]) {
-            setFields({
-              [extraConfig[name]]: {
-                ...errResult[name],
-                value: values[extraConfig[name]],
-              },
-            });
-          } else {
-            customErr[name] = errResult[name];
-          }
+          customErr = {
+            ...customErr,
+            ...this.makeExtraError(errResult, extraConfig, values, name),
+          };
         } else {
           formError[name] = errResult[name];
         }
@@ -99,9 +145,15 @@ export default formCreate => option => (Componet) => {
     handleOnError = (error, extraConfig = {}, callback, isUnicode) => {
       if (!this.form) return;
       const { setFields, getFieldsValue } = this.form;
+      if (extraConfig === false) {
+        if (Object.keys(error).length) setFields(error);
+        return;
+      }
       const values = getFieldsValue();
       const errResult = unicodeFieldsError(error, isUnicode, { ...values });
+
       const { customErr, formError } = this.disposeErrorResult(errResult, extraConfig, values);
+
       if (typeof extraConfig === 'function') extraConfig(customErr, values, error);
       if (callback) callback(customErr, values, error);
       if (Object.keys(formError).length) setFields(formError);
@@ -111,8 +163,16 @@ export default formCreate => option => (Componet) => {
       return (e) => {
         if (e) e.preventDefault();
         if (!this.form) return;
+        const fieldsError = dotFieldsValue(this.form.getFieldsError());
+        let errorAble = false;
+        Object.keys(fieldsError).forEach((key) => {
+          if (fieldsError[key]) {
+            errorAble = true;
+          }
+        });
+        if (errorAble) message.error('表单存在未处理的错误信息！');
         this.form.validateFieldsAndScroll((err, values) => {
-          if (!err) {
+          if (!err && !errorAble) {
             callback(values, this.handleOnError);
           }
         });

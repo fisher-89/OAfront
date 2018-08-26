@@ -2,18 +2,18 @@ import React from 'react';
 import {
   Icon,
   Button,
-  Tooltip,
 } from 'antd';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import update from 'immutability-helper';
 import ItemView from './itemView';
 import CustomerCard from '../FormList/Drag';
+import styles from '../FormList/index.less';
 /**
  * 列表控件 弹窗形式
  * config:{
     sorter: false,   是否排序 默认否
-    initialValue: [],  默认值
+    value: [],  默认值
     onChange: () => { }, 表单change对象
  * }
  */
@@ -22,63 +22,73 @@ import CustomerCard from '../FormList/Drag';
 export default class List extends React.Component {
   constructor(props) {
     super(props);
-    let { initialValue } = props;
+    let { value } = props;
     this.newIndex = 0;
-    initialValue = this.dotDataSource(initialValue);
+    value = this.dotDataSource(value);
     this.state = {
-      dataSource: initialValue || [],
+      dataSource: value || [],
       dataInfo: {},
+      error: {},
       visible: false,
     };
   }
 
   componentWillReceiveProps(nextProps) {
     const { dataSource } = this.state;
-    if (nextProps.initialValue.length !== 0) {
+    if (nextProps.value.length !== 0) {
       if (
-        JSON.stringify(nextProps.initialValue)
+        JSON.stringify(nextProps.value)
         !==
-        JSON.stringify(this.props.initialValue)
+        JSON.stringify(this.props.value)
         && (dataSource.length === 0)
       ) {
-        this.setState({ dataSource: this.dotDataSource(nextProps.initialValue) });
+        this.setState({ dataSource: this.dotDataSource(nextProps.value) });
       }
     }
   }
 
-  dotDataSource = (initialValue) => {
-    const newValue = initialValue.map((item, index) => {
+  dotDataSource = (value) => {
+    const newValue = value.map((item, index) => {
       return {
         ...item,
         onlyId: index + 1,
       };
     });
-    this.newIndex = initialValue.length;
+    this.newIndex = value.length;
     return newValue;
   }
 
 
   handleEditItem = (id) => {
     const { dataSource } = this.state;
-    const [dataInfo] = dataSource.filter(item => item.onlyId === id);
+    const { error } = this.props;
+    let errorInfo = {};
+    const dataInfo = dataSource.find((item, index) => {
+      if (item.onlyId === id) errorInfo = error[index] || {};
+      return item.onlyId === id;
+    });
     this.setState({
       dataInfo,
+      error: { ...errorInfo },
     }, () => this.handleVisible(true));
   }
 
-  handleOk = (params) => {
+  handleOk = (params, labelText) => {
     const { dataSource } = this.state;
+    this.labelText = labelText;
     if (Object.keys(params).length === 0) {
       this.handleVisible(false);
       return;
     }
+    let dataIndex;
     const dataInfo = { ...params };
     let newDataSource = [...dataSource];
     if (dataInfo.onlyId) {
-      newDataSource = dataSource.map((item) => {
-        let newItem = item;
+      newDataSource = dataSource.map((item, index) => {
+        const newItem = item;
         if (newItem.onlyId === dataInfo.onlyId) {
-          newItem = dataInfo;
+          dataIndex = index;
+          return dataInfo;
         }
         return newItem;
       });
@@ -86,6 +96,7 @@ export default class List extends React.Component {
       this.newIndex += 1;
       dataInfo.onlyId = this.newIndex;
       newDataSource.push(dataInfo);
+      dataIndex = newDataSource.length - 1;
     }
     this.setState({
       visible: false,
@@ -96,18 +107,20 @@ export default class List extends React.Component {
         delete temp.onlyId;
         return temp;
       });
-      this.props.onChange(value);
+      this.props.onChange(value, dataIndex);
     });
   }
 
   handleRemove = (id) => {
     const { dataSource } = this.state;
-    const newDataSource = dataSource.filter(item => item.onlyId !== id);
+    const newDataSource = dataSource.filter((item) => {
+      return item.onlyId !== id;
+    });
     this.setState({
       dataSource: [...newDataSource],
     }, () => {
       this.handleVisible(false);
-      this.props.onChange(this.state.dataSource);
+      this.props.onChange(this.state.dataSource, 'all');
     });
   }
 
@@ -116,23 +129,13 @@ export default class List extends React.Component {
   }
 
   makeButtom = (id) => {
-    return [
-      <Tooltip key="delete" title="删除" placement="right">
-        <Icon
-          className="dynamic-delete-button"
-          type="close"
-          onClick={() => this.handleRemove(id)}
-        />
-      </Tooltip>,
-      <Tooltip key="edit" title="编辑" placement="right">
-        <a>
-          <Icon
-            type="form"
-            onClick={() => this.handleEditItem(id)}
-          />
-        </a>
-      </Tooltip>,
-    ];
+    return (
+      <div className={styles.action}>
+        <Icon className={styles.defaultColor} type="form" onClick={() => this.handleEditItem(id)} />
+        <br />
+        <Icon className={styles.danger} type="delete" onClick={() => this.handleRemove(id)} />
+      </div>
+    );
   }
 
   moveCard = (dragIndex, hoverIndex) => {
@@ -150,28 +153,30 @@ export default class List extends React.Component {
       };
     });
     this.setState({ dataSource: newDataSource }, () => {
-      this.props.onChange(this.state.dataSource);
+      this.props.onChange(this.state.dataSource, 'all');
     });
   }
 
   makeListContent = () => {
     const { dataSource } = this.state;
     const {
+      error,
       sorter,
-      // listItemContent,
-      // error,
+      listItemContent,
     } = this.props;
     const list = dataSource.map((value, i) => {
-      // const errorObj = typeof error[i] === 'object' ? error[i] : {};
-      // const form = listItemContent(value, errorObj);
-      // const key = i;
-      const content = <ItemView />;
+      const errorObj = error[i] ? error[i] : {};
+      const errorAble = Object.keys(errorObj).length;
+      const data = listItemContent(value, errorObj);
+      const content = <ItemView data={data || {}} />;
       const result = sorter ? (
         <CustomerCard
           key={value.onlyId}
           index={i}
           id={value.onlyId}
           content={content}
+          errorAble={errorAble}
+          actionBtn={() => this.makeButtom(value.onlyId)}
           moveCard={this.moveCard}
         />
       ) : content;
@@ -181,8 +186,8 @@ export default class List extends React.Component {
   }
 
   makeModalComponet = () => {
-    const { title, width, zIndex, bodyStyle, height, error } = this.props;
-    const { visible, dataInfo, dataSource } = this.state;
+    const { title, width, zIndex, bodyStyle, height } = this.props;
+    const { visible, dataInfo, dataSource, error } = this.state;
     const response = {
       error,
       dataSource,
@@ -227,7 +232,7 @@ export default class List extends React.Component {
 }
 List.defaultProps = {
   sorter: false,
-  initialValue: [],
+  value: [],
   onChange: () => { },
   width: 520,
   zIndex: 1000,

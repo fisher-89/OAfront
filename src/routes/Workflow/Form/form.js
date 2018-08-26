@@ -35,6 +35,7 @@ class addForm extends PureComponent {
     this.state = {
       panes: [],
       activeKey: 'form',
+      listError: {},
       formId: props.match.params.id,
       isEdit: props.match.params.id !== undefined,
     };
@@ -89,10 +90,34 @@ class addForm extends PureComponent {
     }
   }
 
+  fieldListChange = (errKey, name) => {
+    const { listError } = this.state;
+    const fieldsError = listError[name] || {};
+    if (errKey === 'all') {
+      const newListError = { ...listError };
+      delete newListError[name];
+      this.setState({ listError: newListError });
+    } else if (fieldsError[errKey]) {
+      delete fieldsError[errKey];
+      const newListError = {
+        ...listError,
+        [name]: { ...fieldsError },
+      };
+      this.setState({ listError: newListError });
+    }
+  }
+
   handleOnError = (errors) => {
     const { onError } = this.props;
-    onError(errors, (err) => {
-      console.log(err);
+    const { panes } = this.state;
+    const gridsError = {};
+    panes.forEach((_, index) => {
+      gridsError[`grids.${index}.name`] = `grids[${index}].name`;
+      gridsError[`grids.${index}.key`] = `grids[${index}].key`;
+      gridsError[`grids.${index}.fields`] = `grids[${index}].fields`;
+    });
+    onError(errors, gridsError, (err) => {
+      this.setState({ listError: err });
     });
   }
 
@@ -138,7 +163,6 @@ class addForm extends PureComponent {
     this.props.history.push('/workflow/form');
   }
 
-
   addTabs = () => {
     const { panes } = this.state;
     this.newTabIndex += 1;
@@ -166,29 +190,16 @@ class addForm extends PureComponent {
     this.setState({ panes, activeKey });
   }
 
-
-  // handleFieldListOnChange = (listData, name) => {
-  //   this.props.handleFieldsError(name);
-  // }
-
   render() {
     const {
-      formType,
-      // fetching,
-      // submitting,
-      validateFields,
       form: {
         getFieldDecorator,
+        getFieldsError,
       },
-      validator,
-      formVal,
-    } = this.props;
-    const {
-      formId,
-      isEdit,
-      activeKey,
-      panes,
-    } = this.state;
+      validatorRequired,
+      formType, validateFields, validator, formVal } = this.props;
+
+    const { formId, isEdit, activeKey, panes, listError } = this.state;
     let initialFieldsValue = {};
     let grids = {};
     let fields = [];
@@ -218,12 +229,11 @@ class addForm extends PureComponent {
         sm: { span: 12 },
       },
     };
+    const formError = getFieldsError(['name', 'form_type_id', 'fields']);
+    const errColor = (formError.name || formError.form_type_id || formError.fields || listError.fields) && { style: { color: 'red' } };
+    const gridsError = listError.grids || {};
     return (
-      <OAForm
-        // onSubmitBtn
-        onSubmit={validateFields(isEdit ? this.handleEditSubmit : this.handleAddSubmit)}
-      // loading={(fetching || submitting) === true}
-      >
+      <OAForm onSubmit={validateFields(isEdit ? this.handleEditSubmit : this.handleAddSubmit)}>
         <Tabs
           tabPosition="left"
           activeKey={activeKey}
@@ -241,7 +251,7 @@ class addForm extends PureComponent {
           )}
         >
           <TabPane
-            tab="表单"
+            tab={<span {...errColor}>表单</span>}
             key="form"
           >
             <FormItem
@@ -251,6 +261,7 @@ class addForm extends PureComponent {
             >
               {getFieldDecorator('name', {
                 initialValue: initialFieldsValue.name || '',
+                rules: [validatorRequired],
               })(
                 <Input placeholder="请输入" />
               )}
@@ -272,6 +283,7 @@ class addForm extends PureComponent {
             >
               {getFieldDecorator('form_type_id', (initialFieldsValue ? {
                 initialValue: initialFieldsValue.form_type_id,
+                rules: [validatorRequired],
               } : {}))(
                 <Select placeholder="请选择" >
                   {formType.map(item => <Option key={item.id}>{item.name}</Option>)}
@@ -294,11 +306,12 @@ class addForm extends PureComponent {
             >
               {getFieldDecorator('fields', {
                 initialValue: initialFieldsValue.fields || [],
+                rules: [validatorRequired],
               })(
                 <FieldList
                   validator={validator}
-                // error={fieldsError.fields || {}}
-                // onChange={listData => this.handleFieldListOnChange(listData, 'fields')}
+                  error={listError.fields || {}}
+                  onChange={(_, key) => this.fieldListChange(key, 'grids')}
                 />
               )}
             </FormItem>
@@ -308,13 +321,8 @@ class addForm extends PureComponent {
               <TabPane
                 tab={(
                   <span>
-                    {pane.title}
-                    <Icon
-                      type="close"
-                      onClick={(e) => {
-                        this.removeTabs(pane.key, e);
-                      }}
-                    />
+                    <span {...gridsError[index] && { style: { color: 'red' } }}>{pane.title}</span>
+                    <Icon type="close" onClick={e => this.removeTabs(pane.key, e)} />
                   </span>
                 )}
                 forceRender
@@ -323,6 +331,7 @@ class addForm extends PureComponent {
                 <FormItem label="名称" {...formItemLayout}>
                   {getFieldDecorator(`grids.${index}.name`, {
                     initialValue: grids && grids[index] ? grids[index].name : '',
+                    rules: [validatorRequired],
                   })(
                     <Input placeholder="请输入" />
                   )}
@@ -330,6 +339,7 @@ class addForm extends PureComponent {
                 <FormItem label="键名" {...formItemLayout}>
                   {getFieldDecorator(`grids.${index}.key`, {
                     initialValue: grids && grids[index] ? grids[index].key : '',
+                    rules: [validatorRequired],
                   })(
                     <Input placeholder="请输入" />
                   )}
@@ -340,9 +350,8 @@ class addForm extends PureComponent {
                   })(
                     <FieldList
                       validator={validator}
-                    // error={fieldsError.grids || {}}
-                    // onChange={listData => this.h
-                    // andleFieldListOnChange(listData, `grids.${index}.fields`)}
+                      error={gridsError[index] || {}}
+                      onChange={(_, key) => this.fieldListChange(key, 'grids')}
                     />
                   )}
                 </FormItem>

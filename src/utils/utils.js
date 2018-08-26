@@ -234,6 +234,8 @@ export function dotFieldsValue(fieldsValue, parentKey) {
       } else {
         response[newKey] = value;
       }
+    } else if (value instanceof Error) {
+      response[newKey] = value;
     } else if (typeof value === 'object') {
       response = {
         ...response,
@@ -506,11 +508,12 @@ export function unicodeFieldsError(temp, isUnicode = true, values) {
     const value = fieldsValue[key];
     let fieldsValueMd = params;
     const keyGroup = key.split('.');
+    const newValues = dotFieldsValue(values);
     keyGroup.forEach((item, index) => {
       if (index === keyGroup.length - 1) {
-        if (Object.hasOwnProperty.call(values, item)) {
+        if (Object.hasOwnProperty.call(newValues, key)) {
           fieldsValueMd[item] = isUnicode ?
-            { value: values[item], errors: [new Error(value[0])] } : value;
+            { value: newValues[key], errors: [new Error(value[0])] } : value;
         } else {
           fieldsValueMd[item] = isUnicode ?
             { errors: [new Error(value[0])] } : value;
@@ -520,6 +523,9 @@ export function unicodeFieldsError(temp, isUnicode = true, values) {
         fieldsValueMd = fieldsValueMd[item];
       }
     });
+    if (Object.hasOwnProperty.call(newValues, key) && !Object.hasOwnProperty.call(params, key)) {
+      params[key] = isUnicode ? { errors: [new Error(value[0])] } : value;
+    }
   });
   return params;
 }

@@ -62,22 +62,28 @@ export default class Card extends Component {
     const {
       content,
       isDragging,
+      actionBtn,
+      errorAble,
       connectDragSource,
       connectDropTarget,
     } = this.props;
     const opacity = isDragging ? 0 : 1;
+    const border = errorAble ? '1px solid #f5222d' : 'solid 1px #cccccc';
     return connectDropTarget(
-      <div className={styles.rectangle} style={{ opacity }}>
+      <div className={styles.rectangle} style={{ opacity, border }}>
         <div className={styles.header}>
           {
             connectDragSource(
               <div className={styles.dragIcon}>
-                <Icon type="bars" />
+                <Icon type="bars" className={styles.defaultColor} />
               </div>
             )
           }
+          {actionBtn()}
         </div>
-        {content}
+        <div className={styles.content}>
+          {content}
+        </div>
       </div>
     );
   }
