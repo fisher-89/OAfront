@@ -78,10 +78,22 @@ export const getRouterData = (app) => {
 
     /** 客户端管理 */
     '/client/customer/add': {
-      component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/Info/add')),
+      component: dynamicWrapper(app, ['customer'], () => import('../routes/Customer/Info/add')),
     },
     '/client/customer/list': {
       component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/Info/list')),
+    },
+    '/client/notepad/add': {
+      component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/Notepad/add')),
+    },
+    '/client/notepad/list': {
+      component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/Notepad/list')),
+    },
+    '/client/action-log/customer': {
+      component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/ActionLog/customer')),
+    },
+    '/client/action-log/notepad': {
+      component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/ActionLog/notepad')),
     },
 
     /** 报销系统 */

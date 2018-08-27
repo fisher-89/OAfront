@@ -51,6 +51,16 @@ const menuData = [
       {
         name: '操作日志',
         path: 'action-log',
+        children: [
+          {
+            name: '客户资料',
+            path: 'customer',
+          },
+          {
+            name: '记事本',
+            path: 'notepad',
+          },
+        ],
       },
     ],
   }, {

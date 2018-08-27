@@ -2,10 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 // import { connect } from 'dva';
 import {
   Card,
-  Button,
-
   Divider,
-
 } from 'antd';
 
 import OATable from '../../../components/OATable';
@@ -18,29 +15,42 @@ export default class Validator extends PureComponent {
   makeColumns = () => {
     const columns = [
       {
+        // width: 80,
+        title: '员工编号',
+        align: 'center',
+        dataIndex: 'id',
+        sorter: true,
+      },
+      {
+        // width: 100,
+        align: 'center',
+        title: '员工姓名',
+        dataIndex: 'name',
+        searcher: true,
+      },
+      {
+        // width: 200,
+        align: 'center',
+        title: '所在部门',
+        dataIndex: 'department',
+      },
+      {
+        // width: 80,
+        title: '职位',
+        align: 'center',
+        dataIndex: 'position',
+      },
+      {
+        // width: 80,
+        title: '状态',
+        align: 'center',
+        dataIndex: 'status',
+      },
+      {
+        // width: 80,
         align: 'center',
         title: '客户姓名',
-        dataIndex: 'name',
-        // width: 160,
-        searcher: true,
-      },
-      {
-        align: 'center',
-        title: '电话',
-        dataIndex: 'phone',
-        // width: 160,
-        searcher: true,
-      },
-      {
-        align: 'center',
-        title: '客户来源',
-        dataIndex: 'source',
-      },
-      {
-        align: 'center',
-        title: '客户状态',
-        // width: 120,
-        dataIndex: 'status',
+        dataIndex: 'customer',
       },
       {
         // width: 240,
@@ -49,26 +59,19 @@ export default class Validator extends PureComponent {
         dataIndex: 'brand',
       },
       {
-        // width: 120,
+        // width: 200,
         align: 'center',
-        title: '合作时间',
+        title: '记录时间',
         dataIndex: 'time',
       },
       {
-        // width: 160,
-        title: '维护人',
+        // width: 80,
         align: 'center',
-        dataIndex: 'staff',
-        searcher: true,
+        title: '操作类型',
+        dataIndex: 'actionType',
       },
       {
-        // width: 320,
-        title: '标签',
-        align: 'center',
-        dataIndex: 'tag',
-      },
-      {
-        title: '操作',
+        title: '查看',
         render: (rowData) => {
           return (
             <Fragment>
@@ -84,28 +87,13 @@ export default class Validator extends PureComponent {
   }
 
   render() {
-    const extraOperator = [
-      (
-        <Button
-          type="primary"
-          icon="plus"
-          key="plus"
-          onClick={() => {
-            this.props.history.push('/client/customer/add');
-          }}
-        >
-          新建客户资料
-        </Button>
-      ),
-    ];
     return (
       <PageHeaderLayout>
         <Card bordered={false}>
           <OATable
             data={[]}
-            columns={this.makeColumns()}
-            extraOperator={extraOperator}
             serverSide
+            columns={this.makeColumns()}
           />
         </Card>
       </PageHeaderLayout>

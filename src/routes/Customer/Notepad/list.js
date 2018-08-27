@@ -18,54 +18,42 @@ export default class Validator extends PureComponent {
   makeColumns = () => {
     const columns = [
       {
+        // width: 80,
+        title: '序号',
+        align: 'center',
+        dataIndex: 'id',
+        sorter: true,
+      },
+      {
+        // width: 160,
         align: 'center',
         title: '客户姓名',
         dataIndex: 'name',
-        // width: 160,
         searcher: true,
       },
       {
-        align: 'center',
-        title: '电话',
-        dataIndex: 'phone',
-        // width: 160,
-        searcher: true,
-      },
-      {
-        align: 'center',
-        title: '客户来源',
-        dataIndex: 'source',
-      },
-      {
-        align: 'center',
-        title: '客户状态',
-        // width: 120,
-        dataIndex: 'status',
-      },
-      {
-        // width: 240,
+        // width: 200,
         align: 'center',
         title: '合作品牌',
         dataIndex: 'brand',
       },
       {
-        // width: 120,
+        // width: 240,
+        title: '标题',
         align: 'center',
-        title: '合作时间',
+        dataIndex: 'title',
+      },
+      {
+        // width: 400,
+        title: '内容',
+        align: 'center',
+        dataIndex: 'content',
+      },
+      {
+        // width: 200,
+        align: 'center',
+        title: '记录时间',
         dataIndex: 'time',
-      },
-      {
-        // width: 160,
-        title: '维护人',
-        align: 'center',
-        dataIndex: 'staff',
-        searcher: true,
-      },
-      {
-        // width: 320,
-        title: '标签',
-        align: 'center',
-        dataIndex: 'tag',
       },
       {
         title: '操作',
@@ -91,10 +79,10 @@ export default class Validator extends PureComponent {
           icon="plus"
           key="plus"
           onClick={() => {
-            this.props.history.push('/client/customer/add');
+            this.props.history.push('/client/notepad/add');
           }}
         >
-          新建客户资料
+          新建录入
         </Button>
       ),
     ];
