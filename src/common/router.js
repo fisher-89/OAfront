@@ -75,6 +75,8 @@ export const getRouterData = (app) => {
     '/dashboard/analysis': {
       component: dynamicWrapper(app, ['point'], () => import('../routes/Dashboard/Analysis')),
     },
+
+
     '/finance/reimbursement/accountant': {
       component: dynamicWrapper(app, ['reimbursement'], () => import('../routes/Finance/Reimbursement/Accountant')),
       authority: '34',
@@ -87,6 +89,9 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['reimbursement'], () => import('../routes/Finance/Reimbursement/Auditor')),
       authority: '35',
     },
+
+
+    /** 积分制管理 */
     '/point/initEvent': {
       component: dynamicWrapper(app, ['point'], () => import('../routes/Point/InitEvent')),
       authority: '137',
@@ -126,7 +131,7 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['point'], () => import('../routes/Point/Attendance')),
     },
 
-
+    /** HR 管理 */
     '/hr/staff': {
       component: dynamicWrapper(app, ['staffs', 'department', 'brand', 'position', 'shop'], () => import('../routes/Hr/Staff')),
     },
@@ -146,6 +151,8 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['violation', 'department', 'brand', 'position'], () => import('../routes/Hr/Violation/Regime/form')),
     },
 
+
+    /** 工作流 */
     '/workflow/flow': {
       component: dynamicWrapper(app, ['workflow'], () => import('../routes/Workflow/Flow')),
     },
@@ -174,6 +181,8 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['workflow'], () => import('../routes/Workflow/Validator')),
     },
 
+
+    /** 异常界面 */
     '/exception/403': {
       component: dynamicWrapper(app, [], () => import('../routes/Exception/403')),
     },
@@ -186,24 +195,12 @@ export const getRouterData = (app) => {
     '/exception/trigger': {
       component: dynamicWrapper(app, ['error'], () => import('../routes/Exception/triggerException')),
     },
-    '/user': {
-      component: dynamicWrapper(app, [], () => import('../layouts/UserLayout')),
-    },
-    '/user/login': {
-      component: dynamicWrapper(app, ['login'], () => import('../routes/User/Login')),
-    },
-    '/user/register': {
-      component: dynamicWrapper(app, ['register'], () => import('../routes/User/Register')),
-    },
-    '/user/register-result': {
-      component: dynamicWrapper(app, [], () => import('../routes/User/RegisterResult')),
-    },
-    // '/user/:id': {
-    //   component: dynamicWrapper(app, [], () => import('../routes/User/SomeComponent')),
-    // },
+
     '/blank': {
       component: dynamicWrapper(app, [], () => import('../layouts/BlankLayout')),
     },
+
+    /** 登录权限 */
     '/passport/get_access_token': {
       component: dynamicWrapper(app, ['oauth'], () => import('../routes/Oauth/GetAccessToken')),
     },
