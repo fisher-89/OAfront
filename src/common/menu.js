@@ -4,6 +4,46 @@ const menuData = [
     icon: 'dashboard',
     path: '/',
   }, {
+    name: '客户端管理',
+    icon: 'customer-service',
+    path: 'client',
+    children: [
+      {
+        name: '客户资料',
+        path: 'customer',
+        children: [
+          {
+            name: '录入资料',
+            path: 'add',
+          },
+          {
+            name: '查看资料',
+            path: 'info',
+          },
+        ],
+      },
+      {
+        name: '记事本',
+        path: 'notepad',
+      },
+      {
+        name: '客户服务',
+        path: 'service',
+      },
+      {
+        name: '合同管理',
+        path: 'contract-manager',
+      },
+      {
+        name: '统计中心',
+        path: 'stats-central',
+      },
+      {
+        name: '操作日志',
+        path: 'action-log',
+      },
+    ],
+  }, {
     name: '财务',
     path: 'finance',
     icon: '',
