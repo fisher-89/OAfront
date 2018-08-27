@@ -18,7 +18,7 @@ export default {
       return err;
     }
   },
-  *editAttendance({ payload, onSuccess, onError }, { call, post }) {
+  *editAttendance({ payload, onSuccess, onError }, { call, put }) {
     try {
       const params = {
         ...payload,
@@ -29,7 +29,7 @@ export default {
       if (response.errors && onError) {
         onError(response.errors);
       } else {
-        yield post({
+        yield put({
           type: 'update',
           payload: {
             store,
