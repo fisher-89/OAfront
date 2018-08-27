@@ -1,4 +1,4 @@
-import { fetchStaff } from '../../services/user';
+import { fetchStaff, fetchStaffInfo, editStaff } from '../../services/user';
 
 const store = 'staff';
 
@@ -46,6 +46,43 @@ export default {
             },
           });
         }
+      }
+    } catch (err) { return err; }
+  },
+  * fetchStaffInfo({ payload }, { call, put }) {
+    try {
+      const staffSn = payload.staff_sn;
+      if (staffSn !== undefined) {
+        let response = [];
+        response = yield call(fetchStaffInfo, staffSn);
+        yield put({
+          type: 'save',
+          payload: {
+            store,
+            staffSn,
+            data: response,
+          },
+        });
+      }
+    } catch (err) { return err; }
+  },
+  * editStaff({ payload }, { call, put }) {
+    try {
+      const staffSn = payload.staff_sn;
+      const params = {
+        ...payload,
+      };
+      if (staffSn !== undefined) {
+        let response = [];
+        response = yield call(editStaff, params);
+        yield put({
+          type: 'update',
+          payload: {
+            store,
+            staffSn,
+            data: response,
+          },
+        });
       }
     } catch (err) { return err; }
   },

@@ -21,6 +21,7 @@ import MoreSearch from './moreSearch';
 // import EditLeave from './editLeave';
 import request from '../../../utils/request';
 import OATable from '../../../components/OATable';
+import EditStaff from './edit';
 
 import {
   getBrandAuthority,
@@ -51,6 +52,8 @@ export default class extends PureComponent {
     panes: [],
     filterPosition: [],
     activeKey: 'staff_list',
+    staffSn: '',
+    editVisible: false,
     // transferVisible: false,
     // leaveVisible: false,
     // editStaff: {},
@@ -249,6 +252,13 @@ export default class extends PureComponent {
   //   });
   // };
 
+  showEditStaff = (staffInfo) => {
+    this.setState({
+      editVisible: true,
+      staffSn: staffInfo.staff_sn,
+    });
+  };
+
   makeAction = (rowData) => {
     const handleButton = {
       66: (
@@ -302,11 +312,15 @@ export default class extends PureComponent {
         </Link>
       ),
       82: (
-        <Link to={`/hr/staff/edit/${rowData.staff_sn}`} key="edit">
-          <Tooltip title="编辑" mouseLeaveDelay={0}>
+        <Tooltip title="编辑" mouseLeaveDelay={0} key="edit">
+          <a
+            onClick={() => {
+              this.showEditStaff(rowData);
+            }}
+          >
             <Icon type="form" style={{ fontSize: '18px' }} />
-          </Tooltip>
-        </Link>
+          </a>
+        </Tooltip>
       ),
       59: (
         <Tooltip title="删除" key="delete" mouseLeaveDelay={0}>
@@ -620,7 +634,15 @@ export default class extends PureComponent {
             );
           })}
         </Tabs>
-
+        <EditStaff
+          visible={this.state.editVisible}
+          staffSn={this.state.staffSn}
+          onCancel={() => {
+            this.setState({
+              editVisible: false,
+            });
+          }}
+        />
       </Fragment>
     );
   }

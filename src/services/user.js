@@ -28,3 +28,14 @@ export async function fetchStaffInfo(staffSn) {
     method: 'GET',
   });
 }
+
+/**
+ * 编辑员工信息.
+ * @param object params
+ */
+export async function editStaff(params) {
+  return request('/api/hr/staff_update', {
+    method: 'POST',
+    body: { ...params },
+  });
+}
