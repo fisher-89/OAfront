@@ -4,7 +4,7 @@ const menuData = [
     icon: 'dashboard',
     path: '/',
   }, {
-    name: '客户端管理',
+    name: '客户管理',
     icon: 'customer-service',
     path: 'client',
     children: [
@@ -18,13 +18,23 @@ const menuData = [
           },
           {
             name: '查看资料',
-            path: 'info',
+            path: 'list',
           },
         ],
       },
       {
         name: '记事本',
         path: 'notepad',
+        children: [
+          {
+            name: '录入事件',
+            path: 'add',
+          },
+          {
+            name: '事件记录',
+            path: 'list',
+          },
+        ],
       },
       {
         name: '客户服务',

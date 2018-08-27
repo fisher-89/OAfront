@@ -167,50 +167,57 @@ export default !noProxy ? {
   'POST /api/(.*)': 'http://192.168.20.238:8003/api/',
   'POST /oauth/(.*)': 'http://192.168.20.238:8003/oauth/',
 } : {
-  /**
-   * 测试服  ： 报销
-   */
-  'GET /api/finance/reimburse/(.*)': 'http://112.74.177.132:8002/reimburse',
-  'POST /api/finance/reimburse/(.*)': 'http://112.74.177.132:8002/reimburse',
-  'PATCH /api/finance/reimburse/(.*)': 'http://112.74.177.132:8002/reimburse',
-  'PUT /api/finance/reimburse/(.*)': 'http://112.74.177.132:8002/reimburse',
-  'DELETE /api/finance/reimburse/(.*)': 'http://112.74.177.132:8002/reimburse',
+    /**
+     * 测试服  ： 报销
+     */
+    'GET /api/finance/reimburse/(.*)': 'http://112.74.177.132:8002/reimburse',
+    'POST /api/finance/reimburse/(.*)': 'http://112.74.177.132:8002/reimburse',
+    'PATCH /api/finance/reimburse/(.*)': 'http://112.74.177.132:8002/reimburse',
+    'PUT /api/finance/reimburse/(.*)': 'http://112.74.177.132:8002/reimburse',
+    'DELETE /api/finance/reimburse/(.*)': 'http://112.74.177.132:8002/reimburse',
 
-  /**
-   * 测试服  ： 工作流
-   */
-  'GET /api/workflow/(.*)': 'http://112.74.177.132:8006/admin/',
-  'POST /api/workflow/(.*)': 'http://112.74.177.132:8006/admin/',
-  'PUT /api/workflow/(.*)': 'http://112.74.177.132:8006/admin/',
-  'DELETE /api/workflow/(.*)': 'http://112.74.177.132:8006/admin/',
+    /**
+     * 测试服  ： 工作流
+     */
+    'GET /api/workflow/(.*)': 'http://112.74.177.132:8006/admin/',
+    'POST /api/workflow/(.*)': 'http://112.74.177.132:8006/admin/',
+    'PUT /api/workflow/(.*)': 'http://112.74.177.132:8006/admin/',
+    'DELETE /api/workflow/(.*)': 'http://112.74.177.132:8006/admin/',
 
-  /**
-   * 测试服 ： 积分制
-   */
+    /** 客户端管理 */
+    'GET /api/crm/(.*)': 'http://112.74.177.132:8003/admin/',
+    'POST /api/crm/(.*)': 'http://112.74.177.132:8003/admin/',
+    'PUT /api/crm/(.*)': 'http://112.74.177.132:8003/admin/',
+    'PATCH /api/crm/(.*)': 'http://112.74.177.132:8003/admin/',
+    'DELETE /api/crm/(.*)': 'http://112.74.177.132:8003/admin/',
 
-  'GET /api/pms/(.*)': 'http://112.74.177.132:8009/admin/',
-  'POST /api/pms/(.*)': 'http://112.74.177.132:8009/admin/',
-  'PUT /api/pms/(.*)': 'http://112.74.177.132:8009/admin/',
-  'PATCH /api/pms/(.*)': 'http://112.74.177.132:8009/admin/',
-  'DELETE /api/pms/(.*)': 'http://112.74.177.132:8009/admin/',
+    /**
+     * 测试服 ： 积分制
+     */
 
-  'GET /api/admin/(.*)': 'http://112.74.177.132:8009/admin/',
-  'POST /api/admin/(.*)': 'http://112.74.177.132:8009/admin/',
-  'PUT /api/admin/(.*)': 'http://112.74.177.132:8009/admin/',
-  'PATCH /api/admin/(.*)': 'http://112.74.177.132:8009/admin/',
-  'DELETE /api/admin/(.*)': 'http://112.74.177.132:8009/admin/',
+    'GET /api/pms/(.*)': 'http://112.74.177.132:8009/admin/',
+    'POST /api/pms/(.*)': 'http://112.74.177.132:8009/admin/',
+    'PUT /api/pms/(.*)': 'http://112.74.177.132:8009/admin/',
+    'PATCH /api/pms/(.*)': 'http://112.74.177.132:8009/admin/',
+    'DELETE /api/pms/(.*)': 'http://112.74.177.132:8009/admin/',
+
+    'GET /api/admin/(.*)': 'http://112.74.177.132:8009/admin/',
+    'POST /api/admin/(.*)': 'http://112.74.177.132:8009/admin/',
+    'PUT /api/admin/(.*)': 'http://112.74.177.132:8009/admin/',
+    'PATCH /api/admin/(.*)': 'http://112.74.177.132:8009/admin/',
+    'DELETE /api/admin/(.*)': 'http://112.74.177.132:8009/admin/',
 
 
-  /**
-   * 测试服  ： 登录
-   */
-  'GET /api/(.*)': 'http://112.74.177.132:8002/api/',
-  'POST /api/(.*)': 'http://112.74.177.132:8002/api/',
-  'POST /oauth/(.*)': 'http://112.74.177.132:8002/oauth/',
+    /**
+     * 测试服  ： 登录
+     */
+    'GET /api/(.*)': 'http://112.74.177.132:8002/api/',
+    'POST /api/(.*)': 'http://112.74.177.132:8002/api/',
+    'POST /oauth/(.*)': 'http://112.74.177.132:8002/oauth/',
 
-  /**
-   * 唐娇  ： 大爱
-   */
-  'POST /api/violation/(.*)': 'http://192.168.20.144:8001/api/',
-};
+    /**
+     * 唐娇  ： 大爱
+     */
+    // 'POST /api/violation/(.*)': 'http://192.168.20.144:8001/api/',
+  };
 

@@ -78,9 +78,11 @@ export const getRouterData = (app) => {
 
     /** 客户端管理 */
     '/client/customer/add': {
-      component: dynamicWrapper(app, ['point'], () => import('../routes/Customer/Info/add')),
+      component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/Info/add')),
     },
-
+    '/client/customer/list': {
+      component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/Info/list')),
+    },
 
     /** 报销系统 */
     '/finance/reimbursement/accountant': {

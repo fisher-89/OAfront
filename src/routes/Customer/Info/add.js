@@ -8,6 +8,7 @@ import {
   Button,
   Checkbox,
 } from 'antd';
+import { connect } from 'dva';
 import OAForm, {
   Address,
   DatePicker,
@@ -62,9 +63,22 @@ const sexOption = [
   { label: '女', value: 0 },
 ];
 
+@connect(({ nation, loading }) => ({
+  nation: nation.list,
+  loading: (
+    loading.effects['nation/fetchNation']
+  ),
+}))
 @OAForm.create()
 export default class extends React.PureComponent {
+  componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch({ type: 'nation/fetchNation' });
+  }
+
   render() {
+    const { nation } = this.props;
+    console.log(nation);
     return (
       <PageHeaderLayout>
         <Card title="基本信息" bordered={false}>
