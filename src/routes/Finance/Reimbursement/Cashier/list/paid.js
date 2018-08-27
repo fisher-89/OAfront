@@ -25,7 +25,6 @@ export default class extends PureComponent {
         dataIndex: 'reim_sn',
         searcher: true,
         sorter: true,
-        fixed: 'left',
         width: 140,
         render: (cellData) => {
           return (
@@ -37,7 +36,6 @@ export default class extends PureComponent {
         title: '描述',
         dataIndex: 'description',
         searcher: true,
-        fixed: 'left',
         width: 160,
         render: (cellData) => {
           return (
@@ -74,14 +72,6 @@ export default class extends PureComponent {
         },
       },
       {
-        title: '金额',
-        dataIndex: 'audited_cost',
-        sorter: true,
-        render: (cellData) => {
-          return cellData && `￥ ${cellData}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        },
-      },
-      {
         title: '财务审核人',
         dataIndex: 'accountant_name',
         searcher: true,
@@ -90,6 +80,14 @@ export default class extends PureComponent {
         title: '通过时间',
         dataIndex: 'audit_time',
         sorter: true,
+      },
+      {
+        title: '金额',
+        dataIndex: 'audited_cost',
+        sorter: true,
+        render: (cellData) => {
+          return cellData && `￥ ${cellData}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        },
       },
       {
         title: '转账人',

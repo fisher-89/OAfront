@@ -22,7 +22,6 @@ export default class extends PureComponent {
   componentWillReceiveProps = (newProps) => {
     const { packageList } = this.props;
     if (JSON.stringify(newProps.packageList) !== JSON.stringify(packageList)) {
-      console.log('update:', newProps.packageList, packageList);
       this.state.selectedRowKeys = newProps.packageList.map(item => item.id);
     }
   }
@@ -114,13 +113,12 @@ export default class extends PureComponent {
   makeExtraOperators = () => {
     const { packageList } = this.props;
     const { selectedRowKeys } = this.state;
+    const selectedCosts = packageList.filter(item => selectedRowKeys.indexOf(item.id) !== -1)
+      .map(item => parseFloat(item.audited_cost));
+    const totalCost = selectedCosts.length > 0 ?
+      selectedCosts.reduce((total, item) => total + item).toFixed(2) :
+      0;
     return [
-      (
-        <span key="selectingStatus">
-          选中{selectedRowKeys.length === packageList.length ? '全 ' : ` ${selectedRowKeys.length} 项，共 `}
-          {packageList.length} 项
-        </span>
-      ),
       (
         <Button
           key="selectAll"
@@ -145,6 +143,12 @@ export default class extends PureComponent {
           清空
         </Button>
       ),
+      (
+        <span key="selectingStatus">
+          选中 {selectedRowKeys.length} / {packageList.length} 项，
+          共计金额 {totalCost} 元
+        </span>
+      ),
     ];
   }
 
@@ -164,7 +168,6 @@ export default class extends PureComponent {
       onOk: () => {
         const { onCancel, dispatch } = this.props;
         const { selectedRowKeys, packageRemark } = this.state;
-        console.log(selectedRowKeys, packageRemark);
         if (selectedRowKeys.length > 0) {
           dispatch({ type: 'reimbursement/sendPackages', payload: { id: selectedRowKeys, remark: packageRemark } });
           this.state.packageRemark = '';

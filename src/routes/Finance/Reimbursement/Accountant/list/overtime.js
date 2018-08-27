@@ -26,7 +26,6 @@ export default class extends PureComponent {
         dataIndex: 'reim_sn',
         searcher: true,
         sorter: true,
-        fixed: 'left',
         width: 140,
         render: (cellData) => {
           return (
@@ -38,7 +37,6 @@ export default class extends PureComponent {
         title: '描述',
         dataIndex: 'description',
         searcher: true,
-        fixed: 'left',
         width: 160,
         render: (cellData) => {
           return (
