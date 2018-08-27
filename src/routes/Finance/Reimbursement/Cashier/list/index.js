@@ -4,7 +4,6 @@ import { Row, Col, Card, Tabs } from 'antd';
 import Detail from '../../detail';
 import UnPaidList from './unpaid';
 import PaidList from './paid';
-import RejectedList from './rejected';
 
 const { TabPane } = Tabs;
 
@@ -21,6 +20,7 @@ export default class extends PureComponent {
     const { dispatch } = this.props;
     dispatch({ type: 'reimbursement/fetchFundsAttribution' });
     dispatch({ type: 'reimbursement/fetchStatus' });
+    dispatch({ type: 'reimbursement/fetchExpenseTypes' });
   }
 
   showDetail = (rowData) => {
@@ -51,9 +51,6 @@ export default class extends PureComponent {
                 </TabPane>
                 <TabPane tab="已转账" key="approved" style={{ minHeight: 500 }}>
                   <PaidList visible={detailVisible} showDetail={this.showDetail} />
-                </TabPane>
-                <TabPane tab="已驳回" key="rejected" style={{ minHeight: 500 }}>
-                  <RejectedList visible={detailVisible} showDetail={this.showDetail} />
                 </TabPane>
               </Tabs>
             </Card>

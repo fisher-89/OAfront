@@ -24,6 +24,7 @@ export default class extends PureComponent {
     const { dispatch } = this.props;
     dispatch({ type: 'reimbursement/fetchFundsAttribution' });
     dispatch({ type: 'reimbursement/fetchStatus' });
+    dispatch({ type: 'reimbursement/fetchExpenseTypes' });
   }
 
   showDetail = (rowData) => {

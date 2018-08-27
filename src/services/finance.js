@@ -96,6 +96,24 @@ export async function sendReimbursementPackages(params) {
   });
 }
 
+export async function payReimbursements(params) {
+  return request('/api/finance/reimburse/pay', {
+    method: 'PATCH',
+    body: {
+      ...params,
+    },
+  });
+}
+
+export async function rejectReimbursementByCashier(params) {
+  return request('/api/finance/reimburse/pay/reject', {
+    method: 'PATCH',
+    body: {
+      ...params,
+    },
+  });
+}
+
 export async function fetchAllFundsAttribution() {
   return request('/api/finance/reimburse/reim-department', {
     method: 'GET',
@@ -104,6 +122,12 @@ export async function fetchAllFundsAttribution() {
 
 export async function fetchAllReimbursementStatus() {
   return request('/api/finance/reimburse/status', {
+    method: 'GET',
+  });
+}
+
+export async function fetchAllExpenseTypes() {
+  return request('/api/finance/reimburse/types', {
     method: 'GET',
   });
 }

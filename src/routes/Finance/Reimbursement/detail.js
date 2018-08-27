@@ -50,6 +50,7 @@ const rcViewerOptions = {
 
 @connect(({ reimbursement, loading }) => ({
   status: reimbursement.status,
+  expenseTypes: reimbursement.expenseTypes,
   loading: loading.effects['reimbursement/updateDetail'],
 }))
 export default class extends Component {
@@ -62,9 +63,9 @@ export default class extends Component {
   componentWillReceiveProps(newProps) {
     if (JSON.stringify(newProps.info) !== JSON.stringify(this.props.info)) {
       if (newProps.info.expenses) {
-        newProps.info.expenses.forEach(item => {
+        newProps.info.expenses.forEach(item => { // eslint-disable-line arrow-parens
           if (item.audited_cost === null) {
-            item.audited_cost = item.send_cost;
+            item.audited_cost = item.send_cost; // eslint-disable-line no-param-reassign
           }
         });
       }
@@ -96,10 +97,15 @@ export default class extends Component {
     },
     {
       title: '类型',
-      dataIndex: 'type',
+      dataIndex: 'type_id',
       width: 80,
       render: (cellData) => {
-        return (<Tooltip title={cellData.name}><Avatar size="small" src={`http://${cellData.pic_path}`} /></Tooltip>);
+        const { expenseTypes } = this.props;
+        return (
+          <Tooltip title={expenseTypes.filter(item => item.id === cellData)[0].name}>
+            <Avatar size="small" src={`http://${expenseTypes.filter(item => item.id === cellData)[0].pic_path}`} />
+          </Tooltip>
+        );
       },
     },
     {
@@ -132,7 +138,7 @@ export default class extends Component {
               afterChangeInterval = setInterval(() => {
                 clearInterval(afterChangeInterval);
                 info.expenses[index].audited_cost = parseFloat(value).toFixed(2);
-                this.sumAuditedCost(info);
+                info.audited_cost = this.sumAuditedCost(info);
                 this.setState({ info });
                 dispatch({
                   type: 'reimbursement/updateDetail',
@@ -186,11 +192,12 @@ export default class extends Component {
 
   sumAuditedCost = (info) => {
     let sum = 0;
-    info.expenses && info.expenses.forEach((expense) => {
-      sum += parseFloat(expense.audited_cost) || parseFloat(expense.send_cost);
-    });
-    info.audited_cost = sum.toFixed(2);
-    return sum.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    if (info.expenses) {
+      info.expenses.forEach((expense) => {
+        sum += parseFloat(expense.audited_cost) || parseFloat(expense.send_cost);
+      });
+    }
+    return sum.toFixed(2);
   }
 
   handleApprove = () => {
@@ -223,6 +230,50 @@ export default class extends Component {
     });
   }
 
+  handlePay = () => {
+    const { dispatch } = this.props;
+    const { info } = this.state;
+    dispatch({
+      type: 'reimbursement/pay',
+      payload: {
+        id: [info.id],
+      },
+    });
+  }
+
+  handlePayReject = () => {
+    const { dispatch } = this.props;
+    const { info, rejectRemark } = this.state;
+    this.setState({
+      rejectPopVisible: true,
+    });
+    dispatch({
+      type: 'reimbursement/rejectByCashier',
+      payload: {
+        id: info.id,
+        remarks: rejectRemark,
+      },
+      onSuccess: () => {
+        this.setState({
+          rejectPopVisible: false,
+        });
+      },
+    });
+  }
+
+  renderStamp = () => {
+    const { info } = this.state;
+    if (info.status_id === 6 && customerAuthority(135)) {
+      return <img alt="未转账" style={{ position: 'absolute', top: 9, marginLeft: 10 }} src="/images/未转账.png" />;
+    } else if (info.status_id === 7 && customerAuthority(135)) {
+      return <img alt="已转账" style={{ position: 'absolute', top: 9, marginLeft: 10 }} src="/images/已转账.png" />;
+    } else if (info.status_id === -1 || (info.status_id === 3 && customerAuthority(135))) {
+      return <img alt="驳回" style={{ position: 'absolute', top: 9, marginLeft: 10 }} src="/images/驳回.png" />;
+    } else if (info.audit_time !== null && customerAuthority(34)) {
+      return <img alt="通过" style={{ position: 'absolute', top: 9, marginLeft: 10 }} src="/images/通过.png" />;
+    }
+  }
+
   render() {
     const { onClose, status } = this.props;
     const { info, rejectPopVisible, rejectRemark } = this.state;
@@ -232,16 +283,11 @@ export default class extends Component {
       return (
         <div>
           <div>
-            <button className={styles.detailClose} onClick={onClose}><span></span></button>
+            <button className={styles.detailClose} onClick={onClose}><span /></button>
             <h2>
               {info.description}&nbsp;
               <small style={{ color: '#8c8c8c' }}>{info.reim_sn}</small>
-              {info.audit_time !== null && (
-                <img alt="通过" style={{ position: 'absolute', top: 9, marginLeft: 10 }} src="/images/通过.png" />
-              )}
-              {info.approve_time !== null && info.audit_time === null && info.status_id === -1 && (
-                <img alt="驳回" style={{ position: 'absolute', top: 9, marginLeft: 10 }} src="/images/驳回.png" />
-              )}
+              {this.renderStamp()}
             </h2>
             <p style={{ color: '#8c8c8c' }}>{info.remark}</p>
             <Row style={{ color: '#8c8c8c' }}>
@@ -276,17 +322,21 @@ export default class extends Component {
                           rejectPopVisible: visible,
                         });
                       }}
-                      title={(<div>
-                        <p>确认驳回？</p>
-                        <TextArea
-                          placeholder="请输入驳回原因"
-                          style={{ width: 300 }}
-                          value={rejectRemark}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            this.setState({ rejectRemark: value });
-                          }} />
-                      </div>)}
+                      title={(
+                        <div>
+                          <p>确认驳回？</p>
+                          <TextArea
+                            placeholder="请输入驳回原因"
+                            style={{ width: 300 }}
+                            value={rejectRemark}
+                            autosize={{ minRows: 4 }}
+                            onChange={(e) => {
+                              const { value } = e.target;
+                              this.setState({ rejectRemark: value });
+                            }}
+                          />
+                        </div>
+                      )}
                       onConfirm={this.handleReject}
                     >
                       <Button>驳回</Button>
@@ -294,6 +344,42 @@ export default class extends Component {
                   </Col>
                   <Col span={2}>
                     <Button type="primary" onClick={this.handleApprove}>通过</Button>
+                  </Col>
+                </React.Fragment>
+              )}
+              {customerAuthority(135) && info.status_id === 6 && (
+                <React.Fragment>
+                  <Col span={2}>
+                    <Popconfirm
+                      visible={rejectPopVisible}
+                      placement="bottom"
+                      onVisibleChange={(visible) => {
+                        this.setState({
+                          rejectPopVisible: visible,
+                        });
+                      }}
+                      title={(
+                        <div>
+                          <p>确认驳回？</p>
+                          <TextArea
+                            placeholder="请输入驳回原因"
+                            style={{ width: 300 }}
+                            value={rejectRemark}
+                            autosize={{ minRows: 4 }}
+                            onChange={(e) => {
+                              const { value } = e.target;
+                              this.setState({ rejectRemark: value });
+                            }}
+                          />
+                        </div>
+                      )}
+                      onConfirm={this.handlePayReject}
+                    >
+                      <Button>驳回</Button>
+                    </Popconfirm>
+                  </Col>
+                  <Col span={2}>
+                    <Button type="primary" onClick={this.handlePay}>转账</Button>
                   </Col>
                 </React.Fragment>
               )}

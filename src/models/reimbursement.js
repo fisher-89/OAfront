@@ -10,8 +10,11 @@ import {
   approveByAccountant,
   rejectByAccountant,
   sendReimbursementPackages,
+  payReimbursements,
+  rejectReimbursementByCashier,
   fetchAllFundsAttribution,
   fetchAllReimbursementStatus,
+  fetchAllExpenseTypes,
 } from '../services/finance';
 import reducers from './reducers';
 
@@ -28,6 +31,7 @@ export default {
     detailInfo: {},
     fundsAttribution: [],
     status: [],
+    expenseTypes: [],
   },
 
   effects: {
@@ -113,9 +117,7 @@ export default {
     },
     * fetchUnPaidList({ payload }, { call, put }) {
       try {
-        console.log('model');
         const response = yield call(fetchUnpaidReimbursements, payload);
-        console.log(response);
         if (response) {
           yield put({
             type: 'save',
@@ -145,7 +147,7 @@ export default {
         return err;
       }
     },
-    * approveByAccountant({ payload }, { call, put }) {
+    * approveByAccountant({ payload }, { call, put, select }) {
       try {
         const response = yield call(approveByAccountant, payload);
         if (response) {
@@ -156,16 +158,19 @@ export default {
               data: response,
             },
           });
-          yield put({
-            type: 'updateDetail',
-            payload: response,
-          });
+          const detailInfo = yield select(state => state.reimbursement.detailInfo);
+          if (response.id === parseInt(detailInfo.id, 10)) {
+            yield put({
+              type: 'updateDetail',
+              payload: response,
+            });
+          }
         }
       } catch (err) {
         return err;
       }
     },
-    * rejectByAccountant({ payload, onSuccess }, { call, put }) {
+    * rejectByAccountant({ payload, onSuccess }, { call, put, select }) {
       try {
         const response = yield call(rejectByAccountant, payload);
         if (response) {
@@ -177,10 +182,13 @@ export default {
               onSuccess,
             },
           });
-          yield put({
-            type: 'updateDetail',
-            payload: response,
-          });
+          const detailInfo = yield select(state => state.reimbursement.detailInfo);
+          if (response.id === parseInt(detailInfo.id, 10)) {
+            yield put({
+              type: 'updateDetail',
+              payload: response,
+            });
+          }
         }
       } catch (err) {
         return err;
@@ -189,7 +197,6 @@ export default {
     * sendPackages({ payload }, { call, put, select }) {
       try {
         const response = yield call(sendReimbursementPackages, payload);
-        console.log(response);
         if (response) {
           const packageList = yield select(state => state.reimbursement.packageList);
           yield put({
@@ -200,6 +207,54 @@ export default {
             },
           });
           notification.success({ message: '提交成功' });
+        }
+      } catch (err) {
+        return err;
+      }
+    },
+    * pay({ payload, onSuccess }, { call, put, select }) {
+      try {
+        const response = yield call(payReimbursements, payload);
+        if (response) {
+          yield put({
+            type: 'afterPay',
+            payload: {
+              id: payload.id,
+              data: response,
+              onSuccess,
+            },
+          });
+          const detailInfo = yield select(state => state.reimbursement.detailInfo);
+          if (response.length === 1 && response[0].id === detailInfo.id) {
+            yield put({
+              type: 'updateDetail',
+              payload: response[0],
+            });
+          }
+        }
+      } catch (err) {
+        return err;
+      }
+    },
+    * rejectByCashier({ payload, onSuccess }, { call, put, select }) {
+      try {
+        const response = yield call(rejectReimbursementByCashier, payload);
+        if (response) {
+          yield put({
+            type: 'afterRejectByCashier',
+            payload: {
+              id: payload.id,
+              data: response,
+              onSuccess,
+            },
+          });
+          const detailInfo = yield select(state => state.reimbursement.detailInfo);
+          if (response.id === parseInt(detailInfo.id, 10)) {
+            yield put({
+              type: 'updateDetail',
+              payload: response,
+            });
+          }
         }
       } catch (err) {
         return err;
@@ -237,12 +292,28 @@ export default {
         return err;
       }
     },
+    * fetchExpenseTypes(_, { call, put }) {
+      try {
+        const response = yield call(fetchAllExpenseTypes);
+        if (response) {
+          yield put({
+            type: 'save',
+            payload: {
+              store: 'expenseTypes',
+              data: response,
+            },
+          });
+        }
+      } catch (err) {
+        return err;
+      }
+    },
   },
 
   reducers: {
     ...reducers,
     afterApproveByAccountant(state, action) {
-      const { id, data, onSuccess } = action.payload;
+      const { id, data } = action.payload;
       if (data.errors) {
         const errorDescription = Object.keys(data.errors).map((key) => {
           return data.errors[key];
@@ -253,7 +324,6 @@ export default {
         notification.error({ message: data.message });
         return state;
       }
-      onSuccess();
       const newState = {
         ...state,
         processingList: state.processingList.filter(item => item.id !== id),
@@ -261,8 +331,8 @@ export default {
       };
       return newState;
     },
-    afterRejectByAccountant(state, action) {
-      const { id, data, onSuccess } = action.payload;
+    afterRejectByAccountant(state, { payload }) {
+      const { id, data, onSuccess } = payload;
       if (data.errors) {
         const errorDescription = Object.keys(data.errors).map((key) => {
           return data.errors[key];
@@ -273,11 +343,55 @@ export default {
         notification.error({ message: data.message });
         return state;
       }
-      onSuccess();
+      if (onSuccess) {
+        onSuccess();
+      }
       const newState = {
         ...state,
         processingList: state.processingList.filter(item => item.id !== id),
         overtimeList: state.overtimeList.filter(item => item.id !== id),
+      };
+      return newState;
+    },
+    afterPay(state, { payload }) {
+      const { id, data, onSuccess } = payload;
+      if (data.errors) {
+        const errorDescription = Object.keys(data.errors).map((key) => {
+          return data.errors[key];
+        });
+        notification.error({ message: data.message, description: errorDescription });
+        return state;
+      } else if (data.message) {
+        notification.error({ message: data.message });
+        return state;
+      }
+      if (onSuccess) {
+        onSuccess();
+      }
+      const newState = {
+        ...state,
+        unPaidList: state.unPaidList.filter(item => id.indexOf(item.id) === -1),
+      };
+      return newState;
+    },
+    afterRejectByCashier(state, { payload }) {
+      const { id, data, onSuccess } = payload;
+      if (data.errors) {
+        const errorDescription = Object.keys(data.errors).map((key) => {
+          return data.errors[key];
+        });
+        notification.error({ message: data.message, description: errorDescription });
+        return state;
+      } else if (data.message) {
+        notification.error({ message: data.message });
+        return state;
+      }
+      if (onSuccess) {
+        onSuccess();
+      }
+      const newState = {
+        ...state,
+        unPaidList: state.unPaidList.filter(item => item.id !== id),
       };
       return newState;
     },

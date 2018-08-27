@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import { Button } from 'antd';
 import Ellipsis from '../../../../../components/Ellipsis/index';
 
 import OATable from '../../../../../components/OATable/index';
@@ -11,6 +12,10 @@ import OATable from '../../../../../components/OATable/index';
 }))
 
 export default class extends PureComponent {
+  state = {
+    selectedRowKeys: [],
+  }
+
   fetchUnPaidList = (params) => {
     const { dispatch } = this.props;
     dispatch({ type: 'reimbursement/fetchUnPaidList', payload: params });
@@ -24,7 +29,6 @@ export default class extends PureComponent {
         dataIndex: 'reim_sn',
         searcher: true,
         sorter: true,
-        fixed: 'left',
         width: 140,
         render: (cellData) => {
           return (
@@ -36,7 +40,6 @@ export default class extends PureComponent {
         title: '描述',
         dataIndex: 'description',
         searcher: true,
-        fixed: 'left',
         width: 160,
         render: (cellData) => {
           return (
@@ -73,31 +76,22 @@ export default class extends PureComponent {
         },
       },
       {
-        title: '申请时间',
-        dataIndex: 'send_time',
-        sorter: true,
-      },
-      {
         title: '审批人',
         dataIndex: 'approver_name',
         searcher: true,
       },
       {
-        title: '审批时间',
-        dataIndex: 'approve_time',
-        sorter: true,
-        defaultSortOrder: 'descend',
+        title: '财务审核人',
+        dataIndex: 'accountant_name',
+        searcher: true,
       },
       {
-        title: '原金额',
-        dataIndex: 'approved_cost',
+        title: '通过时间',
+        dataIndex: 'audit_time',
         sorter: true,
-        render: (cellData, rowData) => {
-          return `￥ ${cellData || rowData.send_cost}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        },
       },
       {
-        title: '调整后金额',
+        title: '金额',
         dataIndex: 'audited_cost',
         sorter: true,
         render: (cellData) => {
@@ -109,10 +103,9 @@ export default class extends PureComponent {
       {
         title: '操作',
         render: (rowData) => {
-          return rowData.status_id === 3 ?
-            (
-              <a onClick={() => showDetail(rowData)}>查看详情</a>
-            ) : '';
+          return (
+            <a onClick={() => showDetail(rowData)}>查看详情</a>
+          );
         },
       },
     ];
@@ -120,17 +113,86 @@ export default class extends PureComponent {
     return columnsLeftFixed.concat(visible ? [] : columnsMiddle).concat(columnsRight);
   }
 
+  makeExtraOperators = () => {
+    const { unPaidList } = this.props;
+    const { selectedRowKeys } = this.state;
+    const selectedCosts = unPaidList.filter(item => selectedRowKeys.indexOf(item.id) !== -1)
+      .map(item => parseFloat(item.audited_cost));
+    const totalCost = selectedCosts.length > 0 ?
+      selectedCosts.reduce((total, item) => total + item).toFixed(2) :
+      0;
+    return [
+      (
+        <Button
+          key="selectAll"
+          onClick={() => {
+            this.setState({
+              selectedRowKeys: unPaidList.map(item => item.id),
+            });
+          }}
+        >
+          全选
+        </Button>
+      ),
+      (
+        <Button
+          key="clear"
+          onClick={() => {
+            this.setState({
+              selectedRowKeys: [],
+            });
+          }}
+        >
+          清空
+        </Button>
+      ),
+      (
+        <Button type="primary" key="remit" onClick={this.remitInBatches}>批量转账</Button>
+      ),
+      (
+        <span key="selectingStatus">
+          选中 {selectedRowKeys.length} / {unPaidList.length} 项，
+          共计金额 {totalCost} 元
+        </span>
+      ),
+    ];
+  }
+
+  remitInBatches = () => {
+    const { dispatch } = this.props;
+    const { selectedRowKeys } = this.state;
+    dispatch({
+      type: 'reimbursement/pay',
+      payload: {
+        id: selectedRowKeys,
+      },
+      onSuccess: () => {
+        this.setState({
+          selectedRowKeys: [],
+        });
+      },
+    });
+  }
 
   render() {
-    const { upPaidList, loading } = this.props;
+    const { unPaidList, loading } = this.props;
+    const { selectedRowKeys } = this.state;
     return (
       <OATable
         bordered
         serverSide={false}
-        extraOperator={[]}
+        rowSelection={{
+          selectedRowKeys,
+          onChange: (selected) => {
+            this.setState({
+              selectedRowKeys: selected,
+            });
+          },
+        }}
+        extraOperator={this.makeExtraOperators()}
         loading={loading}
         columns={this.makeColumns()}
-        dataSource={upPaidList}
+        dataSource={unPaidList}
         fetchDataSource={this.fetchUnPaidList}
         scroll={{ x: 'auto' }}
       />
