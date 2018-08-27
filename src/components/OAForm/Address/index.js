@@ -142,7 +142,7 @@ export default class Address extends PureComponent {
           </Select>
 
         </InputGroup>
-        <Input
+        <Input.TextArea
           onChange={(e) => {
             const address = e.target.value;
             this.setState({ value: { ...value, address } }, this.setPropsValue);
