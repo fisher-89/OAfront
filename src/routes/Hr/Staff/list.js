@@ -17,7 +17,7 @@ import { connect } from 'dva';
 import { Link } from 'dva/router';
 import StaffInfo from './staffInfo';
 import MoreSearch from './moreSearch';
-// import EditTransfer from './editTransfer';
+import EditTransfer from './editTransfer';
 // import EditLeave from './editLeave';
 import request from '../../../utils/request';
 import OATable from '../../../components/OATable';
@@ -54,9 +54,9 @@ export default class extends PureComponent {
     activeKey: 'staff_list',
     staffSn: '',
     editVisible: false,
-    // transferVisible: false,
+    transferVisible: false,
     // leaveVisible: false,
-    // editStaff: {},
+    editStaff: {},
   };
 
   componentDidMount() {
@@ -230,27 +230,27 @@ export default class extends PureComponent {
     return buttonKey;
   };
 
-  // showStaffTransfer = (staffInfo) => {
-  //   this.setState({
-  //     transferVisible: true,
-  //     editStaff: staffInfo,
-  //   });
-  // };
+  showStaffTransfer = (staffInfo) => {
+    this.setState({
+      transferVisible: true,
+      editStaff: staffInfo,
+    });
+  };
 
-  // handleEditModalVisible = () => {
-  //   this.setState({
-  //     transferVisible: false,
-  //     leaveVisible: false,
-  //     editStaff: {},
-  //   });
-  // };
+  handleEditModalVisible = () => {
+    this.setState({
+      transferVisible: false,
+      // leaveVisible: false,
+      editStaff: {},
+    });
+  };
 
-  // showStaffLeave = (staffInfo) => {
-  //   this.setState({
-  //     leaveVisible: true,
-  //     editStaff: staffInfo,
-  //   });
-  // };
+  showStaffLeave = (staffInfo) => {
+    this.setState({
+      // leaveVisible: true,
+      editStaff: staffInfo,
+    });
+  };
 
   showEditStaff = (staffInfo) => {
     this.setState({
@@ -637,6 +637,15 @@ export default class extends PureComponent {
           onCancel={() => {
             this.setState({
               editVisible: false,
+            });
+          }}
+        />
+        <EditTransfer
+          visible={this.state.transferVisible}
+          editStaff={this.state.editStaff}
+          onCancel={() => {
+            this.setState({
+              transferVisible: false,
             });
           }}
         />
