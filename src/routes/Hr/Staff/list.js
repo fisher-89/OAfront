@@ -583,9 +583,6 @@ export default class extends PureComponent {
       total,
       loading,
       activeKey,
-      // transferVisible,
-      // leaveVisible,
-      // editStaff,
     } = this.state;
     const { staffLoading, staffInfo } = this.props;
     const columns = this.makeColumns();
