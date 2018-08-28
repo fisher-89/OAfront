@@ -16,6 +16,7 @@ import OAForm, {
 } from '../../../components/OAForm';
 import { nation } from '../../../assets/nation';
 import { province } from '../../../assets/province';
+import { customerStatus } from '../../../assets/customer';
 
 import TagInput from '../../../components/TagInput';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
@@ -185,7 +186,7 @@ export default class extends React.PureComponent {
                 <FormItem label="客户状态" {...formItemLayout}>
                   {getFieldDecorator('status', {})(
                     <Select>
-                      {source.map(item =>
+                      {customerStatus.map(item =>
                         (<Option value={item.id} key={item.id}>{item.name}</Option>))
                       }
                     </Select>
