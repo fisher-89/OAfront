@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
-// import { connect } from 'dva';
+import { connect } from 'dva';
 import {
-  Card,
+  // Card,
   Button,
 
   Divider,
@@ -10,10 +10,19 @@ import {
 
 import OATable from '../../../components/OATable';
 // import OAForm, { OAModal } from '../../../components/OAForm';
-import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
+// import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 
+@connect(({ customer, loading }) => ({
+  customer: customer.customer,
+  loading: loading.effects['customer/fetchCustomer'],
+}))
 export default class Validator extends PureComponent {
   state = {};
+
+  fetch = (params) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'customer/fetchCustomer', payload: params });
+  }
 
   makeColumns = () => {
     const columns = [
@@ -72,7 +81,11 @@ export default class Validator extends PureComponent {
         render: (rowData) => {
           return (
             <Fragment>
-              <a onClick={() => this.handleEdit(rowData)}>编辑</a>
+              <a onClick={() => {
+                this.props.history.push('/client/customer/list/info/1');
+              }}
+              >编辑
+              </a>
               <Divider type="vertical" />
               <a onClick={() => this.handleDelete(rowData.id)}>删除</a>
             </Fragment>
@@ -98,17 +111,17 @@ export default class Validator extends PureComponent {
         </Button>
       ),
     ];
+    const { loading, customer } = this.props;
     return (
-      <PageHeaderLayout>
-        <Card bordered={false}>
-          <OATable
-            data={[]}
-            columns={this.makeColumns()}
-            extraOperator={extraOperator}
-            serverSide
-          />
-        </Card>
-      </PageHeaderLayout>
+      <OATable
+        serverSide
+        loading={loading}
+        columns={this.makeColumns()}
+        fetchDataSource={this.fetch}
+        extraOperator={extraOperator}
+        data={[{ id: '1' }]}
+        total={customer && customer.total}
+      />
     );
   }
 }

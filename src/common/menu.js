@@ -14,7 +14,12 @@ const menuData = [
         children: [
           {
             name: '录入资料',
-            path: 'add',
+            path: 'list/add',
+          },
+          {
+            name: '资料详情',
+            path: 'list/info/:id',
+            hideInMenu: true,
           },
           {
             name: '查看资料',

@@ -86,17 +86,21 @@ export default class Validator extends PureComponent {
         </Button>
       ),
     ];
-    return (
+    const { type } = this.props;
+    const table = (
+      <OATable
+        data={[]}
+        columns={this.makeColumns()}
+        extraOperator={extraOperator}
+        serverSide
+      />
+    );
+    return !type ? (
       <PageHeaderLayout>
-        <Card bordered={false}>
-          <OATable
-            data={[]}
-            columns={this.makeColumns()}
-            extraOperator={extraOperator}
-            serverSide
-          />
+        <Card bordered={false} >
+          {table}
         </Card>
       </PageHeaderLayout>
-    );
+    ) : table;
   }
 }

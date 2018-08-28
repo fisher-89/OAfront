@@ -13,16 +13,16 @@ const InputGroup = Input.Group;
 export default class Address extends PureComponent {
   constructor(props) {
     super(props);
-    const { value } = this.props;
+    const value = this.props.value || {};
     this.state = {
       province: [],
       city: [],
       county: [],
-      value: value || {
-        province_id: null,
-        city_id: null,
-        county_id: null,
-        address: null,
+      value: {
+        province_id: value.province_id || undefined,
+        city_id: value.city_id || undefined,
+        county_id: value.county_id || undefined,
+        address: value.address || undefined,
       },
     };
   }
@@ -62,20 +62,16 @@ export default class Address extends PureComponent {
     if (value && value.city_id) {
       county = district.filter(item => item.parent_id === value.city_id);
     }
-    this.setState({
-      province,
-      city,
-      county,
-    });
+    this.setState({ province, city, county });
   }
 
   makeCity = (value) => {
     const city = district.filter(item => item.parent_id === value);
     const newValue = {
       province_id: value,
-      city_id: null,
-      county_id: null,
-      address: null,
+      city_id: undefined,
+      county_id: undefined,
+      address: undefined,
     };
     this.setState({ city, value: newValue }, this.setPropsValue);
   };
@@ -88,8 +84,8 @@ export default class Address extends PureComponent {
       value: {
         ...value,
         city_id: cityId,
-        county_id: null,
-        address: null,
+        county_id: undefined,
+        address: undefined,
       },
     }, this.setPropsValue);
   };
@@ -129,7 +125,7 @@ export default class Address extends PureComponent {
                 value: {
                   ...value,
                   county_id: countyId,
-                  address: null,
+                  address: undefined,
                 },
               }, this.setPropsValue);
             }}
@@ -157,5 +153,10 @@ export default class Address extends PureComponent {
 
 Address.defaultProps = {
   onChange: () => { },
-  name: {},
+  name: {
+    province_id: 'province_id',
+    city_id: 'city_id',
+    county_id: 'county_id',
+    address: 'address',
+  },
 };

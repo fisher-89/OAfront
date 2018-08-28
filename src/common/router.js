@@ -77,11 +77,14 @@ export const getRouterData = (app) => {
     },
 
     /** 客户端管理 */
-    '/client/customer/add': {
-      component: dynamicWrapper(app, ['customer'], () => import('../routes/Customer/Info/add')),
-    },
     '/client/customer/list': {
-      component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/Info/list')),
+      component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/Info')),
+    },
+    '/client/customer/list/info/:id': {
+      component: dynamicWrapper(app, ['customer'], () => import('../routes/Customer/Info/info')),
+    },
+    '/client/customer/list/add': {
+      component: dynamicWrapper(app, ['customer'], () => import('../routes/Customer/Info/add')),
     },
     '/client/notepad/add': {
       component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/Notepad/add')),
