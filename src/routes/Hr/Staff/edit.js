@@ -10,10 +10,8 @@ import {
   Radio,
   Select,
   Switch,
-  Button,
 } from 'antd';
-import OAForm, { SearchTable, Address, DatePicker } from '../../../components/OAForm';
-import FooterToolbar from '../../../components/FooterToolbar';
+import OAForm, { SearchTable, Address, DatePicker, OAModal } from '../../../components/OAForm';
 import RelativeList from './relativeList';
 
 const FormItem = OAForm.Item;
@@ -26,41 +24,25 @@ const { TabPane } = Tabs;
 
 @connect(({ staffs, loading }) => ({
   staffInfo: staffs.staffDetails,
+  staffLoading: loading.models.staffs,
   fetching: loading.effects['staffs/fetchStaff'],
 }))
-
 
 @OAForm.create()
 export default class EditStaff extends PureComponent {
   constructor(props) {
     super(props);
-    // const { form, bindForm } = this.props;
-    // bindForm(form);
-    const staffSn = props.match.params.staff_sn;
-    const isEdit = staffSn !== undefined;
     this.state = {
-      isEdit,
-      staffSn: staffSn || '',
       initialValue: {},
     };
   }
 
-  componentDidMount() {
-    const { dispatch } = this.props;
-    const { isEdit, staffSn } = this.state;
-    if (isEdit) {
-      dispatch({
-        type: 'staffs/fetchStaff',
-        payload: {
-          staff_sn: staffSn,
-        },
-      });
-    }
-  }
-
   componentWillReceiveProps(nextProps) {
-    const { staffInfo } = nextProps;
-    const { staffSn, initialValue } = this.state;
+    const { staffInfo, staffSn } = nextProps;
+    if (staffSn && staffSn !== this.props.staffSn) {
+      this.fetchInfo(staffSn);
+    }
+    const { initialValue } = this.state;
     if (JSON.stringify(staffInfo[staffSn]) !== JSON.stringify(initialValue) && staffInfo[staffSn]) {
       this.setState({ initialValue: staffInfo[staffSn] });
     }
@@ -80,11 +62,38 @@ export default class EditStaff extends PureComponent {
     this.setState({ [key]: value });
   };
 
-  handleSubmit = () => {
-    return false;
+  fetchInfo = (staffSn) => {
+    const { dispatch } = this.props;
+    const isEdit = staffSn !== undefined;
+    if (isEdit) {
+      dispatch({
+        type: 'staffs/fetchStaffInfo',
+        payload: {
+          staff_sn: staffSn,
+        },
+      });
+    }
   };
 
-  handleSubmitSuccess = () => { };
+  handleSubmit = (params) => {
+    const { dispatch } = this.props;
+    const response = { ...params };
+    dispatch({
+      type: 'staffs/editStaff',
+      payload: response,
+      onError: this.handleError,
+      onSuccess: this.handleSuccess,
+    });
+  };
+
+  handleError = (err) => {
+    const { onError } = this.props;
+    onError(err);
+  };
+
+  handleSuccess = () => {
+    this.handleModalVisible(false);
+  };
 
   handleSelectFilter = (input, option) => {
     return (option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0);
@@ -126,7 +135,7 @@ export default class EditStaff extends PureComponent {
           span: 24,
         },
         sm: {
-          span: 8,
+          span: 6,
         },
       },
       wrapperCol: {
@@ -134,7 +143,7 @@ export default class EditStaff extends PureComponent {
           span: 24,
         },
         sm: {
-          span: 10,
+          span: 12,
         },
       },
     };
@@ -145,7 +154,7 @@ export default class EditStaff extends PureComponent {
           span: 24,
         },
         sm: {
-          span: 16,
+          span: 12,
         },
       },
       wrapperCol: {
@@ -153,7 +162,7 @@ export default class EditStaff extends PureComponent {
           span: 24,
         },
         sm: {
-          span: 8,
+          span: 12,
         },
       },
     };
@@ -167,7 +176,7 @@ export default class EditStaff extends PureComponent {
           span: 24,
         },
         sm: {
-          span: 4,
+          span: 9,
         },
       },
       wrapperCol: {
@@ -175,32 +184,39 @@ export default class EditStaff extends PureComponent {
           span: 24,
         },
         sm: {
-          span: 8,
+          span: 12,
         },
       },
     };
     const {
-      fetching,
       form,
+      validateFields,
+      staffLoading,
+      visible,
       form: { getFieldDecorator, setFieldsValue },
-      autoSave,
     } = this.props;
     const { initialValue } = this.state;
     this.makeDecoratorValue();
     return (
-      <Card>
-        <OAForm
-          form={form}
-          onSubmitBtn
-          localStorage={this.handleLocal}
-          loading={fetching}
-          autoSave={autoSave}
-          onSubmit={this.handleSubmit}
-        >
+      <OAModal
+        width={600}
+        title="考勤表单"
+        visible={visible}
+        style={{ top: 30 }}
+        loading={staffLoading}
+        onCancel={() => this.props.onCancel()}
+        onSubmit={validateFields(this.handleSubmit)}
+      >
+        <Card>
           <Tabs defaultActiveKey="1">
             <TabPane forceRender tab="基础资料" key="1" >
               <Row>
                 <Col {...fieldsBoxLayout}>
+                  {initialValue.staff_sn
+                  ? getFieldDecorator('staff_sn', {
+                      initialValue: initialValue.staff_sn,
+                    })(<Input type="hidden" />)
+                  : null}
                   <FormItem {...formItemLayout2} label="员工姓名" required>
                     {getFieldDecorator('realname', {
                       initialValue: initialValue.realname || '',
@@ -690,13 +706,8 @@ export default class EditStaff extends PureComponent {
               </FormItem>
             </TabPane>
           </Tabs>
-          <FooterToolbar>
-            <Button type="primary" htmlType="submit">
-              提交
-            </Button>
-          </FooterToolbar>
-        </OAForm>
-      </Card>
+        </Card>
+      </OAModal>
     );
   }
 }

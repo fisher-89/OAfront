@@ -33,7 +33,6 @@ export default class extends PureComponent {
     };
     return (
       <OAFrom
-        form={this.props.form}
         onSubmit={() => { }}
       >
         <FormItem label="姓名" {...formItemLayout}>

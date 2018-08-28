@@ -86,11 +86,10 @@ class Search extends PureComponent {
       },
     };
     const { live, info, cardNumber, shop } = this.state;
-    const { form: { getFieldDecorator, resetFields }, form } = this.props;
+    const { form: { getFieldDecorator, resetFields } } = this.props;
     // console.log(shop);
     return (
       <OAForm
-        form={form}
         style={{ minWidth: 500 }}
         onSubmit={this.handleSubmit}
       >

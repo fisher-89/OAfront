@@ -71,10 +71,6 @@ export default class RegimeForm extends React.PureComponent {
 
   render() {
     const {
-      loading,
-      autoSave,
-      updateLoading,
-      form,
       form: { getFieldDecorator },
     } = this.props;
     const { info, id } = this.state;
@@ -90,15 +86,7 @@ export default class RegimeForm extends React.PureComponent {
     };
     return (
       <OAForm
-        onSubmitBtn
-        autoSave={{
-          ...autoSave,
-          getLocal: this.getLocal,
-        }}
-        form={form}
         onSubmit={this.handleSubmit}
-        onSuccess={this.handleOnSuccess}
-        loading={(loading || updateLoading) === true}
       >
         {id && <input type="hidden" value={id} name="id" />}
         <Tabs defaultActiveKey="1">
