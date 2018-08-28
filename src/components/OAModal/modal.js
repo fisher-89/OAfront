@@ -1,7 +1,6 @@
 import React from 'react';
 import { Modal } from 'antd';
 import styles from './modal.less';
-// import { getModalToAndHeight } from '../../utils/utils';
 
 export default class OAModal extends React.PureComponent {
   render() {
@@ -17,13 +16,8 @@ export default class OAModal extends React.PureComponent {
     return (
       <Modal
         destroyOnClose
-        // style={{ ...getModalToAndHeight() }}
         {...this.props}
-        bodyStyle={{
-          ...bodyStyle,
-          // height: getModalBodyHeight(),
-          // overflowY: 'auto',
-        }}
+        bodyStyle={{ ...bodyStyle }}
         title={titleView}
       />
     );

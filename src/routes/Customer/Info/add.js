@@ -83,7 +83,6 @@ export default class extends React.PureComponent {
 
   render() {
     const { source, form: { getFieldDecorator } } = this.props;
-    console.log(source);
     return (
       <PageHeaderLayout>
         <Card title="基本信息" bordered={false}>

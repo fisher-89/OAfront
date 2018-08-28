@@ -251,8 +251,11 @@ export default class Staff extends PureComponent {
 Staff.defaultProps = {
   multiple: false,
   disabled: false,
-  name: {},
-  showName: '',
+  showName: 'staff_name',
+  name: {
+    staff_name: 'realname',
+    staff_sn: 'staff_sn',
+  },
   title: '员工',
   placeholder: '请选择员工',
   filters: { content: 'status_id>=0;', status: [1, 2, 3] },
