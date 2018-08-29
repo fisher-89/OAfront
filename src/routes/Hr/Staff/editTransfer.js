@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Input, Select, Row, Col, Button, Modal } from 'antd';
+import moment from 'moment';
 
 import { makePositionData } from '../../../utils/utils';
 
@@ -44,7 +45,15 @@ export default class extends PureComponent {
     });
   };
 
-  handleSubmit = () => {
+  handleSubmit = (params) => {
+    const { dispatch } = this.props;
+    const response = { ...params };
+    dispatch({
+      type: 'staffs/editStaff',
+      payload: response,
+      onError: this.handleError,
+      onSuccess: this.handleSuccess,
+    });
   };
 
   transferOut = () => {
@@ -52,10 +61,18 @@ export default class extends PureComponent {
       title: '确认调离?',
       cancelText: '取消',
       okText: '确认',
-      onOk() {
+      onOk: () => {
+        this.props.form.setFieldsValue({
+          shop_sn: '',
+          brand_id: 1,
+          status_id: 1,
+          position_id: 1,
+          department_id: 1,
+          operation_remark: '人员调离',
+          operate_at: moment().format('YY-MM-DD'),
+        });
       },
-      onCancel() {
-      },
+      onCancel: () => {},
     });
   };
   render() {
@@ -172,7 +189,6 @@ export default class extends PureComponent {
             </FormItem>
           </Col>
         </Row>
-
         <Row>
           <Col {...fieldsBoxLayout}>
             <FormItem label="店铺编号" {...formItemLayout}>
