@@ -8,6 +8,7 @@ import moment from 'moment';
 import OATable from '../../../components/OATable';
 import { customerStatus } from '../../../assets/customer';
 import store from './store';
+
 @connect(({ customer }) => ({ customer: customer.customer }))
 @store
 export default class extends PureComponent {

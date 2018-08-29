@@ -1,6 +1,7 @@
 {
   "extends": "stylelint-config-standard",
   "rules": {
+    "selector-combinator-space-before":null,
     "selector-pseudo-class-no-unknown": null,
     "shorthand-property-no-redundant-values": null,
     "at-rule-empty-line-before": null,
