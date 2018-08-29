@@ -69,6 +69,7 @@ export default class extends PureComponent {
       validateFields,
       form: { getFieldDecorator, setFieldsValue },
     } = this.props;
+
     const formItemLayout = {
       labelCol: {
         span: 7,
@@ -81,10 +82,7 @@ export default class extends PureComponent {
       xs: 24,
       lg: 12,
     };
-    // const initialFieldsValue = {
-    //   ...staffInfo,
-    //   position_id: positionId,
-    // };
+
     return (
       <OAModal
         width={600}
@@ -178,19 +176,20 @@ export default class extends PureComponent {
         <Row>
           <Col {...fieldsBoxLayout}>
             <FormItem label="店铺编号" {...formItemLayout}>
-              <SearchTable.Shop
-                name={{
-                  shop_sn: 'shop_sn',
-                }}
-                showName="shop_sn"
-                placeholder="请选择"
-                value={editStaff.shop_sn ? {
-                  shop_sn: editStaff.shop_sn,
-                } : {}}
-                onChange={(value) => {
-                  setFieldsValue(value);
-                }}
-              />
+              {getFieldDecorator('shop_sn', {
+                initialValue: editStaff.shop_sn,
+              })(
+                <SearchTable.Shop
+                  name={{
+                    shop_sn: 'shop_sn',
+                  }}
+                  showName="shop_sn"
+                  placeholder="请选择"
+                  onChange={(value) => {
+                    setFieldsValue(value);
+                  }}
+                />
+              )}
             </FormItem>
           </Col>
           <Col {...fieldsBoxLayout}>
