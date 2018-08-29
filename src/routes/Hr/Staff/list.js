@@ -18,7 +18,7 @@ import { Link } from 'dva/router';
 import StaffInfo from './staffInfo';
 import MoreSearch from './moreSearch';
 import EditTransfer from './editTransfer';
-// import EditLeave from './editLeave';
+import EditLeave from './editLeave';
 import request from '../../../utils/request';
 import OATable from '../../../components/OATable';
 import EditStaff from './edit';
@@ -55,7 +55,7 @@ export default class extends PureComponent {
     staffSn: '',
     editVisible: false,
     transferVisible: false,
-    // leaveVisible: false,
+    leaveVisible: false,
     editStaff: {},
   };
 
@@ -237,17 +237,9 @@ export default class extends PureComponent {
     });
   };
 
-  handleEditModalVisible = () => {
-    this.setState({
-      transferVisible: false,
-      // leaveVisible: false,
-      editStaff: {},
-    });
-  };
-
   showStaffLeave = (staffInfo) => {
     this.setState({
-      // leaveVisible: true,
+      leaveVisible: true,
       editStaff: staffInfo,
     });
   };
@@ -646,6 +638,15 @@ export default class extends PureComponent {
           onCancel={() => {
             this.setState({
               transferVisible: false,
+            });
+          }}
+        />
+        <EditLeave
+          visible={this.state.leaveVisible}
+          editStaff={this.state.editStaff}
+          onCancel={() => {
+            this.setState({
+              leaveVisible: false,
             });
           }}
         />
