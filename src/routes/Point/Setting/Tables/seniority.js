@@ -90,7 +90,7 @@ export default class extends PureComponent {
                 message: '单位工龄积分不能为空!',
               }],
             })(
-              <Input type="number" placeholder="请输入" style={{ width: '100%' }} addonAfter="分/月" />
+              <Input type="number" placeholder="请输入" style={{ width: '100%' }} addonAfter="分/年" />
             )
           }
         </FormItem>

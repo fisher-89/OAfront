@@ -7,31 +7,12 @@ import {
 import moment from 'moment';
 import OATable from '../../../components/OATable';
 import { customerStatus } from '../../../assets/customer';
-
-@connect(({ customer, loading }) => ({
-  customer: customer.customer,
-  source: customer.source,
-  tags: customer.tags,
-  loading: (
-    loading.effects['customer/fetchSource'] ||
-    loading.effects['customer/fetchTags'] ||
-    loading.effects['customer/fetchCustomer']
-  ),
-}))
-export default class Validator extends PureComponent {
-  state = {};
-  componentWillMount() {
-    const { dispatch } = this.props;
-    dispatch({ type: 'customer/fetchSource' });
-  }
-
-  fetch = (params) => {
-    const { dispatch } = this.props;
-    dispatch({ type: 'customer/fetchCustomer', payload: params });
-  }
-
+import store from './store';
+@connect(({ customer }) => ({ customer: customer.customer }))
+@store
+export default class extends PureComponent {
   makeColumns = () => {
-    const { source, tags } = this.props;
+    const { source, tags, brands } = this.props;
     const columns = [
       {
         align: 'center',
@@ -64,7 +45,7 @@ export default class Validator extends PureComponent {
         dataIndex: 'status',
         filters: customerStatus.map(item => ({ text: item.name, value: item.id })),
         render: (key) => {
-          const value = source.find(item => item.id === `${key}`) || {};
+          const value = source.find(item => `${item.id}` === `${key}`) || {};
           return value.name;
         },
       },
@@ -72,7 +53,13 @@ export default class Validator extends PureComponent {
         // width: 240,
         align: 'center',
         title: '合作品牌',
-        dataIndex: 'brand_id',
+        filters: brands.map(item => ({ text: item.name, value: item.id })),
+        dataIndex: 'has_brands',
+        render: (key) => {
+          const brandId = key.map(item => `${item.brand_id}`);
+          const value = brands.filter(item => brandId.indexOf(`${item.id}`) !== -1).map(item => item.name);
+          return value.join(',');
+        },
       },
       {
         // width: 120,
@@ -94,9 +81,10 @@ export default class Validator extends PureComponent {
         title: '标签',
         align: 'center',
         dataIndex: 'has_tags',
+        filters: tags.map(tag => ({ text: tag.name, value: tag.id })),
         render: (key) => {
           const tagId = key.map(item => `${item.tag_id}`);
-          const value = tags.filter(tag => tagId.indexOf(`${tag.id}`)).map(item => item.name);
+          const value = tags.filter(tag => tagId.indexOf(`${tag.id}`) !== -1).map(item => item.name);
           return value.join(',');
         },
       },
@@ -106,7 +94,7 @@ export default class Validator extends PureComponent {
           return (
             <Fragment>
               <a onClick={() => {
-                this.props.history.push('/client/customer/list/info/1');
+                this.props.history.push(`/client/customer/list/info/${rowData.id}`);
               }}
               >编辑
               </a>
@@ -135,7 +123,7 @@ export default class Validator extends PureComponent {
         </Button>
       ),
     ];
-    const { loading, customer } = this.props;
+    const { loading, customer, fetch } = this.props;
     return (
       <OATable
         serverSide
@@ -143,7 +131,7 @@ export default class Validator extends PureComponent {
         data={customer.data}
         total={customer.total}
         columns={this.makeColumns()}
-        fetchDataSource={this.fetch}
+        fetchDataSource={fetch}
         extraOperator={extraOperator}
       />
     );

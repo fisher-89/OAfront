@@ -17,8 +17,7 @@ import OAForm, {
 import { nation } from '../../../assets/nation';
 import { province } from '../../../assets/province';
 import { customerStatus } from '../../../assets/customer';
-
-// import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
+import store from './store';
 
 const RadioGroup = Radio.Group;
 const FormItem = OAForm.Item;
@@ -68,22 +67,20 @@ const sexOption = [
 ];
 
 @connect(({ customer, loading }) => ({
-  source: customer.source,
-  tags: customer.tags,
   tagsType: customer.tagsType,
   loading: (
-    loading.effects['customer/fetchSource'] ||
+    loading.effects['brand/fetchBrand'] ||
     loading.effects['customer/fetchTags'] ||
+    loading.effects['customer/fetchSource'] ||
     loading.effects['customer/fetchTagsType'] ||
     loading.effects['customer/addCustomer']
   ),
 }))
 @OAForm.create()
+@store
 export default class extends React.PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
-    dispatch({ type: 'customer/fetchSource' });
-    dispatch({ type: 'customer/fetchTags' });
     dispatch({ type: 'customer/fetchTagsType' });
   }
 
@@ -104,7 +101,11 @@ export default class extends React.PureComponent {
 
   render() {
     const {
-      tags, tagsType, source, form: { getFieldDecorator }, validateFields, validatorRequired,
+      brands,
+      tags,
+      tagsType,
+      source,
+      form: { getFieldDecorator, setFieldsValue }, validateFields, validatorRequired,
     } = this.props;
     let tagsGroup = [];
     const tagsTypeId = tagsType.map(type => type.id);
@@ -169,7 +170,7 @@ export default class extends React.PureComponent {
               })(
                 <Select placeholder="请选择">
                   {province.map(item =>
-                    (<Option value={item.id} key={item.id}>{item.name}</Option>))
+                    (<Option key={`${item.id}`}>{item.name}</Option>))
                   }
                 </Select>
               )}
@@ -230,7 +231,7 @@ export default class extends React.PureComponent {
               })(
                 <Select placeholder="请选择">
                   {source.map(item =>
-                    (<Option value={item.id} key={item.id}>{item.name}</Option>))
+                    (<Option key={`${item.id}`}>{item.name}</Option>))
                   }
                 </Select>
               )}
@@ -243,7 +244,7 @@ export default class extends React.PureComponent {
               })(
                 <Select placeholder="请选择">
                   {customerStatus.map(item =>
-                    (<Option value={item.id} key={item.id}>{item.name}</Option>))
+                    (<Option key={`${item.id}`}>{item.name}</Option>))
                   }
                 </Select>
               )}
@@ -251,11 +252,23 @@ export default class extends React.PureComponent {
           </Col>
         </Row>
         <Row gutter={rowGutter}>
-          <Col {...rowGutter}>
-            <FormItem label="初次合作时间" {...rowFormItemLayout} required>
+          <Col {...colSpan}>
+            <FormItem label="合作品牌" {...formItemLayout}>
+              {getFieldDecorator('brand_id', {
+                initialValue: [],
+              })(
+                <Select placeholder="请选择" mode="multiple">
+                  {brands.map(item =>
+                    (<Option key={`${item.id}`}>{item.name}</Option>))
+                  }
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+          <Col {...colSpan}>
+            <FormItem label="初次合作时间" {...formItemLayout}>
               {getFieldDecorator('first_cooperation_at', {
                 initialValue: '',
-                rules: [validatorRequired],
               })(
                 <DatePicker placeholder="请输入" style={{ width: '100%' }} />
               )}
@@ -268,7 +281,15 @@ export default class extends React.PureComponent {
               {getFieldDecorator('tag_id', {
                 initialValue: [],
               })(
-                <Select optionFilterProp="children" mode="tags" tokenSeparators={[',']} placeholder="请选择">
+                <Select
+                  mode="multiple"
+                  placeholder="请选择"
+                  tokenSeparators={[',']}
+                  optionFilterProp="children"
+                  onChange={(value) => {
+                    setFieldsValue({ tag_id: value });
+                  }}
+                >
                   {tagsGroup.map((item) => {
                     return item.children ? (
                       <OptGroup key={`${item.id}`} label={item.name}>
