@@ -31,11 +31,11 @@ export default class extends PureComponent {
               {...{
                 labelCol: {
                   xs: { span: 24 },
-                  sm: { span: 5 },
+                  sm: { span: 6 },
                 },
                 wrapperCol: {
                   xs: { span: 24 },
-                  sm: { span: 15 },
+                  sm: { span: 16 },
                 },
               }
               }
@@ -68,17 +68,17 @@ export default class extends PureComponent {
               ...{
                 labelCol: {
                   xs: { span: 24 },
-                  sm: { span: 6 },
+                  sm: { span: 8 },
                 },
                 wrapperCol: {
                   xs: { span: 24 },
-                  sm: { span: 12 },
+                  sm: { span: 14 },
                 },
               }
               }
             >
               {getFieldDecorator(`${name}[relative_type]`, value.relative_type ? {
-                initialValue: value.relative_type.toString() || '',
+                initialValue: value.relative_type.name.toString() || '',
               } : {})(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
                   <Option value="">-- 无 --</Option>

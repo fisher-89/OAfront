@@ -188,6 +188,18 @@ export default class EditStaff extends PureComponent {
         },
       },
     };
+    const formItemLayout4 = {
+      labelCol: {
+        sm: {
+          span: 4,
+        },
+      },
+      wrapperCol: {
+        sm: {
+          span: 20,
+        },
+      },
+    };
     const {
       form,
       validateFields,
@@ -697,7 +709,7 @@ export default class EditStaff extends PureComponent {
               </Row>
             </TabPane>
             <TabPane forceRender tab="关系人" key="3">
-              <FormItem label="关系人" {...formItemLayout}>
+              <FormItem label="关系人" {...formItemLayout4}>
                 <RelativeList
                   form={form}
                   name="relatives"
