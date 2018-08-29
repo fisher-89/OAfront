@@ -40,7 +40,7 @@ function checkStatus(response) {
   throw error;
 }
 
-function notificateErrorMessage(promise) {
+function notificateErrorMessage(promise, response) {
   promise.then((body) => {
     if (body.message) {
       notification.error({
@@ -121,9 +121,10 @@ export default async function request(url, options) {
       if (response.headers.get('content-type') === 'application/vnd.ms-excel; charset=UTF-8') {
         return response;
       }
-      if (response.status === 400) {
+
+      if (response.status === 400 || (newOptions.method === 'GET' && response.status === 401)) {
         const promise = response.json();
-        notificateErrorMessage(promise);
+        notificateErrorMessage(promise, response);
       }
       if (response.status === 204) {
         return response.text();

@@ -64,7 +64,7 @@ export default class Validator extends PureComponent {
         dataIndex: 'status',
         filters: customerStatus.map(item => ({ text: item.name, value: item.id })),
         render: (key) => {
-          const value = source.find(item => item.id === key) || {};
+          const value = source.find(item => item.id === `${key}`) || {};
           return value.name;
         },
       },
@@ -79,6 +79,7 @@ export default class Validator extends PureComponent {
         align: 'center',
         title: '合作时间',
         dataIndex: 'first_cooperation_at',
+        sorter: true,
         render: time => moment(time).format('YYYY-MM-DD'),
       },
       {
@@ -94,8 +95,8 @@ export default class Validator extends PureComponent {
         align: 'center',
         dataIndex: 'has_tags',
         render: (key) => {
-          const tagId = key.map(item => item.tag_id);
-          const value = tags.filter(tag => tagId.indexOf(tag.id)).map(item => item.name);
+          const tagId = key.map(item => `${item.tag_id}`);
+          const value = tags.filter(tag => tagId.indexOf(`${tag.id}`)).map(item => item.name);
           return value.join(',');
         },
       },

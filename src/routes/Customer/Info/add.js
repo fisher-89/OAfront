@@ -252,7 +252,7 @@ export default class extends React.PureComponent {
         </Row>
         <Row gutter={rowGutter}>
           <Col {...rowGutter}>
-            <FormItem label="合作时间" {...rowFormItemLayout} required>
+            <FormItem label="初次合作时间" {...rowFormItemLayout} required>
               {getFieldDecorator('first_cooperation_at', {
                 initialValue: '',
                 rules: [validatorRequired],
