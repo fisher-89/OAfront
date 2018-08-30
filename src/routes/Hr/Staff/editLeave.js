@@ -18,8 +18,15 @@ export default class extends PureComponent {
     };
   }
 
-  handleSubmit = (e) => {
-    return e;
+  handleSubmit = (params) => {
+    const { dispatch } = this.props;
+    const response = { ...params };
+    dispatch({
+      type: 'staffs/editStaff',
+      payload: response,
+      onError: this.handleError,
+      onSuccess: this.handleSuccess,
+    });
   };
 
   render() {

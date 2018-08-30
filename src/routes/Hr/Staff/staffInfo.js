@@ -9,6 +9,7 @@ import {
 import DescriptionList from '../../../components/DescriptionList';
 
 const { Description } = DescriptionList;
+const staffProperty = ['无', '108将', '36天罡', '24金刚', '18罗汉'];
 
 export default class StaffInfo extends PureComponent {
   render() {
@@ -42,7 +43,7 @@ export default class StaffInfo extends PureComponent {
               {`${data.status.name}`}
             </Description>
             <Description term="员工属性">
-              {`${data.property.name}`}
+              {`${staffProperty[data.property]}`}
             </Description>
             <Description term="银行账户">
               {`${data.account_number}     ${data.account_name}     ${data.account_bank}`}
