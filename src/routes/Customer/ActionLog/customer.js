@@ -4,12 +4,12 @@ import {
   Card,
   Divider,
 } from 'antd';
-
+import store from './store';
 import OATable from '../../../components/OATable';
-// import OAForm, { OAModal } from '../../../components/OAForm';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 
-export default class Validator extends PureComponent {
+@store('fetchClientLogs')
+export default class extends PureComponent {
   state = {};
 
   makeColumns = () => {

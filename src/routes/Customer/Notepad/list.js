@@ -1,21 +1,20 @@
 import React, { PureComponent, Fragment } from 'react';
-// import { connect } from 'dva';
 import {
-  Card,
   Button,
-
   Divider,
-
 } from 'antd';
-
+import store from './store';
 import OATable from '../../../components/OATable';
-// import OAForm, { OAModal } from '../../../components/OAForm';
-import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 
+@store
 export default class Validator extends PureComponent {
   state = {};
 
   makeColumns = () => {
+    const { deleted } = this.props;
+    const onClick = (name, id) => {
+      this.props.history.push(`/client/customer/list/${name}/${id}`);
+    };
     const columns = [
       {
         // width: 80,
@@ -35,7 +34,7 @@ export default class Validator extends PureComponent {
         // width: 200,
         align: 'center',
         title: '合作品牌',
-        dataIndex: 'brand',
+        dataIndex: 'brands',
       },
       {
         // width: 240,
@@ -53,16 +52,16 @@ export default class Validator extends PureComponent {
         // width: 200,
         align: 'center',
         title: '记录时间',
-        dataIndex: 'time',
+        dataIndex: 'created_at',
       },
       {
         title: '操作',
-        render: (rowData) => {
+        render: ({ id }) => {
           return (
             <Fragment>
-              <a onClick={() => this.handleEdit(rowData)}>编辑</a>
+              <a onClick={() => onClick('edit', id)}>编辑</a>
               <Divider type="vertical" />
-              <a onClick={() => this.handleDelete(rowData.id)}>删除</a>
+              <a onClick={() => deleted(id)}>删除</a>
             </Fragment>
           );
         },
@@ -71,7 +70,18 @@ export default class Validator extends PureComponent {
     return columns;
   }
 
+  fetchDataSource = (params) => {
+    const { fetch, customerId } = this.props;
+    const client = customerId ? { client_id: customerId } : {};
+    const newParams = {
+      ...params,
+      ...client,
+    };
+    fetch(newParams);
+  }
+
   render() {
+    const { notes } = this.props;
     const extraOperator = [
       (
         <Button
@@ -79,28 +89,22 @@ export default class Validator extends PureComponent {
           icon="plus"
           key="plus"
           onClick={() => {
-            this.props.history.push('/client/notepad/add');
+            this.props.history.push('/client/notepad/list/add');
           }}
         >
           新建录入
         </Button>
       ),
     ];
-    const { type } = this.props;
-    const table = (
+    return (
       <OATable
-        data={[]}
-        columns={this.makeColumns()}
-        extraOperator={extraOperator}
         serverSide
+        data={notes.data}
+        total={notes.total}
+        columns={this.makeColumns()}
+        fetchDataSource={this.fetchDataSource}
+        extraOperator={extraOperator}
       />
     );
-    return !type ? (
-      <PageHeaderLayout>
-        <Card bordered={false} >
-          {table}
-        </Card>
-      </PageHeaderLayout>
-    ) : table;
   }
 }

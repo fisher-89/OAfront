@@ -3,7 +3,7 @@ import { Upload, Button } from 'antd';
 import upload from '../../utils/upload';
 
 
-export default class extends React.Component {
+export default class extends Upload {
   state = {
     fileList: [],
   }

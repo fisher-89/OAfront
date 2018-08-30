@@ -4,28 +4,26 @@ import {
   Card,
   Divider,
 } from 'antd';
-
+import store from './store';
 import OATable from '../../../components/OATable';
-// import OAForm, { OAModal } from '../../../components/OAForm';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 
-export default class Validator extends PureComponent {
-  state = {};
-
+@store('fetchNoteLogs')
+export default class extends PureComponent {
   makeColumns = () => {
     const columns = [
       {
         // width: 80,
         title: '员工编号',
         align: 'center',
-        dataIndex: 'id',
+        dataIndex: 'staff_sn',
         sorter: true,
       },
       {
         // width: 100,
         align: 'center',
         title: '员工姓名',
-        dataIndex: 'name',
+        dataIndex: 'staff_name',
         searcher: true,
       },
       {
@@ -72,12 +70,12 @@ export default class Validator extends PureComponent {
       },
       {
         title: '查看',
-        render: (rowData) => {
+        render: () => {
           return (
             <Fragment>
-              <a onClick={() => this.handleEdit(rowData)}>编辑</a>
+              <a >编辑</a>
               <Divider type="vertical" />
-              <a onClick={() => this.handleDelete(rowData.id)}>删除</a>
+              <a >详细信息</a>
             </Fragment>
           );
         },
@@ -87,13 +85,16 @@ export default class Validator extends PureComponent {
   }
 
   render() {
+    const { fetchNoteLogs, clientLogs } = this.props;
     return (
       <PageHeaderLayout>
         <Card bordered={false}>
           <OATable
-            data={[]}
             serverSide
+            data={clientLogs.data}
+            total={clientLogs.total}
             columns={this.makeColumns()}
+            fetchDataSource={fetchNoteLogs}
           />
         </Card>
       </PageHeaderLayout>

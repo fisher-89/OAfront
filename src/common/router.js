@@ -35,9 +35,7 @@ const dynamicWrapper = (app, models, component) => {
   // () => import('module')
   return dynamic({
     app,
-    models: () => models.filter(
-      model => modelNotExisted(app, model)).map(m => import(`../models/${m}.js`)
-    ),
+    models: () => models.filter(model => modelNotExisted(app, model)).map(m => import(`../models/${m}.js`)),
     // add routerData prop
     component: () => {
       if (!routerDataCache) {
@@ -83,14 +81,17 @@ export const getRouterData = (app) => {
     '/client/customer/list/info/:id': {
       component: dynamicWrapper(app, ['customer'], () => import('../routes/Customer/Info/info')),
     },
+    '/client/customer/list/edit/:id': {
+      component: dynamicWrapper(app, ['customer'], () => import('../routes/Customer/Info/add')),
+    },
     '/client/customer/list/add': {
       component: dynamicWrapper(app, ['customer'], () => import('../routes/Customer/Info/add')),
     },
-    '/client/notepad/add': {
-      component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/Notepad/add')),
-    },
     '/client/notepad/list': {
-      component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/Notepad/list')),
+      component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/Notepad')),
+    },
+    '/client/notepad/list/add': {
+      component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/Notepad/add')),
     },
     '/client/action-log/customer': {
       component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/ActionLog/customer')),

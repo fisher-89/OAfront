@@ -17,6 +17,11 @@ const menuData = [
             path: 'list/add',
           },
           {
+            name: '编辑资料',
+            path: 'list/edit/:id',
+            hideInMenu: true,
+          },
+          {
             name: '资料详情',
             path: 'list/info/:id',
             hideInMenu: true,
@@ -33,7 +38,7 @@ const menuData = [
         children: [
           {
             name: '录入事件',
-            path: 'add',
+            path: 'list/add',
           },
           {
             name: '事件记录',

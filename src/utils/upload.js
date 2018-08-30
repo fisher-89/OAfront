@@ -44,21 +44,30 @@ function checkStatus(response) {
 export default function upload(url, options) {
   const urlParam = url;
   const defaultOptions = {
-    credentials: 'include',
+    // credentials: 'include',
   };
-  if (localStorage.getItem('OA_access_token')
-      && localStorage.getItem('OA_access_token_expires_in') > new Date().getTime()) {
-    defaultOptions.headers = {
-      Authorization: `Bearer ${localStorage.getItem('OA_access_token')}`,
-    };
-  } else {
-    store.dispatch(routerRedux.push('/passport/redirect_to_authorize'));
-  }
+
   const newOptions = {
     ...defaultOptions,
+    method: 'POST',
     ...options,
+    headers: {
+      Accept: 'application/json',
+      ...(options && options.headers),
+    },
   };
-  newOptions.headers.Accept = 'application/json';
+
+  const accessToken = localStorage.getItem('OA_access_token');
+  const expiresIn = localStorage.getItem('OA_access_token_expires_in');
+
+  if (accessToken && expiresIn > new Date().getTime()) {
+    newOptions.headers = {
+      Authorization: `Bearer ${localStorage.getItem('OA_access_token')}`,
+      ...newOptions.headers,
+    };
+  } else {
+    return false;
+  }
 
   return fetch(urlParam, newOptions)
     .then(checkStatus)
@@ -66,6 +75,6 @@ export default function upload(url, options) {
       if (newOptions.method === 'DELETE' && response.status === 204) {
         return response.text();
       }
-      return response.json();
+      return response;
     });
 }

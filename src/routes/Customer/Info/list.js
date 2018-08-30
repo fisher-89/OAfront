@@ -14,6 +14,9 @@ import store from './store';
 export default class extends PureComponent {
   makeColumns = () => {
     const { source, tags, brands } = this.props;
+    const onClick = (name, id) => {
+      this.props.history.push(`/client/customer/list/${name}/${id}`);
+    };
     const columns = [
       {
         align: 'center',
@@ -55,10 +58,11 @@ export default class extends PureComponent {
         align: 'center',
         title: '合作品牌',
         filters: brands.map(item => ({ text: item.name, value: item.id })),
-        dataIndex: 'has_brands',
-        render: (key) => {
-          const brandId = key.map(item => `${item.brand_id}`);
-          const value = brands.filter(item => brandId.indexOf(`${item.id}`) !== -1).map(item => item.name);
+        dataIndex: 'brands.brand_id',
+        render: (_, record) => {
+          const brandId = record.brand_id.map(item => item.brand_id);
+          const value = brands.filter(item => brandId.indexOf(item.id) !== -1)
+            .map(item => item.name);
           return value.join(',');
         },
       },
@@ -81,11 +85,12 @@ export default class extends PureComponent {
         // width: 320,
         title: '标签',
         align: 'center',
-        dataIndex: 'has_tags',
+        dataIndex: 'tags.tag_id',
         filters: tags.map(tag => ({ text: tag.name, value: tag.id })),
-        render: (key) => {
-          const tagId = key.map(item => `${item.tag_id}`);
-          const value = tags.filter(tag => tagId.indexOf(`${tag.id}`) !== -1).map(item => item.name);
+        render: (_, record) => {
+          const tagId = record.tags.map(item => item.tag_id);
+          const value = tags.filter(tag => tagId.indexOf(tag.id) !== -1)
+            .map(item => item.name);
           return value.join(',');
         },
       },
@@ -94,11 +99,9 @@ export default class extends PureComponent {
         render: (rowData) => {
           return (
             <Fragment>
-              <a onClick={() => {
-                this.props.history.push(`/client/customer/list/info/${rowData.id}`);
-              }}
-              >编辑
-              </a>
+              <a onClick={() => onClick('info', rowData.id)}>查看</a>
+              <Divider type="vertical" />
+              <a onClick={() => onClick('edit', rowData.id)}>编辑</a>
               <Divider type="vertical" />
               <a onClick={() => this.handleDelete(rowData.id)}>删除</a>
             </Fragment>

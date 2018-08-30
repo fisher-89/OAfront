@@ -26,7 +26,7 @@ const formItemLayout = {
   },
 };
 
-function getAddress(data) {
+export function getAddress(data) {
   let address;
   try {
     address = JSON.parse(data);
@@ -41,12 +41,15 @@ function getAddress(data) {
 }
 
 function CustomerInfo(props) {
-  const { data, loading, source, tags } = props;
+  const { data, loading, source, tags, brands } = props;
   const address = getAddress(data.present_address || []);
   const sourceData = source.find(item => item.id === data.source_id) || {};
-  const statusData = customerStatus.find(item => item.id === data.status) || {};
-  const tagId = (data.has_tags || []).map(item => item.tag_id);
+  const statusData = customerStatus.find(item => item.id === `${data.status}`) || {};
+  const tagId = (data.tags || []).map(item => item.tag_id);
   const tagData = tags.filter(item => tagId.indexOf(item.id) !== -1).map(item => item.name);
+  const brandId = (data.brands || []).map(item => item.brand_id);
+  const brandData = brands.filter(item => brandId.indexOf(item.id) !== -1).map(item => item.name);
+
   return (
     <Spin spinning={loading}>
       <div className={styles.customerInfo}>
@@ -59,7 +62,7 @@ function CustomerInfo(props) {
         <FormItem label="微信" {...formItemLayout}>{data.wechat}</FormItem>
         <FormItem label="客户来源" {...formItemLayout}> {sourceData.name}</FormItem>
         <FormItem label="客户状态"{...formItemLayout}>{statusData.name}</FormItem>
-        <FormItem label="合作品牌"{...formItemLayout} />
+        <FormItem label="合作品牌"{...formItemLayout} >{brandData.join('、')}</FormItem>
         <FormItem label="合作时间" {...formItemLayout}> {moment(data.first_cooperation_at).format('YYYY-MM-DD')}</FormItem>
         <FormItem label="标签" {...formItemLayout}> {tagData.join('、')}</FormItem>
         <FormItem label="备注" {...formItemLayout}>{data.remark}</FormItem>
@@ -88,7 +91,7 @@ export default class extends React.PureComponent {
     delete customerInfoProps.customer;
     return (
       <React.Fragment>
-        <Button icon="left">返回客户列表</Button>
+        <Button icon="left" onClick={() => { this.props.history.goBack(-1); }}>返回客户列表</Button>
         <Tabs defaultActiveKey="1" style={{ marginTop: 10 }}>
           <TabPane tab="基本信息" key="1" >
             <CustomerInfo
@@ -97,7 +100,7 @@ export default class extends React.PureComponent {
             />
           </TabPane>
           <TabPane tab="记事本" key="2">
-            <Notepad type="user" />
+            <Notepad customerId={this.id} />
           </TabPane>
           <TabPane tab="操作日志" key="3">
             <ActionLog type="user" />
