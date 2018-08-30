@@ -39,3 +39,13 @@ export async function editStaff(params) {
     body: { ...params },
   });
 }
+
+/**
+ * 删除员工.
+ * @param int params
+ */
+export async function deleteStaff(id) {
+  return request(`/api/hr/staff_delete/${id}`, {
+    method: 'DELETE',
+  });
+}

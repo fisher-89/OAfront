@@ -10,7 +10,7 @@ import {
   Icon,
   Tooltip,
   Tabs,
-  // Modal,
+  Modal,
 } from 'antd';
 
 import { connect } from 'dva';
@@ -251,6 +251,22 @@ export default class extends PureComponent {
     });
   };
 
+  deleteStaff = (id) => {
+    Modal.confirm({
+      title: '确认删除?',
+      cancelText: '取消',
+      okText: '确认',
+      onOk: () => {
+        const { dispatch } = this.props;
+        dispatch({
+          type: 'staffs/deleteStaff',
+          payload: { staff_sn: id },
+        });
+      },
+      onCancel: () => {},
+    });
+  };
+
   makeAction = (rowData) => {
     const handleButton = {
       66: (
@@ -316,7 +332,12 @@ export default class extends PureComponent {
       ),
       59: (
         <Tooltip title="删除" key="delete" mouseLeaveDelay={0}>
-          <a style={{ color: 'red' }}>
+          <a
+            style={{ color: 'red' }}
+            onClick={() => {
+              this.deleteStaff(rowData.staff_sn);
+            }}
+          >
             <Icon type="delete" style={{ fontSize: '18px' }} />
           </a>
         </Tooltip>
