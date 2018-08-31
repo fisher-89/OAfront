@@ -289,88 +289,76 @@ class OATable extends PureComponent {
 
   handleSearch = (key) => {
     return (value) => {
-      const { filters, filtered } = this.state;
-      const { serverSide } = this.props;
+      const { pagination, filters, sorter, filtered } = this.state;
       const searchFilter = value ? [value] : [];
       const filteredState = filtered.filter(item => item !== key);
       if (value) {
         filteredState.push(key);
       }
+      const newFilters = {
+        ...filters,
+        [key]: searchFilter,
+      };
       this.setState({
-        filters: {
-          ...filters,
-          [key]: searchFilter,
-        },
         filterDropdownVisible: false,
         filtered: filteredState,
       }, () => {
-        if (serverSide) {
-          this.fetchTableDataSource();
-        }
+        this.handleTableChange(pagination, newFilters, sorter);
       });
     };
   }
 
   handleTreeFilter = (key) => {
     return (checkedKeys) => {
-      const { filters } = this.state;
-      const { serverSide } = this.props;
+      const { pagination, filters, sorter } = this.state;
+      const newFilters = {
+        ...filters,
+        [key]: checkedKeys,
+      };
       this.setState({
-        filters: {
-          ...filters,
-          [key]: checkedKeys,
-        },
         filterDropdownVisible: false,
       }, () => {
-        if (serverSide) {
-          this.fetchTableDataSource();
-        }
+        this.handleTableChange(pagination, newFilters, sorter);
       });
     };
   }
 
   handleDateFilter = (key) => {
     return (timeValue) => {
-      const { filters, filtered } = this.state;
-      const { serverSide } = this.props;
+      const { pagination, filters, sorter, filtered } = this.state;
       const filteredState = filtered.filter(item => item !== key);
       if (timeValue.length > 0) {
         filteredState.push(key);
       }
+      const newFilters = {
+        ...filters,
+        [key]: timeValue,
+      };
       this.setState({
-        filters: {
-          ...filters,
-          [key]: timeValue,
-        },
         filterDropdownVisible: false,
         filtered: filteredState,
       }, () => {
-        if (serverSide) {
-          this.fetchTableDataSource();
-        }
+        this.handleTableChange(pagination, newFilters, sorter);
       });
     };
   }
 
   handleRangeFilter = (key) => {
     return (rangeValue) => {
-      const { filters, filtered } = this.state;
-      const { serverSide } = this.props;
+      const { pagination, filters, sorter, filtered } = this.state;
       const filteredState = filtered.filter(item => item !== key);
       if (rangeValue.length > 0) {
         filteredState.push(key);
       }
+      const newFilters = {
+        ...filters,
+        [key]: rangeValue,
+      };
       this.setState({
-        filters: {
-          ...filters,
-          [key]: rangeValue,
-        },
         filterDropdownVisible: false,
         filtered: filteredState,
       }, () => {
-        if (serverSide) {
-          this.fetchTableDataSource();
-        }
+        this.handleTableChange(pagination, newFilters, sorter);
       });
     };
   }
