@@ -447,26 +447,20 @@ class OATable extends PureComponent {
   }
 
   resetFilter = (key) => {
-    const { serverSide } = this.props;
-    const { filters, searchers, filtered } = this.state;
+    const { pagination, filters, sorter, filtered } = this.state;
     if (key && filters[key]) {
       delete filters[key];
-    } else if (key && searchers[key]) {
-      delete searchers[key];
     }
     let newFiltered = [];
     if (key) {
       newFiltered = filtered.filter(item => item !== key);
     }
+    const newFilters = key ? filters : {};
     this.setState({
       filters: key ? filters : {},
-      searchers: key ? searchers : {},
       filtered: newFiltered,
-      // sorter: {},
     }, () => {
-      if (serverSide) {
-        this.fetchTableDataSource();
-      }
+      this.handleTableChange(pagination, newFilters, sorter);
     });
   }
 
