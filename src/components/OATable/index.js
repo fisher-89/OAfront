@@ -376,6 +376,15 @@ class OATable extends PureComponent {
   }
 
   handleTableChange = (pagination, filters, sorter) => {
+    const { onChange } = this.props;
+    if (onChange) {
+      onChange(pagination, filters, sorter, this.changeStateAndFetch);
+    } else {
+      this.changeStateAndFetch(pagination, filters, sorter);
+    }
+  }
+
+  changeStateAndFetch = (pagination, filters, sorter) => {
     this.setState({
       filters,
       pagination,
@@ -401,8 +410,10 @@ class OATable extends PureComponent {
   }
 
   makeDefaultOnRangeFilter = (key) => {
-    const valueInfo = eval(`arguments[1].${key}`);
-    return ({ min, max }) => min <= valueInfo && max >= valueInfo;
+    return ({ min, max }) => {
+      const valueInfo = eval(`arguments[1].${key}`);
+      return min <= valueInfo && max >= valueInfo;
+    };
   }
 
 
@@ -506,12 +517,12 @@ class OATable extends PureComponent {
     const response = {
       rowKey: (record, index) => record.id || record.staff_sn || record.shop_sn || index,
       dataSource: data,
-      onChange: this.handleTableChange,
       size: 'middle',
       bordered: false,
       scroll: {},
       pagination,
       ...this.props,
+      onChange: this.handleTableChange,
       loading: loading || this.state.loading,
       rowSelection: newRowSelection,
       columns: this.mapColumns(),
