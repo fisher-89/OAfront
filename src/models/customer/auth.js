@@ -1,15 +1,15 @@
 
-import { fetchCustomer, addCustomer, editCustomer, deleteCustomer } from '../../services/customer';
+import { fetchAuth, addAuth, editAuth, deleteAuth } from '../../services/customer';
 
-const store = 'customer';
+const store = 'auth';
 
 export default {
-  * fetchCustomer({ payload }, { call, put }) {
+  * fetchAuth({ payload }, { call, put }) {
     try {
       const params = { ...payload };
       const { id } = params;
       delete params.id;
-      const response = yield call(fetchCustomer, params, id || '');
+      const response = yield call(fetchAuth, params, id || '');
       if (response.message) { return; }
       yield put({
         type: 'save',
@@ -21,10 +21,10 @@ export default {
       });
     } catch (err) { return err; }
   },
-  * addCustomer({ payload, onError, onSuccess }, { call, put }) {
+  * addAuth({ payload, onError, onSuccess }, { call, put }) {
     try {
       const params = { ...payload };
-      const response = yield call(addCustomer, params);
+      const response = yield call(addAuth, params);
       if (response.errors) { onError(response.errors); return; }
       if (response.message) { return; }
       yield put({
@@ -37,12 +37,12 @@ export default {
       onSuccess(response);
     } catch (err) { return err; }
   },
-  * editCustomer({ payload, onError, onSuccess }, { call, put }) {
+  * editAuth({ payload, onError, onSuccess }, { call, put }) {
     try {
       const params = { ...payload };
       const { id } = params;
       delete params.id;
-      const response = yield call(editCustomer, params, id);
+      const response = yield call(editAuth, params, id);
       if (response.errors) { onError(response.errors); return; }
       if (response.message) { return; }
       yield put({
@@ -56,12 +56,12 @@ export default {
       onSuccess(response);
     } catch (err) { return err; }
   },
-  * deleteCustomer({ payload, onError, onSuccess }, { call, put }) {
+  * deleteAuth({ payload, onError, onSuccess }, { call, put }) {
     try {
       const params = { ...payload };
       const { id } = params;
       delete params.id;
-      const response = yield call(deleteCustomer, id);
+      const response = yield call(deleteAuth, id);
       if (response.errors) { onError(response.errors); return; }
       if (response.message) { return; }
       yield put({

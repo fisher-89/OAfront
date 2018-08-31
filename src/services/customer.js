@@ -119,3 +119,25 @@ export async function fetchNoteLogs(params) {
 export async function fetchClientLogs(params) {
   return request('/api/crm/client/logs', { method: 'GET', body: params });
 }
+
+
+/** 客户管理权限列表 */
+export async function fetchAuth(params) {
+  return request('/api/crm/auth', { method: 'GET', body: params });
+}
+
+/** 添加客户管理权限 */
+export async function addAuth(params) {
+  return request('/api/crm/auth', { method: 'POST', body: params });
+}
+
+/** 编辑客户管理权限 */
+export async function editAuth(params, id) {
+  return request(`/api/crm/auth/${id}`, { method: 'PUT', body: params });
+}
+
+/** 删除客户管理权限 */
+export async function deleteAuth(id) {
+  return request(`/api/crm/auth/${id}`, { method: 'DELETE' });
+}
+

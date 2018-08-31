@@ -530,3 +530,34 @@ export function unicodeFieldsError(temp, isUnicode = true, values) {
   return params;
 }
 
+/**
+ * 反回store对象的props
+ * @param {生成store的类} _this
+ * @param {*参数类型} type
+ */
+export function makeProps(_this, type) {
+  let response = {};
+  const { loading } = _this.props;
+  if (typeof type === 'string') {
+    response.loading = loading[type];
+    if (_this[type]) response[type] = _this[type];
+  } else if (Array.isArray(type)) {
+    response.loading = false;
+    type.forEach((item) => {
+      if (loading[item]) response.loading = true;
+      if (_this[item]) response.loading = _this[type];
+    });
+  } else {
+    response = { ..._this.props };
+    response.loading = false;
+    Object.keys(_this).forEach((item) => {
+      const func = _this[item];
+      if (typeof func === 'function') response[item] = func;
+    });
+    Object.keys(loading).forEach((load) => {
+      const loadBeal = loading[load];
+      if (loadBeal) response.loading = true;
+    });
+  }
+  return response;
+}

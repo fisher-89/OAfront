@@ -237,7 +237,7 @@ export default class extends React.PureComponent {
           <Col {...colSpan}>
             <FormItem label="客户来源" {...formItemLayout} required>
               {getFieldDecorator('source_id', {
-                initialValue: `${customerInfo.source_id}` || undefined,
+                initialValue: customerInfo.source_id ? `${customerInfo.source_id}` : undefined,
                 rules: [validatorRequired],
               })(
                 <Select placeholder="请选择">
@@ -251,7 +251,7 @@ export default class extends React.PureComponent {
           <Col {...colSpan}>
             <FormItem label="客户状态" {...formItemLayout} required>
               {getFieldDecorator('status', {
-                initialValue: `${customerInfo.status}` || undefined,
+                initialValue: customerInfo.status ? `${customerInfo.status}` : undefined,
                 rules: [validatorRequired],
               })(
                 <Select placeholder="请选择">
@@ -265,9 +265,10 @@ export default class extends React.PureComponent {
         </Row>
         <Row gutter={rowGutter}>
           <Col {...colSpan}>
-            <FormItem label="合作品牌" {...formItemLayout}>
+            <FormItem label="合作品牌" {...formItemLayout} required>
               {getFieldDecorator('brand_id', {
                 initialValue: [],
+                rules: [validatorRequired],
               })(
                 <Select placeholder="请选择" mode="multiple">
                   {brands.map(item =>

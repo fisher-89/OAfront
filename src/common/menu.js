@@ -59,6 +59,10 @@ const menuData = [
         path: 'stats-central',
       },
       {
+        name: '权限管理',
+        path: 'auth',
+      },
+      {
         name: '操作日志',
         path: 'action-log',
         children: [

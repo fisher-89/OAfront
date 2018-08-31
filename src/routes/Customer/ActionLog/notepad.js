@@ -2,14 +2,20 @@ import React, { PureComponent, Fragment } from 'react';
 // import { connect } from 'dva';
 import {
   Card,
+  Drawer,
   Divider,
 } from 'antd';
 import store from './store';
 import OATable from '../../../components/OATable';
+import NotepadInfo from './notepad/index';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 
 @store('fetchNoteLogs')
 export default class extends PureComponent {
+  state = {
+    visible: false,
+  }
+
   makeColumns = () => {
     const columns = [
       {
@@ -75,7 +81,7 @@ export default class extends PureComponent {
             <Fragment>
               <a >编辑</a>
               <Divider type="vertical" />
-              <a >详细信息</a>
+              <a onClick={() => { this.setState({ visible: true }); }}>详细信息</a>
             </Fragment>
           );
         },
@@ -86,16 +92,24 @@ export default class extends PureComponent {
 
   render() {
     const { fetchNoteLogs, clientLogs } = this.props;
+    const { visible } = this.state;
     return (
       <PageHeaderLayout>
         <Card bordered={false}>
           <OATable
             serverSide
-            data={clientLogs.data}
+            data={clientLogs.data || [{ id: '1' }]}
             total={clientLogs.total}
             columns={this.makeColumns()}
             fetchDataSource={fetchNoteLogs}
           />
+          <Drawer
+            width={400}
+            visible={visible}
+            onClose={() => { this.setState({ visible: false }); }}
+          >
+            <NotepadInfo />
+          </Drawer>
         </Card>
       </PageHeaderLayout>
     );
