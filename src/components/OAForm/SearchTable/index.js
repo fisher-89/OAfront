@@ -160,7 +160,10 @@ export default class SearchTable extends PureComponent {
             title,
             visible,
           }}
-          onChange={this.setTableValue}
+          onChange={(values) => {
+            this.setTableValue(values);
+            this.handleOk();
+          }}
           onCancel={this.handleModelVisble}
           name={name}
           value={value}

@@ -30,6 +30,10 @@ const menuData = [
             name: '查看资料',
             path: 'list',
           },
+          {
+            name: '标签管理',
+            path: 'tags',
+          },
         ],
       },
       {
