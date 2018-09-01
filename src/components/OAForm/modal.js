@@ -18,9 +18,10 @@ const defaultProps = {
 };
 export default class Modal extends PureComponent {
   makeModalProps = () => {
-    const { title, okText, onSubmit } = this.props;
+    const { title, okText, onSubmit, loading } = this.props;
     const response = {
       ...this.props,
+      confirmLoading: loading,
       title: title || '表单',
       okText: okText || '确定',
       onOk: onSubmit,
