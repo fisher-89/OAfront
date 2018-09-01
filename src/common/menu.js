@@ -7,6 +7,7 @@ const menuData = [
     name: '客户管理',
     icon: 'customer-service',
     path: 'client',
+    authority: '174',
     children: [
       {
         name: '客户资料',
