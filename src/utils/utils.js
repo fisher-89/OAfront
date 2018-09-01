@@ -536,7 +536,7 @@ export function unicodeFieldsError(temp, isUnicode = true, values) {
  * @param {*参数类型} type
  */
 export function makeProps(_this, type) {
-  let response = {};
+  const response = { ..._this.props };
   const { loading } = _this.props;
   if (typeof type === 'string') {
     response.loading = loading[type];
@@ -545,10 +545,9 @@ export function makeProps(_this, type) {
     response.loading = false;
     type.forEach((item) => {
       if (loading[item]) response.loading = true;
-      if (_this[item]) response.loading = _this[type];
+      if (_this[item]) response[item] = _this[item];
     });
   } else {
-    response = { ..._this.props };
     response.loading = false;
     Object.keys(_this).forEach((item) => {
       const func = _this[item];

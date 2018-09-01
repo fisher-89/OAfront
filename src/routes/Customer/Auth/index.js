@@ -1,7 +1,8 @@
 import React from 'react';
-import { Card } from 'antd';
+import { Card, Divider, Button } from 'antd';
 import store from './store';
 import OATable from '../../../components/OATable';
+import AuthForm from './form';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 
 const authType = [
@@ -9,11 +10,14 @@ const authType = [
   { value: 2, text: '操作权限' },
 ];
 
-@store()
+@store(['fetchAuth', 'fetchDepartment'])
 export default class extends React.PureComponent {
-  componentWillMount() {
-    const { fetchDepartment } = this.props;
-    fetchDepartment();
+  state = {
+    visible: false,
+  }
+
+  handleModalVisible = (flag) => {
+    this.setState({ visible: !!flag });
   }
 
   makeColumns = () => {
@@ -74,6 +78,7 @@ export default class extends React.PureComponent {
           return (
             <React.Fragment>
               <a>编辑</a>
+              <Divider type="vertical" />
               <a>删除</a>
             </React.Fragment>
           );
@@ -84,16 +89,33 @@ export default class extends React.PureComponent {
   }
 
   render() {
-    const { fetchAuth, auth } = this.props;
+    const { fetchAuth, auth, loading } = this.props;
+    const { visible } = this.state;
+    const extraOperator = (
+      <Button
+        icon="plus"
+        type="primary"
+        style={{ marginLeft: '10px' }}
+        onClick={() => this.handleModalVisible(true)}
+      >
+        添加权限
+      </Button>
+    );
     return (
       <PageHeaderLayout>
         <Card bordered={false}>
           <OATable
             serverSide
             data={auth.data}
+            loading={loading}
             total={auth.total}
             fetchDataSource={fetchAuth}
             columns={this.makeColumns()}
+            extraOperator={extraOperator}
+          />
+          <AuthForm
+            visible={visible}
+            onCancel={() => this.handleModalVisible(false)}
           />
         </Card>
       </PageHeaderLayout>

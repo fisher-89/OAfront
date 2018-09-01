@@ -18,6 +18,10 @@ export default type => (Component) => {
     },
   }))
   class Store extends React.PureComponent {
+    componentWillMount() {
+      this.fetchDepartment();
+    }
+
     fetchAuth = (params) => {
       const { dispatch } = this.props;
       dispatch({ type: 'customer/fetchAuth', payload: params });

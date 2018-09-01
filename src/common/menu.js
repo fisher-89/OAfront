@@ -281,3 +281,4 @@ function formatter(data, parentPath = '', parentAuthority) {
 }
 
 export const getMenuData = () => formatter(menuData);
+

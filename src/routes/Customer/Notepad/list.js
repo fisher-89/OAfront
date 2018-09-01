@@ -81,7 +81,7 @@ export default class Validator extends PureComponent {
   }
 
   render() {
-    const { notes } = this.props;
+    const { notes, loading } = this.props;
     const extraOperator = [
       (
         <Button
@@ -100,6 +100,7 @@ export default class Validator extends PureComponent {
       <OATable
         serverSide
         data={notes.data}
+        loading={loading}
         total={notes.total}
         columns={this.makeColumns()}
         fetchDataSource={this.fetchDataSource}
