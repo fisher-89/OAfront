@@ -5,7 +5,7 @@ import TagForm from './form';
 import OATable from '../../../components/OATable';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 
-@store()
+@store(['fetchTagsType', 'fetchTags'])
 export default class extends React.PureComponent {
   state = {
     visible: false,
@@ -59,7 +59,7 @@ export default class extends React.PureComponent {
 
   render() {
     const { visible } = this.state;
-    const { loading, fetchTags, tags } = this.props;
+    const { fetchTags, tags } = this.props;
     const extraOperator = (
       <Button
         icon="plus"
@@ -74,7 +74,6 @@ export default class extends React.PureComponent {
         <Card bordered={false}>
           <OATable
             data={tags}
-            loading={loading}
             total={tags.length}
             fetchDataSource={fetchTags}
             columns={this.makeColumns()}

@@ -45,18 +45,6 @@ export default class SearchTable extends PureComponent {
     }
   }
 
-  setTableValue = (changeValue) => {
-    const { multiple } = this.props;
-    if (!multiple) {
-      this.setState({ value: changeValue[0] || [] }, () => {
-        this.handleOk();
-      });
-      return;
-    }
-    this.pushValue = changeValue;
-  };
-
-
   handleModelVisble = (flag) => {
     const { modalVisible } = this.props;
     this.setState({ visible: flag }, () => {
@@ -66,21 +54,8 @@ export default class SearchTable extends PureComponent {
     });
   };
 
-  handleOk = () => {
-    const { onChange, multiple } = this.props;
-    const { value } = this.state;
-    this.handleModelVisble(false);
-    let result = value;
-    if (multiple) {
-      result = this.pushValue;
-      this.setState({ value: result });
-    }
-    onChange(result);
-  };
-
-
   makeSearchView = () => {
-    const { multiple, placeholder, disabled, showName, tableProps } = this.props;
+    const { multiple, placeholder, disabled, showName, tableProps, onChange } = this.props;
     const { visible, value } = this.state;
     const commonProps = {
       value,
@@ -96,8 +71,7 @@ export default class SearchTable extends PureComponent {
           {...commonProps}
           setTagSelectedValue={(removeIndex) => {
             const newValue = value.filter((_, index) => index !== removeIndex);
-            this.setTableValue(newValue);
-            this.handleOk();
+            onChange(newValue);
           }}
         />
       ) :
@@ -105,15 +79,13 @@ export default class SearchTable extends PureComponent {
         <RadioInput
           {...commonProps}
           modalVisible={visible}
-          clearValue={() => {
-            this.setTableValue([]);
-          }}
+          clearValue={() => onChange([])}
         />
       );
   };
 
   makeUserView = () => {
-    const { multiple, placeholder, disabled, showName, tableProps, style } = this.props;
+    const { multiple, placeholder, disabled, showName, tableProps, style, onChange } = this.props;
     const { visible, value } = this.state;
     const commonProps = {
       value,
@@ -130,8 +102,7 @@ export default class SearchTable extends PureComponent {
           {...commonProps}
           setTagSelectedValue={(removeIndex) => {
             const newValue = value.filter((_, index) => index !== removeIndex);
-            this.setTableValue(newValue);
-            this.handleOk();
+            onChange(newValue);
           }}
         />
       ) :
@@ -139,16 +110,14 @@ export default class SearchTable extends PureComponent {
         <RadioCustomer
           {...commonProps}
           modalVisible={visible}
-          clearValue={() => {
-            this.setTableValue({});
-          }}
+          clearValue={() => onChange({})}
         />
       );
   }
 
 
   render() {
-    const { mode, multiple, name, title, tableProps, width } = this.props;
+    const { mode, multiple, name, title, tableProps, width, onChange } = this.props;
     const { visible, value } = this.state;
     return (
       <div>
@@ -160,10 +129,7 @@ export default class SearchTable extends PureComponent {
             title,
             visible,
           }}
-          onChange={(values) => {
-            this.setTableValue(values);
-            this.handleOk();
-          }}
+          onChange={onChange}
           onCancel={this.handleModelVisble}
           name={name}
           value={value}

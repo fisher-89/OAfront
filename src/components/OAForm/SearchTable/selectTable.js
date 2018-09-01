@@ -21,29 +21,26 @@ export default class SelectTable extends React.Component {
     }
   }
 
-  clickSelectValue = (selectedRows) => {
+  clickSelectValue = (selectedRow) => {
     const {
-      data,
       index,
       multiple,
     } = this.props;
-    let { value } = this.state;
+    const { value } = this.state;
+    const selectedKey = selectedRow[index];
+    let valueKey;
     if (multiple) {
-      const valueKey = value.map(item => item[index]);
-      const removeValIndex = valueKey.indexOf(selectedRows[index]);
-      if (removeValIndex !== -1) {
-        value = value.filter((_, i) => i !== removeValIndex);
+      valueKey = value.map(item => item[index]);
+      const hasIndex = valueKey.indexOf(selectedKey) !== -1;
+      if (hasIndex) {
+        valueKey = valueKey.filter(item => item !== selectedKey);
       } else {
-        data.forEach((item) => {
-          if (item[index] === selectedRows[index]) {
-            value.push(item);
-          }
-        });
+        valueKey.push(selectedKey);
       }
     } else {
-      value = [selectedRows];
+      valueKey = [selectedKey];
     }
-    this.handelChange('', value);
+    this.handelChange(valueKey, [selectedRow]);
   };
 
   handleRow = (record) => {
@@ -60,14 +57,15 @@ export default class SelectTable extends React.Component {
     };
   };
 
-  handelChange = (_, selectedRows) => {
-    const { setSelectedValue } = this.props;
-    const value = [];
-    selectedRows.forEach((item) => {
-      value.push(item);
+  handelChange = (selectedRowKeys, selectedRows) => {
+    const { setSelectedValue, index } = this.props;
+    const { value } = this.state;
+    const newValue = selectedRowKeys.map((item) => {
+      const selectedRow = selectedRows.find(row => row[index] === item);
+      return selectedRow || value.find(row => row[index] === item);
     });
-    this.setState({ value }, () => {
-      setSelectedValue([...value]);
+    this.setState({ value: newValue }, () => {
+      setSelectedValue([...newValue]);
     });
   };
 
