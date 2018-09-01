@@ -58,20 +58,12 @@ export default class SelectTable extends React.Component {
   };
 
   handelChange = (selectedRowKeys, selectedRows) => {
-    console.log(selectedRowKeys);
     const { setSelectedValue, index } = this.props;
     const { value } = this.state;
     const newValue = selectedRowKeys.map((item) => {
       const selectedRow = selectedRows.find(row => row[index] === item);
       return selectedRow || value.find(row => row[index] === item);
     });
-    // selectedRows.forEach((item)=>{
-
-    // });
-    console.log(newValue, selectedRows);
-    // selectedRows.forEach((item) => {
-    //   value.push(item);
-    // });
     this.setState({ value: newValue }, () => {
       setSelectedValue([...newValue]);
     });
