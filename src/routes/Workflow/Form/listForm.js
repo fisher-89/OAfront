@@ -92,6 +92,7 @@ export default class extends React.PureComponent {
       region_level: null,
       ...initialValue,
       ...value,
+      min: initialValue.min || value.min || '',
       is_checkbox: isCheckbox,
       oa_id: oaId,
     });
