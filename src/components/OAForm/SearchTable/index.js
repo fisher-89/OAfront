@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import { ModalSelect } from '../../OAModal';
-// import SelectTable from './selectTable';
 import RadioInput from './input';
 import CheckBoxTag from './tag';
 import CheckBoxCustomer from './staff';
@@ -91,16 +90,17 @@ export default class SearchTable extends PureComponent {
       valueName: tableProps.index,
       handleModelVisble: this.handleModelVisble,
     };
-    return multiple ? (
-      <CheckBoxTag
-        {...commonProps}
-        setTagSelectedValue={(removeIndex) => {
-          const newValue = value.filter((_, index) => index !== removeIndex);
-          this.setTableValue(newValue);
-          this.handleOk();
-        }}
-      />
-    ) :
+    return multiple ?
+      (
+        <CheckBoxTag
+          {...commonProps}
+          setTagSelectedValue={(removeIndex) => {
+            const newValue = value.filter((_, index) => index !== removeIndex);
+            this.setTableValue(newValue);
+            this.handleOk();
+          }}
+        />
+      ) :
       (
         <RadioInput
           {...commonProps}
@@ -124,16 +124,17 @@ export default class SearchTable extends PureComponent {
       valueName: tableProps.index,
       handleModelVisble: this.handleModelVisble,
     };
-    return multiple ? (
-      <CheckBoxCustomer
-        {...commonProps}
-        setTagSelectedValue={(removeIndex) => {
-          const newValue = value.filter((_, index) => index !== removeIndex);
-          this.setTableValue(newValue);
-          this.handleOk();
-        }}
-      />
-    ) :
+    return multiple ?
+      (
+        <CheckBoxCustomer
+          {...commonProps}
+          setTagSelectedValue={(removeIndex) => {
+            const newValue = value.filter((_, index) => index !== removeIndex);
+            this.setTableValue(newValue);
+            this.handleOk();
+          }}
+        />
+      ) :
       (
         <RadioCustomer
           {...commonProps}
@@ -147,14 +148,8 @@ export default class SearchTable extends PureComponent {
 
 
   render() {
-    const { mode, multiple, name, title, tableProps, onChange, width } = this.props;
+    const { mode, multiple, name, title, tableProps, width } = this.props;
     const { visible, value } = this.state;
-    // let selectValue = [];
-    // if (multiple) {
-    //   selectValue = [...value];
-    // } else {
-    //   selectValue = [value[tableProps.index]] || [];
-    // }
     return (
       <div>
         {mode === 'default' && this.makeSearchView()}
@@ -165,7 +160,7 @@ export default class SearchTable extends PureComponent {
             title,
             visible,
           }}
-          onChange={onChange}
+          onChange={this.setTableValue}
           onCancel={this.handleModelVisble}
           name={name}
           value={value}
@@ -180,7 +175,8 @@ SearchTable.defaultProps = {
   title: '列表',
   mode: 'default',
   tableProps: { index: 'id' },
-  onChange: () => { },
+  onChange: () => {
+  },
 };
 SearchTable.Staff = Staff;
 SearchTable.Shop = Shop;

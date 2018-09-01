@@ -6,7 +6,9 @@ import { makeInitialValue, dontInitialValue, getTableBodyHeight } from '../../..
 const defaultProps = {
   visible: false,
   modalProps: {},
-  onChange: () => { },
+  onChange: () => {
+    //
+  },
 };
 
 export default class ModalStaff extends React.PureComponent {
