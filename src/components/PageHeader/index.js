@@ -58,6 +58,7 @@ export default class PageHeader extends Component {
   render() {
     const { routes, params, location, breadcrumbNameMap } = this.getBreadcrumbProps();
     const {
+      menuData,
       title, logo, action, content, extraContent,
       breadcrumbList, tabList, className, linkElement = 'a',
       tabActiveKey,
@@ -93,7 +94,12 @@ export default class PageHeader extends Component {
       const pathSnippets = location.pathname.split('/').filter(i => i);
       const extraBreadcrumbItems = pathSnippets.map((_, index) => {
         const url = `/${pathSnippets.slice(0, index + 1).join('/')}`;
-        const currentBreadcrumb = getBreadcrumb(breadcrumbNameMap, url);
+        const breadCrumbName = {};
+        menuData.forEach((item) => {
+          breadCrumbName[item.path] = breadcrumbNameMap[item.path] ?
+            breadcrumbNameMap[item.path] : item;
+        });
+        const currentBreadcrumb = getBreadcrumb(breadCrumbName, url);
         const isLinkable = (index !== pathSnippets.length - 1) && currentBreadcrumb.component;
         return currentBreadcrumb.name && !currentBreadcrumb.hideInBreadcrumb ? (
           <Breadcrumb.Item key={url}>
