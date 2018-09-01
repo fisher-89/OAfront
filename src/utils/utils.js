@@ -298,7 +298,7 @@ export function markTreeData(data = [], { value, lable, parentId }, pid = null) 
     if (item[parentId] === pid) {
       const temp = {
         value: item[value].toString(),
-        label: item[lable],
+        title: item[lable],
         key: `${item[value]}`,
       };
       const children = markTreeData(data, { value, lable, parentId }, item[value]);

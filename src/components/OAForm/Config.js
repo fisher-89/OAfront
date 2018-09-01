@@ -190,7 +190,7 @@ export default formCreate => option => (Componet) => {
       const respone = {
         bindAutoSave: this.bindAutoSave,
         bindModalAutoSave: this.bindModalAutoSave,
-        // setFiedError: this.handleFieldsError,
+        setFiedError: this.handleFieldsError,
         onChange: this.handleOnChange,
         validateFields: this.handleSubmit,
         onError: this.handleOnError,
