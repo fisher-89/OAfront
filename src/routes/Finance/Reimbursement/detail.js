@@ -267,10 +267,12 @@ export default class extends Component {
       return <img alt="未转账" style={{ position: 'absolute', top: 9, marginLeft: 10 }} src="/images/未转账.png" />;
     } else if (info.status_id === 7 && customerAuthority(135)) {
       return <img alt="已转账" style={{ position: 'absolute', top: 9, marginLeft: 10 }} src="/images/已转账.png" />;
-    } else if (info.status_id === -1 || (info.status_id === 3 && customerAuthority(135))) {
+    } else if (info.status_id === -1) {
       return <img alt="驳回" style={{ position: 'absolute', top: 9, marginLeft: 10 }} src="/images/驳回.png" />;
     } else if (info.audit_time !== null && customerAuthority(34)) {
       return <img alt="通过" style={{ position: 'absolute', top: 9, marginLeft: 10 }} src="/images/通过.png" />;
+    } else if (info.second_rejected_at !== null && customerAuthority(135)) {
+      return <img alt="被驳回" style={{ position: 'absolute', top: 9, marginLeft: 10 }} src="/images/被驳回.png" />;
     }
   }
 
@@ -296,14 +298,24 @@ export default class extends Component {
               <Col span={8}>申请时间：{info.send_time}</Col>
               {info.approve_time && (<Col span={4}>审批人：{info.approver_name}</Col>)}
               {info.approve_time && (<Col span={8}>通过时间：{info.approve_time}</Col>)}
+            </Row>
+            <Row style={{ color: '#8c8c8c' }}>
               {info.audit_time && (<Col span={4}>财务审核人：{info.accountant_name}</Col>)}
               {info.audit_time && (<Col span={8}>通过时间：{info.audit_time}</Col>)}
               {info.manager_approved_at && (<Col span={4}>品牌副总：{info.manager_name}</Col>)}
               {info.manager_approved_at && (<Col span={8}>通过时间：{info.manager_approved_at}</Col>)}
               {info.paid_at && (<Col span={4}>出纳：{info.payer_name}</Col>)}
               {info.paid_at && (<Col span={8}>转账时间：{info.paid_at}</Col>)}
-              {info.reject_time && (<Col span={4}>驳回人：{info.accountant_name}</Col>)}
+            </Row>
+            <Row style={{ color: '#8c8c8c' }}>
+              {info.second_rejected_at && (<Col span={4}>驳回人：{info.second_rejecter_name}</Col>)}
+              {info.second_rejected_at && (<Col span={8}>驳回时间：{info.second_rejected_at}</Col>)}
+              {info.reject_time && (<Col span={4}>驳回人：{info.reject_name}</Col>)}
               {info.reject_time && (<Col span={8}>驳回时间：{info.reject_time}</Col>)}
+            </Row>
+            <Row style={{ color: '#8c8c8c' }}>
+              {info.second_rejected_at && (<Col span={24}>驳回理由：{info.second_reject_remarks}</Col>)}
+              {info.reject_time && (<Col span={24}>驳回理由：{info.reject_remarks}</Col>)}
             </Row>
             <h3>
               金额：{auditedCost !== null && auditedCost !== approvedCost ?
