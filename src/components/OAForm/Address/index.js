@@ -37,7 +37,7 @@ export default class Address extends PureComponent {
       !==
       JSON.stringify(this.props.value)
     ) {
-      this.setState({ value: nextProps.value }, this.makeSelectOption);
+      this.setState({ value: nextProps.value || {} }, this.makeSelectOption);
     }
   }
 

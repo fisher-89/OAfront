@@ -15,7 +15,10 @@ export default type => (Compoent) => {
   class NewCompoent extends React.PureComponent {
     fetchTags = (params) => {
       const { dispatch } = this.props;
-      dispatch({ type: 'customer/fetchTags', payload: params });
+      const newParams = { ...params };
+      delete newParams.update;
+      const { update } = newParams;
+      dispatch({ type: 'customer/fetchTags', payload: params, update });
     }
 
     fetchTagsType = (params) => {

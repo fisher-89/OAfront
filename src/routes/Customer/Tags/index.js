@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Button } from 'antd';
+import { Card, Button, Divider } from 'antd';
 import store from './store';
 import TagForm from './form';
 import OATable from '../../../components/OATable';
@@ -31,7 +31,7 @@ export default class extends React.PureComponent {
       {
         title: '标签类型',
         dataIndex: 'type_id',
-        filters: tagsType.map(item => ({ value: item.id, text: value.name })),
+        filters: tagsType.map(item => ({ value: item.id, text: item.name })),
         render: (key) => {
           const value = tagsType.find(item => item.id === key) || {};
           return value.name || '';
@@ -48,6 +48,7 @@ export default class extends React.PureComponent {
           return (
             <React.Fragment>
               <a>编辑</a>
+              <Divider type="vertical" />
               <a>删除</a>
             </React.Fragment>
           );

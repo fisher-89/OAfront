@@ -8,7 +8,6 @@ import {
   Radio,
 } from 'antd';
 import { connect } from 'dva';
-import moment from 'moment';
 import OAForm, {
   Address,
   DatePicker,
@@ -18,7 +17,6 @@ import { nation } from '../../../assets/nation';
 import { province } from '../../../assets/province';
 import { customerStatus } from '../../../assets/customer';
 import store from './store';
-import { getAddress } from './info';
 
 const RadioGroup = Radio.Group;
 const FormItem = OAForm.Item;
@@ -106,7 +104,7 @@ export default class extends React.PureComponent {
       tagsType,
       source,
       validateFields, validatorRequired,
-      form: { getFieldDecorator, setFieldsValue },
+      form: { getFieldDecorator },
     } = this.props;
     let tagsGroup = [];
     const tagsTypeId = tagsType.map(type => type.id);
@@ -124,10 +122,10 @@ export default class extends React.PureComponent {
     tagsGroup = tagsGroup.concat(tagsGroupAble);
     const { details } = this.props;
     let customerInfo = {};
-    let address = {};
+    let brandValue;
     if (details[this.id]) {
       customerInfo = details[this.id];
-      address = getAddress(customerInfo.present_address);
+      brandValue = customerInfo.brands.map(item => `${item.brand_id}`);
     }
     return (
       <OAForm onSubmit={validateFields(this.handleSubmit)}>
@@ -180,7 +178,7 @@ export default class extends React.PureComponent {
               })(
                 <Select placeholder="请选择">
                   {province.map(item =>
-                    (<Option key={`${item.id}`}>{item.name}</Option>))
+                    (<Option key={`${item.name}`}>{item.name}</Option>))
                   }
                 </Select>
               )}
@@ -203,7 +201,7 @@ export default class extends React.PureComponent {
           <Col {...rowGutter}>
             <FormItem label="现住地址" {...rowFormItemLayout}>
               {getFieldDecorator('present_address', {
-                initialValue: typeof address === 'object' ? address : {},
+                initialValue: customerInfo.present_address || {},
               })(
                 <Address />
               )}
@@ -251,7 +249,7 @@ export default class extends React.PureComponent {
           <Col {...colSpan}>
             <FormItem label="客户状态" {...formItemLayout} required>
               {getFieldDecorator('status', {
-                initialValue: customerInfo.status ? `${customerInfo.status}` : undefined,
+                initialValue: `${customerInfo.status}` || undefined,
                 rules: [validatorRequired],
               })(
                 <Select placeholder="请选择">
@@ -266,8 +264,8 @@ export default class extends React.PureComponent {
         <Row gutter={rowGutter}>
           <Col {...colSpan}>
             <FormItem label="合作品牌" {...formItemLayout} required>
-              {getFieldDecorator('brand_id', {
-                initialValue: [],
+              {getFieldDecorator('brands', {
+                initialValue: brandValue || [],
                 rules: [validatorRequired],
               })(
                 <Select placeholder="请选择" mode="multiple">
@@ -281,9 +279,7 @@ export default class extends React.PureComponent {
           <Col {...colSpan}>
             <FormItem label="初次合作时间" {...formItemLayout}>
               {getFieldDecorator('first_cooperation_at', {
-                initialValue:
-                  customerInfo.first_cooperation_at ?
-                    moment(customerInfo.first_cooperation_at).format('YYYY-MM-DD') : '',
+                initialValue: customerInfo.first_cooperation_at || '',
               })(
                 <DatePicker placeholder="请输入" style={{ width: '100%' }} />
               )}
@@ -292,8 +288,19 @@ export default class extends React.PureComponent {
         </Row>
         <Row gutter={rowGutter}>
           <Col {...rowGutter}>
+            <FormItem label="合作店铺" {...rowFormItemLayout}>
+              {getFieldDecorator('shops', {
+                initialValue: [],
+              })(
+                <SearchTable.Shop multiple />
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row gutter={rowGutter}>
+          <Col {...rowGutter}>
             <FormItem label="标签" {...rowFormItemLayout}>
-              {getFieldDecorator('tag_id', {
+              {getFieldDecorator('tags', {
                 initialValue: [],
               })(
                 <Select
@@ -301,9 +308,6 @@ export default class extends React.PureComponent {
                   placeholder="请选择"
                   tokenSeparators={[',']}
                   optionFilterProp="children"
-                  onChange={(value) => {
-                    setFieldsValue({ tag_id: value });
-                  }}
                 >
                   {tagsGroup.map((item) => {
                     return item.children ? (

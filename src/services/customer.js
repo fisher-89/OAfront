@@ -22,8 +22,8 @@ export async function editCustomer(params, id) {
 
 
 /** 删除客户资料 */
-export async function deleteCustomer(params, id) {
-  return request(`/api/crm/clients/${id}`, { method: 'DELETE', body: params });
+export async function deleteCustomer(id) {
+  return request(`/api/crm/clients/${id}`, { method: 'DELETE' });
 }
 
 
@@ -43,8 +43,8 @@ export async function editTagsType(params, id) {
 }
 
 /** 删除标签 */
-export async function deleteTagsType(params, id) {
-  return request(`/api/crm/tags/types/${id}`, { method: 'DELETE', body: params });
+export async function deleteTagsType(id) {
+  return request(`/api/crm/tags/types/${id}`, { method: 'DELETE' });
 }
 
 
@@ -64,8 +64,8 @@ export async function editTags(params, id) {
 }
 
 /** 删除标签 */
-export async function deleteTags(params, id) {
-  return request(`/api/crm/tags/${id}`, { method: 'DELETE', body: params });
+export async function deleteTags(id) {
+  return request(`/api/crm/tags/${id}`, { method: 'DELETE' });
 }
 
 
@@ -85,8 +85,8 @@ export async function editNotes(params, id) {
 }
 
 /** 删除事件 */
-export async function deleteNotes(params, id) {
-  return request(`/api/crm/notes/${id}`, { method: 'DELETE', body: params });
+export async function deleteNotes(id) {
+  return request(`/api/crm/notes/${id}`, { method: 'DELETE' });
 }
 
 
@@ -106,8 +106,8 @@ export async function editNoteTypes(params, id) {
 }
 
 /** 删除事件类型 */
-export async function deleteNoteTypes(params, id) {
-  return request(`/api/crm/note/type/${id}`, { method: 'DELETE', body: params });
+export async function deleteNoteTypes(id) {
+  return request(`/api/crm/note/type/${id}`, { method: 'DELETE' });
 }
 
 /** 客户事件列表 */

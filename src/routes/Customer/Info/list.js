@@ -13,7 +13,7 @@ import store from './store';
 @store
 export default class extends PureComponent {
   makeColumns = () => {
-    const { source, tags, brands } = this.props;
+    const { source, tags, brands, deleted } = this.props;
     const onClick = (name, id) => {
       this.props.history.push(`/client/customer/list/${name}/${id}`);
     };
@@ -49,7 +49,7 @@ export default class extends PureComponent {
         dataIndex: 'status',
         filters: customerStatus.map(item => ({ text: item.name, value: item.id })),
         render: (key) => {
-          const value = source.find(item => `${item.id}` === `${key}`) || {};
+          const value = customerStatus.find(item => `${item.id}` === `${key}`) || {};
           return value.name;
         },
       },
@@ -72,7 +72,7 @@ export default class extends PureComponent {
         title: '合作时间',
         dataIndex: 'first_cooperation_at',
         sorter: true,
-        render: time => moment(time).format('YYYY-MM-DD'),
+        render: time => (time ? moment(time).format('YYYY-MM-DD') : ''),
       },
       {
         // width: 160,
@@ -103,7 +103,7 @@ export default class extends PureComponent {
               <Divider type="vertical" />
               <a onClick={() => onClick('edit', rowData.id)}>编辑</a>
               <Divider type="vertical" />
-              <a onClick={() => this.handleDelete(rowData.id)}>删除</a>
+              <a onClick={() => deleted(rowData.id)}>删除</a>
             </Fragment>
           );
         },
@@ -120,7 +120,7 @@ export default class extends PureComponent {
           icon="plus"
           key="plus"
           onClick={() => {
-            this.props.history.push('/client/customer/add');
+            this.props.history.push('/client/customer/list/add');
           }}
         >
           新建客户资料
