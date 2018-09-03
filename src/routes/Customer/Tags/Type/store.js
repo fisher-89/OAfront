@@ -1,44 +1,30 @@
 import React from 'react';
 import { connect } from 'dva';
-import { makeProps } from '../../../utils/utils';
+import { makeProps } from '../../../../utils/utils';
 
 
 export default type => (Compoent) => {
   @connect(({ customer, loading }) => ({
-    tags: customer.tags,
     tagsType: customer.tagsType,
     loading: {
-      deleted: loading.effects['customer/deleteTags'],
-      fetchTags: loading.effects['customer/fetchTags'],
+      deleted: loading.effects['customer/deleteTagsType'],
       fetchTagsType: loading.effects['customer/fetchTagsType'],
       submit: (
-        loading.effects['customer/addTags'] ||
-        loading.effects['customer/editTags']
+        loading.effects['customer/addTagsType'] ||
+        loading.effects['customer/editTagsType']
       ),
     },
   }))
   class NewCompoent extends React.PureComponent {
-    componentWillMount() {
-      this.fetchTagsType();
-    }
-
-    fetchTags = (_, params) => {
+    fetchTagsType = (_, { update }) => {
       const { dispatch } = this.props;
-      const newParams = { ...params };
-      delete newParams.update;
-      const { update } = params;
-      dispatch({ type: 'customer/fetchTags', payload: params, update });
-    }
-
-    fetchTagsType = (params) => {
-      const { dispatch } = this.props;
-      dispatch({ type: 'customer/fetchTagsType', payload: params });
+      dispatch({ type: 'customer/fetchTagsType', update });
     }
 
     deleted = (id, onError, onSuccess) => {
       const { dispatch } = this.props;
       dispatch({
-        type: 'customer/deleteTags',
+        type: 'customer/deleteTagsType',
         payload: { id },
         onSuccess,
         onError,
@@ -48,7 +34,7 @@ export default type => (Compoent) => {
     submit = (values, onError, onSuccess) => {
       const { dispatch } = this.props;
       dispatch({
-        type: values.id ? 'customer/editTags' : 'customer/addTags',
+        type: values.id ? 'customer/editTagsType' : 'customer/addTagsType',
         payload: values,
         onSuccess,
         onError,

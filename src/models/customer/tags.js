@@ -8,6 +8,7 @@ export default {
     try {
       let response;
       response = yield select(model => model.customer[store]);
+      console.log(update);
       if (!response.length || update) {
         response = yield call(fetchTags);
       }

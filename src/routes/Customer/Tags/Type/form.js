@@ -1,15 +1,16 @@
 import React from 'react';
 import {
   Input,
-  Select,
   InputNumber,
 } from 'antd';
+import {
+  SketchPicker,
+} from 'react-color';
 import store from './store';
-import OAForm, { OAModal } from '../../../components/OAForm';
+import OAForm, { OAModal } from '../../../../components/OAForm';
 
 const FormItem = OAForm.Item;
 
-const { Option } = Select;
 
 const formItemLayout = {
   labelCol: { span: 8, pull: 3 },
@@ -33,14 +34,14 @@ export default class extends React.PureComponent {
     const {
       loading,
       initialValue,
-      form: { getFieldDecorator },
-      visible, validatorRequired, validateFields, tagsType, onCancel,
+      visible, validatorRequired, validateFields, onCancel,
+      form: { getFieldValue, getFieldDecorator, setFieldsValue },
     } = this.props;
     return (
       <OAModal
-        title="标签表单"
         loading={loading}
         visible={visible}
+        title="标签类型表单"
         onCancel={() => onCancel(false)}
         onSubmit={validateFields(this.handleSubmit)}
       >
@@ -52,24 +53,20 @@ export default class extends React.PureComponent {
             <Input placeholder="请输入" />
           )}
         </FormItem>
-        <FormItem label="分类" {...formItemLayout} required>
-          {getFieldDecorator('type_id', {
-            initialValue: initialValue.type_id ? `${initialValue.type_id}` : undefined,
+        <FormItem label="颜色" {...formItemLayout} required>
+          {getFieldDecorator('color', {
+            initialValue: initialValue.color || '',
             rules: [validatorRequired],
           })(
-            <Select placeholder="请选择" getPopupContainer={triggerNode => (triggerNode)}>
-              {tagsType.map(item => (
-                <Option key={`${item.id}`}>{item.name}</Option>
-              ))}
-            </Select>
+            <Input type="hidden" />
           )}
-        </FormItem>
-        <FormItem label="说明" {...formItemLayout}>
-          {getFieldDecorator('describe', {
-            initialValue: initialValue.describe || '',
-          })(
-            <Input.TextArea placeholder="请输入" />
-          )}
+          <SketchPicker
+            width={250}
+            color={getFieldValue('color') || '#fff'}
+            onChange={({ hex }) => {
+              setFieldsValue({ color: hex });
+            }}
+          />
         </FormItem>
         <FormItem label="排序" {...formItemLayout}>
           {getFieldDecorator('sort', {

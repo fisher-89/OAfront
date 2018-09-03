@@ -87,8 +87,11 @@ export const getRouterData = (app) => {
     '/client/customer/list/add': {
       component: dynamicWrapper(app, ['customer'], () => import('../routes/Customer/Info/add')),
     },
-    '/client/customer/tags': {
+    '/client/customer/tags/list': {
       component: dynamicWrapper(app, ['customer'], () => import('../routes/Customer/Tags')),
+    },
+    '/client/customer/tags/type': {
+      component: dynamicWrapper(app, ['customer'], () => import('../routes/Customer/Tags/Type')),
     },
 
     '/client/notepad/list': {
