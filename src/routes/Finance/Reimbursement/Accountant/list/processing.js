@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Button } from 'antd';
+import { Button, Divider } from 'antd';
 import Ellipsis from '../../../../../components/Ellipsis/index';
 
 import OATable from '../../../../../components/OATable/index';
@@ -108,10 +108,11 @@ export default class extends PureComponent {
       {
         title: '操作',
         render: (rowData) => {
-          return rowData.status_id === 3 ?
-            (
-              <a onClick={() => showDetail(rowData)}>查看详情</a>
-            ) : '';
+          return [
+            <a key="approve" onClick={() => this.handleApprove(rowData)}>通过</a>,
+            <Divider key="devider1" type="vertical" />,
+            <a key="showDetail" onClick={() => showDetail(rowData)}>查看详情</a>,
+          ];
         },
       },
     ];
@@ -119,6 +120,23 @@ export default class extends PureComponent {
     return columnsLeftFixed.concat(visible ? [] : columnsMiddle).concat(columnsRight);
   }
 
+  handleApprove = (rowData) => {
+    const { dispatch } = this.props;
+    const payload = {
+      ...rowData,
+      expenses: rowData.expenses.map((item) => {
+        const response = { ...item };
+        if (!item.audited_cost) {
+          response.audited_cost = item.send_cost;
+        }
+        return response;
+      }),
+    };
+    dispatch({
+      type: 'reimbursement/approveByAccountant',
+      payload,
+    });
+  }
 
   render() {
     const { processingList, loading, openPackageList } = this.props;

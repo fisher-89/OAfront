@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Button } from 'antd';
+import { Button, Divider } from 'antd';
 import Ellipsis from '../../../../../components/Ellipsis/index';
 
 import OATable from '../../../../../components/OATable/index';
@@ -14,6 +14,25 @@ import OATable from '../../../../../components/OATable/index';
 export default class extends PureComponent {
   state = {
     selectedRowKeys: [],
+    filteredList: null,
+  }
+
+  componentWillReceiveProps(newProps) {
+    if (JSON.stringify(newProps.unPaidList) !== JSON.stringify(this.props.unPaidList)) {
+      const { filteredList } = this.state;
+      if (filteredList) {
+        const unPaidListKeys = newProps.unPaidList.map(item => item.id);
+        console.log('unPaid:', unPaidListKeys);
+        const newList = filteredList.filter(item => unPaidListKeys.indexOf(item.id) !== -1);
+        console.log('newList:', newList);
+        this.setState(
+          {
+            filteredList: newList,
+            selectedRowKeys: [],
+          }
+        );
+      }
+    }
   }
 
   fetchUnPaidList = (params) => {
@@ -57,15 +76,14 @@ export default class extends PureComponent {
         searcher: true,
       },
       {
-        title: '部门',
-        dataIndex: 'department_name',
+        title: '卡号',
+        dataIndex: 'payee_bank_account',
         searcher: true,
-        width: 120,
-        render: (cellData) => {
-          return (
-            <Ellipsis tooltip lines={1} style={{ width: 104 }}>{cellData}</Ellipsis>
-          );
-        },
+      },
+      {
+        title: '开户人',
+        dataIndex: 'payee_name',
+        searcher: true,
       },
       {
         title: '资金归属',
@@ -103,9 +121,11 @@ export default class extends PureComponent {
       {
         title: '操作',
         render: (rowData) => {
-          return (
-            <a onClick={() => showDetail(rowData)}>查看详情</a>
-          );
+          return [
+            <a key="remit" onClick={() => this.handleRemit(rowData)}>转账</a>,
+            <Divider key="devider1" type="vertical" />,
+            <a key="showDetail" onClick={() => showDetail(rowData)}>查看详情</a>,
+          ];
         },
       },
     ];
@@ -115,8 +135,9 @@ export default class extends PureComponent {
 
   makeExtraOperators = () => {
     const { unPaidList } = this.props;
-    const { selectedRowKeys } = this.state;
-    const selectedCosts = unPaidList.filter(item => selectedRowKeys.indexOf(item.id) !== -1)
+    const { selectedRowKeys, filteredList } = this.state;
+    const list = filteredList || unPaidList;
+    const selectedCosts = list.filter(item => selectedRowKeys.indexOf(item.id) !== -1)
       .map(item => parseFloat(item.audited_cost));
     const totalCost = selectedCosts.length > 0 ?
       selectedCosts.reduce((total, item) => total + item).toFixed(2) :
@@ -127,7 +148,7 @@ export default class extends PureComponent {
           key="selectAll"
           onClick={() => {
             this.setState({
-              selectedRowKeys: unPaidList.map(item => item.id),
+              selectedRowKeys: list.map(item => item.id),
             });
           }}
         >
@@ -151,11 +172,21 @@ export default class extends PureComponent {
       ),
       (
         <span key="selectingStatus">
-          选中 {selectedRowKeys.length} / {unPaidList.length} 项，
+          选中 {selectedRowKeys.length} / {list.length} 项，
           共计金额 {totalCost} 元
         </span>
       ),
     ];
+  }
+
+  handleRemit = (rowData) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'reimbursement/pay',
+      payload: {
+        id: [rowData.id],
+      },
+    });
   }
 
   remitInBatches = () => {
@@ -174,6 +205,44 @@ export default class extends PureComponent {
     });
   }
 
+  handleRowSelectionChange = (selected) => {
+    this.setState({
+      selectedRowKeys: selected,
+    });
+  }
+
+  handleTableChange = (pagination, filters, sorter, defaultOnChange) => {
+    console.log(filters);
+    const { unPaidList } = this.props;
+    const { selectedRowKeys } = this.state;
+    const filteredList = unPaidList.filter((item) => {
+      for (const key in filters) {
+        if (
+          filters[key] && filters[key].length > 0 &&
+          (
+            (key === 'reim_department_id' && filters[key].indexOf(`${item[key]}`) === -1) ||
+            item[key].indexOf(filters[key][0])
+          )
+        ) {
+          return false;
+        }
+      }
+      return true;
+    });
+    if (JSON.stringify(filteredList) !== JSON.stringify(unPaidList)) {
+      const fiteredRowKeys = filteredList.map(i => i.id);
+      this.setState(
+        {
+          filteredList,
+          selectedRowKeys: selectedRowKeys.filter(item => fiteredRowKeys.indexOf(item) !== -1),
+        }
+      );
+    } else {
+      this.setState({ filteredList: null });
+    }
+    defaultOnChange(pagination, filters, sorter);
+  }
+
   render() {
     const { unPaidList, loading } = this.props;
     const { selectedRowKeys } = this.state;
@@ -183,12 +252,9 @@ export default class extends PureComponent {
         serverSide={false}
         rowSelection={{
           selectedRowKeys,
-          onChange: (selected) => {
-            this.setState({
-              selectedRowKeys: selected,
-            });
-          },
+          onChange: this.handleRowSelectionChange,
         }}
+        onChange={this.handleTableChange}
         extraOperator={this.makeExtraOperators()}
         loading={loading}
         columns={this.makeColumns()}
