@@ -77,8 +77,10 @@ class Operator extends PureComponent {
         if (item.dataIndex === name && filters[name]) {
           let lable = item.filterData ? filters[name] : filters[name][0];
           lable = this.makeFilterString(lable, item);
-          const filterTag = { label: `${item.title}：${lable}`, dataIndex: name };
-          filtersTag.push(filterTag);
+          if (lable) {
+            const filterTag = { label: `${item.title}：${lable}`, dataIndex: name };
+            filtersTag.push(filterTag);
+          }
         }
       });
     });

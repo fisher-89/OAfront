@@ -14,10 +14,6 @@ export default (Compoent) => {
     ),
   }))
   class NewCompoent extends React.PureComponent {
-    componentWillMount() {
-      this.fetchStore();
-    }
-
     makeParams = (values) => {
       const params = {
         ...values,
@@ -62,6 +58,7 @@ export default (Compoent) => {
 
     fetchDataSource = (params) => {
       const { dispatch } = this.props;
+      this.fetchStore();
       dispatch({ type: 'customer/fetchCustomer', payload: params });
     }
 

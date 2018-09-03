@@ -1,16 +1,13 @@
 import React from 'react';
 import { Card, Divider, Button } from 'antd';
-import store from './store';
-import OATable from '../../../components/OATable';
+import store from '../store';
 import AuthForm from './form';
-import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
+import { authType } from '../../../../assets/customer';
+import OATable from '../../../../components/OATable';
+import PageHeaderLayout from '../../../../layouts/PageHeaderLayout';
 
-const authType = [
-  { value: 1, text: '查看权限' },
-  { value: 2, text: '操作权限' },
-];
 
-@store(['fetchAuth', 'fetchDepartment'])
+@store('fetchAuth')
 export default class extends React.PureComponent {
   state = {
     visible: false,

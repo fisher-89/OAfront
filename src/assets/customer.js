@@ -5,3 +5,7 @@ export const customerStatus = [
   { id: '-1', name: '黑名单' },
 ];
 
+export const authType = [
+  { value: 1, text: '查看权限' },
+  { value: 2, text: '操作权限' },
+];

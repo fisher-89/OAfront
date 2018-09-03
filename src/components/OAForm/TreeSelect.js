@@ -5,21 +5,21 @@ import {
 import { markTreeData } from '../../utils/utils';
 
 const defaultProps = {
-  dataSource: {
-    data: [],
-    parentValue: 0,
-    fields: { value: 'id', parentId: 'parent_id', lable: 'name' },
-  },
+  dataSource: [],
+  parentValue: 0,
+  fields: { value: 'id', parentId: 'parent_id', lable: 'full_name' },
+  placeholder: '请选择',
   onChange: () => { },
 };
 
 export default class OATreeSelect extends TreeSelect {
   handleOnChange = (value) => {
     const {
-      dataSource,
       name,
-      onChange,
+      fields,
       multiple,
+      onChange,
+      dataSource,
       treeCheckable,
     } = this.props;
     if (!name) {
@@ -27,14 +27,8 @@ export default class OATreeSelect extends TreeSelect {
       return;
     }
     if (treeCheckable || multiple) {
-      const fieldsName = dataSource.fields.value;
-      const newData = [];
-      dataSource.data.forEach((item) => {
-        const valueIndex = value.indexOf(item[fieldsName].toString());
-        if (valueIndex !== -1) {
-          newData[valueIndex] = item;
-        }
-      });
+      const fieldsName = fields.value;
+      const newData = dataSource.filter(item => value.indexOf(item[fieldsName].toString()) !== -1);
       const newValue = newData.map((item) => {
         const temp = {};
         Object.keys(name).forEach((key) => {
@@ -44,7 +38,7 @@ export default class OATreeSelect extends TreeSelect {
       });
       onChange(newValue);
     } else {
-      const [newData] = dataSource.data.filter(item => value === item[fieldsName].toString());
+      const [newData] = dataSource.filter(item => value === item[fieldsName].toString());
       const newValue = {};
       Object.keys(name).forEach((key) => {
         temp[key] = newData[name[key]];
@@ -55,34 +49,39 @@ export default class OATreeSelect extends TreeSelect {
 
   makeTreeValue = () => {
     const {
-      value,
-      dataSource,
       name,
-      treeCheckable,
+      value,
+      fields,
       multiple,
+      treeCheckable,
     } = this.props;
-    let newValue = value;
+    let newValue = multiple ? (value || []) : (value || {});
     if (name && (treeCheckable || multiple)) {
       let valueName = '';
       Object.keys(name).forEach((key) => {
-        if (dataSource.fields.value === name[key]) {
+        if (fields.value === name[key]) {
           valueName = key;
         }
       });
-      newValue = value.map(item => item[valueName].toString());
-    } else if (name) {
-      newValue = value[valueName].toString();
+      newValue = newValue.map(item => item[valueName].toString());
+    } else if (name && !multiple) {
+      newValue = {};
+      Object.keys(name).forEach((key) => {
+        if (fields.value === name[key]) {
+          newValue[key] = value[key].toString();
+        }
+      });
     }
     return newValue;
   }
 
   makeProps = () => {
-    const { dataSource: { data, fields, parentValue } } = this.props;
+    const { dataSource, fields, parentValue } = this.props;
     const response = {
-      dropdownStyle: { maxHeight: 400, overflow: 'auto' },
+      dropdownStyle: { maxHeight: 300, overflow: 'auto' },
       ...this.props,
       value: this.makeTreeValue(),
-      treeData: markTreeData(data, fields, parentValue),
+      treeData: markTreeData(dataSource, fields, parentValue),
     };
     Object.keys(defaultProps).forEach((key) => {
       delete response[key];

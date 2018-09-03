@@ -60,7 +60,7 @@ export default class extends PureComponent {
         filters: brands.map(item => ({ text: item.name, value: item.id })),
         dataIndex: 'brands.brand_id',
         render: (_, record) => {
-          const brandId = record.brand_id.map(item => item.brand_id);
+          const brandId = record.brands.map(item => item.brand_id);
           const value = brands.filter(item => brandId.indexOf(item.id) !== -1)
             .map(item => item.name);
           return value.join(',');
