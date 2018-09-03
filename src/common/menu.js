@@ -198,6 +198,11 @@ const menuData = [
         hideInMenu: true,
       },
       {
+        name: '部门管理',
+        path: 'department',
+        authority: '38',
+      },
+      {
         name: '大爱',
         path: 'violation',
         authority: '76',
