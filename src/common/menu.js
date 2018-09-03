@@ -65,7 +65,7 @@ const menuData = [
       },
       {
         name: '权限管理',
-        path: 'auth',
+        path: 'auth/group',
       },
       {
         name: '操作日志',

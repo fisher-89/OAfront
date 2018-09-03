@@ -81,12 +81,8 @@ export default class extends PureComponent {
                   department_id: 'id',
                   department_full_name: 'full_name',
                 }}
-                dataSource={{
-                  data: [...department],
-                  parentValue: 0,
-                  fields: { value: 'id', parentId: 'parent_id', lable: 'full_name' },
-                }}
                 placeholder="请选择"
+                dataSource={department}
                 dropdownMatchSelectWidth
                 treeNodeFilterProp="title"
                 dropdownStyle={{ height: '300px' }}

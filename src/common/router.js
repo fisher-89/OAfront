@@ -100,8 +100,8 @@ export const getRouterData = (app) => {
     '/client/action-log/customer': {
       component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/ActionLog/customer')),
     },
-    '/client/auth': {
-      component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/Auth')),
+    '/client/auth/group': {
+      component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/Auth/Group')),
     },
     '/client/action-log/notepad': {
       component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/ActionLog/notepad')),
