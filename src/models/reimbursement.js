@@ -2,6 +2,7 @@ import { notification } from 'antd';
 import {
   fetchProcessingReimbursements,
   fetchOvertimeReimbursements,
+  fetchBeingRejectedReimbursements,
   fetchApprovedReimbursements,
   fetchRejectedReimbursements,
   fetchPackageReimbursements,
@@ -23,6 +24,7 @@ export default {
   state: {
     processingList: [],
     overtimeList: [],
+    beingRejectedList: [],
     approvedList: [],
     rejectedList: [],
     packageList: [],
@@ -59,6 +61,22 @@ export default {
             type: 'save',
             payload: {
               store: 'overtimeList',
+              data: response,
+            },
+          });
+        }
+      } catch (err) {
+        return err;
+      }
+    },
+    * fetchBeingRejectedList({ payload }, { call, put }) {
+      try {
+        const response = yield call(fetchBeingRejectedReimbursements, payload);
+        if (response) {
+          yield put({
+            type: 'save',
+            payload: {
+              store: 'beingRejectedList',
               data: response,
             },
           });
@@ -328,6 +346,7 @@ export default {
         ...state,
         processingList: state.processingList.filter(item => item.id !== id),
         overtimeList: state.overtimeList.filter(item => item.id !== id),
+        beingRejectedList: state.beingRejectedList.filter(item => item.id !== id),
       };
       return newState;
     },
@@ -350,6 +369,7 @@ export default {
         ...state,
         processingList: state.processingList.filter(item => item.id !== id),
         overtimeList: state.overtimeList.filter(item => item.id !== id),
+        beingRejectedList: state.beingRejectedList.filter(item => item.id !== id),
       };
       return newState;
     },

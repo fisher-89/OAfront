@@ -20,6 +20,16 @@ export async function fetchOvertimeReimbursements(params) {
   });
 }
 
+export async function fetchBeingRejectedReimbursements(params) {
+  return request('/api/finance/reimburse/audit', {
+    method: 'GET',
+    body: {
+      ...params,
+      type: 'being-rejected',
+    },
+  });
+}
+
 export async function fetchApprovedReimbursements(params) {
   return request('/api/finance/reimburse/audit', {
     method: 'GET',

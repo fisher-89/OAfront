@@ -4,6 +4,7 @@ import { Row, Col, Card, Tabs } from 'antd';
 import Detail from '../../detail';
 import ProcessingList from './processing';
 import OvertimeList from './overtime';
+import BeingRejectedList from './beingRejected';
 import ApprovedList from './approved';
 import RejectedList from './rejected';
 import PackageList from '../packageList';
@@ -68,6 +69,13 @@ export default class extends PureComponent {
                 </TabPane>
                 <TabPane tab="逾期" key="overtime" style={{ minHeight: 500 }}>
                   <OvertimeList
+                    visible={detailVisible}
+                    showDetail={this.showDetail}
+                    openPackageList={this.openPackageList}
+                  />
+                </TabPane>
+                <TabPane tab="重审" key="beingRejected" style={{ minHeight: 500 }}>
+                  <BeingRejectedList
                     visible={detailVisible}
                     showDetail={this.showDetail}
                     openPackageList={this.openPackageList}
