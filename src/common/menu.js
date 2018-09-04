@@ -34,6 +34,16 @@ const menuData = [
           {
             name: '标签管理',
             path: 'tags',
+            children: [
+              {
+                name: '标签列表',
+                path: 'list',
+              },
+              {
+                name: '标签类型',
+                path: 'type',
+              },
+            ],
           },
         ],
       },
@@ -186,6 +196,11 @@ const menuData = [
         name: '编辑员工',
         path: 'staff/edit/:staff_sn',
         hideInMenu: true,
+      },
+      {
+        name: '部门管理',
+        path: 'department',
+        authority: '38',
       },
       {
         name: '大爱',

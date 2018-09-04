@@ -1,11 +1,11 @@
 import React from 'react';
-import { Card, Button, Divider } from 'antd';
+import { Tag, Card, Button, Divider } from 'antd';
 import store from './store';
-import TagForm from './form';
-import OATable from '../../../components/OATable';
-import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
+import TagTypeForm from './form';
+import OATable from '../../../../components/OATable';
+import PageHeaderLayout from '../../../../layouts/PageHeaderLayout';
 
-@store(['fetchTagsType', 'fetchTags', 'deleted'])
+@store(['fetchTagsType', 'deleted'])
 export default class extends React.PureComponent {
   state = {
     visible: false,
@@ -13,7 +13,7 @@ export default class extends React.PureComponent {
   }
 
   makeColumns = () => {
-    const { tagsType, deleted } = this.props;
+    const { deleted } = this.props;
     const columns = [
       {
         title: '序号',
@@ -26,18 +26,10 @@ export default class extends React.PureComponent {
         dataIndex: 'name',
       },
       {
-        title: '标签类型',
-        dataIndex: 'type_id',
-        filters: tagsType.map(item => ({ value: item.id, text: item.name })),
-        render: (key) => {
-          const value = tagsType.find(item => `${item.id}` === `${key}`) || {};
-          return value.name || '';
-        },
-      },
-      {
-        title: '描述',
+        title: '颜色',
         searcher: true,
-        dataIndex: 'describe',
+        dataIndex: 'color',
+        render: color => (<Tag color={color}>{color}</Tag>),
       },
       {
         title: '操作',
@@ -65,7 +57,7 @@ export default class extends React.PureComponent {
 
   render() {
     const { visible, initialValue } = this.state;
-    const { fetchTags, tags, loading } = this.props;
+    const { fetchTagsType, tagsType, loading } = this.props;
     const extraOperator = (
       <Button
         icon="plus"
@@ -74,21 +66,21 @@ export default class extends React.PureComponent {
           this.setState({ visible: true, initialValue: {} });
         }}
       >
-        添加标签
+        添加标签类型
       </Button>
     );
     return (
       <PageHeaderLayout>
         <Card bordered={false}>
           <OATable
-            data={tags}
+            data={tagsType}
             loading={loading}
-            total={tags.length}
-            fetchDataSource={fetchTags}
+            total={tagsType.length}
             columns={this.makeColumns()}
             extraOperator={extraOperator}
+            fetchDataSource={fetchTagsType}
           />
-          <TagForm
+          <TagTypeForm
             visible={visible}
             initialValue={initialValue}
             onCancel={this.handleModalVisible}

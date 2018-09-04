@@ -18,11 +18,18 @@ export default (Compoent) => {
       this.fetchStore();
     }
 
+    onSuccess = () => {
+      this.props.history.push('/client/customer/list');
+    }
+
     makeParams = (values) => {
       const params = {
         ...values,
         vindicator_sn: values.vindicator.staff_sn || '',
         vindicator_name: values.vindicator.staff_name || '',
+        tags: (values.tags || []).map(item => ({ tag_id: item.tag_id })),
+        shops: (values.shops || []).map(item => ({ shop_sn: item.shop_sn })),
+        brands: (values.brands || []).map(item => ({ brand_id: item })),
       };
       delete params.vindicator;
       return params;
@@ -38,25 +45,36 @@ export default (Compoent) => {
       });
     }
 
-    update = (values, onError, onSuccess) => {
+    update = (values, onError) => {
       const { dispatch } = this.props;
       const params = this.makeParams(values);
       dispatch({
         type: 'customer/editCustomer',
         payload: params,
         onError: errors => onError(errors, { vindicator_name: 'vindicator' }),
-        onSuccess,
+        onSuccess: () => this.onSuccess(),
       });
     }
 
-    add = (values, onError, onSuccess) => {
+    add = (values, onError) => {
       const { dispatch } = this.props;
       const params = this.makeParams(values);
       dispatch({
         type: 'customer/addCustomer',
         payload: params,
         onError: errors => onError(errors, { vindicator_name: 'vindicator' }),
-        onSuccess,
+        onSuccess: () => this.onSuccess(),
+      });
+    }
+
+    edit = (values, onError) => {
+      const { dispatch } = this.props;
+      const params = this.makeParams(values);
+      dispatch({
+        type: 'customer/editCustomer',
+        payload: params,
+        onError: errors => onError(errors, { vindicator_name: 'vindicator' }),
+        onSuccess: () => this.onSuccess(),
       });
     }
 
@@ -82,8 +100,9 @@ export default (Compoent) => {
       const response = {
         ...this.props,
         add: this.add,
-        delete: this.delete,
+        edit: this.edit,
         update: this.update,
+        deleted: this.delete,
         fetch: this.fetchDataSource,
         fetchTagsType: this.fetchTagsType,
       };

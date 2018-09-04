@@ -27,15 +27,14 @@ const formItemLayout = {
 };
 
 export function getAddress(data) {
-  let address;
+  let address = '';
   try {
-    address = JSON.parse(data);
-    address = Object.keys(address).map((addr) => {
-      const value = address[addr];
+    // address = JSON.parse(data);
+    Object.keys(data).forEach((addr) => {
+      const value = data[addr];
       const temp = district.find(dist => value === dist.id) || {};
-      return temp.name || value;
+      if (temp.name) address += temp.name;
     });
-    address = address.join('');
   } catch (e) { address = data; }
   return address;
 }
@@ -49,7 +48,6 @@ function CustomerInfo(props) {
   const tagData = tags.filter(item => tagId.indexOf(item.id) !== -1).map(item => item.name);
   const brandId = (data.brands || []).map(item => item.brand_id);
   const brandData = brands.filter(item => brandId.indexOf(item.id) !== -1).map(item => item.name);
-
   return (
     <Spin spinning={loading}>
       <div className={styles.customerInfo}>
@@ -63,7 +61,9 @@ function CustomerInfo(props) {
         <FormItem label="客户来源" {...formItemLayout}> {sourceData.name}</FormItem>
         <FormItem label="客户状态"{...formItemLayout}>{statusData.name}</FormItem>
         <FormItem label="合作品牌"{...formItemLayout} >{brandData.join('、')}</FormItem>
-        <FormItem label="合作时间" {...formItemLayout}> {moment(data.first_cooperation_at).format('YYYY-MM-DD')}</FormItem>
+        <FormItem label="合作时间" {...formItemLayout}>
+          {data.first_cooperation_at ? moment(data.first_cooperation_at).format('YYYY-MM-DD') : ''}
+        </FormItem>
         <FormItem label="标签" {...formItemLayout}> {tagData.join('、')}</FormItem>
         <FormItem label="备注" {...formItemLayout}>{data.remark}</FormItem>
         <FormItem label="维护人" {...formItemLayout}>{data.vindicator_name}</FormItem>

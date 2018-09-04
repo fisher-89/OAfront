@@ -152,11 +152,15 @@ export default class Shop extends PureComponent {
 Shop.defaultProps = {
   multiple: false,
   disabled: false,
-  name: {},
-  showName: '',
+  name: {
+    shop_sn: 'shop_sn',
+    shop_name: 'name',
+  },
+  showName: 'shop_name',
   title: '店铺',
   placeholder: '请选择',
   filters: {},
   width: 800,
   onChange: () => { },
 };
+

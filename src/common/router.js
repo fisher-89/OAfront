@@ -87,8 +87,11 @@ export const getRouterData = (app) => {
     '/client/customer/list/add': {
       component: dynamicWrapper(app, ['customer'], () => import('../routes/Customer/Info/add')),
     },
-    '/client/customer/tags': {
+    '/client/customer/tags/list': {
       component: dynamicWrapper(app, ['customer'], () => import('../routes/Customer/Tags')),
+    },
+    '/client/customer/tags/type': {
+      component: dynamicWrapper(app, ['customer'], () => import('../routes/Customer/Tags/Type')),
     },
 
     '/client/notepad/list': {
@@ -165,6 +168,9 @@ export const getRouterData = (app) => {
     /** HR 管理 */
     '/hr/staff': {
       component: dynamicWrapper(app, ['staffs', 'department', 'brand', 'position', 'shop'], () => import('../routes/Hr/Staff')),
+    },
+    '/hr/department': {
+      component: dynamicWrapper(app, ['department', 'position', 'brand'], () => import('../routes/Hr/Department')),
     },
     '/hr/staff/edit/:staff_sn': {
       component: dynamicWrapper(app, [], () => import('../routes/Hr/Staff/edit')),

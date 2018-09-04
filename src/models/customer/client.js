@@ -61,7 +61,7 @@ export default {
       const params = { ...payload };
       const { id } = params;
       delete params.id;
-      const response = yield call(deleteCustomer, id);
+      const response = yield call(deleteCustomer, id || '');
       if (response.errors) { onError(response.errors); return; }
       if (response.message) { return; }
       yield put({
