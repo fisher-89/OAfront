@@ -92,14 +92,14 @@ export default class extends PureComponent {
           )}
         </FormItem>
         <FormItem
-          label="上级分类"
+          label="上级部门"
           {...formItemLayout}
         >
           {getFieldDecorator('parent_id', initialValue.parent_id ? {
             initialValue: initialValue.parent_id.toString(),
           } : { initialValue: null })(
             <TreeSelect
-              placeholder="上级分类默认为空"
+              placeholder="上级部门默认为空"
               treeDefaultExpandAll
               treeData={newTreeData}
               dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}

@@ -53,7 +53,7 @@ export default class extends PureComponent {
       cancelText: '取消',
       onOk: () => {
         dispatch({
-          type: 'point/deleteType',
+          type: 'department/deleteDepart',
           payload: { id },
         });
       },

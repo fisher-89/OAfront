@@ -7,18 +7,15 @@ import { connect } from 'dva';
 import OATable from '../../../components/OATable';
 import DepartTree from './departTree';
 import DepartForm from './departForm';
-import request from '../../../utils/request';
 import { customerAuthority, getBrandAuthority } from '../../../utils/utils';
 
-@connect(({ brand, loading }) => ({
+@connect(({ department, brand, loading }) => ({
   brand: brand.brand,
+  department: department.department,
   fLoading: loading.effects['department/fetchDepart'],
 }))
 export default class extends PureComponent {
   state = {
-    total: 0,
-    department: [],
-    loading: false,
     visible: false,
     editInfo: {},
   };
@@ -57,17 +54,11 @@ export default class extends PureComponent {
     this.setState({ visible: !!flag });
   }
 
-  fetchDepartment = (param) => {
-    this.setState({ loading: true });
-    request('/api/department', {
-      method: 'GET',
-      body: param,
-    }).then((response) => {
-      this.setState({
-        loading: false,
-        department: response.data,
-        total: response.total,
-      });
+  fetchDepartment = (params) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'department/fetchDepart',
+      payload: params,
     });
   };
 
@@ -139,8 +130,8 @@ export default class extends PureComponent {
 
   render() {
     const columns = this.makeColumns();
-    const { total, loading, department, visible, editInfo } = this.state;
-
+    const { fLoading, department } = this.props;
+    const { visible, editInfo } = this.state;
     return (
       <Row>
         <Col span={4} style={{ borderRight: '1px solid #e8e8e8' }}>
@@ -149,11 +140,9 @@ export default class extends PureComponent {
         <Col span={20}>
           <OATable
             serverSide
-            data={department}
-            total={total}
             columns={columns}
-            loading={loading}
-            scroll={{ x: 300 }}
+            loading={fLoading}
+            data={department}
             fetchDataSource={this.fetchDepartment}
           />
         </Col>
