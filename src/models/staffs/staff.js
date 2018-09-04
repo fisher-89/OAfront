@@ -88,7 +88,7 @@ export default {
   },
   * deleteStaff({ payload }, { call, put }) {
     try {
-      const id = payload.staff_sn;
+      const { id } = payload;
       const response = yield call(deleteStaff, id);
       if (response.error) {
         notification.error({

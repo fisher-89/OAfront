@@ -1,13 +1,15 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import {
-  Row,
-  Col,
+  Tabs,
+  Divider,
 } from 'antd';
 import { connect } from 'dva';
 import OATable from '../../../components/OATable';
 import DepartTree from './departTree';
 import DepartForm from './departForm';
 import { customerAuthority, getBrandAuthority } from '../../../utils/utils';
+
+const { TabPane } = Tabs;
 
 @connect(({ department, brand, loading }) => ({
   brand: brand.brand,
@@ -17,12 +19,17 @@ import { customerAuthority, getBrandAuthority } from '../../../utils/utils';
 export default class extends PureComponent {
   state = {
     visible: false,
+    activeKey: 'depart_list',
     editInfo: {},
   };
 
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({ type: 'brand/fetchBrand' });
+  }
+
+  onEdit = (targetKey, action) => {
+    this[action](targetKey);
   }
 
   handleEdit = (rowData) => {
@@ -60,6 +67,10 @@ export default class extends PureComponent {
       type: 'department/fetchDepart',
       payload: params,
     });
+  };
+
+  tabsChange = (activeKey) => {
+    this.setState({ activeKey });
   };
 
   makeColumns = () => {
@@ -105,61 +116,76 @@ export default class extends PureComponent {
         sorter: true,
       },
     ];
-    // if (customerAuthority(143) || customerAuthority(144)) {
-    //   columns.push(
-    //     {
-    //       title: '操作',
-    //       render: (rowData) => {
-    //         return (
-    //           <Fragment>
-    //             {customerAuthority(143) && (
-    //               <a onClick={() => this.handleEdit(rowData)}>编辑</a>
-    //             )}
-    //             <Divider type="vertical" />
-    //             {customerAuthority(144) && (
-    //               <a onClick={() => this.handleDelete(rowData.id)}>删除</a>
-    //             )}
-    //           </Fragment>
-    //         );
-    //       },
-    //     }
-    //   );
-    // }
+    if (customerAuthority(143) || customerAuthority(144)) {
+      columns.push(
+        {
+          title: '操作',
+          render: (rowData) => {
+            return (
+              <Fragment>
+                {customerAuthority(143) && (
+                  <a onClick={() => this.handleEdit(rowData)}>编辑</a>
+                )}
+                <Divider type="vertical" />
+                {customerAuthority(144) && (
+                  <a onClick={() => this.handleDelete(rowData.id)}>删除</a>
+                )}
+              </Fragment>
+            );
+          },
+        }
+      );
+    }
     return columns;
   }
 
   render() {
     const columns = this.makeColumns();
     const { fLoading, department } = this.props;
-    const { visible, editInfo } = this.state;
+    const { visible, editInfo, activeKey } = this.state;
     return (
-      <Row>
-        <Col span={4} style={{ borderRight: '1px solid #e8e8e8' }}>
-          <DepartTree fetchDataSource={typeId => this.setTypeId(typeId)} />
-        </Col>
-        <Col span={20}>
-          <OATable
-            serverSide
-            columns={columns}
-            loading={fLoading}
-            data={department}
-            fetchDataSource={this.fetchDepartment}
-          />
-        </Col>
-        <Col span={20}>
-          {(customerAuthority(151) || customerAuthority(138)) &&
-            (
-              <DepartForm
-                visible={visible}
-                initialValue={editInfo}
-                onCancel={this.handleModalVisible}
-                treeData={department}
-                onClose={() => this.setState({ editInfo: {} })}
-              />
-            )
-          }
-        </Col>
-      </Row>
+      <Fragment>
+        <Tabs
+          hideAdd
+          animated
+          type="editable-card"
+          onEdit={this.onEdit}
+          activeKey={activeKey}
+          onChange={this.tabsChange}
+        >
+          <TabPane
+            tab="部门列表"
+            key="depart_list"
+            closable={false}
+          >
+            <OATable
+              serverSide
+              columns={columns}
+              loading={fLoading}
+              data={department}
+              fetchDataSource={this.fetchDepartment}
+            />
+          </TabPane>
+          <TabPane
+            tab="部门树形结构"
+            key="depart_s_list"
+            closable={false}
+          >
+            <DepartTree fetchDataSource={typeId => this.setTypeId(typeId)} />
+            {(customerAuthority(151) || customerAuthority(138)) &&
+              (
+                <DepartForm
+                  visible={visible}
+                  initialValue={editInfo}
+                  onCancel={this.handleModalVisible}
+                  treeData={department}
+                  onClose={() => this.setState({ editInfo: {} })}
+                />
+              )
+            }
+          </TabPane>
+        </Tabs>
+      </Fragment>
     );
   }
 }

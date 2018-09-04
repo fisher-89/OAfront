@@ -260,7 +260,7 @@ export default class extends PureComponent {
         const { dispatch } = this.props;
         dispatch({
           type: 'staffs/deleteStaff',
-          payload: { staff_sn: id },
+          payload: { id },
         });
       },
       onCancel: () => {},
