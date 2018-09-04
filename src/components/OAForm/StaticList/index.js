@@ -199,7 +199,11 @@ export default class List extends React.Component {
         onOk: this.handleOk,
         destroyOnClose: true,
         title: title || '表单',
-        bodyStyle: { ...bodyStyle, height },
+        bodyStyle: {
+          ...bodyStyle,
+          maxHeight: height,
+          overflowY: 'auto',
+        },
         onCancel: () => this.handleVisible(false),
         afterClose: () => this.setState({ dataInfo: {} }),
       },

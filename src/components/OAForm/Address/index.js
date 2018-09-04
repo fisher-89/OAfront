@@ -9,7 +9,12 @@ import districtData from '../../../../public/district';
 const { district } = districtData;
 const { Option } = Select;
 const InputGroup = Input.Group;
-
+const disableds = {
+  province: false,
+  city: false,
+  county: false,
+  address: false,
+};
 export default class Address extends PureComponent {
   constructor(props) {
     super(props);
@@ -92,6 +97,11 @@ export default class Address extends PureComponent {
 
   render() {
     const { province, city, county, value } = this.state;
+    const { disabled } = this.props;
+    const able = {
+      ...disableds,
+      ...disabled,
+    };
     return (
       <Fragment>
         <InputGroup compact>
@@ -101,6 +111,7 @@ export default class Address extends PureComponent {
             value={value.province_id}
             onChange={this.makeCity}
             placeholder="请选择"
+            disabled={able.province}
           >
             {province.map((item) => {
               return (<Option key={item.id} value={item.id}>{item.name}</Option>);
@@ -112,6 +123,7 @@ export default class Address extends PureComponent {
             value={value.city_id}
             onChange={this.makeCounty}
             placeholder="请选择"
+            disabled={able.city}
           >
             {city.map((item) => {
               return (<Option key={item.id} value={item.id}>{item.name}</Option>);
@@ -131,6 +143,7 @@ export default class Address extends PureComponent {
             }}
             value={value.county_id}
             placeholder="请选择"
+            disabled={able.county}
           >
             {county.map((item) => {
               return (<Option key={item.id} value={item.id}>{item.name}</Option>);
@@ -143,6 +156,7 @@ export default class Address extends PureComponent {
             const address = e.target.value;
             this.setState({ value: { ...value, address } }, this.setPropsValue);
           }}
+          disabled={able.address}
           value={value.address}
           placeholder="详细地址，请输入0-30个字符"
         />
@@ -159,4 +173,5 @@ Address.defaultProps = {
     county_id: 'county_id',
     address: 'address',
   },
+  disabled: disableds,
 };

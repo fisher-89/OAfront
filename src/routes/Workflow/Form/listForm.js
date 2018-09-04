@@ -1,5 +1,7 @@
 import React from 'react';
+import moment from 'moment';
 import { connect } from 'dva';
+import classNames from 'classnames';
 import {
   Input,
   Select,
@@ -7,16 +9,20 @@ import {
   Col,
   Switch,
   Radio,
-  TreeSelect,
+  Checkbox,
+  TimePicker,
   InputNumber,
 } from 'antd';
 import OAForm, {
   InputTags,
   OAModal,
   SearchTable,
+  DatePicker,
+  Address,
+  TreeSelect,
 } from '../../../components/OAForm';
 import TagInput from '../../../components/TagInput';
-import { markTreeData } from '../../../utils/utils';
+import styles from './index.less';
 
 const FormItem = OAForm.Item;
 const { Option } = Select;
@@ -60,6 +66,17 @@ export const labelText = {
 };
 
 
+const fieldScale = ['int'];
+
+const fieldOptions = ['array'];
+
+const fieldMinAndMax = ['int', 'text'];
+
+const fieldIsCheckbox = ['department', 'staff', 'shop', 'array'];
+
+const defaultValueComponent = ['int', 'text'];
+
+
 @connect(({ department, workflow, loading }) => ({
   loading: (
     loading.effects['workflow/fetchValidator']
@@ -69,6 +86,14 @@ export const labelText = {
 }))
 @OAForm.create()
 export default class extends React.PureComponent {
+  state = {
+    checkValue: null,
+  }
+
+  componentWillMount() {
+    this.fetchDepartment();
+  }
+
   componentWillReceiveProps(nextProps) {
     const { error, onError } = nextProps;
     if (Object.keys(error).length && error !== this.props.error) {
@@ -76,7 +101,180 @@ export default class extends React.PureComponent {
     }
   }
 
+  getTypeDefaultComponent = (type) => {
+    const { initialValue } = this.props;
+    const {
+      getFieldValue,
+      getFieldsValue,
+      setFieldsValue,
+      getFieldDecorator,
+    } = this.props.form;
+    const whereValue = getFieldsValue(['is_checkbox']);
+    const value = initialValue.default_value ?
+      initialValue.default_value : whereValue.is_checkbox ? [] : undefined;
+    const multiple = whereValue.is_checkbox;
+    if (['date', 'datetime'].indexOf(type) !== -1) {
+      const format = type === 'date' ? 'YYYY-MM-DD' : 'YYYY-MM-DD HH:mm';
+      return getFieldDecorator('default_value', {
+        initialValue: initialValue.default_value || '',
+      })(
+        <DatePicker format={format} showTime={type !== 'date'} />
+      );
+    } else if (type === 'time') {
+      return getFieldDecorator('default_value', {
+        initialValue:
+          initialValue.default_value ? moment(initialValue.default_value, 'HH:mm:ss') : undefined,
+      })(
+        <TimePicker
+          onChange={(_, timStr) => {
+            setFieldsValue({ default_value: timStr });
+          }}
+        />
+      );
+    } else if (type === 'array') {
+      const { options } = getFieldsValue(['options']);
+      const mode = whereValue.is_checkbox ? { mode: 'multiple' } : {};
+      return getFieldDecorator('default_value', {
+        initialValue: value,
+      })(
+        <Select {...mode} placeholder="请选择">
+          {options.map((item, index) => {
+            const key = `${index}`;
+            return (
+              <Option key={key} value={item}>{item}</Option>
+            );
+          })}
+        </Select>
+      );
+    } else if (['staff', 'shop', 'department'].indexOf(type) !== -1) {
+      let defaultValue = value;
+      defaultValue = !multiple && !defaultValue ? {} : defaultValue;
+      const selectType = this.makeSelectDefaultValue(defaultValue);
+      if (selectType !== false) return selectType;
+      const commoProps = {
+        multiple,
+        showName: 'text',
+      };
+      const { department } = this.props;
+      console.log(defaultValue);
+      return getFieldDecorator('default_value', {
+        initialValue: defaultValue,
+      })(
+        type === 'staff' ? (
+          <SearchTable.Staff
+            {...commoProps}
+            name={{ text: 'realname', value: 'staff_sn' }}
+          />
+        ) :
+          type === 'shop' ?
+            (
+              <SearchTable.Shop
+                {...commoProps}
+                name={{ value: 'shop_sn', text: 'name' }}
+              />
+            ) :
+            (
+              <TreeSelect
+                parentValue={0}
+                multiple={multiple}
+                dataSource={department}
+                name={{ value: 'id', text: 'full_name' }}
+                getPopupContainer={triggerNode => (triggerNode)}
+                dropdownStyle={{ maxHeight: '300px', overflow: 'auto' }}
+              />
+            )
+      );
+    } else if (type === 'region') {
+      const defaultValue = initialValue.default_value || {};
+      const regionLevel = getFieldValue('region_level');
+      let disabled = {};
+      if (regionLevel === '1') {
+        disabled = {
+          city: true,
+          county: true,
+          address: true,
+        };
+      } else if (regionLevel === '2') {
+        disabled = { county: true, address: true };
+      } else if (regionLevel === '3') {
+        disabled = { address: true };
+      }
+      return getFieldDecorator('default_value', {
+        initialValue: defaultValue,
+      })(
+        <Address disabled={disabled} />
+      );
+    }
+    return null;
+  }
+
+  getDefaultComponent = (fields, type) => {
+    const { initialValue } = this.props;
+    const { getFieldDecorator } = this.props.form;
+    if (defaultValueComponent.indexOf(type) !== -1) {
+      return getFieldDecorator('default_value', {
+        initialValue: initialValue.default_value || '',
+      })(
+        <InputTags placeholder="请输入" fields={fields} />
+      );
+    } else {
+      return this.getTypeDefaultComponent(type);
+    }
+  }
+
+
   labelValue = labelText;
+
+  makeSelectDefaultValue = (defaultValue) => {
+    const { getFieldValue, getFieldDecorator } = this.props.form;
+    const sourceData = getFieldValue('oa_id');
+    if (!sourceData || (!Object.keys(sourceData).length || !sourceData.length)) {
+      return false;
+    }
+    const isCheckbox = getFieldValue('is_checkbox');
+    const mode = isCheckbox ? { mode: 'multiple' } : {};
+    return getFieldDecorator('default_value', {
+      initialValue: defaultValue,
+    })(
+      <Select {...mode} placeholder="请选择">
+        {sourceData.map((item) => {
+          return (
+            <Option key={item.value} >{item.text}</Option>
+          );
+        })}
+      </Select>
+    );
+  }
+
+  handleTypeChange = () => {
+    const { setFieldsValue } = this.props.form;
+    setFieldsValue({ default_value: null });
+    this.setState({ checkValue: null });
+  }
+
+  handleCurrentChange = (e) => {
+    const { getFieldsValue, setFieldsValue } = this.props.form;
+    const whereConfig = getFieldsValue(['is_checkbox', 'type', 'default_value']);
+    const { checked } = e.target;
+    const current = {
+      value: whereConfig.type,
+      text: this.currentlabelText,
+    };
+    let defaultValue;
+    if (checked && whereConfig.is_checkbox) {
+      defaultValue = whereConfig.default_value || [];
+      defaultValue.push(current);
+    } else if (checked && !whereConfig.is_checkbox) {
+      defaultValue = current;
+    } else if (whereConfig.is_checkbox) {
+      defaultValue = whereConfig.default_value.filter(item => item.value === current.value);
+    } else {
+      defaultValue = {};
+    }
+    setFieldsValue({ default_value: defaultValue });
+    this.setState({ checkValue: e.target.checked ? '1' : null });
+  }
+
 
   handleOk = (value) => {
     const { initialValue, config: { onOk } } = this.props;
@@ -110,7 +308,7 @@ export default class extends React.PureComponent {
     return (
       <FormItem label={labelValue.region_level} {...fieldsItemLayout}>
         {getFieldDecorator('region_level', {
-          initialValue: `${initialValue.region_level}` || null,
+          initialValue: `${initialValue.region_level || 3}`,
         })(
           <RadioGroup>
             <Radio value="3">省/市/区</Radio>
@@ -126,22 +324,20 @@ export default class extends React.PureComponent {
     const { labelValue } = this;
     const { department } = this.props;
     const { initialValue, form: { getFieldDecorator } } = this.props;
-    const departmentTree = markTreeData(
-      department, {
-        parentId: 'parent_id',
-        value: 'id',
-        lable: 'full_name',
-      }, 0);
-    return departmentTree && (
+    return (
       <FormItem label={labelValue.oa_id} {...fieldsItemLayout}>
         {getFieldDecorator('oa_id', {
-          initialValue: initialValue.oa_id,
+          initialValue: initialValue.oa_id || [],
         })(
           <TreeSelect
             multiple
-            allowClear
-            placeholder="请选择部门"
-            treeData={departmentTree}
+            parentValue={0}
+            fields={{
+              parentId: 'parent_id',
+              value: 'id',
+              lable: 'full_name',
+            }}
+            dataSource={department}
             getPopupContainer={triggerNode => (triggerNode)}
             dropdownStyle={{ maxHeight: '300px', overflow: 'auto' }}
           />
@@ -161,9 +357,9 @@ export default class extends React.PureComponent {
         })(
           <SearchTable.Staff
             multiple
-            showName="staff_sn"
+            showName="text"
             placeholder="请选择"
-            name={{ staff_sn: 'staff_sn' }}
+            name={{ value: 'staff_sn', text: 'realname' }}
           />
         )}
       </FormItem>
@@ -233,17 +429,14 @@ export default class extends React.PureComponent {
         render = this.renderRegion();
         break;
       case 'department':
-        this.fetchDepartment();
         render = this.renderDepartment();
-        extarRender = [this.renderCheckBoxExtar()];
         break;
       case 'staff':
         render = this.renderStaff();
-        extarRender = [this.renderCheckBoxExtar(), this.renderStaffCondition()];
+        extarRender = [this.renderStaffCondition()];
         break;
       case 'shop':
         render = this.renderShop();
-        extarRender = [this.renderCheckBoxExtar()];
         break;
       default:
         break;
@@ -260,13 +453,38 @@ export default class extends React.PureComponent {
     const {
       initialValue, validator, dataSource, form, validateFields, validatorRequired,
     } = this.props;
-    const { getFieldDecorator } = form;
+    const { getFieldDecorator, getFieldValue } = form;
     const fields = dataSource.map((item) => {
       return { key: item.key, name: item.name };
     });
     const modalProps = { ...this.props.config };
     delete modalProps.onOK;
     const { labelValue } = this;
+    const fieldType = getFieldValue('type');
+    const scaleCls = classNames({
+      [styles.disblock]: fieldScale.indexOf(fieldType) === -1,
+    });
+    const optionsCls = classNames({
+      [styles.disblock]: fieldOptions.indexOf(fieldType) === -1,
+    });
+    const maxAndMinCls = classNames({
+      [styles.disblock]: fieldMinAndMax.indexOf(fieldType) === -1,
+    });
+    const isCheckboxCls = classNames({
+      [styles.disblock]: fieldIsCheckbox.indexOf(fieldType) === -1,
+    });
+    const notDefaultValue = ['file'];
+    const defaultCls = classNames({
+      [styles.disblock]: !fieldType || notDefaultValue.indexOf(fieldType) !== -1,
+    });
+    let currentlabelText = (
+      (fieldsTypes.find(item => item.value === fieldType) || {}).text || ''
+    ).replace('控件', '');
+    currentlabelText = `当前${currentlabelText}`;
+    this.currentlabelText = currentlabelText;
+    const currentCls = classNames({
+      [styles.disblock]: !fieldType || ['staff', 'shop', 'department'].indexOf(fieldType) === -1,
+    });
 
     return (
       <OAModal {...modalProps} width={950} onSubmit={validateFields(this.handleOk)}>
@@ -299,18 +517,31 @@ export default class extends React.PureComponent {
             <FormItem label={labelValue.type} {...fieldsItemLayout}>
               {
                 getFieldDecorator('type', {
-                  initialValue: initialValue.type || [],
+                  initialValue: initialValue.type || undefined,
                   rules: [validatorRequired],
                 })(
                   <Select
                     placeholder="请选择"
                     style={{ width: '100%' }}
                     getPopupContainer={triggerNode => (triggerNode)}
+                    onChange={this.handleTypeChange}
                   >
                     {fieldsTypes.map(item => (
                       <Option key={item.value} value={item.value}>{item.text}</Option>
                     ))}
                   </Select>
+                )
+              }
+            </FormItem>
+          </Col>
+          <Col {...fieldsBoxLayout} className={isCheckboxCls}>
+            <FormItem label={labelValue.is_checkbox} {...fieldsItemLayout} >
+              {
+                getFieldDecorator('is_checkbox', {
+                  initialValue: initialValue.is_checkbox === 1 || false,
+                  valuePropName: 'checked',
+                })(
+                  <Switch />
                 )
               }
             </FormItem>
@@ -323,7 +554,7 @@ export default class extends React.PureComponent {
               </Col>
             );
           })}
-          <Col {...fieldsBoxLayout}>
+          <Col {...fieldsBoxLayout} className={scaleCls || ''}>
             <FormItem label={labelValue.scale} {...fieldsItemLayout}>
               {
                 getFieldDecorator('scale', {
@@ -334,7 +565,7 @@ export default class extends React.PureComponent {
               }
             </FormItem>
           </Col>
-          <Col {...fieldsBoxLayout}>
+          <Col {...fieldsBoxLayout} className={maxAndMinCls}>
             <FormItem label={labelValue.min} {...fieldsItemLayout}>
               {
                 getFieldDecorator('min', {
@@ -345,7 +576,7 @@ export default class extends React.PureComponent {
               }
             </FormItem>
           </Col>
-          <Col {...fieldsBoxLayout}>
+          <Col {...fieldsBoxLayout} className={maxAndMinCls}>
             <FormItem label={labelValue.max} {...fieldsItemLayout}>
               {
                 getFieldDecorator('max', {
@@ -356,7 +587,7 @@ export default class extends React.PureComponent {
               }
             </FormItem>
           </Col>
-          <Col {...fieldsBoxLayout}>
+          <Col {...fieldsBoxLayout} className={optionsCls}>
             <FormItem label={labelValue.options} {...fieldsItemLayout}>
               {
                 getFieldDecorator('options', {
@@ -390,27 +621,8 @@ export default class extends React.PureComponent {
               }
             </FormItem>
           </Col>
-          <Col span={24}>
-            <FormItem
-              label={labelValue.default_value}
-              labelCol={{ xs: { span: 24 }, sm: { span: 8 }, lg: { span: 4 } }}
-              wrapperCol={{ xs: { span: 24 }, sm: { span: 16 }, lg: { span: 18 } }}
-            >
-              {
-                getFieldDecorator('default_value', {
-                  initialValue: initialValue.default_value || '',
-                })(
-                  <InputTags placeholder="请输入" fields={fields} />
-                )
-              }
-            </FormItem>
-          </Col>
-          <Col span={24}>
-            <FormItem
-              label={labelValue.description}
-              labelCol={{ xs: { span: 24 }, sm: { span: 8 }, lg: { span: 4 } }}
-              wrapperCol={{ xs: { span: 24 }, sm: { span: 16 }, lg: { span: 18 } }}
-            >
+          <Col {...fieldsBoxLayout}>
+            <FormItem label={labelValue.description} {...fieldsItemLayout}>
               {
                 getFieldDecorator('description', {
                   initialValue: initialValue.description || '',
@@ -418,6 +630,28 @@ export default class extends React.PureComponent {
                   <Input placeholder="请输入" name="description" />
                 )
               }
+            </FormItem>
+          </Col>
+          <Col span={24} className={defaultCls}>
+            <FormItem
+              label={labelValue.default_value}
+              labelCol={{ xs: { span: 24 }, sm: { span: 8 }, lg: { span: 4 } }}
+              wrapperCol={{ xs: { span: 24 }, sm: { span: 16 }, lg: { span: 18 } }}
+            >
+              {this.getDefaultComponent(fields, fieldType)}
+            </FormItem>
+          </Col>
+          <Col span={24} className={currentCls}>
+            <FormItem
+              label={currentlabelText}
+              labelCol={{ xs: { span: 24 }, sm: { span: 8 }, lg: { span: 4 } }}
+              wrapperCol={{ xs: { span: 24 }, sm: { span: 16 }, lg: { span: 18 } }}
+            >
+              <Checkbox
+                value="1"
+                checked={this.state.checkValue === '1'}
+                onChange={this.handleCurrentChange}
+              />
             </FormItem>
           </Col>
         </Row>

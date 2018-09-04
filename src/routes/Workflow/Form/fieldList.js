@@ -42,6 +42,7 @@ export default class FieldList extends React.Component {
           value={this.props.value}
           error={this.props.error}
           onChange={this.props.onChange}
+          bodyStyle={{ minHeight: 400 }}
           listItemContent={this.makeContent}
         />
       </React.Fragment>

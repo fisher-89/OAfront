@@ -7,7 +7,12 @@ import { markTreeData } from '../../utils/utils';
 const defaultProps = {
   dataSource: [],
   parentValue: 0,
-  fields: { value: 'id', parentId: 'parent_id', lable: 'full_name' },
+  fields: {
+    value: 'id',
+    parentId: 'parent_id',
+    lable: 'full_name',
+  },
+  name: { id: 'id', department_name: 'full_name' },
   placeholder: '请选择',
   onChange: () => { },
 };
@@ -63,12 +68,12 @@ export default class OATreeSelect extends TreeSelect {
           valueName = key;
         }
       });
-      newValue = newValue.map(item => item[valueName].toString());
+      newValue = newValue.map(item => `${item[valueName] || ''}`);
     } else if (name && !multiple) {
-      newValue = {};
+      newValue = '';
       Object.keys(name).forEach((key) => {
         if (fields.value === name[key]) {
-          newValue[key] = value[key].toString();
+          newValue = newValue[key] ? newValue[key] : undefined;
         }
       });
     }

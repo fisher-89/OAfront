@@ -100,11 +100,11 @@ export default class List extends PureComponent {
 
     return (
       <OATable
-        loading={loading}
         data={list}
-        fetchDataSource={this.fetchForm}
         columns={columns}
+        loading={loading}
         extraOperator={extraOperator}
+        fetchDataSource={this.fetchForm}
         // serverSide={true}
       />
     );
