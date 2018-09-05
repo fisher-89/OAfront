@@ -7,12 +7,10 @@ import {
 const store = 'department';
 
 export default {
-  * fetchDepart({ update }, { call, put, select }) {
+  * fetchDepart({ payload }, { call, put }) {
     try {
-      let response = yield select(model => model[store][store]);
-      if (!response.length || update) {
-        response = yield call(fetchDepart);
-      }
+      const params = { ...payload };
+      const response = yield call(fetchDepart, params);
       yield put({
         type: 'save',
         payload: {
