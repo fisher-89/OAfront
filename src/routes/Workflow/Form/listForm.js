@@ -37,10 +37,11 @@ const fieldsItemLayout = {
 export const fieldsTypes = [
   { value: 'text', text: '文本' },
   { value: 'int', text: '数字' },
-  { value: 'date', text: '日期' },
-  { value: 'datetime', text: '日期时间' },
-  { value: 'time', text: '时间' },
-  { value: 'array', text: '数组' },
+  { value: 'date', text: '日期（年-月-日）' },
+  { value: 'datetime', text: '日期时间（年-月-日 时:分）' },
+  { value: 'time', text: '时间（时:分:秒）' },
+  { value: 'select', text: '选择控件' },
+  { value: 'array', text: '多输入控件' },
   { value: 'file', text: '文件' },
   { value: 'region', text: '地区' },
   { value: 'department', text: '部门控件' },
@@ -53,26 +54,26 @@ export const labelText = {
   key: '键名',
   type: '字段类型',
   is_checkbox: '是否多选',
-  condition: '条件',
+  condition: '筛选条件',
   region_level: '地区级数',
-  oa_id: '关联编号',
+  oa_id: '可选项',
   scale: '小数位数',
   min: '最小值',
   max: '最大值',
   options: '可选值',
   validator_id: '验证规则',
   default_value: '默认值',
-  description: '描述',
+  description: '输入提示',
 };
 
 
 const fieldScale = ['int'];
 
-const fieldOptions = ['array'];
+const fieldOptions = ['select'];
 
 const fieldMinAndMax = ['int', 'text'];
 
-const fieldIsCheckbox = ['department', 'staff', 'shop', 'array'];
+const fieldIsCheckbox = ['department', 'staff', 'shop', 'select'];
 
 const defaultValueComponent = ['int', 'text'];
 
@@ -131,7 +132,7 @@ export default class extends React.PureComponent {
           }}
         />
       );
-    } else if (type === 'array') {
+    } else if (type === 'select') {
       const { options } = getFieldsValue(['options']);
       const mode = whereValue.is_checkbox ? { mode: 'multiple' } : {};
       return getFieldDecorator('default_value', {
@@ -308,9 +309,10 @@ export default class extends React.PureComponent {
     return (
       <FormItem label={labelValue.region_level} {...fieldsItemLayout}>
         {getFieldDecorator('region_level', {
-          initialValue: `${initialValue.region_level || 3}`,
+          initialValue: `${initialValue.region_level || 4}`,
         })(
           <RadioGroup>
+            <Radio value="4">省/市/区/详细地址</Radio>
             <Radio value="3">省/市/区</Radio>
             <Radio value="2">省/市</Radio>
             <Radio value="1">省</Radio>
@@ -490,7 +492,7 @@ export default class extends React.PureComponent {
       <OAModal {...modalProps} width={950} onSubmit={validateFields(this.handleOk)}>
         <Row>
           <Col {...fieldsBoxLayout}>
-            <FormItem label={labelValue.name} {...fieldsItemLayout}>
+            <FormItem label={labelValue.name} {...fieldsItemLayout} required>
               {
                 getFieldDecorator('name', {
                   initialValue: initialValue.name || '',
@@ -502,7 +504,7 @@ export default class extends React.PureComponent {
             </FormItem>
           </Col>
           <Col {...fieldsBoxLayout}>
-            <FormItem label={labelValue.key} {...fieldsItemLayout}>
+            <FormItem label={labelValue.key} {...fieldsItemLayout} required>
               {
                 getFieldDecorator('key', {
                   initialValue: initialValue.key || '',
@@ -514,7 +516,7 @@ export default class extends React.PureComponent {
             </FormItem>
           </Col>
           <Col {...fieldsBoxLayout}>
-            <FormItem label={labelValue.type} {...fieldsItemLayout}>
+            <FormItem label={labelValue.type} {...fieldsItemLayout} required>
               {
                 getFieldDecorator('type', {
                   initialValue: initialValue.type || undefined,
