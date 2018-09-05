@@ -20,8 +20,8 @@ const status = [
 @connect(({ staffs, department, brand, position, loading }) => ({
   brand: brand.brand,
   brandLoading: loading.models.brand,
-  department: department.department,
-  departmentLoading: loading.effects['department/fetchDepartment'],
+  department: department.tree,
+  departmentLoading: loading.effects['department/fetchDepart'],
   staffSearcherTotal: staffs.totalResult,
   staffSearcherResult: staffs.tableResult,
   staffsLoading: loading.effects['staffs/fetchStaff'],
@@ -53,7 +53,7 @@ export default class Staff extends PureComponent {
     dispatch({ type: 'staffs/fetchStaff', payload: newParams });
     dispatch({ type: 'brand/fetchBrand' });
     dispatch({ type: 'position/fetchPosition' });
-    dispatch({ type: 'department/fetchDepartment', payload: {} });
+    dispatch({ type: 'department/fetchDepart', payload: {} });
     if (params.filters && params.filters.brand_id) {
       const pushPosition = this.makePositionData(params.filters.brand_id);
       if (pushPosition.length > 0) {
@@ -112,7 +112,6 @@ export default class Staff extends PureComponent {
     filterPosition = filterPosition.map((item) => {
       return { text: item.name, value: item.id };
     });
-
     const newDepartment = department.map((item) => {
       const temp = { ...item };
       if (access) {
