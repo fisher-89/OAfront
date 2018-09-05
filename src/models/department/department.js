@@ -50,7 +50,7 @@ export default {
       const { id } = payload;
       delete params.id;
       const response = yield call(editDepart, params, id);
-      if (response.errors && onErrors) {
+      if (response.errors && onError) {
         onError(response.errors);
       } else {
         yield put({
