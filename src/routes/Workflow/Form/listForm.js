@@ -1,5 +1,4 @@
 import React from 'react';
-import moment from 'moment';
 import { connect } from 'dva';
 import classNames from 'classnames';
 import {
@@ -10,17 +9,23 @@ import {
   Switch,
   Radio,
   Card,
-  TimePicker,
   InputNumber,
 } from 'antd';
 import OAForm, {
-  InputTags,
   OAModal,
-  SearchTable,
-  DatePicker,
   Address,
+  InputTags,
   TreeSelect,
+  SearchTable,
 } from '../../../components/OAForm';
+import {
+  RadioDate,
+  RadioTime,
+  RadioShop,
+  RadioStaff,
+  RadioSelect,
+  RadioDepartment,
+} from './ListFormComponent';
 import TagInput from '../../../components/TagInput';
 import styles from './index.less';
 
@@ -87,11 +92,15 @@ const fieldScale = ['int'];
 
 const fieldOptions = ['select'];
 
-const defaultValueComponent = ['int', 'text'];
+const defaultValueComponent = [...fieldScale, 'text'];
 
-const fieldIsCheckbox = ['department', 'staff', 'shop', 'select'];
+const fieldIsCheckbox = ['department', 'staff', 'shop', ...fieldOptions];
 
-const fieldMinAndMax = ['int', 'text', 'department', 'staff', 'shop', 'select', 'array'];
+const fieldMinAndMax = [
+  ...defaultValueComponent,
+  ...fieldIsCheckbox,
+  'array',
+];
 
 @connect(({ department, workflow, loading }) => ({
   loading: (
@@ -113,42 +122,138 @@ export default class extends React.PureComponent {
     }
   }
 
+  getFieldTypeText = (type) => {
+    const fieldType = fieldsTypes.find(item => item.value === type);
+    return fieldType.text || '';
+  }
+
+  getMultiple = () => {
+    const { getFieldValue } = this.props.form;
+    return getFieldValue('is_checkbox');
+  }
+
+  getDateComponent = (initialValue, type) => {
+    const { getFieldDecorator } = this.props.form;
+    const fieldType = this.getFieldTypeText(type);
+    const format = type === 'date' ? 'YYYY-MM-DD' : 'YYYY-MM-DD HH:mm';
+    return getFieldDecorator('default_value', {
+      initialValue: initialValue || '',
+    })(
+      <RadioDate
+        type={type}
+        format={format}
+        fieldType={fieldType}
+        showTime={type !== 'date'}
+      />
+    );
+  }
+
+  getTimeComponent = (initialValue, type) => {
+    const { getFieldDecorator } = this.props.form;
+    const fieldType = this.getFieldTypeText(type);
+    return getFieldDecorator('default_value', {
+      initialValue: initialValue || '',
+    })(
+      <RadioTime
+        type={type}
+        fieldType={fieldType}
+      />
+    );
+  }
+
+  getDepartmentComponent = (initialValue, type) => {
+    const selectType = this.getSelectDefaultValue(initialValue, type);
+    if (selectType !== false) return selectType;
+
+    const { getFieldDecorator } = this.props.form;
+    const fieldType = this.getFieldTypeText(type);
+    const multiple = this.getMultiple();
+    return getFieldDecorator('default_value', {
+      initialValue: initialValue || undefined,
+    })(
+      <RadioDepartment
+        type={type}
+        multiple={multiple}
+        fieldType={fieldType}
+        dataSource={this.props.department}
+        key={multiple ? 'multiple' : 'single'}
+      />
+    );
+  }
+
+  getStaffComponent = (initialValue, type) => {
+    const selectType = this.getSelectDefaultValue(initialValue, type);
+    if (selectType !== false) return selectType;
+
+    const { getFieldDecorator } = this.props.form;
+    const fieldType = this.getFieldTypeText(type);
+    const multiple = this.getMultiple();
+    return getFieldDecorator('default_value', {
+      initialValue: initialValue || undefined,
+    })(
+      <RadioStaff
+        type={type}
+        multiple={multiple}
+        fieldType={fieldType}
+      />
+    );
+  }
+
+  getShopComponent = (initialValue, type) => {
+    const selectType = this.getSelectDefaultValue(initialValue, type);
+    if (selectType !== false) return selectType;
+
+    const { getFieldDecorator } = this.props.form;
+    const fieldType = this.getFieldTypeText(type);
+    const multiple = this.getMultiple();
+    return getFieldDecorator('default_value', {
+      initialValue: initialValue || undefined,
+    })(
+      <RadioShop
+        type={type}
+        multiple={multiple}
+        fieldType={fieldType}
+      />
+    );
+  }
+
+  getSelectDefaultValue = (defaultValue, type) => {
+    const { getFieldValue, getFieldDecorator } = this.props.form;
+    const sourceData = getFieldValue('available_options');
+    if (!sourceData || (!Object.keys(sourceData).length || !sourceData.length)) {
+      return false;
+    }
+    const fieldType = this.getFieldTypeText(type);
+    const multiple = this.getMultiple();
+    return getFieldDecorator('default_value', {
+      initialValue: defaultValue,
+    })(
+      <RadioSelect
+        type={type}
+        multiple={multiple}
+        fieldType={fieldType}
+        sourceData={sourceData}
+      />
+    );
+  }
+
   getTypeDefaultComponent = (type) => {
     const { initialValue } = this.props;
     const {
       getFieldValue,
       getFieldsValue,
-      setFieldsValue,
       getFieldDecorator,
     } = this.props.form;
-    const whereValue = getFieldsValue(['is_checkbox']);
-
-    const value = initialValue.default_value || (
-      whereValue.is_checkbox ? [] : undefined
-    );
-    const multiple = whereValue.is_checkbox;
+    const multiple = this.getMultiple();
+    const value = initialValue.default_value || undefined;
 
     if (['date', 'datetime'].indexOf(type) !== -1) {
-      const format = type === 'date' ? 'YYYY-MM-DD' : 'YYYY-MM-DD HH:mm';
-      return getFieldDecorator('default_value', {
-        initialValue: initialValue.default_value || '',
-      })(
-        <DatePicker format={format} showTime={type !== 'date'} />
-      );
+      return this.getDateComponent(value, type);
     } else if (type === 'time') {
-      return getFieldDecorator('default_value', {
-        initialValue:
-          initialValue.default_value ? moment(initialValue.default_value, 'HH:mm:ss') : undefined,
-      })(
-        <TimePicker
-          onChange={(_, timStr) => {
-            setFieldsValue({ default_value: timStr });
-          }}
-        />
-      );
+      return this.getTimeComponent(value, type);
     } else if (type === 'select') {
       const { options } = getFieldsValue(['options']);
-      const mode = whereValue.is_checkbox ? { mode: 'multiple' } : {};
+      const mode = multiple ? { mode: 'multiple' } : {};
       return getFieldDecorator('default_value', {
         initialValue: value,
       })(
@@ -163,48 +268,18 @@ export default class extends React.PureComponent {
       );
     } else if (type === 'array') {
       return getFieldDecorator('default_value', {
-        initialValue: initialValue.default_value,
+        initialValue: value,
       })(
         <TagInput />
       );
-    } else if (['staff', 'shop', 'department'].indexOf(type) !== -1) {
-      const selectType = this.makeSelectDefaultValue(value);
-      if (selectType !== false) return selectType;
-      const commoProps = {
-        multiple,
-        showName: 'text',
-      };
-      return getFieldDecorator('default_value', {
-        initialValue: value,
-      })(
-        type === 'staff' ? (
-          <SearchTable.Staff
-            {...commoProps}
-            name={{ text: 'realname', value: 'staff_sn' }}
-          />
-        ) :
-          type === 'shop' ?
-            (
-              <SearchTable.Shop
-                {...commoProps}
-                name={{ value: 'shop_sn', text: 'name' }}
-              />
-            ) :
-            (
-              <TreeSelect
-                parentValue={0}
-                valueIndex="value"
-                multiple={multiple}
-                dataSource={this.props.department}
-                key={multiple ? 'multiple' : 'single'}
-                name={{ value: 'id', text: 'full_name' }}
-                getPopupContainer={triggerNode => (triggerNode)}
-                dropdownStyle={{ maxHeight: '300px', overflow: 'auto' }}
-              />
-            )
-      );
+    } else if (type === 'department') {
+      return this.getDepartmentComponent(value, type);
+    } else if (type === 'staff') {
+      return this.getStaffComponent(value, type);
+    } else if (type === 'shop') {
+      return this.getShopComponent(value, type);
     } else if (type === 'region') {
-      const defaultValue = initialValue.default_value || {};
+      const defaultValue = value || {};
       const regionLevel = getFieldValue('region_level');
       let disabled = {};
       if (regionLevel === '1') {
@@ -244,44 +319,11 @@ export default class extends React.PureComponent {
 
   labelValue = labelText;
 
-  makeSelectDefaultValue = (defaultValue) => {
-    const { getFieldValue, getFieldDecorator } = this.props.form;
-    const sourceData = getFieldValue('available_options');
-    if (!sourceData || (!Object.keys(sourceData).length || !sourceData.length)) {
-      return false;
-    }
-    const isCheckbox = getFieldValue('is_checkbox');
-    let value;
-    if (Array.isArray(defaultValue)) {
-      value = defaultValue.map(item => (
-        typeof item === 'object' ? item.value : item
-      ));
-    } else if (typeof defaultValue === 'object') {
-      ({ value } = defaultValue);
-    } else if (!defaultValue) {
-      value = isCheckbox ? [] : '';
-    }
-    return getFieldDecorator('default_value', {
-      initialValue: value,
-    })(
-      <Select
-        placeholder="请选择"
-        {...(isCheckbox ? { mode: 'multiple' } : {})}
-      >
-        {sourceData.map((item) => {
-          return (
-            <Option key={`${item.value}`} >{item.text}</Option>
-          );
-        })}
-      </Select>
-    );
-  }
 
   handleDefaultValueChange = (values = { default_value: undefined }) => {
     const { setFieldsValue } = this.props.form;
     setFieldsValue(values);
   }
-
 
   handleOk = (value) => {
     const { initialValue, config: { onOk } } = this.props;
@@ -325,15 +367,24 @@ export default class extends React.PureComponent {
   };
 
   makeFieldBlockCls = (fieldType) => {
+    const isCheckBoxData = fieldMinAndMax.filter(item =>
+      [...defaultValueComponent, 'array'].indexOf(item) === -1);
+    const { getFieldValue } = this.props.form;
+    const isCheckBox = getFieldValue('is_checkbox');
+
+    const maxAndMinCls = classNames({
+      [styles.disblock]:
+        fieldMinAndMax.indexOf(fieldType) === -1 || (
+          !isCheckBox && isCheckBoxData.indexOf(fieldType) !== -1
+        ),
+    });
     const scaleCls = classNames({
       [styles.disblock]: fieldScale.indexOf(fieldType) === -1,
     });
     const optionsCls = classNames({
       [styles.disblock]: fieldOptions.indexOf(fieldType) === -1,
     });
-    const maxAndMinCls = classNames({
-      [styles.disblock]: fieldMinAndMax.indexOf(fieldType) === -1,
-    });
+
     const isCheckboxCls = classNames({
       [styles.disblock]: fieldIsCheckbox.indexOf(fieldType) === -1,
     });
@@ -347,7 +398,7 @@ export default class extends React.PureComponent {
       maxAndMinCls.length &&
       isCheckboxCls.length && defaultCls.length
     );
-    const cardCls = classNames({
+    const cardCls = classNames(styles.cardTitle, {
       [styles.disblock]: cardAble,
     });
     return {
@@ -385,7 +436,7 @@ export default class extends React.PureComponent {
     const { department } = this.props;
     const { initialValue, form: { getFieldDecorator } } = this.props;
     return (
-      <FormItem label={labelValue.available_options} {...fieldsItemLayout}>
+      <FormItem label={labelValue.available_options} {...fieldsRowItemLayout}>
         {getFieldDecorator('available_options', {
           initialValue: initialValue.available_options || [],
         })(
@@ -408,7 +459,7 @@ export default class extends React.PureComponent {
     const { labelValue } = this;
     const { initialValue, form: { getFieldDecorator } } = this.props;
     return (
-      <FormItem label={labelValue.available_options} {...fieldsItemLayout}>
+      <FormItem label={labelValue.available_options} {...fieldsRowItemLayout}>
         {getFieldDecorator('available_options', {
           initialValue: initialValue.available_options || [],
         })(
@@ -428,7 +479,7 @@ export default class extends React.PureComponent {
     const { labelValue } = this;
     const { initialValue, form: { getFieldDecorator } } = this.props;
     return (
-      <FormItem label={labelValue.available_options} {...fieldsItemLayout}>
+      <FormItem label={labelValue.available_options} {...fieldsRowItemLayout}>
         {getFieldDecorator('available_options', {
           initialValue: initialValue.available_options || [],
         })(
@@ -451,7 +502,7 @@ export default class extends React.PureComponent {
     const { initialValue, form: { getFieldDecorator } } = this.props;
     const { labelValue } = this;
     return (
-      <FormItem label={labelValue.condition} {...fieldsItemLayout}>
+      <FormItem label={labelValue.condition} {...fieldsRowItemLayout}>
         {
           getFieldDecorator('condition', {
             initialValue: initialValue.condition || '',
@@ -467,7 +518,7 @@ export default class extends React.PureComponent {
     const { form: { getFieldValue } } = this.props;
     const typeValue = getFieldValue('type');
     let render;
-    let extarRender = [];
+    let extarRender;
     switch (typeValue) {
       case 'region':
         render = this.renderRegion();
@@ -477,7 +528,11 @@ export default class extends React.PureComponent {
         break;
       case 'staff':
         render = this.renderStaff();
-        extarRender = [this.renderStaffCondition()];
+        extarRender = (
+          <Col span={24} key="renderStaffCondition">
+            {this.renderStaffCondition()}
+          </Col>
+        );
         break;
       case 'shop':
         render = this.renderShop();
@@ -485,12 +540,12 @@ export default class extends React.PureComponent {
       default:
         break;
     }
-    return render ? (
-      [
-        render,
-        ...extarRender,
-      ]
-    ) : [];
+    render = (
+      <Col span={24} key="renderTypeComponent">
+        {render}
+      </Col>
+    );
+    return [render, extarRender] || null;
   }
 
   render() {
@@ -521,8 +576,13 @@ export default class extends React.PureComponent {
       isCheckboxCls,
     } = this.makeFieldBlockCls(fieldType);
     return (
-      <OAModal {...modalProps} visible width={800} onSubmit={validateFields(this.handleOk)}>
-        <Card title="控件信息" bordered={false}>
+      <OAModal
+        width={800}
+        {...modalProps}
+        visible
+        onSubmit={validateFields(this.handleOk)}
+      >
+        <Card className={styles.cardTitle} title="控件信息" bordered={false}>
           <Row>
             <Col {...fieldsBoxLayout}>
               <FormItem label={labelValue.name} {...fieldsItemLayout} required>
@@ -552,14 +612,16 @@ export default class extends React.PureComponent {
               <FormItem label={labelValue.type} {...fieldsItemLayout} required>
                 {
                   getFieldDecorator('type', {
-                    initialValue: initialValue.type || undefined,
+                    initialValue: initialValue.type || 'department',
                     rules: [validatorRequired],
                   })(
                     <Select
                       placeholder="请选择"
                       style={{ width: '100%' }}
                       getPopupContainer={triggerNode => (triggerNode)}
-                      onChange={() => this.handleDefaultValueChange(resetFields)}
+                      onChange={() => {
+                        this.handleDefaultValueChange(resetFields);
+                      }}
                     >
                       {fieldsTypes.map(item => (
                         <Option key={item.value} value={item.value}>{item.text}</Option>
@@ -606,6 +668,34 @@ export default class extends React.PureComponent {
         </Card>
         <Card title="控件配置" className={cardCls} bordered={false}>
           <Row>
+            <Col {...fieldsBoxLayout} className={optionsCls}>
+              <FormItem label={labelValue.options} {...fieldsItemLayout}>
+                {
+                  getFieldDecorator('options', {
+                    initialValue: initialValue.options || [],
+                  })(
+                    <TagInput name="options" />
+                  )
+                }
+              </FormItem>
+            </Col>
+            <Col span={24} className={isCheckboxCls}>
+              <FormItem label={labelValue.is_checkbox} {...fieldsRowItemLayout} >
+                {
+                  getFieldDecorator('is_checkbox', {
+                    initialValue: initialValue.is_checkbox === 1 || false,
+                    valuePropName: 'checked',
+                  })(
+                    <Switch onChange={() => this.handleDefaultValueChange({
+                      max: undefined,
+                      min: undefined,
+                      default_value: undefined,
+                    })}
+                    />
+                  )
+                }
+              </FormItem>
+            </Col>
             <Col {...fieldsBoxLayout} className={maxAndMinCls}>
               <FormItem label={labelValue.min} {...fieldsItemLayout}>
                 {
@@ -628,26 +718,6 @@ export default class extends React.PureComponent {
                 }
               </FormItem>
             </Col>
-            <Col {...fieldsBoxLayout} className={isCheckboxCls}>
-              <FormItem label={labelValue.is_checkbox} {...fieldsItemLayout} >
-                {
-                  getFieldDecorator('is_checkbox', {
-                    initialValue: initialValue.is_checkbox === 1 || false,
-                    valuePropName: 'checked',
-                  })(
-                    <Switch onChange={() => this.handleDefaultValueChange()} />
-                  )
-                }
-              </FormItem>
-            </Col>
-            {this.renderTypeComponent().map((item, index) => {
-              const key = `key-${index}`;
-              return (
-                <Col {...(fieldType === 'region' ? { span: 24 } : fieldsBoxLayout)} key={key}>
-                  {item}
-                </Col>
-              );
-            })}
             <Col {...fieldsBoxLayout} className={scaleCls || ''}>
               <FormItem label={labelValue.scale} {...fieldsItemLayout}>
                 {
@@ -659,18 +729,7 @@ export default class extends React.PureComponent {
                 }
               </FormItem>
             </Col>
-
-            <Col {...fieldsBoxLayout} className={optionsCls}>
-              <FormItem label={labelValue.options} {...fieldsItemLayout}>
-                {
-                  getFieldDecorator('options', {
-                    initialValue: initialValue.options || [],
-                  })(
-                    <TagInput name="options" />
-                  )
-                }
-              </FormItem>
-            </Col>
+            {this.renderTypeComponent()}
             <Col span={24} className={defaultCls}>
               <FormItem label={labelValue.default_value} {...fieldsRowItemLayout}>
                 {this.getDefaultComponent(fields, fieldType)}

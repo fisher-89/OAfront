@@ -1,8 +1,8 @@
 import React from 'react';
 import { Input, Icon } from 'antd';
+import './index.less';
 
-const { Search } = Input;
-export default class extends React.PureComponent {
+export default class SearchInput extends React.PureComponent {
   handleFocus = () => {
     const { modalVisible } = this.props;
     this.searchInput.blur();
@@ -26,21 +26,31 @@ export default class extends React.PureComponent {
     } = this.props;
 
     const buttonBefore = (
-      <span onClick={clearValue} style={{ cursor: 'pointer' }}><Icon type="close" /></span>
+      <Icon
+        type="close-circle"
+        onClick={clearValue}
+        style={{ cursor: 'pointer' }}
+        className="ant-input-suffix-customer"
+      />
     );
     return (
-      <Search
+      <Input
         readOnly
-        addonBefore={buttonBefore}
         ref={(e) => {
           this.searchInput = e;
         }}
         disabled={disabled}
-        placeholder={placeholder}
-        value={value && value[showName]}
-        onFocus={this.handleFocus}
+        suffix={buttonBefore}
+        value={value[showName]}
         onBlur={this.handleBlur}
+        onFocus={this.handleFocus}
+        placeholder={placeholder || '请选择'}
+        prefix={<Icon type="search" style={{ color: 'rgba(0,0,0,.25)' }} />}
       />
     );
   }
 }
+SearchInput.defaultProps = {
+  placeholder: '请选择',
+  value: {},
+};

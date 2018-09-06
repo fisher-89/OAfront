@@ -20,6 +20,8 @@ export default class FieldList extends React.Component {
       valueTemp.options = value.options.length ? value.options.join(',') : '';
     }
     const staticObject = {};
+
+
     Object.keys(labelText).forEach((key) => {
       if (Array.isArray(valueTemp[key]) && valueTemp[key].length) {
         staticObject[labelText[key]] = { value: valueTemp[key].join(',') };
