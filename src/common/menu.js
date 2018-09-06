@@ -203,6 +203,21 @@ const menuData = [
         authority: '38',
       },
       {
+        name: '职位管理',
+        path: 'position',
+        authority: '42',
+      },
+      {
+        name: '品牌管理',
+        path: 'brand',
+        authority: '42',
+      },
+      {
+        name: '店铺管理',
+        path: 'shop',
+        authority: '70',
+      },
+      {
         name: '大爱',
         path: 'violation',
         authority: '76',

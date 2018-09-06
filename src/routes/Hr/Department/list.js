@@ -1,6 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import {
   Tabs,
+  Modal,
   Divider,
 } from 'antd';
 import { connect } from 'dva';
@@ -13,6 +14,7 @@ const { TabPane } = Tabs;
 
 @connect(({ department, brand, loading }) => ({
   brand: brand.brand,
+  treeList: department.tree,
   department: department.department,
   fLoading: loading.effects['department/fetchDepart'],
 }))
@@ -26,6 +28,7 @@ export default class extends PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({ type: 'brand/fetchBrand' });
+    dispatch({ type: 'department/fetchTreeDepart' });
   }
 
   onEdit = (targetKey, action) => {
@@ -36,24 +39,19 @@ export default class extends PureComponent {
     this.setState({ editInfo: rowData }, () => this.handleModalVisible(true));
   }
 
-  handleSubmit = (params) => {
-    return params;
-  }
-
-  handleError = (err) => {
-    const { onError } = this.props;
-    onError(err);
-  }
-
-  handleSuccess = () => {
-    this.handleModalVisible(false);
-  }
-
   handleDelete = (id) => {
     const { dispatch } = this.props;
-    dispatch({
-      type: 'department/deleteDepart',
-      payload: { id },
+    Modal.confirm({
+      title: '确定要删除该分类及下面的子类么?',
+      okText: '删除',
+      okType: 'danger',
+      cancelText: '取消',
+      onOk: () => {
+        dispatch({
+          type: 'department/deleteDepart',
+          payload: { id },
+        });
+      },
     });
   }
 
@@ -63,9 +61,13 @@ export default class extends PureComponent {
 
   fetchDepartment = (params) => {
     const { dispatch } = this.props;
+    const { filters } = params;
     dispatch({
       type: 'department/fetchDepart',
-      payload: params,
+      payload: {
+        ...params,
+        filters,
+      },
     });
   };
 
@@ -141,7 +143,7 @@ export default class extends PureComponent {
 
   render() {
     const columns = this.makeColumns();
-    const { fLoading, department } = this.props;
+    const { fLoading, department, treeList } = this.props;
     const { visible, editInfo, activeKey } = this.state;
     return (
       <Fragment>
@@ -162,29 +164,31 @@ export default class extends PureComponent {
               serverSide
               columns={columns}
               loading={fLoading}
-              data={department}
+              dataSource={department && department.data}
+              total={department.total || 0}
+              filtered={department.filtered || 0}
               fetchDataSource={this.fetchDepartment}
             />
           </TabPane>
           <TabPane
-            tab="部门树形结构"
+            tab="部门结构"
             key="depart_s_list"
             closable={false}
           >
             <DepartTree fetchDataSource={typeId => this.setTypeId(typeId)} />
-            {(customerAuthority(151) || customerAuthority(138)) &&
-              (
-                <DepartForm
-                  visible={visible}
-                  initialValue={editInfo}
-                  onCancel={this.handleModalVisible}
-                  treeData={department}
-                  onClose={() => this.setState({ editInfo: {} })}
-                />
-              )
-            }
           </TabPane>
         </Tabs>
+        {(customerAuthority(151) || customerAuthority(138)) &&
+          (
+            <DepartForm
+              visible={visible}
+              initialValue={editInfo}
+              onCancel={this.handleModalVisible}
+              treeData={treeList}
+              onClose={() => this.setState({ editInfo: {} })}
+            />
+          )
+        }
       </Fragment>
     );
   }

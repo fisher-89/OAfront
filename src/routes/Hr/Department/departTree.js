@@ -15,7 +15,7 @@ import './department.less';
 const { TreeNode } = Tree;
 
 @connect(({ department, loading }) => ({
-  dataSource: department.department,
+  dataSource: department.tree,
   loading: loading.effects['department/fetchDepart'],
   sortLoading: loading.effects['department/fetchDepart'],
 }))
