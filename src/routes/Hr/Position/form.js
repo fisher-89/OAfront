@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import {
   Input,
+  Select,
+  InputNumber,
 } from 'antd';
 import { connect } from 'dva';
 import OAForm, {
@@ -8,8 +10,10 @@ import OAForm, {
 } from '../../../components/OAForm';
 
 const FormItem = OAForm.Item;
+const { Option } = Select;
 
-@connect(({ loading }) => ({
+@connect(({ brand, loading }) => ({
+  brand: brand.brand,
   loading: (
     loading.effects['position/addPosition'] ||
     loading.effects['position/editPosition']
@@ -17,6 +21,11 @@ const FormItem = OAForm.Item;
 }))
 @OAForm.create()
 export default class extends PureComponent {
+  componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch({ type: 'brand/fetchBrand' });
+  }
+
   handleError = (error) => {
     const { onError } = this.props;
     onError(error);
@@ -28,7 +37,7 @@ export default class extends PureComponent {
       ...params,
     };
     dispatch({
-      type: params.id ? 'position/addPosition' : 'point/addPosition',
+      type: params.id ? 'position/editPosition' : 'position/addPosition',
       payload: body,
       onError: this.handleError,
       onSuccess: () => this.props.handleVisible(false),
@@ -37,6 +46,7 @@ export default class extends PureComponent {
 
   render() {
     const {
+      brand,
       handleVisible,
       visible,
       initialValue,
@@ -44,11 +54,12 @@ export default class extends PureComponent {
       validateFields,
       form: { getFieldDecorator },
     } = this.props;
-    const info = { ...initialValue };
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 16 },
     };
+    const brandVal = (initialValue.brands || []).map(item => item.id.toString());
+
     return (
       <OAModal
         title="职位表单"
@@ -58,7 +69,7 @@ export default class extends PureComponent {
         onCancel={() => handleVisible(false)}
         afterClose={onCancel}
       >
-        {info.id ? (getFieldDecorator('id', {
+        {initialValue.id ? (getFieldDecorator('id', {
           initialValue: initialValue.id,
         }))(
           <Input type="hidden" placeholder="请输入" />
@@ -66,14 +77,49 @@ export default class extends PureComponent {
 
         <FormItem {...formItemLayout} label="职位名称" required>
           {
-            getFieldDecorator('point_a_awarding_limit', {
+            getFieldDecorator('name', {
               initialValue: initialValue.name,
             })(
               <Input placeholder="请输入" style={{ width: '100%' }} />
             )
           }
         </FormItem>
-
+        <FormItem {...formItemLayout} label="职级" required>
+          {
+            getFieldDecorator('level', {
+              initialValue: initialValue.level,
+            })(
+              <InputNumber placeholder="请输入" style={{ width: '100%' }} />
+            )
+          }
+        </FormItem>
+        <FormItem {...formItemLayout} label="是否公共职位" >
+          {getFieldDecorator('is_public', {
+            initialValue: initialValue.is_public,
+          })(
+            <Select
+              showSearch
+              placeholder="请选择"
+            >
+              <Option value="0">否</Option>
+              <Option value="1">是</Option>
+            </Select>
+          )}
+        </FormItem>
+        <FormItem {...formItemLayout} label="关联品牌" >
+          {getFieldDecorator('brands', {
+            initialValue: brandVal,
+          })(
+            <Select
+              mode="multiple"
+              placeholder="请选择"
+            >
+              {brand.map(item => (
+                <Option key={`${item.id}`}>{item.name}</Option>
+              ))}
+            </Select>
+          )}
+        </FormItem>
       </OAModal>
     );
   }

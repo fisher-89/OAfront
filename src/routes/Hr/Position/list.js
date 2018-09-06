@@ -1,12 +1,13 @@
 import React, { PureComponent, Fragment } from 'react';
 import {
+  Modal,
   Button,
   Divider,
 } from 'antd';
 import { connect } from 'dva';
 
 import OATable from '../../../components/OATable';
-import FinalForm from './form';
+import PositionForm from './form';
 import { customerAuthority } from '../../../utils/utils';
 @connect(({ position, loading }) => ({
   position: position.position,
@@ -33,8 +34,19 @@ export default class extends PureComponent {
   }
 
   handleDelete = (id) => {
-    const { dispatch } = this.props;
-    dispatch({ type: 'position/deletePosition', payload: { id } });
+    Modal.confirm({
+      title: '确认删除?',
+      cancelText: '取消',
+      okText: '确认',
+      onOk: () => {
+        const { dispatch } = this.props;
+        dispatch({
+          type: 'position/deletePosition',
+          payload: { id },
+        });
+      },
+      onCancel: () => {},
+    });
   }
 
   makeColumns = () => {
@@ -76,18 +88,18 @@ export default class extends PureComponent {
       },
     ];
 
-    if (customerAuthority(154) || customerAuthority(155)) {
+    if (customerAuthority(63) || customerAuthority(64)) {
       columns.push(
         {
           title: '操作',
           render: (rowData) => {
             return (
               <Fragment>
-                {customerAuthority(154) && (
+                {customerAuthority(63) && (
                   <a onClick={() => this.handleEdit(rowData)}>编辑</a>
                 )}
                 <Divider type="vertical" />
-                {customerAuthority(155) && (
+                {customerAuthority(64) && (
                   <a onClick={() => this.handleDelete(rowData.id)}>删除</a>
                 )}
               </Fragment>
@@ -102,7 +114,7 @@ export default class extends PureComponent {
 
   makeExtraOperator = () => {
     const extra = [];
-    if (customerAuthority(150)) {
+    if (customerAuthority(62)) {
       extra.push((
         <Button
           icon="plus"
@@ -124,9 +136,9 @@ export default class extends PureComponent {
     return (
       <React.Fragment>
         {
-          (customerAuthority(150) || customerAuthority(154)) &&
+          (customerAuthority(63) || customerAuthority(64)) &&
           (
-            <FinalForm
+            <PositionForm
               initialValue={editInfo}
               visible={visible}
               onCancel={() => { this.setState({ editInfo: {} }); }}

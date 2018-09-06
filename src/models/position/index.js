@@ -1,5 +1,5 @@
 import positionEffects from './position';
-import defaultReducers from '../reducers/default';
+import defaultReducers from '../reducers';
 
 export default {
   namespace: 'position',
