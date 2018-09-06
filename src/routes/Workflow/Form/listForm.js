@@ -671,8 +671,8 @@ export default class extends React.PureComponent {
         </Card>
         <Card title="控件配置" className={cardCls} bordered={false}>
           <Row>
-            <Col {...fieldsBoxLayout} className={optionsCls}>
-              <FormItem label={labelValue.options} {...fieldsItemLayout}>
+            <Col span={24} className={optionsCls}>
+              <FormItem label={labelValue.options} {...fieldsRowItemLayout}>
                 {
                   getFieldDecorator('options', {
                     initialValue: initialValue.options || [],
