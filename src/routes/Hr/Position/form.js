@@ -95,7 +95,7 @@ export default class extends PureComponent {
         </FormItem>
         <FormItem {...formItemLayout} label="是否公共职位" >
           {getFieldDecorator('is_public', {
-            initialValue: initialValue.is_public,
+            initialValue: initialValue.is_public ? initialValue.is_public.toString() : '0',
           })(
             <Select
               showSearch
