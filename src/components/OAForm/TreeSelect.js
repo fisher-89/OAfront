@@ -83,21 +83,18 @@ export default class OATreeSelect extends TreeSelect {
       dropdownStyle: { maxHeight: 300, overflow: 'auto' },
       ...this.props,
       value: this.makeTreeValue(),
-      treeData: markTreeData(dataSource, fields, parentValue),
     };
     Object.keys(defaultProps).forEach((key) => {
       delete response[key];
     });
     response.onChange = this.handleOnChange;
+    response.treeData = markTreeData(dataSource, fields, parentValue);
     return response;
   }
 
   render() {
-    return (
-      <TreeSelect
-        {...this.makeProps()}
-      />
-    );
+    const response = <TreeSelect {...this.makeProps()} />;
+    return response;
   }
 }
 OATreeSelect.defaultProps = defaultProps;

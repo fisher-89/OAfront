@@ -37,7 +37,7 @@ export default class FieldList extends React.Component {
           sorter
           width={700}
           height={600}
-          title="字段"
+          title="表单控件"
           Component={ListForm}
           value={this.props.value}
           error={this.props.error}

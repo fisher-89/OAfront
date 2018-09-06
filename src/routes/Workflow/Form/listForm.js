@@ -9,6 +9,7 @@ import {
   Col,
   Switch,
   Radio,
+  Card,
   TimePicker,
   InputNumber,
 } from 'antd';
@@ -33,12 +34,17 @@ const fieldsItemLayout = {
   wrapperCol: { xs: { span: 24 }, lg: { span: 12 } },
 };
 
+const fieldsRowItemLayout = {
+  labelCol: { xs: { span: 24 }, sm: { span: 8 }, lg: { span: 4 } },
+  wrapperCol: { xs: { span: 24 }, sm: { span: 16 }, lg: { span: 18 } },
+};
+
 export const fieldsTypes = [
   { value: 'text', text: '文本' },
   { value: 'int', text: '数字' },
+  { value: 'time', text: '时间（时:分:秒）' },
   { value: 'date', text: '日期（年-月-日）' },
   { value: 'datetime', text: '日期时间（年-月-日 时:分）' },
-  { value: 'time', text: '时间（时:分:秒）' },
   { value: 'select', text: '选择控件' },
   { value: 'array', text: '多输入控件' },
   { value: 'file', text: '文件' },
@@ -51,7 +57,7 @@ export const fieldsTypes = [
 export const labelText = {
   name: '名称',
   key: '键名',
-  type: '字段类型',
+  type: '控件类型',
   is_checkbox: '是否多选',
   condition: '筛选条件',
   region_level: '地区级数',
@@ -65,17 +71,27 @@ export const labelText = {
   description: '输入提示',
 };
 
+const resetFields = {
+  options: [],
+  min: undefined,
+  max: undefined,
+  scale: undefined,
+  condition: undefined,
+  region_level: undefined,
+  default_value: undefined,
+  available_options: undefined,
+};
+
 
 const fieldScale = ['int'];
 
 const fieldOptions = ['select'];
 
-const fieldMinAndMax = ['int', 'text'];
+const defaultValueComponent = ['int', 'text'];
 
 const fieldIsCheckbox = ['department', 'staff', 'shop', 'select'];
 
-const defaultValueComponent = ['int', 'text'];
-
+const fieldMinAndMax = ['int', 'text', 'department', 'staff', 'shop', 'select', 'array'];
 
 @connect(({ department, workflow, loading }) => ({
   loading: (
@@ -158,7 +174,6 @@ export default class extends React.PureComponent {
         multiple,
         showName: 'text',
       };
-      const { department } = this.props;
       return getFieldDecorator('default_value', {
         initialValue: value,
       })(
@@ -180,7 +195,8 @@ export default class extends React.PureComponent {
                 parentValue={0}
                 valueIndex="value"
                 multiple={multiple}
-                dataSource={department}
+                dataSource={this.props.department}
+                key={multiple ? 'multiple' : 'single'}
                 name={{ value: 'id', text: 'full_name' }}
                 getPopupContainer={triggerNode => (triggerNode)}
                 dropdownStyle={{ maxHeight: '300px', overflow: 'auto' }}
@@ -270,24 +286,37 @@ export default class extends React.PureComponent {
   handleOk = (value) => {
     const { initialValue, config: { onOk } } = this.props;
     const isCheckbox = value.is_checkbox ? 1 : 0;
-    console.log({
-      condition: '',
+
+    let defaultValue = value.default_value;
+    const availableOptions = value.available_options;
+    const optionsAble = availableOptions &&
+      Array.isArray(availableOptions) &&
+      availableOptions.length;
+    if (defaultValue && Array.isArray(defaultValue) && optionsAble) {
+      const availableOptionsValue = availableOptions.map(item => `${item.value}`);
+      defaultValue = defaultValue.map((item) => {
+        if (typeof item === 'object') {
+          return item;
+        } else {
+          const optIndex = availableOptionsValue.indexOf(item);
+          return availableOptions[optIndex];
+        }
+      });
+    }
+    const params = {
       region_level: null,
       ...initialValue,
       ...value,
-      min: initialValue.min || value.min || '',
       is_checkbox: isCheckbox,
       available_options: value.available_options || [],
+      default_value: defaultValue,
+    };
+    Object.keys(params).forEach((key) => {
+      if (params[key] === undefined) {
+        params[key] = '';
+      }
     });
-    // onOk({
-    //   condition: '',
-    //   region_level: null,
-    //   ...initialValue,
-    //   ...value,
-    //   min: initialValue.min || value.min || '',
-    //   is_checkbox: isCheckbox,
-    //   available_options: value.available_options || [],
-    // });
+    onOk(params);
   }
 
   fetchDepartment = () => {
@@ -295,16 +324,52 @@ export default class extends React.PureComponent {
     dispatch({ type: 'department/fetchDepart' });
   };
 
+  makeFieldBlockCls = (fieldType) => {
+    const scaleCls = classNames({
+      [styles.disblock]: fieldScale.indexOf(fieldType) === -1,
+    });
+    const optionsCls = classNames({
+      [styles.disblock]: fieldOptions.indexOf(fieldType) === -1,
+    });
+    const maxAndMinCls = classNames({
+      [styles.disblock]: fieldMinAndMax.indexOf(fieldType) === -1,
+    });
+    const isCheckboxCls = classNames({
+      [styles.disblock]: fieldIsCheckbox.indexOf(fieldType) === -1,
+    });
+    const notDefaultValue = ['file'];
+    const defaultCls = classNames({
+      [styles.disblock]: !fieldType || notDefaultValue.indexOf(fieldType) !== -1,
+    });
+    const cardAble = (
+      scaleCls.length &&
+      optionsCls.length &&
+      maxAndMinCls.length &&
+      isCheckboxCls.length && defaultCls.length
+    );
+    const cardCls = classNames({
+      [styles.disblock]: cardAble,
+    });
+    return {
+      cardCls,
+      scaleCls,
+      defaultCls,
+      optionsCls,
+      maxAndMinCls,
+      isCheckboxCls,
+    };
+  }
+
 
   renderRegion = () => {
     const { labelValue } = this;
     const { initialValue, form: { getFieldDecorator } } = this.props;
     return (
-      <FormItem label={labelValue.region_level} {...fieldsItemLayout}>
+      <FormItem label={labelValue.region_level} {...fieldsRowItemLayout}>
         {getFieldDecorator('region_level', {
           initialValue: `${initialValue.region_level || 4}`,
         })(
-          <RadioGroup>
+          <RadioGroup onChange={() => this.handleDefaultValueChange()}>
             <Radio value="4">省/市/区/详细地址</Radio>
             <Radio value="3">省/市/区</Radio>
             <Radio value="2">省/市</Radio>
@@ -422,8 +487,8 @@ export default class extends React.PureComponent {
     }
     return render ? (
       [
-        ...extarRender,
         render,
+        ...extarRender,
       ]
     ) : [];
   }
@@ -440,182 +505,179 @@ export default class extends React.PureComponent {
     delete modalProps.onOK;
     const { labelValue } = this;
     const fieldType = getFieldValue('type');
-    const scaleCls = classNames({
-      [styles.disblock]: fieldScale.indexOf(fieldType) === -1,
-    });
-    const optionsCls = classNames({
-      [styles.disblock]: fieldOptions.indexOf(fieldType) === -1,
-    });
-    const maxAndMinCls = classNames({
-      [styles.disblock]: fieldMinAndMax.indexOf(fieldType) === -1,
-    });
-    const isCheckboxCls = classNames({
-      [styles.disblock]: fieldIsCheckbox.indexOf(fieldType) === -1,
-    });
-    const notDefaultValue = ['file'];
-    const defaultCls = classNames({
-      [styles.disblock]: !fieldType || notDefaultValue.indexOf(fieldType) !== -1,
-    });
+    let validatorData = [...validator];
+    if (fieldType === 'file') {
+      validatorData = validator.filter(item => item.type === 'mimes');
+    } else {
+      validatorData = validator.filter(item => item.type !== 'mimes');
+    }
+
+    const {
+      cardCls,
+      scaleCls,
+      defaultCls,
+      optionsCls,
+      maxAndMinCls,
+      isCheckboxCls,
+    } = this.makeFieldBlockCls(fieldType);
     return (
-      <OAModal {...modalProps} visible width={950} onSubmit={validateFields(this.handleOk)}>
-        <Row>
-          <Col {...fieldsBoxLayout}>
-            <FormItem label={labelValue.name} {...fieldsItemLayout} required>
-              {
-                getFieldDecorator('name', {
-                  initialValue: initialValue.name || '',
-                  rules: [validatorRequired],
-                })(
-                  <Input placeholder="请输入" />
-                )
-              }
-            </FormItem>
-          </Col>
-          <Col {...fieldsBoxLayout}>
-            <FormItem label={labelValue.key} {...fieldsItemLayout} required>
-              {
-                getFieldDecorator('key', {
-                  initialValue: initialValue.key || '',
-                  rules: [validatorRequired],
-                })(
-                  <Input placeholder="请输入" />
-                )
-              }
-            </FormItem>
-          </Col>
-          <Col {...fieldsBoxLayout}>
-            <FormItem label={labelValue.type} {...fieldsItemLayout} required>
-              {
-                getFieldDecorator('type', {
-                  initialValue: initialValue.type || undefined,
-                  rules: [validatorRequired],
-                })(
-                  <Select
-                    placeholder="请选择"
-                    style={{ width: '100%' }}
-                    getPopupContainer={triggerNode => (triggerNode)}
-                    onChange={() => this.handleDefaultValueChange({
-                      default_value: undefined,
-                      available_options: undefined,
-                    })}
-                  >
-                    {fieldsTypes.map(item => (
-                      <Option key={item.value} value={item.value}>{item.text}</Option>
-                    ))}
-                  </Select>
-                )
-              }
-            </FormItem>
-          </Col>
-          <Col {...fieldsBoxLayout} className={isCheckboxCls}>
-            <FormItem label={labelValue.is_checkbox} {...fieldsItemLayout} >
-              {
-                getFieldDecorator('is_checkbox', {
-                  initialValue: initialValue.is_checkbox === 1 || false,
-                  valuePropName: 'checked',
-                })(
-                  <Switch onChange={() => this.handleDefaultValueChange()} />
-                )
-              }
-            </FormItem>
-          </Col>
-          {this.renderTypeComponent().map((item, index) => {
-            const key = `key-${index}`;
-            return (
-              <Col {...fieldsBoxLayout} key={key}>
-                {item}
-              </Col>
-            );
-          })}
-          <Col {...fieldsBoxLayout} className={scaleCls || ''}>
-            <FormItem label={labelValue.scale} {...fieldsItemLayout}>
-              {
-                getFieldDecorator('scale', {
-                  initialValue: initialValue.scale || 0,
-                })(
-                  <InputNumber placeholder="请输入" min={0} style={{ width: '100%' }} />
-                )
-              }
-            </FormItem>
-          </Col>
-          <Col {...fieldsBoxLayout} className={maxAndMinCls}>
-            <FormItem label={labelValue.min} {...fieldsItemLayout}>
-              {
-                getFieldDecorator('min', {
-                  initialValue: initialValue.min || '',
-                })(
-                  <InputNumber placeholder="请输入" min={0} style={{ width: '100%' }} />
-                )
-              }
-            </FormItem>
-          </Col>
-          <Col {...fieldsBoxLayout} className={maxAndMinCls}>
-            <FormItem label={labelValue.max} {...fieldsItemLayout}>
-              {
-                getFieldDecorator('max', {
-                  initialValue: initialValue.max || '',
-                })(
-                  <InputNumber placeholder="请输入" min={0} style={{ width: '100%' }} />
-                )
-              }
-            </FormItem>
-          </Col>
-          <Col {...fieldsBoxLayout} className={optionsCls}>
-            <FormItem label={labelValue.options} {...fieldsItemLayout}>
-              {
-                getFieldDecorator('options', {
-                  initialValue: initialValue.options || [],
-                })(
-                  <TagInput name="options" />
-                )
-              }
-            </FormItem>
-          </Col>
+      <OAModal {...modalProps} visible width={800} onSubmit={validateFields(this.handleOk)}>
+        <Card title="控件信息" bordered={false}>
+          <Row>
+            <Col {...fieldsBoxLayout}>
+              <FormItem label={labelValue.name} {...fieldsItemLayout} required>
+                {
+                  getFieldDecorator('name', {
+                    initialValue: initialValue.name || '',
+                    rules: [validatorRequired],
+                  })(
+                    <Input placeholder="请输入" />
+                  )
+                }
+              </FormItem>
+            </Col>
+            <Col {...fieldsBoxLayout}>
+              <FormItem label={labelValue.key} {...fieldsItemLayout} required>
+                {
+                  getFieldDecorator('key', {
+                    initialValue: initialValue.key || '',
+                    rules: [validatorRequired],
+                  })(
+                    <Input placeholder="请输入" />
+                  )
+                }
+              </FormItem>
+            </Col>
+            <Col {...fieldsBoxLayout}>
+              <FormItem label={labelValue.type} {...fieldsItemLayout} required>
+                {
+                  getFieldDecorator('type', {
+                    initialValue: initialValue.type || undefined,
+                    rules: [validatorRequired],
+                  })(
+                    <Select
+                      placeholder="请选择"
+                      style={{ width: '100%' }}
+                      getPopupContainer={triggerNode => (triggerNode)}
+                      onChange={() => this.handleDefaultValueChange(resetFields)}
+                    >
+                      {fieldsTypes.map(item => (
+                        <Option key={item.value} value={item.value}>{item.text}</Option>
+                      ))}
+                    </Select>
+                  )
+                }
+              </FormItem>
+            </Col>
+            <Col {...fieldsBoxLayout}>
+              <FormItem label={labelValue.description} {...fieldsItemLayout}>
+                {
+                  getFieldDecorator('description', {
+                    initialValue: initialValue.description || '',
+                  })(
+                    <Input placeholder="请输入" name="description" />
+                  )
+                }
+              </FormItem>
+            </Col>
+            <Col {...fieldsBoxLayout}>
+              <FormItem label={labelValue.validator_id} {...fieldsItemLayout}>
+                {
+                  getFieldDecorator('validator_id', {
+                    initialValue: initialValue.validator_id || [],
+                  })(
+                    <Select
+                      mode="multiple"
+                      style={{ width: '100%' }}
+                      placeholder="请选择"
+                      getPopupContainer={triggerNode => (triggerNode)}
+                    >
+                      {
+                        validatorData.map(item => (
+                          <Option key={item.id} value={item.id}>{item.name}</Option>
+                        ))
+                      }
+                    </Select>
+                  )
+                }
+              </FormItem>
+            </Col>
+          </Row>
+        </Card>
+        <Card title="控件配置" className={cardCls} bordered={false}>
+          <Row>
+            <Col {...fieldsBoxLayout} className={maxAndMinCls}>
+              <FormItem label={labelValue.min} {...fieldsItemLayout}>
+                {
+                  getFieldDecorator('min', {
+                    initialValue: initialValue.min || '',
+                  })(
+                    <InputNumber placeholder="请输入" min={0} style={{ width: '100%' }} />
+                  )
+                }
+              </FormItem>
+            </Col>
+            <Col {...fieldsBoxLayout} className={maxAndMinCls}>
+              <FormItem label={labelValue.max} {...fieldsItemLayout}>
+                {
+                  getFieldDecorator('max', {
+                    initialValue: initialValue.max || '',
+                  })(
+                    <InputNumber placeholder="请输入" min={0} style={{ width: '100%' }} />
+                  )
+                }
+              </FormItem>
+            </Col>
+            <Col {...fieldsBoxLayout} className={isCheckboxCls}>
+              <FormItem label={labelValue.is_checkbox} {...fieldsItemLayout} >
+                {
+                  getFieldDecorator('is_checkbox', {
+                    initialValue: initialValue.is_checkbox === 1 || false,
+                    valuePropName: 'checked',
+                  })(
+                    <Switch onChange={() => this.handleDefaultValueChange()} />
+                  )
+                }
+              </FormItem>
+            </Col>
+            {this.renderTypeComponent().map((item, index) => {
+              const key = `key-${index}`;
+              return (
+                <Col {...(fieldType === 'region' ? { span: 24 } : fieldsBoxLayout)} key={key}>
+                  {item}
+                </Col>
+              );
+            })}
+            <Col {...fieldsBoxLayout} className={scaleCls || ''}>
+              <FormItem label={labelValue.scale} {...fieldsItemLayout}>
+                {
+                  getFieldDecorator('scale', {
+                    initialValue: initialValue.scale || 0,
+                  })(
+                    <InputNumber placeholder="请输入" min={0} style={{ width: '100%' }} />
+                  )
+                }
+              </FormItem>
+            </Col>
 
-          <Col {...fieldsBoxLayout}>
-            <FormItem label={labelValue.validator_id} {...fieldsItemLayout}>
-              {
-                getFieldDecorator('validator_id', {
-                  initialValue: initialValue.validator_id || [],
-                })(
-                  <Select
-                    mode="multiple"
-                    style={{ width: '100%' }}
-                    placeholder="请选择"
-                    getPopupContainer={triggerNode => (triggerNode)}
-                  >
-                    {
-                      validator.map(item => (
-                        <Option key={item.id} value={item.id}>{item.name}</Option>
-                      ))
-                    }
-                  </Select>
-                )
-              }
-            </FormItem>
-          </Col>
-          <Col {...fieldsBoxLayout}>
-            <FormItem label={labelValue.description} {...fieldsItemLayout}>
-              {
-                getFieldDecorator('description', {
-                  initialValue: initialValue.description || '',
-                })(
-                  <Input placeholder="请输入" name="description" />
-                )
-              }
-            </FormItem>
-          </Col>
-          <Col span={24} className={defaultCls}>
-            <FormItem
-              label={labelValue.default_value}
-              labelCol={{ xs: { span: 24 }, sm: { span: 8 }, lg: { span: 4 } }}
-              wrapperCol={{ xs: { span: 24 }, sm: { span: 16 }, lg: { span: 18 } }}
-            >
-              {this.getDefaultComponent(fields, fieldType)}
-            </FormItem>
-          </Col>
-
-        </Row>
+            <Col {...fieldsBoxLayout} className={optionsCls}>
+              <FormItem label={labelValue.options} {...fieldsItemLayout}>
+                {
+                  getFieldDecorator('options', {
+                    initialValue: initialValue.options || [],
+                  })(
+                    <TagInput name="options" />
+                  )
+                }
+              </FormItem>
+            </Col>
+            <Col span={24} className={defaultCls}>
+              <FormItem label={labelValue.default_value} {...fieldsRowItemLayout}>
+                {this.getDefaultComponent(fields, fieldType)}
+              </FormItem>
+            </Col>
+          </Row>
+        </Card>
       </OAModal>
     );
   }
