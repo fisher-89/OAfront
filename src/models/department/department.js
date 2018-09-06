@@ -2,7 +2,8 @@ import {
   fetchDepart,
   addDepart,
   editDepart,
-  deleteDepart } from '../../services/department';
+  deleteDepart,
+} from '../../services/department';
 
 const store = 'department';
 

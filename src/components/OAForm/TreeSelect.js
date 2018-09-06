@@ -12,12 +12,25 @@ const defaultProps = {
     parentId: 'parent_id',
     lable: 'full_name',
   },
-  name: { id: 'id', department_name: 'full_name' },
+  name: {
+    id: 'id',
+    department_name: 'full_name',
+  },
+  valueIndex: 'id',
   placeholder: '请选择',
   onChange: () => { },
 };
 
 export default class OATreeSelect extends TreeSelect {
+  getFieldValue = (value) => {
+    const newValue = {};
+    const { name } = this.props;
+    Object.keys(name).forEach((key) => {
+      newValue[key] = value[name[key]];
+    });
+    return newValue;
+  }
+
   handleOnChange = (value) => {
     const {
       name,
@@ -31,51 +44,35 @@ export default class OATreeSelect extends TreeSelect {
       onChange(value);
       return;
     }
+    const fieldsName = fields.value;
+    let newValue;
     if (treeCheckable || multiple) {
-      const fieldsName = fields.value;
-      const newData = dataSource.filter(item => value.indexOf(item[fieldsName].toString()) !== -1);
-      const newValue = newData.map((item) => {
-        const temp = {};
-        Object.keys(name).forEach((key) => {
-          temp[key] = item[name[key]];
-        });
-        return temp;
+      const newData = dataSource.filter(item => (
+        value.indexOf(item[fieldsName].toString()) !== -1
+      ));
+      newValue = newData.map((item) => {
+        return this.getFieldValue(item);
       });
-      onChange(newValue);
     } else {
-      const [newData] = dataSource.filter(item => value === item[fieldsName].toString());
-      const newValue = {};
-      Object.keys(name).forEach((key) => {
-        temp[key] = newData[name[key]];
-      });
-      onChange(newValue);
+      const newData = dataSource.find(item => value === item[fieldsName].toString());
+      newValue = this.getFieldValue(newData);
     }
+    onChange(newValue);
   }
 
   makeTreeValue = () => {
     const {
       name,
       value,
-      fields,
       multiple,
+      valueIndex,
       treeCheckable,
     } = this.props;
-    let newValue = multiple ? (value || []) : (value || {});
+    const newValue = value || (multiple ? [] : {});
     if (name && (treeCheckable || multiple)) {
-      let valueName = '';
-      Object.keys(name).forEach((key) => {
-        if (fields.value === name[key]) {
-          valueName = key;
-        }
-      });
-      newValue = newValue.map(item => `${item[valueName] || ''}`);
+      return newValue.map(item => `${item[valueIndex]}`);
     } else if (name && !multiple) {
-      newValue = '';
-      Object.keys(name).forEach((key) => {
-        if (fields.value === name[key]) {
-          newValue = newValue[key] ? newValue[key] : undefined;
-        }
-      });
+      return `${newValue[valueIndex] || ''}`;
     }
     return newValue;
   }
