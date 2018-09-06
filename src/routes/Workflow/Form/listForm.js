@@ -164,7 +164,6 @@ export default class extends React.PureComponent {
   getDepartmentComponent = (initialValue, type) => {
     const selectType = this.getSelectDefaultValue(initialValue, type);
     if (selectType !== false) return selectType;
-
     const { getFieldDecorator } = this.props.form;
     const fieldType = this.getFieldTypeText(type);
     const multiple = this.getMultiple();
@@ -173,6 +172,7 @@ export default class extends React.PureComponent {
     })(
       <RadioDepartment
         type={type}
+        valueType="object"
         multiple={multiple}
         fieldType={fieldType}
         dataSource={this.props.department}
@@ -193,6 +193,7 @@ export default class extends React.PureComponent {
     })(
       <RadioStaff
         type={type}
+        valueType="object"
         multiple={multiple}
         fieldType={fieldType}
       />
@@ -211,6 +212,7 @@ export default class extends React.PureComponent {
     })(
       <RadioShop
         type={type}
+        valueType="object"
         multiple={multiple}
         fieldType={fieldType}
       />
@@ -230,6 +232,7 @@ export default class extends React.PureComponent {
     })(
       <RadioSelect
         type={type}
+        valueType="object"
         multiple={multiple}
         fieldType={fieldType}
         sourceData={sourceData}
@@ -246,7 +249,6 @@ export default class extends React.PureComponent {
     } = this.props.form;
     const multiple = this.getMultiple();
     const value = initialValue.default_value || undefined;
-
     if (['date', 'datetime'].indexOf(type) !== -1) {
       return this.getDateComponent(value, type);
     } else if (type === 'time') {
@@ -330,11 +332,9 @@ export default class extends React.PureComponent {
     const isCheckbox = value.is_checkbox ? 1 : 0;
 
     let defaultValue = value.default_value;
-    const availableOptions = value.available_options;
-    const optionsAble = availableOptions &&
-      Array.isArray(availableOptions) &&
-      availableOptions.length;
-    if (defaultValue && Array.isArray(defaultValue) && optionsAble) {
+    const availableOptions = value.available_options || [];
+    const optionsAble = defaultValue && availableOptions.length;
+    if (Array.isArray(defaultValue) && optionsAble) {
       const availableOptionsValue = availableOptions.map(item => `${item.value}`);
       defaultValue = defaultValue.map((item) => {
         if (typeof item === 'object') {
@@ -344,7 +344,13 @@ export default class extends React.PureComponent {
           return availableOptions[optIndex];
         }
       });
+    } else if (typeof defaultValue === 'object' && optionsAble) {
+      defaultValue = availableOptions.find(item => `${item.value}` === defaultValue.value);
+      defaultValue = defaultValue || value.default_value;
+    } else if (typeof defaultValue === 'string' && optionsAble) {
+      defaultValue = availableOptions.find(item => `${item.value}` === defaultValue);
     }
+    console.log(value, defaultValue);
     const params = {
       region_level: null,
       ...initialValue,
@@ -579,7 +585,6 @@ export default class extends React.PureComponent {
       <OAModal
         width={800}
         {...modalProps}
-        visible
         onSubmit={validateFields(this.handleOk)}
       >
         <Card className={styles.cardTitle} title="控件信息" bordered={false}>
@@ -612,7 +617,7 @@ export default class extends React.PureComponent {
               <FormItem label={labelValue.type} {...fieldsItemLayout} required>
                 {
                   getFieldDecorator('type', {
-                    initialValue: initialValue.type || 'department',
+                    initialValue: initialValue.type || undefined,
                     rules: [validatorRequired],
                   })(
                     <Select

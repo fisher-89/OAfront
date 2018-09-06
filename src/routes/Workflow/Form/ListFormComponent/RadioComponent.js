@@ -25,7 +25,7 @@ export default (Component) => {
     render() {
       const { value, type, fieldType, valueType } = this.props;
       let radioGroupValue = 2;
-      if (valueType === 'object' && value.value === type) {
+      if (valueType === 'object' && value && value.value === type) {
         radioGroupValue = 1;
       } else if (valueType === 'string' && value === type) {
         radioGroupValue = 1;
