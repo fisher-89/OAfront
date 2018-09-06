@@ -341,16 +341,14 @@ export default class extends React.PureComponent {
           return item;
         } else {
           const optIndex = availableOptionsValue.indexOf(item);
-          return availableOptions[optIndex];
+          return availableOptions[optIndex] || item;
         }
       });
     } else if (typeof defaultValue === 'object' && optionsAble) {
-      defaultValue = availableOptions.find(item => `${item.value}` === defaultValue.value);
-      defaultValue = defaultValue || value.default_value;
+      defaultValue = availableOptions.find(item => `${item.value}` === defaultValue.value) || value.default_value;
     } else if (typeof defaultValue === 'string' && optionsAble) {
-      defaultValue = availableOptions.find(item => `${item.value}` === defaultValue);
+      defaultValue = availableOptions.find(item => `${item.value}` === defaultValue) || defaultValue;
     }
-    console.log(value, defaultValue);
     const params = {
       region_level: null,
       ...initialValue,
