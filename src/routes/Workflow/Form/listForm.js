@@ -175,6 +175,7 @@ export default class extends React.PureComponent {
         valueType="object"
         multiple={multiple}
         fieldType={fieldType}
+        onChange={this.handelRadioChange}
         dataSource={this.props.department}
         key={multiple ? 'multiple' : 'single'}
       />
@@ -196,6 +197,7 @@ export default class extends React.PureComponent {
         valueType="object"
         multiple={multiple}
         fieldType={fieldType}
+        onChange={this.handelRadioChange}
       />
     );
   }
@@ -215,6 +217,7 @@ export default class extends React.PureComponent {
         valueType="object"
         multiple={multiple}
         fieldType={fieldType}
+        onChange={this.handelRadioChange}
       />
     );
   }
@@ -236,6 +239,7 @@ export default class extends React.PureComponent {
         multiple={multiple}
         fieldType={fieldType}
         sourceData={sourceData}
+        onChange={this.handelRadioChange}
       />
     );
   }
@@ -321,6 +325,15 @@ export default class extends React.PureComponent {
 
   labelValue = labelText;
 
+  handelRadioChange = (_, isCheckBox) => {
+    if (isCheckBox) {
+      this.handleDefaultValueChange({
+        min: undefined,
+        max: undefined,
+        is_checkbox: false,
+      });
+    }
+  }
 
   handleDefaultValueChange = (values = { default_value: undefined }) => {
     const { setFieldsValue } = this.props.form;

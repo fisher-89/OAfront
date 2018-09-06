@@ -16,7 +16,7 @@ export default (Component) => {
             text: type,
           };
         }
-        if (onChange) onChange(changeValue);
+        if (onChange) onChange(changeValue, true);
       } else if (value === 2) {
         if (onChange) onChange(undefined);
       }
