@@ -7,11 +7,11 @@ export default {
   ],
   define: {
     OA_PATH: env.OA_PATH,
-    OA_CRM_UPLOAD: "http://112.74.177.132:8003/admin/",
+    OA_CRM_UPLOAD: env.OA_CRM_UPLOAD,
     OA_CLIENT_ID: env.OA_CLIENT_ID,
     OA_CLIENT_SECRET: env.OA_CLIENT_SECRET,
-    AUTH_NAME: "pro",
-    TOKEN_PREFIX: "OA_"
+    AUTH_NAME: env.AUTH_NAME,
+    TOKEN_PREFIX: env.TOKEN_PREFIX,
   },
   env: {
     development: {
