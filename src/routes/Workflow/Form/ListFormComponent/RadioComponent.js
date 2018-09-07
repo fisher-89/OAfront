@@ -16,7 +16,7 @@ export default (Component) => {
             text: type,
           };
         }
-        if (onChange) onChange(changeValue, true);
+        if (onChange) onChange(changeValue, 'radio');
       } else if (value === 2) {
         if (onChange) onChange(undefined);
       }

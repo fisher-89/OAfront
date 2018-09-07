@@ -33,6 +33,14 @@ const defaultProps = {
   },
 };
 
+function renderColumns(viewText, tooltip) {
+  return (
+    <Ellipsis tooltip={tooltip || false} lines={1}>
+      {viewText}
+    </Ellipsis>
+  );
+}
+
 class OATable extends PureComponent {
   constructor(props) {
     super(props);
@@ -162,11 +170,7 @@ class OATable extends PureComponent {
           if (column.searcher) {
             viewText = this.makeDefaultSearchRender(key)(text);
           }
-          return (
-            <Ellipsis tooltip={tooltip || false} lines={1}>
-              {viewText}
-            </Ellipsis>
-          );
+          return renderColumns(viewText, tooltip);
         };
         response.render = render;
       }
@@ -694,6 +698,7 @@ class OATable extends PureComponent {
 
 OATable.EdiTableCell = EdiTableCell;
 OATable.defaultProps = defaultProps;
+OATable.renderColumns = renderColumns;
 
 export default OATable;
 

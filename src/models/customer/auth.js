@@ -44,15 +44,15 @@ export default {
       delete params.id;
       const response = yield call(editAuth, params, id);
       if (response.errors) { onError(response.errors); return; }
-      if (response.message) { return; }
       yield put({
-        type: 'edit',
+        type: 'update',
         payload: {
           id,
           store,
           data: response,
         },
       });
+      if (response.message) { return; }
       onSuccess(response);
     } catch (err) { return err; }
   },

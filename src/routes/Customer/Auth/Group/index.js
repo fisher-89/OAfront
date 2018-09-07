@@ -2,23 +2,30 @@ import React from 'react';
 import { Card, Divider, Button } from 'antd';
 import store from '../store';
 import AuthForm from './form';
-import { authType } from '../../../../assets/customer';
 import OATable from '../../../../components/OATable';
 import PageHeaderLayout from '../../../../layouts/PageHeaderLayout';
 
 
-@store('fetchAuth')
+@store(['fetchAuth', 'deletedGroup'])
 export default class extends React.PureComponent {
   state = {
     visible: false,
+    initialValue: {},
   }
 
   handleModalVisible = (flag) => {
     this.setState({ visible: !!flag });
   }
 
+  makeBrandsName = (data) => {
+    const { brand } = this.props;
+    const key = data.map(item => `${item}`);
+    const value = brand.filter(item => key.indexOf(`${item.id}`) !== -1).map(item => item.name);
+    return OATable.renderColumns(value.join('、') || '', true);
+  }
+
   makeColumns = () => {
-    const { department } = this.props;
+    const { brand, deletedGroup } = this.props;
     const columns = [
       {
         searcher: true,
@@ -26,57 +33,45 @@ export default class extends React.PureComponent {
         dataIndex: 'name',
       },
       {
-        title: '分组类型',
-        dataIndex: 'auth_type',
-        filters: authType,
-        render: (key) => {
-          const value = authType.find(item => item.value === key) || {};
-          return value.text || '';
-        },
+        width: 300,
+        title: '品牌操作权限',
+        dataIndex: 'editables.brand_id',
+        filters: brand.map(item => ({ text: item.name, value: item.id })),
+        render: (_, record) => this.makeBrandsName(record.visibles),
       },
       {
-        width: 200,
-        title: '部门',
-        dataIndex: 'departments.department_id',
-        treeFilters: {
-          title: 'full_name',
-          value: 'id',
-          parentId: 'parent_id',
-          data: department,
-        },
-        render: (_, record) => {
-          const value = record.departments.map(item => item.department_name);
-          return value.join('、');
-        },
+        width: 300,
+        title: '品牌查看权限',
+        dataIndex: 'visibles.brand_id',
+        filters: brand.map(item => ({ text: item.name, value: item.id })),
+        render: (_, record) => this.makeBrandsName(record.visibles),
       },
       {
-        width: 200,
+        width: 300,
+        title: '员工',
         searcher: true,
-        title: '事件权限人员',
-        dataIndex: 'note_staff.staff_name',
-        render: (_, record) => {
-          const value = record.note_staff.map(item => item.staff_name);
-          return value.join('、');
-        },
-      },
-      {
-        width: 200,
-        searcher: true,
-        title: '客户信息权限人员',
-        dataIndex: 'staffs.staff_name',
+        dataIndex: 'staffs.staff_id',
         render: (_, record) => {
           const value = record.staffs.map(item => item.staff_name);
-          return value.join('、');
+          return OATable.renderColumns(value.join('、') || '', true);
         },
+      },
+      {
+        title: '描述',
+        dataIndex: 'description',
       },
       {
         title: '操作',
-        render: () => {
+        render: (_, record) => {
           return (
             <React.Fragment>
-              <a>编辑</a>
+              <a onClick={() => {
+                this.setState({ visible: true, initialValue: record });
+              }}
+              >编辑
+              </a>
               <Divider type="vertical" />
-              <a>删除</a>
+              <a onClick={() => deletedGroup(record.id)}>删除</a>
             </React.Fragment>
           );
         },
@@ -87,7 +82,7 @@ export default class extends React.PureComponent {
 
   render() {
     const { fetchAuth, auth, loading } = this.props;
-    const { visible } = this.state;
+    const { visible, initialValue } = this.state;
     const extraOperator = (
       <Button
         icon="plus"
@@ -106,13 +101,17 @@ export default class extends React.PureComponent {
             data={auth.data}
             loading={loading}
             total={auth.total}
+            scroll={{ x: 1200 }}
             fetchDataSource={fetchAuth}
             columns={this.makeColumns()}
             extraOperator={extraOperator}
           />
           <AuthForm
             visible={visible}
-            onCancel={() => this.handleModalVisible(false)}
+            initialValue={initialValue}
+            onCancel={() => {
+              this.setState({ visible: false, initialValue: {} });
+            }}
           />
         </Card>
       </PageHeaderLayout>
