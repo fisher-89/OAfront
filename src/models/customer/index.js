@@ -21,6 +21,7 @@ export default {
     tagsType: [],
     noteTypes: [],
     clientLogs: {},
+    notesDetails: {},
     customerDetails: {},
   },
   effects: {

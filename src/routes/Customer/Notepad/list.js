@@ -5,15 +5,16 @@ import {
 } from 'antd';
 import store from './store';
 import OATable from '../../../components/OATable';
+import { getDataSourceIndex, getFiltersData } from '../../../utils/utils';
 
 @store
 export default class Validator extends PureComponent {
   state = {};
 
   makeColumns = () => {
-    const { deleted } = this.props;
+    const { deleted, brand } = this.props;
     const onClick = (name, id) => {
-      this.props.history.push(`/client/customer/list/${name}/${id}`);
+      this.props.history.push(`/client/notepad/list/${name}/${id}`);
     };
     const columns = [
       {
@@ -27,14 +28,18 @@ export default class Validator extends PureComponent {
         // width: 160,
         align: 'center',
         title: '客户姓名',
-        dataIndex: 'name',
         searcher: true,
+        dataIndex: 'client_name',
       },
       {
-        // width: 200,
+        width: 300,
         align: 'center',
         title: '合作品牌',
-        dataIndex: 'brands',
+        dataIndex: 'brands.brand_id',
+        filters: getFiltersData(brand),
+        render: (_, record) => {
+          return OATable.renderColumns(getDataSourceIndex(brand, record.brands), true);
+        },
       },
       {
         // width: 240,
@@ -47,12 +52,6 @@ export default class Validator extends PureComponent {
         title: '内容',
         align: 'center',
         dataIndex: 'content',
-      },
-      {
-        // width: 200,
-        align: 'center',
-        title: '记录时间',
-        dataIndex: 'created_at',
       },
       {
         title: '操作',

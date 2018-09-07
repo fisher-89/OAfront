@@ -3,9 +3,10 @@ import { connect } from 'dva';
 
 export default (Compoent) => {
   @connect(({ customer, brand, loading }) => ({
-    notes: customer.notes,
     brand: brand.brand,
+    notes: customer.notes,
     noteTypes: customer.noteTypes,
+    notesDetails: customer.notesDetails,
     loading: (
       loading.effects['customer/fetchNotes'] ||
       loading.effects['brand/fetchBrand'] ||
@@ -17,6 +18,7 @@ export default (Compoent) => {
   }))
   class NewCompoent extends React.PureComponent {
     componentWillMount() {
+      this.fetchBrand();
       this.fetchNoteTypes();
     }
 
@@ -72,7 +74,6 @@ export default (Compoent) => {
         submit: this.submit,
         deleted: this.delete,
         fetch: this.fetchDataSource,
-        fetchBrand: this.fetchBrand,
       };
       return response;
     }

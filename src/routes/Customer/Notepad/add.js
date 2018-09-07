@@ -10,7 +10,7 @@ export default class extends React.PureComponent {
     return (
       <Tabs defaultActiveKey="1">
         <TabPane tab="记事本模板1" key="1">
-          <NotepadForm />
+          <NotepadForm {...this.props} />
         </TabPane>
       </Tabs>
     );

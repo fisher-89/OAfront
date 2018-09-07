@@ -3,6 +3,7 @@ import { Card, Divider, Button } from 'antd';
 import store from '../store';
 import AuthForm from './form';
 import OATable from '../../../../components/OATable';
+import { getDataSourceIndex } from '../../../../utils/utils';
 import PageHeaderLayout from '../../../../layouts/PageHeaderLayout';
 
 
@@ -19,9 +20,8 @@ export default class extends React.PureComponent {
 
   makeBrandsName = (data) => {
     const { brand } = this.props;
-    const key = data.map(item => `${item}`);
-    const value = brand.filter(item => key.indexOf(`${item.id}`) !== -1).map(item => item.name);
-    return OATable.renderColumns(value.join('、') || '', true);
+    const value = getDataSourceIndex(brand, data);
+    return OATable.renderColumns(value, true);
   }
 
   makeColumns = () => {

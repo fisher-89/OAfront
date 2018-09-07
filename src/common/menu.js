@@ -56,6 +56,11 @@ const menuData = [
             path: 'list/add',
           },
           {
+            name: '编辑事件',
+            path: 'list/edit/:id',
+            hideInMenu: true,
+          },
+          {
             name: '事件记录',
             path: 'list',
           },

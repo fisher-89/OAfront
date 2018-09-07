@@ -560,3 +560,27 @@ export function makeProps(_this, type) {
   }
   return response;
 }
+
+
+/**
+ *  获取数据转换源
+ * @param {数据源} dataSource
+ * @param {转换数据} data
+ * @param {返回的值的key} index
+ */
+
+export function getDataSourceIndex(dataSource, data, index = 'name') {
+  const key = data.map(item => `${item}`);
+  const value = dataSource.filter(item => key.indexOf(`${item.id}`) !== -1).map(item => item[index]);
+  return value.join('、');
+}
+
+/**
+ *
+ * @param {数据源} dataSource
+ * @param {值} value
+ * @param {显示文字} text
+ */
+export function getFiltersData(dataSource, value = 'id', text = 'name') {
+  return dataSource.map(item => ({ value: item[value], text: item[text] }));
+}
