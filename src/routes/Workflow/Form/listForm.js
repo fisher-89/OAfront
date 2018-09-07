@@ -135,15 +135,12 @@ export default class extends React.PureComponent {
   getDateComponent = (initialValue, type) => {
     const { getFieldDecorator } = this.props.form;
     const fieldType = this.getFieldTypeText(type);
-    const format = type === 'date' ? 'YYYY-MM-DD' : 'YYYY-MM-DD HH:mm';
     return getFieldDecorator('default_value', {
       initialValue: initialValue || '',
     })(
       <RadioDate
         type={type}
-        format={format}
         fieldType={fieldType}
-        showTime={type !== 'date'}
       />
     );
   }
@@ -326,7 +323,7 @@ export default class extends React.PureComponent {
   labelValue = labelText;
 
   handelRadioChange = (_, isCheckBox) => {
-    if (isCheckBox) {
+    if (isCheckBox === 'radio') {
       this.handleDefaultValueChange({
         min: undefined,
         max: undefined,

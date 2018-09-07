@@ -157,7 +157,7 @@ export default class extends React.PureComponent {
         </Row>
         <Row gutter={rowGutter}>
           <Col {...colSpan}>
-            <FormItem label="名族" {...formItemLayout} required>
+            <FormItem label="民族" {...formItemLayout} required>
               {getFieldDecorator('nation', {
                 initialValue: customerInfo.nation || undefined,
                 rules: [validatorRequired],
@@ -171,10 +171,10 @@ export default class extends React.PureComponent {
             </FormItem>
           </Col>
           <Col {...colSpan}>
-            <FormItem label="籍贯" {...formItemLayout} required>
+            <FormItem label="籍贯" {...formItemLayout} >
               {getFieldDecorator('native_place', {
                 initialValue: customerInfo.native_place || undefined,
-                rules: [validatorRequired],
+                // rules: [validatorRequired],
               })(
                 <Select placeholder="请选择">
                   {province.map(item =>
@@ -249,7 +249,7 @@ export default class extends React.PureComponent {
           <Col {...colSpan}>
             <FormItem label="客户状态" {...formItemLayout} required>
               {getFieldDecorator('status', {
-                initialValue: `${customerInfo.status}` || undefined,
+                initialValue: customerInfo.status !== undefined ? `${customerInfo.status}` : undefined,
                 rules: [validatorRequired],
               })(
                 <Select placeholder="请选择">
@@ -282,17 +282,6 @@ export default class extends React.PureComponent {
                 initialValue: customerInfo.first_cooperation_at || '',
               })(
                 <DatePicker placeholder="请输入" style={{ width: '100%' }} />
-              )}
-            </FormItem>
-          </Col>
-        </Row>
-        <Row gutter={rowGutter}>
-          <Col {...rowGutter}>
-            <FormItem label="合作店铺" {...rowFormItemLayout}>
-              {getFieldDecorator('shops', {
-                initialValue: [],
-              })(
-                <SearchTable.Shop multiple />
               )}
             </FormItem>
           </Col>

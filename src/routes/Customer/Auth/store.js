@@ -15,6 +15,7 @@ export default type => (Component) => {
       department: department.department,
       brand: brand.brand,
       loading: {
+        deletedGroup: loading.effects['customer/deleteAuth'],
         fetchAuth: loading.effects['customer/fetchAuth'],
         ...commoLoad,
         submit: (
@@ -29,7 +30,6 @@ export default type => (Component) => {
   class Store extends React.PureComponent {
     componentWillMount() {
       this.fetchBrand();
-      this.fetchDepartment();
     }
 
     fetchAuth = (params) => {
@@ -42,9 +42,14 @@ export default type => (Component) => {
       dispatch({ type: 'brand/fetchBrand', payload: params });
     }
 
-    fetchDepartment = (params) => {
+    deletedGroup = (id, onError, onSuccess) => {
       const { dispatch } = this.props;
-      dispatch({ type: 'department/fetchDepartment', payload: params });
+      dispatch({
+        type: 'customer/deleteAuth',
+        payload: { id },
+        onError: errors => onError(errors),
+        onSuccess,
+      });
     }
 
     submit = (values, onError, onSuccess) => {

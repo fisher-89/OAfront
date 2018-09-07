@@ -6,25 +6,15 @@ const { TreeNode } = Tree;
 export default class TreeFilter extends PureComponent {
   constructor(props) {
     super(props);
-    const { treeFilters: { parentVal } } = this.props;
-    const treeData = this.markTreeData(props.treeFilters.data, parentVal);
     this.state = {
       checkedKeys: {
         checked: [],
         halfChecked: [],
       },
       selectChild: false,
-      treeData: treeData || [],
     };
   }
 
-  componentWillReceiveProps(nextProps) {
-    const { treeFilters: { data, parentVal } } = nextProps;
-    if (data !== this.props.treeFilters.data) {
-      const treeData = this.markTreeData(data, parentVal);
-      this.setState({ treeData });
-    }
-  }
 
   markTreeData = (data, pId) => {
     const tree = [];
@@ -90,8 +80,9 @@ export default class TreeFilter extends PureComponent {
   }
 
   render() {
-    const { handleConfirm } = this.props;
-    const { checkedKeys, treeData, selectChild } = this.state;
+    const { handleConfirm, treeFilters: { data } } = this.props;
+    const { checkedKeys, selectChild } = this.state;
+    const treeData = this.markTreeData(data, 0);
     const result = selectChild ? checkedKeys : checkedKeys.checked;
     return (
       <div className="ant-table-filter-dropdown ant-table-tree-filter">
