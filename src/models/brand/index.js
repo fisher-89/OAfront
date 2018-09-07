@@ -1,5 +1,5 @@
 import brandEffects from './brand';
-import defaultReducers from '../reducers/default';
+import defaultReducers from '../reducers';
 
 export default {
   namespace: 'brand',

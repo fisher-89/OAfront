@@ -1,15 +1,16 @@
-import { fetchPosition } from '../../services/position';
+import {
+  fetchPosition,
+  addPosition,
+  editPosition,
+  deletePosition } from '../../services/position';
 
 const store = 'position';
 
 export default {
-  * fetchPosition({ update }, { call, put, select }) {
+  * fetchPosition({ payload }, { call, put }) {
     try {
-      let response;
-      response = yield select(model => model[store][store]);
-      if (!response.length || update) {
-        response = yield call(fetchPosition);
-      }
+      const params = { ...payload };
+      const response = yield call(fetchPosition, params);
       yield put({
         type: 'save',
         payload: {
@@ -18,5 +19,63 @@ export default {
         },
       });
     } catch (err) { return err; }
+  },
+  * addPosition({ payload, onSuccess, onError }, { call, put }) {
+    try {
+      const params = { ...payload };
+      const response = yield call(addPosition, params);
+      if (response.errors && onError) {
+        onError(response.errors);
+      } else {
+        yield put({
+          type: 'add',
+          payload: {
+            store,
+            data: response,
+          },
+        });
+        onSuccess(response);
+      }
+    } catch (error) { return error; }
+  },
+  * editPosition({ payload, onSuccess, onError }, { call, put }) {
+    try {
+      const params = { ...payload };
+      const { id } = payload;
+      const response = yield call(editPosition, params, id);
+      if (response.errors && onError) {
+        onError(response.errors);
+      } else {
+        yield put({
+          type: 'update',
+          payload: {
+            store,
+            id,
+            data: response,
+          },
+        });
+        onSuccess(response);
+      }
+    } catch (error) { return error; }
+  },
+  * deletePosition({ payload }, { call, put }) {
+    try {
+      const { id } = payload;
+      const response = yield call(deletePosition, id);
+      if (response.error) {
+        notification.error({
+          message: '删除失败',
+          description: response.error,
+        });
+      } else {
+        yield put({
+          type: 'delete',
+          payload: {
+            store,
+            id,
+          },
+        });
+      }
+    } catch (error) { return error; }
   },
 };

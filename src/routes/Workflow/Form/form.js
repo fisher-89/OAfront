@@ -122,7 +122,6 @@ class addForm extends PureComponent {
       gridsError[`grids.${index}.fields`] = `grids[${index}].fields`;
     });
     onError(errors, gridsError, (err) => {
-      console.log(err);
       this.setState({ listError: err });
     });
   }
@@ -309,7 +308,7 @@ class addForm extends PureComponent {
             </FormItem>
             <FormItem
               {...formItemLayout}
-              label="字段"
+              label="表单控件"
             >
               {getFieldDecorator('fields', {
                 initialValue: initialFieldsValue.fields || [],
@@ -358,7 +357,7 @@ class addForm extends PureComponent {
                     <Input placeholder="请输入" />
                   )}
                 </FormItem>
-                <FormItem label="字段" {...formItemLayout}>
+                <FormItem label="表单控件" {...formItemLayout}>
                   {getFieldDecorator(`grids.${index}.fields`, {
                     initialValue: grids && grids[index] ? grids[index].fields : [],
                     rules: [validatorRequired],

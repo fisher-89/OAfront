@@ -2,17 +2,16 @@ import {
   fetchDepart,
   addDepart,
   editDepart,
-  deleteDepart } from '../../services/department';
+  deleteDepart,
+} from '../../services/department';
 
 const store = 'department';
 
 export default {
-  * fetchDepart({ update }, { call, put, select }) {
+  * fetchDepart({ payload }, { call, put }) {
     try {
-      let response = yield select(model => model[store][store]);
-      if (!response.length || update) {
-        response = yield call(fetchDepart);
-      }
+      const params = { ...payload };
+      const response = yield call(fetchDepart, params);
       yield put({
         type: 'save',
         payload: {
@@ -52,7 +51,7 @@ export default {
       const { id } = payload;
       delete params.id;
       const response = yield call(editDepart, params, id);
-      if (response.errors && onErrors) {
+      if (response.errors && onError) {
         onError(response.errors);
       } else {
         yield put({

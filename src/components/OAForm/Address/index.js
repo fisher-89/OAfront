@@ -110,7 +110,7 @@ export default class Address extends PureComponent {
             style={{ width: '33.33%' }}
             value={value.province_id}
             onChange={this.makeCity}
-            placeholder="请选择"
+            placeholder="省"
             disabled={able.province}
           >
             {province.map((item) => {
@@ -122,7 +122,7 @@ export default class Address extends PureComponent {
             style={{ width: '33.33%' }}
             value={value.city_id}
             onChange={this.makeCounty}
-            placeholder="请选择"
+            placeholder="市"
             disabled={able.city}
           >
             {city.map((item) => {
@@ -142,7 +142,7 @@ export default class Address extends PureComponent {
               }, this.setPropsValue);
             }}
             value={value.county_id}
-            placeholder="请选择"
+            placeholder="区"
             disabled={able.county}
           >
             {county.map((item) => {
@@ -158,7 +158,7 @@ export default class Address extends PureComponent {
           }}
           disabled={able.address}
           value={value.address}
-          placeholder="详细地址，请输入0-30个字符"
+          placeholder="详细地址，请输入0-50个字符"
         />
       </Fragment>
     );

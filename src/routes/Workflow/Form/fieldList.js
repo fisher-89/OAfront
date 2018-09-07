@@ -1,7 +1,7 @@
 import React from 'react';
 import { List } from '../../../components/OAForm';
-
 import ListForm, { labelText, fieldsTypes } from './listForm';
+import { getAvailableText } from './ListFormComponent/RadioSelect';
 
 export default class FieldList extends React.Component {
   makeContent = (value) => {
@@ -17,9 +17,21 @@ export default class FieldList extends React.Component {
     } else { valueTemp.validator_id = ''; }
 
     if (Array.isArray(value.options)) {
-      valueTemp.options = value.options.length ? value.options.join(',') : '';
+      valueTemp.options = value.options.length ? value.options.join('、') : '';
     }
     const staticObject = {};
+
+    if (value.available_options.length) {
+      valueTemp.available_options = value.available_options.map(item => item.text).join('、');
+    }
+
+    if (value.default_value) {
+      valueTemp.default_value = getAvailableText(value.default_value);
+      if (valueTemp.default_value === value.type) {
+        valueTemp.default_value = `当前${valueTemp.type.replace(/(（.*）)|控件/, '')}`;
+      }
+    }
+
     Object.keys(labelText).forEach((key) => {
       if (Array.isArray(valueTemp[key]) && valueTemp[key].length) {
         staticObject[labelText[key]] = { value: valueTemp[key].join(',') };
@@ -37,7 +49,7 @@ export default class FieldList extends React.Component {
           sorter
           width={700}
           height={600}
-          title="字段"
+          title="表单控件"
           Component={ListForm}
           value={this.props.value}
           error={this.props.error}
