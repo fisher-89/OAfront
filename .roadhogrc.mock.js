@@ -52,11 +52,11 @@ export default !noProxy ? {
     /**
      * 测试服  ： 报销
      */
-    'GET /api/finance/reimburse/(.*)': `${api_port}/reimburse`,
-    'POST /api/finance/reimburse/(.*)': `${api_port}/reimburse`,
-    'PATCH /api/finance/reimburse/(.*)': `${api_port}/reimburse`,
-    'PUT /api/finance/reimburse/(.*)': `${api_port}/reimburse`,
-    'DELETE /api/finance/reimburse/(.*)': `${api_port}/reimburse`,
+    'GET /api/finance/reimburse/(.*)': `${api_port}/reimburse/`,
+    'POST /api/finance/reimburse/(.*)': `${api_port}/reimburse/`,
+    'PATCH /api/finance/reimburse/(.*)': `${api_port}/reimburse/`,
+    'PUT /api/finance/reimburse/(.*)': `${api_port}/reimburse/`,
+    'DELETE /api/finance/reimburse/(.*)': `${api_port}/reimburse/`,
 
     /**
      * 测试服  ： 工作流
