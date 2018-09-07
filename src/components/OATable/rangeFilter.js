@@ -24,20 +24,11 @@ export default class extends PureComponent {
     });
   };
 
-  resetOnSearchRange = () => {
-    const { onSearchRange } = this.props;
-    this.setState({
-      value: [],
-    }, () => {
-      onSearchRange([]);
-    });
-  };
-
   render() {
     const { onSearchRange, width } = this.props;
     const { value } = this.state;
     return (
-      <div className="ant-table-filter-dropdown" style={{ width: 260 }}>
+      <div className="ant-table-filter-dropdown">
         <InputRange
           value={value[0]}
           width={width}

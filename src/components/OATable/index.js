@@ -265,7 +265,7 @@ class OATable extends PureComponent {
   }
 
   makeRangeFilterOption = (key, column) => {
-    const { filterDropdownVisible, filtered } = this.state;
+    const { filterDropdownVisible, filters, filtered } = this.state;
     const { serverSide } = this.props;
     const cls = classNames({
       [styles['table-filter-active']]: filtered.indexOf(key) !== -1,
@@ -274,12 +274,17 @@ class OATable extends PureComponent {
       filterIcon: <Icon type="filter" className={cls} />,
       filterDropdown: (
         <RangeFilter
-          width={260}
+          ref={(ele) => {
+            this[`rangeInput_${key}`] = ele;
+          }}
           onSearchRange={this.handleRangeFilter(key)}
         />
       ),
       filterDropdownVisible: filterDropdownVisible === key,
       onFilterDropdownVisibleChange: (visible) => {
+        if (visible) {
+          this[`rangeInput_${key}`].onChange(filters[key] ? filters[key][0] : { min: null, max: null });
+        }
         this.setState({
           filterDropdownVisible: visible ? key : false,
         });
@@ -351,13 +356,14 @@ class OATable extends PureComponent {
     return (rangeValue) => {
       const { pagination, filters, sorter, filtered } = this.state;
       const filteredState = filtered.filter(item => item !== key);
-      if (rangeValue.length > 0) {
+      const newFilters = { ...filters };
+      const { min, max } = rangeValue[0];
+      if (min || max) {
         filteredState.push(key);
+        newFilters[key] = rangeValue;
+      } else {
+        delete newFilters[key];
       }
-      const newFilters = {
-        ...filters,
-        [key]: rangeValue,
-      };
       this.setState({
         filterDropdownVisible: false,
         filtered: filteredState,
@@ -403,8 +409,8 @@ class OATable extends PureComponent {
 
   makeDefaultOnRangeFilter = (key) => {
     return ({ min, max }) => {
-      const valueInfo = eval(`arguments[1].${key}`);
-      return min <= valueInfo && max >= valueInfo;
+      const valueInfo = parseFloat(eval(`arguments[1].${key}`));
+      return (!min || parseFloat(min) <= valueInfo) && (!max || parseFloat(max) >= valueInfo);
     };
   }
 
