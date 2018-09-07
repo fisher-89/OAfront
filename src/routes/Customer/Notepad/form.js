@@ -67,13 +67,13 @@ export default class extends React.PureComponent {
   state = {
     fileList: [],
     attachments: [],
-    brandData: [],
   }
 
   componentWillMount() {
-    const { fetch, match } = this.props;
+    const { fetchStaffBrandsAuth, fetch, match } = this.props;
     const { id } = match.params;
     if (id) fetch({ id });
+    fetchStaffBrandsAuth();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -157,11 +157,12 @@ export default class extends React.PureComponent {
       noteTypes,
       notesDetails,
       validateFields,
+      staffBrandsAuth,
       form: { getFieldDecorator },
     } = this.props;
     const { id } = match.params;
-    const { brandData, fileList } = this.state;
-    const brandOption = brand.filter(item => brandData.indexOf(item.id) !== -1);
+    const { fileList } = this.state;
+    const brandOption = brand.filter(item => staffBrandsAuth.indexOf(`${item.id}`) !== -1);
     let initialValue = {};
     if (notesDetails[id]) {
       initialValue = notesDetails[id];
@@ -228,18 +229,13 @@ export default class extends React.PureComponent {
               name: initialValue.client_name,
             } : {},
           })(
-            <SearchTable.Customer
-              name={{ id: 'id', name: 'name', brands: 'brands' }}
-              onChange={({ brands }) => {
-                this.setState({ brandData: brands });
-              }}
-            />
+            <SearchTable.Customer name={{ id: 'id', name: 'name' }} />
           )}
         </FormItem>
 
         <FormItem label="品牌选择" {...formItemLayout}>
           {getFieldDecorator('brands', {
-            initialValue: undefined,
+            initialValue: [],
           })(
             <Select placeholder="请输入" mode="multiple">
               {brandOption.map(item => (<Option key={item.id}>{item.name}</Option>))}

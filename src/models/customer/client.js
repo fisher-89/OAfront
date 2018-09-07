@@ -1,9 +1,25 @@
 
-import { fetchCustomer, addCustomer, editCustomer, deleteCustomer } from '../../services/customer';
+import { fetchCustomer, addCustomer, editCustomer, deleteCustomer, customerStaffBrandsAuth } from '../../services/customer';
 
 const store = 'customer';
 
 export default {
+  * customerStaffBrandsAuth({ update }, { call, put, select }) {
+    try {
+      let response;
+      response = yield select(model => model.customer.staffBrandsAuth);
+      if (!response.length || update) {
+        response = yield call(customerStaffBrandsAuth);
+      }
+      yield put({
+        type: 'save',
+        payload: {
+          data: response,
+          store: 'staffBrandsAuth',
+        },
+      });
+    } catch (err) { return err; }
+  },
   * fetchCustomer({ payload }, { call, put }) {
     try {
       const params = { ...payload };

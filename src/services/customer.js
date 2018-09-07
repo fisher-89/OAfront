@@ -26,6 +26,11 @@ export async function deleteCustomer(id) {
   return request(`/api/crm/clients/${id}`, { method: 'DELETE' });
 }
 
+/** 当前员工品牌 */
+export async function customerStaffBrandsAuth() {
+  return request('/api/crm/clients/brands', { method: 'GET' });
+}
+
 
 /** 标签列表 */
 export async function fetchTagsType() {

@@ -23,6 +23,7 @@ export default {
     clientLogs: {},
     notesDetails: {},
     customerDetails: {},
+    staffBrandsAuth: [],
   },
   effects: {
     ...authEffect,

@@ -7,13 +7,15 @@ export default (Compoent) => {
     notes: customer.notes,
     noteTypes: customer.noteTypes,
     notesDetails: customer.notesDetails,
+    staffBrandsAuth: customer.staffBrandsAuth,
     loading: (
       loading.effects['customer/fetchNotes'] ||
       loading.effects['brand/fetchBrand'] ||
       loading.effects['customer/editNotes'] ||
       loading.effects['customer/addNotes'] ||
       loading.effects['customer/deleteNotes'] ||
-      loading.effects['customer/fetchNoteTypes']
+      loading.effects['customer/fetchNoteTypes'] ||
+      loading.effects['customer/customerStaffBrandsAuth']
     ),
   }))
   class NewCompoent extends React.PureComponent {
@@ -68,12 +70,18 @@ export default (Compoent) => {
       dispatch({ type: 'customer/fetchNotes', payload: params });
     }
 
+    fetchStaffBrandsAuth = () => {
+      const { dispatch } = this.props;
+      dispatch({ type: 'customer/customerStaffBrandsAuth' });
+    }
+
     makeProps = () => {
       const response = {
         ...this.props,
         submit: this.submit,
         deleted: this.delete,
         fetch: this.fetchDataSource,
+        fetchStaffBrandsAuth: this.fetchStaffBrandsAuth,
       };
       return response;
     }
