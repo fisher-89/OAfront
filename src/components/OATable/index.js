@@ -50,7 +50,7 @@ function renderColumns(viewText, tooltip) {
  *  table数据处理
  */
 function tooltipRender(dataSource, key, tooltip = false, index = 'id') {
-  const keysValue = key.map(item => item[index]);
+  const keysValue = key.map(item => (item[index] !== undefined ? item[index] : item));
   const value = getDataSourceIndex(dataSource, keysValue);
   return renderColumns(value, tooltip);
 }
