@@ -5,7 +5,7 @@ import store from './store';
 import SearchTable from '../index';
 import OATable from '../../../OATable';
 import { customerStatus } from '../../../../assets/customer';
-import { getDataSourceIndex, getFiltersData } from '../../../../utils/utils';
+import { getFiltersData } from '../../../../utils/utils';
 
 
 @connect(({ customer }) => ({ customer: customer.customer }))
@@ -46,10 +46,7 @@ export default class Customer extends PureComponent {
         width: 120,
         dataIndex: 'status',
         filters: getFiltersData(customerStatus),
-        render: (key) => {
-          const value = customerStatus.find(item => `${item.id}` === `${key}`) || {};
-          return value.name;
-        },
+        render: key => OATable.findRenderKey(customerStatus, key).name,
       },
       {
         width: 160,
@@ -57,10 +54,7 @@ export default class Customer extends PureComponent {
         title: '合作品牌',
         filters: getFiltersData(brands),
         dataIndex: 'brands.brand_id',
-        render: (_, record) => {
-          const key = record.brands.map(item => `${item.brand_id}`);
-          return OATable.renderEllipsis(getDataSourceIndex(brands, key), true);
-        },
+        render: (_, record) => OATable.analysisColumn(brands, record.brands, 'brand_id'),
       },
       {
         width: 120,
@@ -83,10 +77,7 @@ export default class Customer extends PureComponent {
         align: 'center',
         dataIndex: 'tags.tag_id',
         filters: getFiltersData(tags),
-        render: (_, record) => {
-          const key = record.tags.map(item => `${item.tag_id}`);
-          return OATable.renderEllipsis(getDataSourceIndex(tags, key), true);
-        },
+        render: (_, record) => OATable.analysisColumn(tags, record.tags, 'tag_id'),
       },
     ];
     return columns;

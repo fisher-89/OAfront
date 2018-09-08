@@ -6,6 +6,7 @@ export default (Compoent) => {
     brands: brand.brand,
     source: customer.source,
     tags: customer.tags,
+    tagsType: customer.tagsType,
     staffBrandsAuth: customer.staffBrandsAuth,
     loading: (
       loading.effects['brand/fetchBrand'] ||

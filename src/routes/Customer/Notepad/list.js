@@ -5,7 +5,7 @@ import {
 } from 'antd';
 import store from './store';
 import OATable from '../../../components/OATable';
-import { getDataSourceIndex, getFiltersData } from '../../../utils/utils';
+import { getFiltersData } from '../../../utils/utils';
 
 @store
 export default class Validator extends PureComponent {
@@ -37,9 +37,7 @@ export default class Validator extends PureComponent {
         title: '合作品牌',
         dataIndex: 'brands.brand_id',
         filters: getFiltersData(brand),
-        render: (_, record) => {
-          return OATable.renderEllipsis(getDataSourceIndex(brand, record.brands), true);
-        },
+        render: (_, record) => OATable.analysisColumn(brand, record.brands, false),
       },
       {
         // width: 240,

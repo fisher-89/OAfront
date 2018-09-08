@@ -53,10 +53,11 @@ function renderEllipsis(viewText, tooltip) {
  * @param {替换的数组} key
  * @param {是否显示提示框} tooltip
  * @param {替换数组的键默认id，可以是对象或者一维数组} index
+ * @param { 返回值的key } name
  */
-function analysisColumn(dataSource, key, index = 'id', tooltip = true) {
-  const value = analysisData(dataSource, key, index);
-  return renderEllipsis(value, tooltip);
+function analysisColumn(dataSource, key, index = 'id', name = 'name', dataSourceIndex, tooltip = true) {
+  const value = analysisData(dataSource, key, index, name, dataSourceIndex);
+  return renderEllipsis(value.join('、'), tooltip);
 }
 
 
