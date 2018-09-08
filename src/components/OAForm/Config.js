@@ -136,10 +136,7 @@ export default formCreate => option => (Componet) => {
           formError[name] = errResult[name];
         }
       });
-      return {
-        customErr,
-        formError,
-      };
+      return { customErr, formError };
     }
 
     handleOnError = (error, extraConfig = {}, callback, isUnicode) => {
@@ -153,7 +150,6 @@ export default formCreate => option => (Componet) => {
       const errResult = unicodeFieldsError(error, isUnicode, { ...values });
 
       const { customErr, formError } = this.disposeErrorResult(errResult, extraConfig, values);
-
       if (typeof extraConfig === 'function') extraConfig(customErr, values, error);
       if (callback) callback(customErr, values, error);
       if (Object.keys(formError).length) setFields(formError);

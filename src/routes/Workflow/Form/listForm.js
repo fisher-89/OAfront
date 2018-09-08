@@ -137,6 +137,9 @@ export default class extends React.PureComponent {
     const fieldType = this.getFieldTypeText(type);
     return getFieldDecorator('default_value', {
       initialValue: initialValue || '',
+      rules: [{
+        validator: this.validateFiledsDefaultValue,
+      }],
     })(
       <RadioDate
         type={type}
@@ -150,6 +153,9 @@ export default class extends React.PureComponent {
     const fieldType = this.getFieldTypeText(type);
     return getFieldDecorator('default_value', {
       initialValue: initialValue || '',
+      rules: [{
+        validator: this.validateFiledsDefaultValue,
+      }],
     })(
       <RadioTime
         type={type}
@@ -166,6 +172,9 @@ export default class extends React.PureComponent {
     const multiple = this.getMultiple();
     return getFieldDecorator('default_value', {
       initialValue: initialValue || undefined,
+      rules: [{
+        validator: this.validateFiledsDefaultValue,
+      }],
     })(
       <RadioDepartment
         type={type}
@@ -188,6 +197,9 @@ export default class extends React.PureComponent {
     const multiple = this.getMultiple();
     return getFieldDecorator('default_value', {
       initialValue: initialValue || undefined,
+      rules: [{
+        validator: this.validateFiledsDefaultValue,
+      }],
     })(
       <RadioStaff
         type={type}
@@ -208,6 +220,9 @@ export default class extends React.PureComponent {
     const multiple = this.getMultiple();
     return getFieldDecorator('default_value', {
       initialValue: initialValue || undefined,
+      rules: [{
+        validator: this.validateFiledsDefaultValue,
+      }],
     })(
       <RadioShop
         type={type}
@@ -229,6 +244,9 @@ export default class extends React.PureComponent {
     const multiple = this.getMultiple();
     return getFieldDecorator('default_value', {
       initialValue: defaultValue,
+      rules: [{
+        validator: this.validateFiledsDefaultValue,
+      }],
     })(
       <RadioSelect
         type={type}
@@ -258,7 +276,10 @@ export default class extends React.PureComponent {
       const { options } = getFieldsValue(['options']);
       const mode = multiple ? { mode: 'multiple' } : {};
       return getFieldDecorator('default_value', {
-        initialValue: value,
+        initialValue: value || (multiple ? [] : ''),
+        rules: [{
+          validator: this.validateFiledsDefaultValue,
+        }],
       })(
         <Select {...mode} placeholder="请选择">
           {options.map((item, index) => {
@@ -271,7 +292,10 @@ export default class extends React.PureComponent {
       );
     } else if (type === 'array') {
       return getFieldDecorator('default_value', {
-        initialValue: value,
+        initialValue: value || [],
+        rules: [{
+          validator: this.validateFiledsDefaultValue,
+        }],
       })(
         <TagInput />
       );
@@ -298,6 +322,9 @@ export default class extends React.PureComponent {
       }
       return getFieldDecorator('default_value', {
         initialValue: defaultValue,
+        rules: [{
+          validator: this.validateFiledsDefaultValue,
+        }],
       })(
         <Address disabled={disabled} />
       );
@@ -311,6 +338,9 @@ export default class extends React.PureComponent {
     if (defaultValueComponent.indexOf(type) !== -1) {
       return getFieldDecorator('default_value', {
         initialValue: initialValue.default_value || '',
+        rules: [{
+          validator: this.validateFiledsDefaultValue,
+        }],
       })(
         <InputTags placeholder="请输入" fields={fields} />
       );
@@ -424,6 +454,71 @@ export default class extends React.PureComponent {
       maxAndMinCls,
       isCheckboxCls,
     };
+  }
+
+  validateFiledsMinAndMax = (_, __, cb) => {
+    const { getFieldsValue, validateFields } = this.props.form;
+    const { min, max } = getFieldsValue(['max', 'min']);
+    if (min !== undefined && max !== undefined) {
+      validateFields(['default_value'], { force: true });
+      if (min > max) {
+        cb('最小值不能大于最大值');
+      }
+    }
+    cb();
+  }
+
+  validateFiledsScale = (_, __, cb) => {
+    const { getFieldValue, validateFields } = this.props.form;
+    const defaultValue = getFieldValue('default_value');
+    if (defaultValue !== undefined && defaultValue !== '') {
+      validateFields(['default_value'], { force: true });
+    }
+    cb();
+  }
+
+  validateFiledsDefaultValue = (_, value, cb) => {
+    if (value !== undefined && value !== '') {
+      const { getFieldsValue, getFieldValue } = this.props.form;
+      const minAndMaxAndType = getFieldsValue(['max', 'min', 'type']);
+      const scale = getFieldValue('scale');
+      const min = parseFloat(minAndMaxAndType.min);
+      const max = parseFloat(minAndMaxAndType.max);
+      const { type } = minAndMaxAndType;
+      const minAble = min !== undefined && min !== '';
+      const maxAble = max !== undefined && max !== '';
+      if (Array.isArray(value)) {
+        if (minAble && value.length < min) {
+          cb(`默认值的最小个数为${min}`);
+        }
+        if (maxAble && value.length > max) {
+          cb(`默认值的最大个数为${max}`);
+        }
+      } else if (type === 'text') {
+        if (minAble && value.length < min) {
+          cb(`默认值的最小长度为${min}`);
+        }
+        if (maxAble && value.length > max) {
+          cb(`默认值的最大长度为${max}`);
+        }
+      } else if (type === 'int') {
+        if (minAble && parseFloat(value) < min) {
+          cb(`默认值的最小值为${min}`);
+        }
+        if (maxAble && parseFloat(value) > max) {
+          cb(`默认值的最大值为${max}`);
+        }
+        if (scale !== undefined && scale !== '') {
+          const regArr = ['^(-|\\d)?[0-9]+\\.\\d', `{${scale}}`];
+          const regStr = regArr.join('');
+          const reg = new RegExp(regStr);
+          if (!reg.test(value)) {
+            cb(`默认值必须是一个小数位数为${scale}位的数字`);
+          }
+        }
+      }
+    }
+    cb();
   }
 
 
@@ -715,8 +810,11 @@ export default class extends React.PureComponent {
                 {
                   getFieldDecorator('min', {
                     initialValue: initialValue.min || '',
+                    rules: [{
+                      validator: this.validateFiledsMinAndMax,
+                    }],
                   })(
-                    <InputNumber placeholder="请输入" min={0} style={{ width: '100%' }} />
+                    <Input placeholder="请输入" min={0} style={{ width: '100%' }} />
                   )
                 }
               </FormItem>
@@ -726,8 +824,11 @@ export default class extends React.PureComponent {
                 {
                   getFieldDecorator('max', {
                     initialValue: initialValue.max || '',
+                    rules: [{
+                      validator: this.validateFiledsMinAndMax,
+                    }],
                   })(
-                    <InputNumber placeholder="请输入" min={0} style={{ width: '100%' }} />
+                    <Input placeholder="请输入" min={0} style={{ width: '100%' }} />
                   )
                 }
               </FormItem>
