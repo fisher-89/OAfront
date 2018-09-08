@@ -82,11 +82,10 @@ const sexOption = [
 @store
 export default class extends React.PureComponent {
   componentDidMount() {
-    const { fetchStaffBrandsAuth, fetchTagsType, fetch, match } = this.props;
+    const { fetchTagsType, fetch, match } = this.props;
     const { id } = match.params;
     if (id) { this.id = id; fetch({ id }); }
     fetchTagsType();
-    fetchStaffBrandsAuth();
   }
 
   handleSubmit = (values, onError) => {

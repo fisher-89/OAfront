@@ -15,10 +15,11 @@ import { getFiltersData } from '../../../utils/utils';
 @store
 export default class extends PureComponent {
   makeColumns = () => {
-    const { source, tags, brands, deleted } = this.props;
+    const { source, tags, brands, deleted, staffBrandsAuth } = this.props;
     const onClick = (name, id) => {
       this.props.history.push(`/client/customer/list/${name}/${id}`);
     };
+    const sourceData = source.filter(item => staffBrandsAuth.indexOf(item.id) !== -1);
     const columns = [
       {
         align: 'center',
@@ -38,7 +39,7 @@ export default class extends PureComponent {
         align: 'center',
         title: '客户来源',
         dataIndex: 'source_id',
-        filters: getFiltersData(source),
+        filters: getFiltersData(sourceData),
         render: key => OATable.findRenderKey(customerStatus, key).name,
       },
       {
