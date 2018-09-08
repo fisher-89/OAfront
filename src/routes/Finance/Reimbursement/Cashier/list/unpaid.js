@@ -106,11 +106,13 @@ export default class extends PureComponent {
       {
         title: '通过时间',
         dataIndex: 'audit_time',
+        dateFilters: true,
         sorter: true,
       },
       {
         title: '金额',
         dataIndex: 'audited_cost',
+        rangeFilters: true,
         sorter: true,
         render: (cellData) => {
           return cellData && `￥ ${cellData}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -293,12 +295,6 @@ export default class extends PureComponent {
     const reimbursementSheet = XLSX.utils.aoa_to_sheet(reimbursements);
     const expenseSheet = XLSX.utils.aoa_to_sheet(expenses);
     const payeeSheet = XLSX.utils.aoa_to_sheet(payees);
-    Object.keys(reimbursementSheet).forEach((key) => {
-      const topLineKey = /^[A-Z]1$/;
-      if (topLineKey.test(key)) {
-        reimbursementSheet[key].s = { fill: { fgColor: { rgb: 'FFFF00' } }, font: { bold: true } };
-      }
-    });
     XLSX.utils.book_append_sheet(workbook, reimbursementSheet, '报销单');
     XLSX.utils.book_append_sheet(workbook, expenseSheet, '消费明细');
     XLSX.utils.book_append_sheet(workbook, payeeSheet, '收款人');
