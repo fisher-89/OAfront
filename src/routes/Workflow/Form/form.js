@@ -312,7 +312,7 @@ class addForm extends PureComponent {
             >
               {getFieldDecorator('fields', {
                 initialValue: initialFieldsValue.fields || [],
-                rules: [validatorRequired],
+                // rules: [validatorRequired],
               })(
                 <FieldList
                   validator={validator}

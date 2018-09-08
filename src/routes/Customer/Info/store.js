@@ -98,6 +98,7 @@ export default (Compoent) => {
 
     fetchStore() {
       const { dispatch } = this.props;
+      this.fetchStaffBrandsAuth();
       dispatch({ type: 'customer/fetchSource' });
       dispatch({ type: 'customer/fetchTags' });
       dispatch({ type: 'brand/fetchBrand' });

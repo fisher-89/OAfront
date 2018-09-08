@@ -69,10 +69,11 @@ export default class Validator extends PureComponent {
 
   fetchDataSource = (params) => {
     const { fetch, customerId } = this.props;
-    const client = customerId ? { client_id: customerId } : {};
+    let { filters } = { ...params };
+    filters = customerId ? `${filters};client_id=${customerId}` : filters;
     const newParams = {
       ...params,
-      ...client,
+      filters,
     };
     fetch(newParams);
   }
