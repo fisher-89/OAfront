@@ -59,7 +59,7 @@ export default class Customer extends PureComponent {
         dataIndex: 'brands.brand_id',
         render: (_, record) => {
           const key = record.brands.map(item => `${item.brand_id}`);
-          return OATable.renderColumns(getDataSourceIndex(brands, key), true);
+          return OATable.renderEllipsis(getDataSourceIndex(brands, key), true);
         },
       },
       {
@@ -85,7 +85,7 @@ export default class Customer extends PureComponent {
         filters: getFiltersData(tags),
         render: (_, record) => {
           const key = record.tags.map(item => `${item.tag_id}`);
-          return OATable.renderColumns(getDataSourceIndex(tags, key), true);
+          return OATable.renderEllipsis(getDataSourceIndex(tags, key), true);
         },
       },
     ];

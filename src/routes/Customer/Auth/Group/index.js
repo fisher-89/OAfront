@@ -21,7 +21,7 @@ export default class extends React.PureComponent {
   makeBrandsName = (data) => {
     const { brand } = this.props;
     const value = getDataSourceIndex(brand, data);
-    return OATable.renderColumns(value, true);
+    return OATable.renderEllipsis(value, true);
   }
 
   makeColumns = () => {
@@ -53,7 +53,7 @@ export default class extends React.PureComponent {
         dataIndex: 'staffs.staff_id',
         render: (_, record) => {
           const value = record.staffs.map(item => item.staff_name);
-          return OATable.renderColumns(value.join('、') || '', true);
+          return OATable.renderEllipsis(value.join('、') || '', true);
         },
       },
       {

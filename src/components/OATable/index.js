@@ -38,7 +38,7 @@ const defaultProps = {
  * @param {table的内容} viewText
  * @param {*} tooltip
  */
-function renderColumns(viewText, tooltip) {
+function renderEllipsis(viewText, tooltip) {
   return (
     <Ellipsis tooltip={tooltip || false} lines={1}>
       {viewText}
@@ -47,12 +47,16 @@ function renderColumns(viewText, tooltip) {
 }
 
 /**
- *  table数据处理
+ *
+ * @param {替换数据源} dataSource
+ * @param {替换的数组} key
+ * @param {是否显示提示框} tooltip
+ * @param {替换数组的键默认id，可以是对象或者一维数组} index
  */
-function tooltipRender(dataSource, key, tooltip = false, index = 'id') {
+function analysisColumn(dataSource, key, index = 'id', tooltip = true) {
   const keysValue = key.map(item => (item[index] !== undefined ? item[index] : item));
   const value = getDataSourceIndex(dataSource, keysValue);
-  return renderColumns(value, tooltip);
+  return renderEllipsis(value, tooltip);
 }
 
 
@@ -185,7 +189,7 @@ class OATable extends PureComponent {
           if (column.searcher) {
             viewText = this.makeDefaultSearchRender(key)(text);
           }
-          return renderColumns(viewText, tooltip);
+          return renderEllipsis(viewText, tooltip);
         };
         response.render = render;
       }
@@ -719,8 +723,8 @@ class OATable extends PureComponent {
 
 OATable.EdiTableCell = EdiTableCell;
 OATable.defaultProps = defaultProps;
-OATable.renderColumns = renderColumns;
-OATable.tooltipRender = tooltipRender;
+OATable.renderEllipsis = renderEllipsis;
+OATable.analysisColumn = analysisColumn;
 
 export default OATable;
 

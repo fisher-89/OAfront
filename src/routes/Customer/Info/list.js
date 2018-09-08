@@ -61,7 +61,7 @@ export default class extends PureComponent {
         title: '合作品牌',
         filters: getFiltersData(brands),
         dataIndex: 'brands.brand_id',
-        render: (_, record) => OATable.tooltipRender(brands, record.brands, true, 'brand_id'),
+        render: (_, record) => OATable.analysisColumn(brands, record.brands, 'brand_id'),
       },
       {
         // width: 120,
@@ -79,12 +79,12 @@ export default class extends PureComponent {
         searcher: true,
       },
       {
-        // width: 320,
+        width: 300,
         title: '标签',
         align: 'center',
         dataIndex: 'tags.tag_id',
         filters: tags.map(tag => ({ text: tag.name, value: tag.id })),
-        render: (_, record) => OATable.tooltipRender(tags, record.tags, true, 'tag_id'),
+        render: (_, record) => OATable.analysisColumn(tags, record.tags, 'tag_id'),
       },
       {
         title: '操作',

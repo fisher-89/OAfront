@@ -38,7 +38,7 @@ export default class Validator extends PureComponent {
         dataIndex: 'brands.brand_id',
         filters: getFiltersData(brand),
         render: (_, record) => {
-          return OATable.renderColumns(getDataSourceIndex(brand, record.brands), true);
+          return OATable.renderEllipsis(getDataSourceIndex(brand, record.brands), true);
         },
       },
       {
