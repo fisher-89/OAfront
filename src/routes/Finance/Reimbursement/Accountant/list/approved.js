@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Button } from 'antd';
+import { Button, Modal } from 'antd';
 import XLSX from 'xlsx';
 import Ellipsis from '../../../../../components/Ellipsis';
 
@@ -133,6 +133,23 @@ export default class extends PureComponent {
     return columnsLeftFixed.concat(visible ? [] : columnsMiddle).concat(columnsRight);
   }
 
+  confirmExport = () => {
+    const { approvedList: { total } } = this.props;
+    if (total > 3000) {
+      Modal.confirm({
+        title: '导出超过3000条。',
+        content: '这会需要较长的时间，如果不需要全部内容，请筛选后再次尝试。',
+        okText: '确认',
+        cancelText: '继续导出',
+        onCancel: () => {
+          this.handleExport();
+        },
+      });
+    } else {
+      this.handleExport();
+    }
+  }
+
   handleExport = () => {
     const { dispatch } = this.props;
     dispatch({
@@ -170,12 +187,6 @@ export default class extends PureComponent {
         ]);
         const reimbursementSheet = XLSX.utils.aoa_to_sheet(reimbursements);
         const expenseSheet = XLSX.utils.aoa_to_sheet(expenses);
-        Object.keys(reimbursementSheet).forEach((key) => {
-          const topLineKey = /^[A-Z]1$/;
-          if (topLineKey.test(key)) {
-            reimbursementSheet[key].s = { fill: { fgColor: { rgb: 'FFFF00' } }, font: { bold: true } };
-          }
-        });
         XLSX.utils.book_append_sheet(workbook, reimbursementSheet, '报销单');
         XLSX.utils.book_append_sheet(workbook, expenseSheet, '消费明细');
         XLSX.writeFile(workbook, '已通过报销单.xlsx');
@@ -191,7 +202,7 @@ export default class extends PureComponent {
         serverSide
         loading={loading}
         extraOperator={[
-          <Button key="export" onClick={this.handleExport} loading={exportLoading} icon="download">导出</Button>,
+          <Button key="export" onClick={this.confirmExport} loading={exportLoading} icon="download">导出</Button>,
         ]}
         columns={this.makeColumns()}
         dataSource={approvedList.data}

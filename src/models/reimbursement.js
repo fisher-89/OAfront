@@ -8,6 +8,7 @@ import {
   fetchPackageReimbursements,
   fetchUnpaidReimbursements,
   fetchPaidReimbursements,
+  fetchExportPaidReimbursements,
   approveByAccountant,
   rejectByAccountant,
   sendReimbursementPackages,
@@ -154,6 +155,16 @@ export default {
               data: response,
             },
           });
+        }
+      } catch (err) {
+        return err;
+      }
+    },
+    * exportPaidList({ payload, onSuccess }, { call }) {
+      try {
+        const response = yield call(fetchExportPaidReimbursements, payload);
+        if (response) {
+          onSuccess(response);
         }
       } catch (err) {
         return err;

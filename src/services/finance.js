@@ -79,6 +79,16 @@ export async function fetchPaidReimbursements(params) {
   });
 }
 
+export async function fetchExportPaidReimbursements(params) {
+  return request('/api/finance/reimburse/export-pay', {
+    method: 'GET',
+    body: {
+      ...params,
+      type: 'paid',
+    },
+  });
+}
+
 export async function approveByAccountant(params) {
   return request('/api/finance/reimburse/agree', {
     method: 'PATCH',
