@@ -82,10 +82,11 @@ const sexOption = [
 @store
 export default class extends React.PureComponent {
   componentDidMount() {
-    const { fetchTagsType, fetch, match } = this.props;
+    const { fetchStaffBrandsAuth, fetchTagsType, fetch, match } = this.props;
     const { id } = match.params;
     if (id) { this.id = id; fetch({ id }); }
     fetchTagsType();
+    fetchStaffBrandsAuth();
   }
 
   handleSubmit = (values, onError) => {
@@ -99,10 +100,11 @@ export default class extends React.PureComponent {
 
   render() {
     const {
-      brands,
       tags,
-      tagsType,
       source,
+      brands,
+      tagsType,
+      staffBrandsAuth,
       validateFields, validatorRequired,
       form: { getFieldDecorator },
     } = this.props;
@@ -121,19 +123,20 @@ export default class extends React.PureComponent {
     });
     tagsGroup = tagsGroup.concat(tagsGroupAble);
     const { details } = this.props;
-    let customerInfo = {};
+    let initialValue = {};
     let brandValue;
     if (details[this.id]) {
-      customerInfo = details[this.id];
-      brandValue = customerInfo.brands.map(item => `${item.brand_id}`);
+      initialValue = details[this.id];
+      brandValue = initialValue.brands.map(item => `${item.brand_id}`);
     }
+    const staffBransData = brands.filter(item => staffBrandsAuth.indexOf(item.id) !== -1);
     return (
       <OAForm onSubmit={validateFields(this.handleSubmit)}>
         <Row gutter={rowGutter}>
           <Col {...colSpan}>
             <FormItem label="客户姓名" {...formItemLayout} required>
               {getFieldDecorator('name', {
-                initialValue: customerInfo.name || '',
+                initialValue: initialValue.name || '',
                 rules: [validatorRequired],
               })(
                 <Input placeholder="请输入" />
@@ -143,7 +146,7 @@ export default class extends React.PureComponent {
           <Col {...colSpan}>
             <FormItem label="性别" {...formItemLayout} required>
               {getFieldDecorator('gender', {
-                initialValue: customerInfo.gender || '男',
+                initialValue: initialValue.gender || '男',
                 rules: [validatorRequired],
               })(
                 <RadioGroup>
@@ -159,7 +162,7 @@ export default class extends React.PureComponent {
           <Col {...colSpan}>
             <FormItem label="民族" {...formItemLayout} required>
               {getFieldDecorator('nation', {
-                initialValue: customerInfo.nation || undefined,
+                initialValue: initialValue.nation || undefined,
                 rules: [validatorRequired],
               })(
                 <Select placeholder="请选择">
@@ -173,7 +176,7 @@ export default class extends React.PureComponent {
           <Col {...colSpan}>
             <FormItem label="籍贯" {...formItemLayout} >
               {getFieldDecorator('native_place', {
-                initialValue: customerInfo.native_place || undefined,
+                initialValue: initialValue.native_place || undefined,
                 // rules: [validatorRequired],
               })(
                 <Select placeholder="请选择">
@@ -189,7 +192,7 @@ export default class extends React.PureComponent {
           <Col {...rowGutter}>
             <FormItem label="身份证号码" {...rowFormItemLayout} required>
               {getFieldDecorator('id_card_number', {
-                initialValue: customerInfo.id_card_number || '',
+                initialValue: initialValue.id_card_number || '',
                 rules: [validatorRequired],
               })(
                 <Input placeholder="请输入" />
@@ -201,7 +204,7 @@ export default class extends React.PureComponent {
           <Col {...rowGutter}>
             <FormItem label="现住地址" {...rowFormItemLayout}>
               {getFieldDecorator('present_address', {
-                initialValue: customerInfo.present_address || {},
+                initialValue: initialValue.present_address || {},
               })(
                 <Address />
               )}
@@ -212,7 +215,7 @@ export default class extends React.PureComponent {
           <Col {...rowGutter}>
             <FormItem label="电话" {...rowFormItemLayout} required>
               {getFieldDecorator('mobile', {
-                initialValue: customerInfo.mobile || '',
+                initialValue: initialValue.mobile || '',
                 rules: [validatorRequired],
               })(
                 <Input placeholder="请输入" />
@@ -224,7 +227,7 @@ export default class extends React.PureComponent {
           <Col {...rowGutter}>
             <FormItem label="微信" {...rowFormItemLayout}>
               {getFieldDecorator('wechat', {
-                initialValue: customerInfo.wechat || '',
+                initialValue: initialValue.wechat || '',
               })(
                 <Input placeholder="请输入" />
               )}
@@ -235,7 +238,7 @@ export default class extends React.PureComponent {
           <Col {...colSpan}>
             <FormItem label="客户来源" {...formItemLayout} required>
               {getFieldDecorator('source_id', {
-                initialValue: customerInfo.source_id ? `${customerInfo.source_id}` : undefined,
+                initialValue: initialValue.source_id ? `${initialValue.source_id}` : undefined,
                 rules: [validatorRequired],
               })(
                 <Select placeholder="请选择">
@@ -249,7 +252,7 @@ export default class extends React.PureComponent {
           <Col {...colSpan}>
             <FormItem label="客户状态" {...formItemLayout} required>
               {getFieldDecorator('status', {
-                initialValue: customerInfo.status !== undefined ? `${customerInfo.status}` : undefined,
+                initialValue: initialValue.status !== undefined ? `${initialValue.status}` : undefined,
                 rules: [validatorRequired],
               })(
                 <Select placeholder="请选择">
@@ -269,7 +272,7 @@ export default class extends React.PureComponent {
                 rules: [validatorRequired],
               })(
                 <Select placeholder="请选择" mode="multiple">
-                  {brands.map(item =>
+                  {staffBransData.map(item =>
                     (<Option key={`${item.id}`}>{item.name}</Option>))
                   }
                 </Select>
@@ -279,7 +282,7 @@ export default class extends React.PureComponent {
           <Col {...colSpan}>
             <FormItem label="初次合作时间" {...formItemLayout}>
               {getFieldDecorator('first_cooperation_at', {
-                initialValue: customerInfo.first_cooperation_at || '',
+                initialValue: initialValue.first_cooperation_at || '',
               })(
                 <DatePicker placeholder="请输入" style={{ width: '100%' }} />
               )}
@@ -290,18 +293,16 @@ export default class extends React.PureComponent {
           <Col {...rowGutter}>
             <FormItem label="标签" {...rowFormItemLayout}>
               {getFieldDecorator('tags', {
-                initialValue: [],
+                initialValue: initialValue.tags ? initialValue.tags.map(item => `${item}`) : [],
               })(
                 <Select
                   mode="multiple"
                   placeholder="请选择"
-                  tokenSeparators={[',']}
-                  optionFilterProp="children"
                 >
                   {tagsGroup.map((item) => {
                     return item.children ? (
                       <OptGroup key={`${item.id}`} label={item.name}>
-                        {item.children.map(tag => (<Option key={`${tag.id}`}>{tag.name}</Option>))}
+                        {item.children.map(tag => (<Option key={`${tag.id}`} value={`${tag.id}`}>{tag.name}</Option>))}
                       </OptGroup>
                     ) :
                       (
@@ -318,7 +319,7 @@ export default class extends React.PureComponent {
           <Col {...rowGutter}>
             <FormItem label="备注" {...rowFormItemLayout}>
               {getFieldDecorator('remark', {
-                initialValue: customerInfo.remark || '',
+                initialValue: initialValue.remark || '',
               })(
                 <Input.TextArea placeholder="请输入" />
               )}
@@ -330,9 +331,9 @@ export default class extends React.PureComponent {
             <FormItem label="维护人" {...rowFormItemLayout}>
               {getFieldDecorator('vindicator', {
                 initialValue:
-                  customerInfo.vindicator_sn ? {
-                    staff_sn: customerInfo.vindicator_sn,
-                    staff_name: customerInfo.vindicator_name,
+                  initialValue.vindicator_sn ? {
+                    staff_sn: initialValue.vindicator_sn,
+                    staff_name: initialValue.vindicator_name,
                   } : {},
               })(
                 <SearchTable.Staff />

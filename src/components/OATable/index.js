@@ -3,7 +3,6 @@ import classNames from 'classnames';
 import moment from 'moment';
 import { Table, Input, Icon, message, Button, Tooltip } from 'antd';
 import Ellipsis from '../Ellipsis';
-import { makerFilters } from '../../utils/utils';
 import TreeFilter from './treeFilter';
 import DateFilter from './dateFilter';
 import RangeFilter from './rangeFilter';
@@ -12,7 +11,7 @@ import TableUpload from './upload';
 import EdiTableCell from './editTableCell';
 import styles from './index.less';
 import request from '../../utils/request';
-
+import { makerFilters, getDataSourceIndex } from '../../utils/utils';
 
 const defaultProps = {
   multiOperator: null,
@@ -33,6 +32,12 @@ const defaultProps = {
   },
 };
 
+
+/**
+ * 超出隐藏
+ * @param {table的内容} viewText
+ * @param {*} tooltip
+ */
 function renderColumns(viewText, tooltip) {
   return (
     <Ellipsis tooltip={tooltip || false} lines={1}>
@@ -40,6 +45,16 @@ function renderColumns(viewText, tooltip) {
     </Ellipsis>
   );
 }
+
+/**
+ *  table数据处理
+ */
+function tooltipRender(dataSource, key, tooltip = false, index = 'id') {
+  const keysValue = key.map(item => item[index]);
+  const value = getDataSourceIndex(dataSource, keysValue);
+  return renderColumns(value, tooltip);
+}
+
 
 class OATable extends PureComponent {
   constructor(props) {
@@ -705,6 +720,7 @@ class OATable extends PureComponent {
 OATable.EdiTableCell = EdiTableCell;
 OATable.defaultProps = defaultProps;
 OATable.renderColumns = renderColumns;
+OATable.tooltipRender = tooltipRender;
 
 export default OATable;
 
