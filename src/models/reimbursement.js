@@ -2,7 +2,7 @@ import { notification } from 'antd';
 import {
   fetchProcessingReimbursements,
   fetchOvertimeReimbursements,
-  fetchBeingRejectedReimbursements,
+  fetchExportApprovedReimbursements,
   fetchApprovedReimbursements,
   fetchRejectedReimbursements,
   fetchPackageReimbursements,
@@ -69,22 +69,6 @@ export default {
         return err;
       }
     },
-    * fetchBeingRejectedList({ payload }, { call, put }) {
-      try {
-        const response = yield call(fetchBeingRejectedReimbursements, payload);
-        if (response) {
-          yield put({
-            type: 'save',
-            payload: {
-              store: 'beingRejectedList',
-              data: response,
-            },
-          });
-        }
-      } catch (err) {
-        return err;
-      }
-    },
     * fetchApprovedList({ payload }, { call, put }) {
       try {
         const response = yield call(fetchApprovedReimbursements, payload);
@@ -96,6 +80,16 @@ export default {
               data: response,
             },
           });
+        }
+      } catch (err) {
+        return err;
+      }
+    },
+    * exportApprovedList({ payload, onSuccess }, { call }) {
+      try {
+        const response = yield call(fetchExportApprovedReimbursements, payload);
+        if (response) {
+          onSuccess(response);
         }
       } catch (err) {
         return err;

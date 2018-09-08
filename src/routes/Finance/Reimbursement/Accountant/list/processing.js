@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Button, Divider } from 'antd';
+import { Button, Divider, Checkbox } from 'antd';
 import Ellipsis from '../../../../../components/Ellipsis/index';
 
 import OATable from '../../../../../components/OATable/index';
@@ -12,6 +12,10 @@ import OATable from '../../../../../components/OATable/index';
 }))
 
 export default class extends PureComponent {
+  state = {
+    isRejected: false,
+  };
+
   fetchProcessingList = (params) => {
     const { dispatch } = this.props;
     dispatch({ type: 'reimbursement/fetchProcessingList', payload: params });
@@ -75,6 +79,7 @@ export default class extends PureComponent {
         title: '申请时间',
         dataIndex: 'send_time',
         sorter: true,
+        dateFilters: true,
       },
       {
         title: '审批人',
@@ -85,6 +90,7 @@ export default class extends PureComponent {
         title: '审批时间',
         dataIndex: 'approve_time',
         sorter: true,
+        dateFilters: true,
         defaultSortOrder: 'descend',
       },
       {
@@ -99,6 +105,7 @@ export default class extends PureComponent {
         title: '调整后金额',
         dataIndex: 'audited_cost',
         sorter: true,
+        rangeFilters: true,
         render: (cellData) => {
           return cellData && `￥ ${cellData}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         },
@@ -138,18 +145,34 @@ export default class extends PureComponent {
     });
   }
 
+  toggleIsRejected = (e) => {
+    const { checked } = e.target;
+    this.setState({
+      isRejected: checked,
+    });
+  }
+
+  fetchRejectedList = () => {
+    const { processingList } = this.props;
+    return processingList.filter((item) => {
+      return item.second_rejected_at !== null;
+    });
+  }
+
   render() {
     const { processingList, loading, openPackageList } = this.props;
+    const { isRejected } = this.state;
     return (
       <OATable
         bordered
         serverSide={false}
         extraOperator={[
           <Button key="submit" onClick={openPackageList}>批量送审</Button>,
+          <Checkbox key="isRejected" onChange={this.toggleIsRejected} style={{ marginLeft: 20 }}>仅显示重审</Checkbox>,
         ]}
         loading={loading}
         columns={this.makeColumns()}
-        dataSource={processingList}
+        dataSource={isRejected ? this.fetchRejectedList() : processingList}
         fetchDataSource={this.fetchProcessingList}
         scroll={{ x: 'auto' }}
       />
