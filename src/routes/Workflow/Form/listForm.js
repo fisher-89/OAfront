@@ -171,7 +171,7 @@ export default class extends React.PureComponent {
     const fieldType = this.getFieldTypeText(type);
     const multiple = this.getMultiple();
     return getFieldDecorator('default_value', {
-      initialValue: initialValue || undefined,
+      initialValue: initialValue || (multiple ? [] : {}),
       rules: [{
         validator: this.validateFiledsDefaultValue,
       }],
@@ -196,7 +196,7 @@ export default class extends React.PureComponent {
     const fieldType = this.getFieldTypeText(type);
     const multiple = this.getMultiple();
     return getFieldDecorator('default_value', {
-      initialValue: initialValue || undefined,
+      initialValue: initialValue || (multiple ? [] : {}),
       rules: [{
         validator: this.validateFiledsDefaultValue,
       }],
@@ -219,7 +219,7 @@ export default class extends React.PureComponent {
     const fieldType = this.getFieldTypeText(type);
     const multiple = this.getMultiple();
     return getFieldDecorator('default_value', {
-      initialValue: initialValue || undefined,
+      initialValue: initialValue || (multiple ? [] : {}),
       rules: [{
         validator: this.validateFiledsDefaultValue,
       }],
@@ -388,6 +388,8 @@ export default class extends React.PureComponent {
       defaultValue = availableOptions.find(item => `${item.value}` === defaultValue.value) || value.default_value;
     } else if (typeof defaultValue === 'string' && optionsAble) {
       defaultValue = availableOptions.find(item => `${item.value}` === defaultValue) || defaultValue;
+    } else if (!defaultValue && availableOptions.length) {
+      defaultValue = value.is_checkbox ? [] : {};
     }
     const params = {
       region_level: null,
@@ -403,6 +405,7 @@ export default class extends React.PureComponent {
         params[key] = '';
       }
     });
+    console.log(params);
     onOk(params);
   }
 

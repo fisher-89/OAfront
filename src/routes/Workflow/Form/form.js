@@ -113,18 +113,17 @@ class addForm extends PureComponent {
   }
 
   handleOnError = (errors) => {
-    const { onError, form: { setFields } } = this.props;
+    const { onError } = this.props;
     const { panes } = this.state;
-    const gridsError = {};
+    const gridsError = {
+      fields: 'fields',
+    };
     panes.forEach((_, index) => {
       gridsError[`grids.${index}.name`] = `grids[${index}].name`;
       gridsError[`grids.${index}.key`] = `grids[${index}].key`;
       gridsError[`grids.${index}.fields`] = `grids[${index}].fields`;
     });
-    onError(errors, gridsError, (err, values) => {
-      if (err.fields) {
-        setFields({ fields: { error: err.error, value: values.fields } });
-      }
+    onError(errors, gridsError, (err) => {
       this.setState({ listError: err });
     });
   }

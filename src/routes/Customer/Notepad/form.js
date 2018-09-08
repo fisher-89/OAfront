@@ -158,6 +158,7 @@ export default class extends React.PureComponent {
       notesDetails,
       validateFields,
       staffBrandsAuth,
+      validatorRequired,
       form: { getFieldDecorator },
     } = this.props;
     const { id } = match.params;
@@ -172,6 +173,7 @@ export default class extends React.PureComponent {
         <FormItem label="标题" {...formItemLayout}>
           {getFieldDecorator('title', {
             initialValue: initialValue.title,
+            rules: [validatorRequired],
           })(
             <Input placeholder="请输入" />
           )}
@@ -181,6 +183,7 @@ export default class extends React.PureComponent {
             <FormItem label="类型" {...colFormItemLayout}>
               {getFieldDecorator('note_type_id', {
                 initialValue: initialValue.note_type_id ? `${initialValue.note_type_id}` : undefined,
+                rules: [validatorRequired],
               })(
                 <Select placeholder="请输入" >
                   {noteTypes.map(item => (<Option key={item.id}>{item.name}</Option>))}
@@ -192,6 +195,7 @@ export default class extends React.PureComponent {
             <FormItem label="发生时间" {...colFormItemLayout1}>
               {getFieldDecorator('took_place_at', {
                 initialValue: initialValue.took_place_at,
+                rules: [validatorRequired],
               })(
                 <DatePicker placeholder="请输入" style={{ width: '100%' }} />
               )}
@@ -201,6 +205,7 @@ export default class extends React.PureComponent {
         <FormItem label="内容" {...formItemLayout}>
           {getFieldDecorator('content', {
             initialValue: initialValue.content,
+            rules: [validatorRequired],
           })(
             <Input.TextArea placeholder="请输入" autosize={{ minRows: 10, maxRows: 10 }} />
           )}
@@ -228,6 +233,7 @@ export default class extends React.PureComponent {
               id: initialValue.client_id,
               name: initialValue.client_name,
             } : {},
+            rules: [validatorRequired],
           })(
             <SearchTable.Customer name={{ id: 'id', name: 'name' }} />
           )}
@@ -236,6 +242,7 @@ export default class extends React.PureComponent {
         <FormItem label="品牌选择" {...formItemLayout}>
           {getFieldDecorator('brands', {
             initialValue: initialValue.brands,
+            rules: [validatorRequired],
           })(
             <Select placeholder="请输入" mode="multiple">
               {brandOption.map(item => (<Option key={item.id}>{item.name}</Option>))}
