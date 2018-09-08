@@ -100,6 +100,10 @@ export const getRouterData = (app) => {
     '/client/notepad/list/add': {
       component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/Notepad/add')),
     },
+    '/client/notepad/list/edit/:id': {
+      component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/Notepad/add')),
+    },
+
     '/client/action-log/customer': {
       component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/ActionLog/customer')),
     },

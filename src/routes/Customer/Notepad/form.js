@@ -65,12 +65,31 @@ const colSpan = { push: 1, sm: rowGutter.sm / 2, lg: rowGutter.lg / 2 };
 @store
 export default class extends React.PureComponent {
   state = {
+    fileList: [],
     attachments: [],
-    brandData: [],
   }
 
   componentWillMount() {
-    this.props.fetchBrand();
+    const { fetchStaffBrandsAuth, fetch, match } = this.props;
+    const { id } = match.params;
+    if (id) fetch({ id });
+    fetchStaffBrandsAuth();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { notesDetails, match } = nextProps;
+    const { id } = match.params;
+    if (notesDetails !== this.props.notesDetails && notesDetails[id]) {
+      const attachments = notesDetails[id].attachments.map((item, index) => {
+        return {
+          uid: `${index + 1}`,
+          name: `附件${index + 1}`,
+          status: 'done',
+          url: item,
+        };
+      });
+      this.setState({ attachments: [...attachments], fileList: [...attachments] });
+    }
   }
 
   normFile = (e) => {
@@ -101,8 +120,11 @@ export default class extends React.PureComponent {
     this.setState({ attachments: [...newAttachments] });
   }
 
-  fileChange = ({ file }) => {
-    if (!file.error && file.status === 'done' && file.response) this.uploadSuccess(file);
+  fileChange = ({ file, fileList }) => {
+    this.setState({ fileList });
+    if (!file.error && file.status === 'done' && file.response) {
+      this.uploadSuccess(file);
+    }
     if (!file.error && file.status === 'removed') this.removeFile(file.uid);
   }
 
@@ -113,7 +135,8 @@ export default class extends React.PureComponent {
       body: formData,
     }).then((res) => {
       if (res.status === 200) {
-        options.onSuccess(res.text());
+        const response = res.text();
+        options.onSuccess(response);
       } else {
         options.onError('上传失败');
       }
@@ -129,18 +152,26 @@ export default class extends React.PureComponent {
 
   render() {
     const {
+      match,
       brand,
       noteTypes,
+      notesDetails,
       validateFields,
+      staffBrandsAuth,
       form: { getFieldDecorator },
     } = this.props;
-    const { brandData } = this.state;
-    const brandOption = brand.filter(item => brandData.indexOf(item.id) !== -1);
+    const { id } = match.params;
+    const { fileList } = this.state;
+    const brandOption = brand.filter(item => staffBrandsAuth.indexOf(item.id) !== -1);
+    let initialValue = {};
+    if (notesDetails[id]) {
+      initialValue = notesDetails[id];
+    }
     return (
       <OAForm onSubmit={validateFields(this.handleSubmit)}>
         <FormItem label="标题" {...formItemLayout}>
           {getFieldDecorator('title', {
-            initialValue: '',
+            initialValue: initialValue.title,
           })(
             <Input placeholder="请输入" />
           )}
@@ -149,7 +180,7 @@ export default class extends React.PureComponent {
           <Col {...colSpan} >
             <FormItem label="类型" {...colFormItemLayout}>
               {getFieldDecorator('note_type_id', {
-                initialValue: undefined,
+                initialValue: initialValue.note_type_id ? `${initialValue.note_type_id}` : undefined,
               })(
                 <Select placeholder="请输入" >
                   {noteTypes.map(item => (<Option key={item.id}>{item.name}</Option>))}
@@ -160,7 +191,7 @@ export default class extends React.PureComponent {
           <Col {...colSpan}>
             <FormItem label="发生时间" {...colFormItemLayout1}>
               {getFieldDecorator('took_place_at', {
-                initialValue: '',
+                initialValue: initialValue.took_place_at,
               })(
                 <DatePicker placeholder="请输入" style={{ width: '100%' }} />
               )}
@@ -169,7 +200,7 @@ export default class extends React.PureComponent {
         </Row>
         <FormItem label="内容" {...formItemLayout}>
           {getFieldDecorator('content', {
-            initialValue: '',
+            initialValue: initialValue.content,
           })(
             <Input.TextArea placeholder="请输入" autosize={{ minRows: 10, maxRows: 10 }} />
           )}
@@ -178,8 +209,9 @@ export default class extends React.PureComponent {
           <div className="dropbox">
             <Upload.Dragger
               name="files"
-              customRequest={this.customRequest}
+              fileList={fileList}
               onChange={this.fileChange}
+              customRequest={this.customRequest}
             >
               <p className="ant-upload-drag-icon">
                 <Icon type="inbox" />
@@ -192,20 +224,18 @@ export default class extends React.PureComponent {
 
         <FormItem label="关联客户" {...formItemLayout}>
           {getFieldDecorator('client', {
-            initialValue: '',
+            initialValue: initialValue.client_id ? {
+              id: initialValue.client_id,
+              name: initialValue.client_name,
+            } : {},
           })(
-            <SearchTable.Customer
-              name={{ id: 'id', name: 'name', brands: 'brands' }}
-              onChange={({ brands }) => {
-                this.setState({ brandData: brands });
-              }}
-            />
+            <SearchTable.Customer name={{ id: 'id', name: 'name' }} />
           )}
         </FormItem>
 
         <FormItem label="品牌选择" {...formItemLayout}>
           {getFieldDecorator('brands', {
-            initialValue: undefined,
+            initialValue: initialValue.brands,
           })(
             <Select placeholder="请输入" mode="multiple">
               {brandOption.map(item => (<Option key={item.id}>{item.name}</Option>))}

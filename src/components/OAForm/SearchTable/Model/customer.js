@@ -1,9 +1,12 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import SearchTable from '../index';
-import { customerStatus } from '../../../../assets/customer';
 import store from './store';
+import SearchTable from '../index';
+import OATable from '../../../OATable';
+import { customerStatus } from '../../../../assets/customer';
+import { getFiltersData } from '../../../../utils/utils';
+
 
 @connect(({ customer }) => ({ customer: customer.customer }))
 @store
@@ -31,7 +34,7 @@ export default class Customer extends PureComponent {
         title: '客户来源',
         dataIndex: 'source_id',
         width: 120,
-        filters: source.map(item => ({ text: item.name, value: item.id })),
+        filters: getFiltersData(source),
         render: (key) => {
           const value = source.find(item => item.id === key) || {};
           return value.name;
@@ -42,22 +45,16 @@ export default class Customer extends PureComponent {
         title: '客户状态',
         width: 120,
         dataIndex: 'status',
-        filters: customerStatus.map(item => ({ text: item.name, value: item.id })),
-        render: (key) => {
-          const value = source.find(item => `${item.id}` === `${key}`) || {};
-          return value.name;
-        },
+        filters: getFiltersData(customerStatus),
+        render: key => OATable.findRenderKey(customerStatus, key).name,
       },
       {
         width: 160,
         align: 'center',
         title: '合作品牌',
-        filters: brands.map(item => ({ text: item.name, value: item.id })),
-        dataIndex: 'brands',
-        render: (key) => {
-          const value = brands.filter(item => key.indexOf(item.id) !== -1).map(item => item.name);
-          return value.join(',');
-        },
+        filters: getFiltersData(brands),
+        dataIndex: 'brands.brand_id',
+        render: (_, record) => OATable.analysisColumn(brands, record.brands, 'brand_id'),
       },
       {
         width: 120,
@@ -78,12 +75,9 @@ export default class Customer extends PureComponent {
         // width: 320,
         title: '标签',
         align: 'center',
-        dataIndex: 'tags',
-        filters: tags.map(tag => ({ text: tag.name, value: tag.id })),
-        render: (key) => {
-          const value = tags.filter(tag => key.indexOf(tag.id) !== -1).map(item => item.name);
-          return value.join(',');
-        },
+        dataIndex: 'tags.tag_id',
+        filters: getFiltersData(tags),
+        render: (_, record) => OATable.analysisColumn(tags, record.tags, 'tag_id'),
       },
     ];
     return columns;

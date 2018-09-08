@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Tag,
   Spin,
   Tabs,
   Form,
@@ -13,6 +14,7 @@ import styles from './index.less';
 import district from '../../../assets/district';
 import store from './store';
 import { customerStatus } from '../../../assets/customer';
+import { findRenderKey, analysisData } from '../../../utils/utils';
 
 const FormItem = Form.Item;
 const formItemLayout = {
@@ -40,16 +42,25 @@ export function getAddress(data) {
 }
 
 function CustomerInfo(props) {
-  const { data, loading, source, tags, brands } = props;
+  const { data, loading, source, tags, brands, tagsType } = props;
   const address = getAddress(data.present_address || []);
-  const sourceData = source.find(item => item.id === data.source_id) || {};
-  const statusData = customerStatus.find(item => item.id === `${data.status}`) || {};
-  const tagId = (data.tags || []).map(item => item.tag_id);
-  const tagData = tags.filter(item => tagId.indexOf(item.id) !== -1).map(item => item.name);
-  const brandId = (data.brands || []).map(item => item.brand_id);
-  const brandData = brands.filter(item => brandId.indexOf(item.id) !== -1).map(item => item.name);
+  const sourceData = findRenderKey(source, data.source_id);
+  const statusData = findRenderKey(customerStatus, data.status);
+  const analysisTag = analysisData(tags, data.tags, 'tag_id', false);
+  const brandData = analysisData(brands, data.brands, 'brand_id');
+  const tagsTypeId = tagsType.map(item => item.id);
+  const tagData = analysisTag.map((item) => {
+    const tagsTypeIndex = tagsTypeId.indexOf(item.type_id);
+    if (tagsTypeId.indexOf(item.type_id) !== -1) {
+      return {
+        ...item,
+        color: tagsType[tagsTypeIndex].color,
+      };
+    }
+    return item;
+  });
   return (
-    <Spin spinning={loading}>
+    <Spin spinning={loading || false}>
       <div className={styles.customerInfo}>
         <FormItem label="客户姓名" {...formItemLayout}>{data.name}</FormItem>
         <FormItem label="性别" {...formItemLayout}>{data.gender}</FormItem>
@@ -64,7 +75,14 @@ function CustomerInfo(props) {
         <FormItem label="合作时间" {...formItemLayout}>
           {data.first_cooperation_at ? moment(data.first_cooperation_at).format('YYYY-MM-DD') : ''}
         </FormItem>
-        <FormItem label="标签" {...formItemLayout}> {tagData.join('、')}</FormItem>
+        <FormItem label="标签" {...formItemLayout}>
+          {tagData.map((item, index) => {
+            const key = `${index}`;
+            return (
+              <Tag key={key} color={item.color || ''}>{item.name}</Tag>
+            );
+          })}
+        </FormItem>
         <FormItem label="备注" {...formItemLayout}>{data.remark}</FormItem>
         <FormItem label="维护人" {...formItemLayout}>{data.vindicator_name}</FormItem>
       </div>
@@ -78,8 +96,9 @@ const { TabPane } = Tabs;
 @store
 export default class extends React.PureComponent {
   componentWillMount() {
-    const { fetch, match } = this.props;
+    const { fetch, match, fetchTagsType } = this.props;
     const { id } = match.params;
+    fetchTagsType();
     fetch({ id });
     this.id = id;
   }

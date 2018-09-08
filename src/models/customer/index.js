@@ -21,7 +21,9 @@ export default {
     tagsType: [],
     noteTypes: [],
     clientLogs: {},
+    notesDetails: {},
     customerDetails: {},
+    staffBrandsAuth: [],
   },
   effects: {
     ...authEffect,

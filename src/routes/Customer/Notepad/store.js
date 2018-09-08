@@ -3,20 +3,24 @@ import { connect } from 'dva';
 
 export default (Compoent) => {
   @connect(({ customer, brand, loading }) => ({
-    notes: customer.notes,
     brand: brand.brand,
+    notes: customer.notes,
     noteTypes: customer.noteTypes,
+    notesDetails: customer.notesDetails,
+    staffBrandsAuth: customer.staffBrandsAuth,
     loading: (
       loading.effects['customer/fetchNotes'] ||
       loading.effects['brand/fetchBrand'] ||
       loading.effects['customer/editNotes'] ||
       loading.effects['customer/addNotes'] ||
       loading.effects['customer/deleteNotes'] ||
-      loading.effects['customer/fetchNoteTypes']
+      loading.effects['customer/fetchNoteTypes'] ||
+      loading.effects['customer/customerStaffBrandsAuth']
     ),
   }))
   class NewCompoent extends React.PureComponent {
     componentWillMount() {
+      this.fetchBrand();
       this.fetchNoteTypes();
     }
 
@@ -66,13 +70,18 @@ export default (Compoent) => {
       dispatch({ type: 'customer/fetchNotes', payload: params });
     }
 
+    fetchStaffBrandsAuth = () => {
+      const { dispatch } = this.props;
+      dispatch({ type: 'customer/customerStaffBrandsAuth' });
+    }
+
     makeProps = () => {
       const response = {
         ...this.props,
         submit: this.submit,
         deleted: this.delete,
         fetch: this.fetchDataSource,
-        fetchBrand: this.fetchBrand,
+        fetchStaffBrandsAuth: this.fetchStaffBrandsAuth,
       };
       return response;
     }

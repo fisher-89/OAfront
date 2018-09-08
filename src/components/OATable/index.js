@@ -3,7 +3,6 @@ import classNames from 'classnames';
 import moment from 'moment';
 import { Table, Input, Icon, message, Button, Tooltip } from 'antd';
 import Ellipsis from '../Ellipsis';
-import { makerFilters } from '../../utils/utils';
 import TreeFilter from './treeFilter';
 import DateFilter from './dateFilter';
 import RangeFilter from './rangeFilter';
@@ -12,7 +11,9 @@ import TableUpload from './upload';
 import EdiTableCell from './editTableCell';
 import styles from './index.less';
 import request from '../../utils/request';
-
+import {
+  makerFilters, findRenderKey, analysisData,
+} from '../../utils/utils';
 
 const defaultProps = {
   multiOperator: null,
@@ -33,13 +34,32 @@ const defaultProps = {
   },
 };
 
-function renderColumns(viewText, tooltip) {
+/**
+ * 超出隐藏
+ * @param {table的内容} viewText
+ * @param {*} tooltip
+ */
+function renderEllipsis(viewText, tooltip) {
   return (
     <Ellipsis tooltip={tooltip || false} lines={1}>
       {viewText}
     </Ellipsis>
   );
 }
+
+/**
+ *
+ * @param {替换数据源} dataSource
+ * @param {替换的数组} key
+ * @param {是否显示提示框} tooltip
+ * @param {替换数组的键默认id，可以是对象或者一维数组} index
+ * @param { 返回值的key } name
+ */
+function analysisColumn(dataSource, key, index = 'id', name = 'name', dataSourceIndex, tooltip = true) {
+  const value = analysisData(dataSource, key, index, name, dataSourceIndex);
+  return renderEllipsis(value.join('、'), tooltip);
+}
+
 
 class OATable extends PureComponent {
   constructor(props) {
@@ -170,7 +190,7 @@ class OATable extends PureComponent {
           if (column.searcher) {
             viewText = this.makeDefaultSearchRender(key)(text);
           }
-          return renderColumns(viewText, tooltip);
+          return renderEllipsis(viewText, tooltip);
         };
         response.render = render;
       }
@@ -704,7 +724,9 @@ class OATable extends PureComponent {
 
 OATable.EdiTableCell = EdiTableCell;
 OATable.defaultProps = defaultProps;
-OATable.renderColumns = renderColumns;
+OATable.renderEllipsis = renderEllipsis;
+OATable.analysisColumn = analysisColumn;
+OATable.findRenderKey = findRenderKey;
 
 export default OATable;
 

@@ -3,6 +3,7 @@ import { Card, Divider, Button } from 'antd';
 import store from '../store';
 import AuthForm from './form';
 import OATable from '../../../../components/OATable';
+import { getFiltersData } from '../../../../utils/utils';
 import PageHeaderLayout from '../../../../layouts/PageHeaderLayout';
 
 
@@ -17,15 +18,9 @@ export default class extends React.PureComponent {
     this.setState({ visible: !!flag });
   }
 
-  makeBrandsName = (data) => {
-    const { brand } = this.props;
-    const key = data.map(item => `${item}`);
-    const value = brand.filter(item => key.indexOf(`${item.id}`) !== -1).map(item => item.name);
-    return OATable.renderColumns(value.join('、') || '', true);
-  }
-
   makeColumns = () => {
     const { brand, deletedGroup } = this.props;
+    const filters = getFiltersData(brand);
     const columns = [
       {
         searcher: true,
@@ -33,18 +28,18 @@ export default class extends React.PureComponent {
         dataIndex: 'name',
       },
       {
+        filters,
         width: 300,
         title: '品牌操作权限',
         dataIndex: 'editables.brand_id',
-        filters: brand.map(item => ({ text: item.name, value: item.id })),
-        render: (_, record) => this.makeBrandsName(record.visibles),
+        render: (_, record) => OATable.analysisColumn(brand, record.editables, false),
       },
       {
+        filters,
         width: 300,
         title: '品牌查看权限',
         dataIndex: 'visibles.brand_id',
-        filters: brand.map(item => ({ text: item.name, value: item.id })),
-        render: (_, record) => this.makeBrandsName(record.visibles),
+        render: (_, record) => OATable.analysisColumn(brand, record.visibles, false),
       },
       {
         width: 300,
@@ -53,7 +48,7 @@ export default class extends React.PureComponent {
         dataIndex: 'staffs.staff_id',
         render: (_, record) => {
           const value = record.staffs.map(item => item.staff_name);
-          return OATable.renderColumns(value.join('、') || '', true);
+          return OATable.renderEllipsis(value.join('、') || '', true);
         },
       },
       {

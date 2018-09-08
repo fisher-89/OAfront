@@ -560,3 +560,52 @@ export function makeProps(_this, type) {
   }
   return response;
 }
+
+
+/**
+ *  获取数据转换源
+ * @param {数据源} dataSource
+ * @param {转换数据} data
+ * @param {返回的值的key} index
+ */
+
+export function getDataSourceIndex(dataSource, keyData, name = 'name', dataSourceIndex = 'id') {
+  const key = (keyData || []).map(item => `${item}`);
+  const value = (dataSource || []).filter(item => key.indexOf(`${item[dataSourceIndex]}`) !== -1);
+  if (!name) {
+    return value;
+  }
+  return value.map(item => item[name]);
+}
+
+/**
+ *
+ * @param {数据源} dataSource
+ * @param {值} value
+ * @param {显示文字} text
+ */
+export function getFiltersData(dataSource, value = 'id', text = 'name') {
+  return (dataSource || []).map(item => ({ value: item[value], text: item[text] }));
+}
+
+
+/**
+ *  解析单个键
+ */
+export function findRenderKey(dataSource, key = '', index = 'id') {
+  return (dataSource || []).find(item => `${item[index]}` === `${key}`) || {};
+}
+
+/**
+ *
+ * @param {替换数据源} dataSource
+ * @param {替换的数组} key
+ * @param {替换数组的键默认id，可以是对象或者一维数组} index
+ * @param {返回对象的key}   name
+ * @param {数据源的下标和替换数组作对比默认id} dataSourceIndex
+ */
+export function analysisData(dataSource, key, keyIndex, name, dataSourceIndex) {
+  const keysValue = (key || [])
+    .map(item => (keyIndex && item[keyIndex] !== undefined ? item[keyIndex] : item));
+  return getDataSourceIndex(dataSource || [], keysValue, name, dataSourceIndex);
+}

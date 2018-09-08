@@ -367,6 +367,7 @@ export default class extends React.PureComponent {
       available_options: value.available_options || [],
       default_value: defaultValue,
     };
+    params.scale = params.scale || 0;
     Object.keys(params).forEach((key) => {
       if (params[key] === undefined) {
         params[key] = '';
@@ -731,7 +732,7 @@ export default class extends React.PureComponent {
                 }
               </FormItem>
             </Col>
-            <Col {...fieldsBoxLayout} className={scaleCls || ''}>
+            <Col {...fieldsBoxLayout} className={scaleCls}>
               <FormItem label={labelValue.scale} {...fieldsItemLayout}>
                 {
                   getFieldDecorator('scale', {

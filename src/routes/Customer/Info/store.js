@@ -6,11 +6,14 @@ export default (Compoent) => {
     brands: brand.brand,
     source: customer.source,
     tags: customer.tags,
+    tagsType: customer.tagsType,
+    staffBrandsAuth: customer.staffBrandsAuth,
     loading: (
       loading.effects['brand/fetchBrand'] ||
       loading.effects['customer/fetchSource'] ||
       loading.effects['customer/fetchTags'] ||
-      loading.effects['customer/fetchCustomer']
+      loading.effects['customer/fetchCustomer'] ||
+      loading.effects['customer/customerStaffBrandsAuth']
     ),
   }))
   class NewCompoent extends React.PureComponent {
@@ -27,8 +30,7 @@ export default (Compoent) => {
         ...values,
         vindicator_sn: values.vindicator.staff_sn || '',
         vindicator_name: values.vindicator.staff_name || '',
-        tags: (values.tags || []).map(item => ({ tag_id: item.tag_id })),
-        shops: (values.shops || []).map(item => ({ shop_sn: item.shop_sn })),
+        tags: (values.tags || []).map(item => ({ tag_id: item })),
         brands: (values.brands || []).map(item => ({ brand_id: item })),
       };
       delete params.vindicator;
@@ -89,6 +91,11 @@ export default (Compoent) => {
     }
 
 
+    fetchStaffBrandsAuth = () => {
+      const { dispatch } = this.props;
+      dispatch({ type: 'customer/customerStaffBrandsAuth' });
+    }
+
     fetchStore() {
       const { dispatch } = this.props;
       dispatch({ type: 'customer/fetchSource' });
@@ -105,6 +112,7 @@ export default (Compoent) => {
         deleted: this.delete,
         fetch: this.fetchDataSource,
         fetchTagsType: this.fetchTagsType,
+        fetchStaffBrandsAuth: this.fetchStaffBrandsAuth,
       };
       return response;
     }

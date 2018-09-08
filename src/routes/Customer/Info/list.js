@@ -5,9 +5,11 @@ import {
   Divider,
 } from 'antd';
 import moment from 'moment';
+import store from './store';
 import OATable from '../../../components/OATable';
 import { customerStatus } from '../../../assets/customer';
-import store from './store';
+import { getFiltersData } from '../../../utils/utils';
+
 
 @connect(({ customer }) => ({ customer: customer.customer }))
 @store
@@ -36,35 +38,24 @@ export default class extends PureComponent {
         align: 'center',
         title: '客户来源',
         dataIndex: 'source_id',
-        filters: source.map(item => ({ text: item.name, value: item.id })),
-        render: (key) => {
-          const value = source.find(item => item.id === key) || {};
-          return value.name;
-        },
+        filters: getFiltersData(source),
+        render: key => OATable.findRenderKey(customerStatus, key).name,
       },
       {
         align: 'center',
         title: '客户状态',
         // width: 120,
         dataIndex: 'status',
-        filters: customerStatus.map(item => ({ text: item.name, value: item.id })),
-        render: (key) => {
-          const value = customerStatus.find(item => `${item.id}` === `${key}`) || {};
-          return value.name;
-        },
+        filters: getFiltersData(customerStatus),
+        render: key => OATable.findRenderKey(customerStatus, key).name,
       },
       {
-        // width: 240,
+        width: 300,
         align: 'center',
         title: '合作品牌',
-        filters: brands.map(item => ({ text: item.name, value: item.id })),
+        filters: getFiltersData(brands),
         dataIndex: 'brands.brand_id',
-        render: (_, record) => {
-          const brandId = record.brands.map(item => item.brand_id);
-          const value = brands.filter(item => brandId.indexOf(item.id) !== -1)
-            .map(item => item.name);
-          return value.join(',');
-        },
+        render: (_, record) => OATable.analysisColumn(brands, record.brands, 'brand_id'),
       },
       {
         // width: 120,
@@ -82,17 +73,12 @@ export default class extends PureComponent {
         searcher: true,
       },
       {
-        // width: 320,
+        width: 300,
         title: '标签',
         align: 'center',
         dataIndex: 'tags.tag_id',
         filters: tags.map(tag => ({ text: tag.name, value: tag.id })),
-        render: (_, record) => {
-          const tagId = record.tags.map(item => item.tag_id);
-          const value = tags.filter(tag => tagId.indexOf(tag.id) !== -1)
-            .map(item => item.name);
-          return value.join(',');
-        },
+        render: (_, record) => OATable.analysisColumn(tags, record.tags, 'tag_id'),
       },
       {
         title: '操作',
@@ -111,6 +97,7 @@ export default class extends PureComponent {
     ];
     return columns;
   }
+
 
   render() {
     const extraOperator = [
