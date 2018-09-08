@@ -106,13 +106,11 @@ export default class extends PureComponent {
       {
         title: '通过时间',
         dataIndex: 'audit_time',
-        dateFilters: true,
         sorter: true,
       },
       {
         title: '金额',
         dataIndex: 'audited_cost',
-        rangeFilters: true,
         sorter: true,
         render: (cellData) => {
           return cellData && `￥ ${cellData}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -221,7 +219,7 @@ export default class extends PureComponent {
           filters[key] && filters[key].length > 0 &&
           (
             (key === 'reim_department_id' && filters[key].indexOf(`${item[key]}`) === -1) ||
-            item[key].indexOf(filters[key][0])
+            (key !== 'reim_department_id' && item[key].indexOf(filters[key][0]))
           )
         ) {
           return false;
