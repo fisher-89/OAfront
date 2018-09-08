@@ -12,7 +12,8 @@ import { getFiltersData } from '../../../../utils/utils';
 @store
 export default class Customer extends PureComponent {
   makeColumns = () => {
-    const { source, tags, brands } = this.props;
+    const { source, tags, brands, staffBrandsAuth } = this.props;
+    const sourceData = brands.filter(item => staffBrandsAuth.indexOf(item.id) !== -1);
     const columns = [
       {
         align: 'center',
@@ -52,7 +53,7 @@ export default class Customer extends PureComponent {
         width: 160,
         align: 'center',
         title: '合作品牌',
-        filters: getFiltersData(brands),
+        filters: getFiltersData(sourceData),
         dataIndex: 'brands.brand_id',
         render: (_, record) => OATable.analysisColumn(brands, record.brands, 'brand_id'),
       },

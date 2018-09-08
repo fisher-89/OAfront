@@ -33,6 +33,7 @@ export default (Compoent) => {
       const params = {
         ...values,
         client_id: values.client.id,
+        client_name: values.client.name,
       };
       delete params.client;
       return params;
@@ -55,7 +56,7 @@ export default (Compoent) => {
       dispatch({
         type: !id ? 'customer/addNotes' : 'customer/editNotes',
         payload: params,
-        onError: errors => onError(errors, { client_id: 'client' }),
+        onError: errors => onError(errors, { client_id: 'client', client_name: 'client_name' }),
         onSuccess,
       });
     }

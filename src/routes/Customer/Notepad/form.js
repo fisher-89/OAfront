@@ -170,7 +170,7 @@ export default class extends React.PureComponent {
     }
     return (
       <OAForm onSubmit={validateFields(this.handleSubmit)}>
-        <FormItem label="标题" {...formItemLayout}>
+        <FormItem label="标题" {...formItemLayout} required>
           {getFieldDecorator('title', {
             initialValue: initialValue.title,
             rules: [validatorRequired],
@@ -180,7 +180,7 @@ export default class extends React.PureComponent {
         </FormItem>
         <Row gutter={rowGutter}>
           <Col {...colSpan} >
-            <FormItem label="类型" {...colFormItemLayout}>
+            <FormItem label="类型" {...colFormItemLayout} required>
               {getFieldDecorator('note_type_id', {
                 initialValue: initialValue.note_type_id ? `${initialValue.note_type_id}` : undefined,
                 rules: [validatorRequired],
@@ -192,7 +192,7 @@ export default class extends React.PureComponent {
             </FormItem>
           </Col>
           <Col {...colSpan}>
-            <FormItem label="发生时间" {...colFormItemLayout1}>
+            <FormItem label="发生时间" {...colFormItemLayout1} required>
               {getFieldDecorator('took_place_at', {
                 initialValue: initialValue.took_place_at,
                 rules: [validatorRequired],
@@ -202,7 +202,7 @@ export default class extends React.PureComponent {
             </FormItem>
           </Col>
         </Row>
-        <FormItem label="内容" {...formItemLayout}>
+        <FormItem label="内容" {...formItemLayout} required>
           {getFieldDecorator('content', {
             initialValue: initialValue.content,
             rules: [validatorRequired],
@@ -227,7 +227,7 @@ export default class extends React.PureComponent {
           </div>
         </FormItem>
 
-        <FormItem label="关联客户" {...formItemLayout}>
+        <FormItem label="关联客户" {...formItemLayout} required>
           {getFieldDecorator('client', {
             initialValue: initialValue.client_id ? {
               id: initialValue.client_id,
@@ -239,7 +239,7 @@ export default class extends React.PureComponent {
           )}
         </FormItem>
 
-        <FormItem label="品牌选择" {...formItemLayout}>
+        <FormItem label="品牌选择" {...formItemLayout} required>
           {getFieldDecorator('brands', {
             initialValue: initialValue.brands,
             rules: [validatorRequired],
