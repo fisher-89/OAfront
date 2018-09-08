@@ -293,7 +293,7 @@ export default class extends React.PureComponent {
           <Col {...rowGutter}>
             <FormItem label="标签" {...rowFormItemLayout}>
               {getFieldDecorator('tags', {
-                initialValue: initialValue.tags ? initialValue.tags.map(item => `${item}`) : [],
+                initialValue: initialValue.tags ? initialValue.tags.map(item => `${item.tag_id}`) : [],
               })(
                 <Select
                   mode="multiple"
