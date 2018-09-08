@@ -113,7 +113,7 @@ class addForm extends PureComponent {
   }
 
   handleOnError = (errors) => {
-    const { onError } = this.props;
+    const { onError, form: { setFields } } = this.props;
     const { panes } = this.state;
     const gridsError = {};
     panes.forEach((_, index) => {
@@ -121,7 +121,10 @@ class addForm extends PureComponent {
       gridsError[`grids.${index}.key`] = `grids[${index}].key`;
       gridsError[`grids.${index}.fields`] = `grids[${index}].fields`;
     });
-    onError(errors, gridsError, (err) => {
+    onError(errors, gridsError, (err, values) => {
+      if (err.fields) {
+        setFields({ fields: { error: err.error, value: values.fields } });
+      }
       this.setState({ listError: err });
     });
   }
@@ -312,7 +315,7 @@ class addForm extends PureComponent {
             >
               {getFieldDecorator('fields', {
                 initialValue: initialFieldsValue.fields || [],
-                // rules: [validatorRequired],
+                rules: [validatorRequired],
               })(
                 <FieldList
                   validator={validator}
