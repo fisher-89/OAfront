@@ -162,7 +162,7 @@ export default class extends React.PureComponent {
     } = this.props;
     const { id } = match.params;
     const { fileList } = this.state;
-    const brandOption = brand.filter(item => staffBrandsAuth.indexOf(`${item.id}`) !== -1);
+    const brandOption = brand.filter(item => staffBrandsAuth.indexOf(item.id) !== -1);
     let initialValue = {};
     if (notesDetails[id]) {
       initialValue = notesDetails[id];
@@ -235,7 +235,7 @@ export default class extends React.PureComponent {
 
         <FormItem label="品牌选择" {...formItemLayout}>
           {getFieldDecorator('brands', {
-            initialValue: [],
+            initialValue: initialValue.brands,
           })(
             <Select placeholder="请输入" mode="multiple">
               {brandOption.map(item => (<Option key={item.id}>{item.name}</Option>))}
