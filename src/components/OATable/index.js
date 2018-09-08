@@ -11,7 +11,9 @@ import TableUpload from './upload';
 import EdiTableCell from './editTableCell';
 import styles from './index.less';
 import request from '../../utils/request';
-import { makerFilters, getDataSourceIndex } from '../../utils/utils';
+import {
+  makerFilters, findRenderKey, analysisData,
+} from '../../utils/utils';
 
 const defaultProps = {
   multiOperator: null,
@@ -31,11 +33,6 @@ const defaultProps = {
     // message.error('请设置fetchDataSource');
   },
 };
-
-
-function findRenderKey(dataSource, key, index = 'id') {
-  return dataSource.find(item => `${item[index]}` === `${key}`) || {};
-}
 
 /**
  * 超出隐藏
@@ -58,8 +55,7 @@ function renderEllipsis(viewText, tooltip) {
  * @param {替换数组的键默认id，可以是对象或者一维数组} index
  */
 function analysisColumn(dataSource, key, index = 'id', tooltip = true) {
-  const keysValue = key.map(item => (item[index] !== undefined ? item[index] : item));
-  const value = getDataSourceIndex(dataSource, keysValue);
+  const value = analysisData(dataSource, key, index);
   return renderEllipsis(value, tooltip);
 }
 

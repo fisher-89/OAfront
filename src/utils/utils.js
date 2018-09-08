@@ -584,3 +584,22 @@ export function getDataSourceIndex(dataSource, data, index = 'name') {
 export function getFiltersData(dataSource, value = 'id', text = 'name') {
   return dataSource.map(item => ({ value: item[value], text: item[text] }));
 }
+
+
+/**
+ *  解析单个键
+ */
+export function findRenderKey(dataSource, key, index = 'id') {
+  return dataSource.find(item => `${item[index]}` === `${key}`) || {};
+}
+
+/**
+ *
+ * @param {替换数据源} dataSource
+ * @param {替换的数组} key
+ * @param {替换数组的键默认id，可以是对象或者一维数组} index
+ */
+export function analysisData(dataSource, key, index = 'id') {
+  const keysValue = key.map(item => (item[index] !== undefined ? item[index] : item));
+  return getDataSourceIndex(dataSource, keysValue);
+}
