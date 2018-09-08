@@ -149,18 +149,22 @@ export default class Flow extends React.PureComponent {
         data.push({
           key: item.key,
           title: item.name,
-          description: item.description,
           disabled: false,
         });
       });
     }
     if (grids.length > 0) {
       grids.forEach((item) => {
+        data.push({
+          key: item.key,
+          title: item.name,
+          grids: true,
+          disabled: false,
+        });
         item.fields.forEach((field) => {
           data.push({
             key: `${item.key}.*.${field.key}`,
-            title: field.name,
-            description: field.description,
+            title: `${item.name} - ${field.name}`,
             disabled: false,
           });
         });

@@ -80,7 +80,7 @@ export default class extends React.PureComponent {
     const { notesDetails, match } = nextProps;
     const { id } = match.params;
     if (notesDetails !== this.props.notesDetails && notesDetails[id]) {
-      const attachments = notesDetails[id].attachments.map((item, index) => {
+      const attachments = (notesDetails[id].attachments || []).map((item, index) => {
         return {
           uid: `${index + 1}`,
           name: `附件${index + 1}`,
@@ -147,7 +147,9 @@ export default class extends React.PureComponent {
     const { submit } = this.props;
     const { attachments } = this.state;
     const data = attachments.map(item => item.url);
-    submit({ ...values, attachments: data }, onError);
+    submit({ ...values, attachments: data }, onError, () => {
+      this.props.history('/client/notepad/list');
+    });
   }
 
   render() {

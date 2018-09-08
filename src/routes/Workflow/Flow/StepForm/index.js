@@ -8,6 +8,7 @@ import {
   message,
   TreeSelect,
   Select,
+  Icon,
 } from 'antd';
 import { connect } from 'dva';
 import OAForm, { InputTags, SearchTable } from '../../../../components/OAForm';
@@ -512,7 +513,13 @@ export default class StepForm extends React.PureComponent {
             selectedKeys={hiddenFields.selectedKeys}
             onChange={this.handleHiddenChange}
             onSelectChange={this.handleHiddenSelectChange}
-            render={item => item.title}
+            render={(item) => {
+              return item.grids ? (
+                <React.Fragment>
+                  {item.title} <Icon type="profile" theme="outlined" />
+                </React.Fragment>
+              ) : item.title;
+            }}
           />
         </FormItem>
 
@@ -530,7 +537,13 @@ export default class StepForm extends React.PureComponent {
             selectedKeys={editFields.selectedKeys}
             onChange={this.handleEditChange}
             onSelectChange={this.handleEditSelectChange}
-            render={item => item.title}
+            render={(item) => {
+              return item.grids ? (
+                <React.Fragment>
+                  {item.title} <Icon type="profile" />
+                </React.Fragment>
+              ) : item.title;
+            }}
           />
         </FormItem>
         <FormItem
@@ -547,7 +560,13 @@ export default class StepForm extends React.PureComponent {
             selectedKeys={requireFields.selectedKeys}
             onChange={this.handleRequireChange}
             onSelectChange={this.handleRequireSelectChange}
-            render={item => item.title}
+            render={(item) => {
+              return item.grids ? (
+                <React.Fragment>
+                  {item.title} <Icon type="profile" theme="outlined" />
+                </React.Fragment>
+              ) : item.title;
+            }}
           />
         </FormItem>
 
