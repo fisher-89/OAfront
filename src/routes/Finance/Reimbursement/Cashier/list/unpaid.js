@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Button, Divider, Tooltip } from 'antd';
+import { Button, Divider } from 'antd';
 import XLSX from 'xlsx';
 import Ellipsis from '../../../../../components/Ellipsis/index';
 
@@ -24,9 +24,7 @@ export default class extends PureComponent {
       const { filteredList } = this.state;
       if (filteredList) {
         const unPaidListKeys = newProps.unPaidList.map(item => item.id);
-        console.log('unPaid:', unPaidListKeys);
         const newList = filteredList.filter(item => unPaidListKeys.indexOf(item.id) !== -1);
-        console.log('newList:', newList);
         this.setState(
           {
             filteredList: newList,
@@ -169,20 +167,14 @@ export default class extends PureComponent {
           清空
         </Button>
       ),
-      (
-        <Button type="primary" key="remit" onClick={this.remitInBatches}>批量转账</Button>
-      ),
+      <Button type="primary" key="remit" onClick={this.remitInBatches}>批量转账</Button>,
       (
         <span key="selectingStatus">
           选中 {selectedRowKeys.length} / {list.length} 项，
           共计金额 {totalCost} 元
         </span>
       ),
-      (
-        <Tooltip key="export" title="导出为Excel">
-          <Button onClick={this.handleExport} icon="download" />
-        </Tooltip>
-      ),
+      <Button key="export" onClick={this.handleExport} icon="download">导出</Button>,
     ];
   }
 
@@ -219,7 +211,6 @@ export default class extends PureComponent {
   }
 
   handleTableChange = (pagination, filters, sorter, defaultOnChange) => {
-    console.log(filters);
     const { unPaidList } = this.props;
     const { selectedRowKeys } = this.state;
     const filteredList = unPaidList.filter((item) => {
@@ -311,7 +302,7 @@ export default class extends PureComponent {
     XLSX.utils.book_append_sheet(workbook, reimbursementSheet, '报销单');
     XLSX.utils.book_append_sheet(workbook, expenseSheet, '消费明细');
     XLSX.utils.book_append_sheet(workbook, payeeSheet, '收款人');
-    XLSX.writeFile(workbook, '测试.xlsx');
+    XLSX.writeFile(workbook, '未转账报销单.xlsx');
   }
 
   render() {

@@ -93,6 +93,7 @@ export default class extends PureComponent {
         title: '驳回时间',
         dataIndex: 'reject_time',
         sorter: true,
+        dateFilters: true,
         defaultSortOrder: 'descend',
       },
       {

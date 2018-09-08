@@ -20,18 +20,18 @@ export async function fetchOvertimeReimbursements(params) {
   });
 }
 
-export async function fetchBeingRejectedReimbursements(params) {
+export async function fetchApprovedReimbursements(params) {
   return request('/api/finance/reimburse/audit', {
     method: 'GET',
     body: {
       ...params,
-      type: 'being-rejected',
+      type: 'audited',
     },
   });
 }
 
-export async function fetchApprovedReimbursements(params) {
-  return request('/api/finance/reimburse/audit', {
+export async function fetchExportApprovedReimbursements(params) {
+  return request('/api/finance/reimburse/export-audit', {
     method: 'GET',
     body: {
       ...params,

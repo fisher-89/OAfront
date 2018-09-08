@@ -75,6 +75,7 @@ export default class extends PureComponent {
         title: '申请时间',
         dataIndex: 'send_time',
         sorter: true,
+        dateFilters: true,
       },
       {
         title: '审批人',
@@ -85,6 +86,7 @@ export default class extends PureComponent {
         title: '审批时间',
         dataIndex: 'approve_time',
         sorter: true,
+        dateFilters: true,
         defaultSortOrder: 'descend',
       },
       {
@@ -98,6 +100,7 @@ export default class extends PureComponent {
       {
         title: '调整后金额',
         dataIndex: 'audited_cost',
+        rangeFilters: true,
         sorter: true,
         render: (cellData) => {
           return cellData && `￥ ${cellData}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
