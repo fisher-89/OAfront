@@ -33,6 +33,10 @@ const defaultProps = {
 };
 
 
+function findRenderKey(dataSource, key, index = 'id') {
+  return dataSource.find(item => `${item[index]}` === `${key}`) || {};
+}
+
 /**
  * 超出隐藏
  * @param {table的内容} viewText
@@ -725,6 +729,7 @@ OATable.EdiTableCell = EdiTableCell;
 OATable.defaultProps = defaultProps;
 OATable.renderEllipsis = renderEllipsis;
 OATable.analysisColumn = analysisColumn;
+OATable.findRenderKey = findRenderKey;
 
 export default OATable;
 

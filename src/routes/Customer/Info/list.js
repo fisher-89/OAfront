@@ -39,10 +39,7 @@ export default class extends PureComponent {
         title: '客户来源',
         dataIndex: 'source_id',
         filters: getFiltersData(source),
-        render: (key) => {
-          const value = source.find(item => item.id === key) || {};
-          return value.name;
-        },
+        render: key => OATable.findRenderKey(customerStatus, key).name,
       },
       {
         align: 'center',
@@ -50,10 +47,7 @@ export default class extends PureComponent {
         // width: 120,
         dataIndex: 'status',
         filters: getFiltersData(customerStatus),
-        render: (key) => {
-          const value = customerStatus.find(item => `${item.id}` === `${key}`) || {};
-          return value.name;
-        },
+        render: key => OATable.findRenderKey(customerStatus, key).name,
       },
       {
         width: 300,
