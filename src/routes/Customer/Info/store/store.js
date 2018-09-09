@@ -1,28 +1,39 @@
 import React from 'react';
 import { connect } from 'dva';
+import { makeProps } from '../../../../utils/utils';
 
-export default (Compoent) => {
+function makeLoading(loading) {
+  const commoLoading = (
+    loading.effects['brand/fetchBrand'] ||
+    loading.effects['customer/fetchTags'] ||
+    loading.effects['customer/fetchSource'] ||
+    loading.effects['customer/fetchCustomer'] ||
+    loading.effects['customer/deleteCustomer'] ||
+    loading.effects['customer/customerStaffBrandsAuth']
+  );
+  return {
+    fetchDataSource: (commoLoading),
+    submit: (
+      commoLoading ||
+      loading.effects['customer/addCustomer'] ||
+      loading.effects['customer/editCustomer']
+    ),
+  };
+}
+
+export default type => (Compoent) => {
   @connect(({ customer, brand, loading }) => ({
+    tags: customer.tags,
     brands: brand.brand,
     source: customer.source,
-    tags: customer.tags,
     tagsType: customer.tagsType,
+    details: customer.customerDetails,
     staffBrandsAuth: customer.staffBrandsAuth,
-    loading: (
-      loading.effects['brand/fetchBrand'] ||
-      loading.effects['customer/fetchSource'] ||
-      loading.effects['customer/fetchTags'] ||
-      loading.effects['customer/fetchCustomer'] ||
-      loading.effects['customer/customerStaffBrandsAuth']
-    ),
+    loading: makeLoading(loading),
   }))
   class NewCompoent extends React.PureComponent {
     componentWillMount() {
       this.fetchStore();
-    }
-
-    onSuccess = () => {
-      this.props.history.push('/client/customer/list');
     }
 
     makeParams = (values) => {
@@ -37,7 +48,7 @@ export default (Compoent) => {
       return params;
     }
 
-    delete = (id, onError, onSuccess) => {
+    deleted = (id, onError, onSuccess) => {
       const { dispatch } = this.props;
       dispatch({
         type: 'customer/deleteCustomer',
@@ -47,36 +58,17 @@ export default (Compoent) => {
       });
     }
 
-    update = (values, onError) => {
+    submit = (values, onError) => {
       const { dispatch } = this.props;
       const params = this.makeParams(values);
+      const { id } = params;
       dispatch({
-        type: 'customer/editCustomer',
+        type: id ? 'customer/editCustomer' : 'customer/addCustomer',
         payload: params,
         onError: errors => onError(errors, { vindicator_name: 'vindicator' }),
-        onSuccess: () => this.onSuccess(),
-      });
-    }
-
-    add = (values, onError) => {
-      const { dispatch } = this.props;
-      const params = this.makeParams(values);
-      dispatch({
-        type: 'customer/addCustomer',
-        payload: params,
-        onError: errors => onError(errors, { vindicator_name: 'vindicator' }),
-        onSuccess: () => this.onSuccess(),
-      });
-    }
-
-    edit = (values, onError) => {
-      const { dispatch } = this.props;
-      const params = this.makeParams(values);
-      dispatch({
-        type: 'customer/editCustomer',
-        payload: params,
-        onError: errors => onError(errors, { vindicator_name: 'vindicator' }),
-        onSuccess: () => this.onSuccess(),
+        onSuccess: () => {
+          this.props.history.push('/client/customer/list');
+        },
       });
     }
 
@@ -90,7 +82,6 @@ export default (Compoent) => {
       dispatch({ type: 'customer/fetchTagsType' });
     }
 
-
     fetchStaffBrandsAuth = () => {
       const { dispatch } = this.props;
       dispatch({ type: 'customer/customerStaffBrandsAuth' });
@@ -99,28 +90,16 @@ export default (Compoent) => {
     fetchStore() {
       const { dispatch } = this.props;
       this.fetchStaffBrandsAuth();
+      this.fetchTagsType();
       dispatch({ type: 'customer/fetchSource' });
       dispatch({ type: 'customer/fetchTags' });
       dispatch({ type: 'brand/fetchBrand' });
     }
 
-    makeProps = () => {
-      const response = {
-        ...this.props,
-        add: this.add,
-        edit: this.edit,
-        update: this.update,
-        deleted: this.delete,
-        fetch: this.fetchDataSource,
-        fetchTagsType: this.fetchTagsType,
-        fetchStaffBrandsAuth: this.fetchStaffBrandsAuth,
-      };
-      return response;
-    }
 
     render() {
       return (
-        <Compoent {...this.makeProps()} />
+        <Compoent {...makeProps(this, type)} />
       );
     }
   }

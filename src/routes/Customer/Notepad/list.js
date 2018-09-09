@@ -7,15 +7,16 @@ import store from './store/store';
 import OATable from '../../../components/OATable';
 import { getFiltersData } from '../../../utils/utils';
 
-@store
-export default class Validator extends PureComponent {
+@store()
+export default class extends PureComponent {
   state = {};
+
+  handleLink = (name, id) => {
+    this.props.history.push(`/client/notepad/list/${name}/${id}`);
+  }
 
   makeColumns = () => {
     const { deleted, brand } = this.props;
-    const onClick = (name, id) => {
-      this.props.history.push(`/client/notepad/list/${name}/${id}`);
-    };
     const columns = [
       {
         // width: 80,
@@ -41,6 +42,7 @@ export default class Validator extends PureComponent {
       },
       {
         // width: 240,
+        search: true,
         title: '标题',
         align: 'center',
         dataIndex: 'title',
@@ -56,7 +58,7 @@ export default class Validator extends PureComponent {
         render: ({ id }) => {
           return (
             <Fragment>
-              <a onClick={() => onClick('edit', id)}>编辑</a>
+              <a onClick={() => this.handleLink('edit', id)}>编辑</a>
               <Divider type="vertical" />
               <a onClick={() => deleted(id)}>删除</a>
             </Fragment>
@@ -68,14 +70,14 @@ export default class Validator extends PureComponent {
   }
 
   fetchDataSource = (params) => {
-    const { fetch, customerId } = this.props;
+    const { fetchDataSource, customerId } = this.props;
     let { filters } = { ...params };
     filters = customerId ? `${filters};client_id=${customerId}` : filters;
     const newParams = {
       ...params,
       filters,
     };
-    fetch(newParams);
+    fetchDataSource(newParams);
   }
 
   render() {

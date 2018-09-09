@@ -49,8 +49,9 @@ export default formCreate => option => (Componet) => {
       props.onChange(allValues, props.index);
     },
   };
-  const { localBackUpKey } = option || {};
+  const { localBackUpKey, modal } = option || {};
   delete newOption.localBackUpKey;
+  delete newOption.modal;
   const FormComponent = Create(formCreate)(newOption)(Componet);
   class NewFormComponent extends React.PureComponent {
     state = {
@@ -200,7 +201,7 @@ export default formCreate => option => (Componet) => {
       const { loading } = this.props;
       const { autoSave, localSave, modalSave } = this.state;
       return (
-        <Spin spinning={loading || false}>
+        <Spin spinning={modal ? false : loading === true}>
           <div className={styles.OAForm}>
             {(autoSave || localSave) && (
               <Operator

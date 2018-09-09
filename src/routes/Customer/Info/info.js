@@ -93,14 +93,13 @@ function CustomerInfo(props) {
 
 const { TabPane } = Tabs;
 @connect(({ customer }) => ({ customer }))
-@store
+@store()
 export default class extends React.PureComponent {
   componentWillMount() {
-    const { fetch, match, fetchTagsType } = this.props;
+    const { fetchDataSource, match } = this.props;
     const { id } = match.params;
-    fetchTagsType();
-    fetch({ id });
-    this.id = id;
+    fetchDataSource({ id });
+    this.id = id || 0;
   }
 
   render() {
@@ -119,7 +118,7 @@ export default class extends React.PureComponent {
             />
           </TabPane>
           <TabPane tab="记事本" key="2">
-            <Notepad customerId={this.id} />
+            <Notepad customerId={this.id} history={this.props.history} />
           </TabPane>
           <TabPane tab="操作日志" key="3">
             <ActionLog type="user" />

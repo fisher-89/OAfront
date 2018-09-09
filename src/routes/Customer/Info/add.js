@@ -7,7 +7,6 @@ import {
   Button,
   Radio,
 } from 'antd';
-import { connect } from 'dva';
 import OAForm, {
   Address,
   DatePicker,
@@ -65,36 +64,20 @@ const sexOption = [
   { label: '女', value: '女' },
 ];
 
-@connect(({ customer, loading }) => ({
-  tagsType: customer.tagsType,
-  details: customer.customerDetails,
-  loading: (
-    loading.effects['brand/fetchBrand'] ||
-    loading.effects['customer/fetchTags'] ||
-    loading.effects['customer/fetchSource'] ||
-    loading.effects['customer/fetchTagsType'] ||
-    loading.effects['customer/fetchCustomer'] ||
-    loading.effects['customer/editCustomer'] ||
-    loading.effects['customer/addCustomer']
-  ),
-}))
+@store(['submit', 'fetchDataSource'])
 @OAForm.create()
-@store
 export default class extends React.PureComponent {
   componentDidMount() {
-    const { fetchTagsType, fetch, match } = this.props;
+    const { fetchDataSource, match } = this.props;
     const { id } = match.params;
-    if (id) { this.id = id; fetch({ id }); }
-    fetchTagsType();
+    if (id) { this.id = id; fetchDataSource({ id }); }
   }
 
   handleSubmit = (values, onError) => {
-    const { add, edit } = this.props;
-    if (this.id) {
-      edit({ id: this.id, ...values }, onError);
-    } else {
-      add(values, onError);
-    }
+    const { submit } = this.props;
+    const params = { ...values };
+    if (this.id) params.id = this.id;
+    submit({ id: this.id, ...values, shops: [] }, onError);
   }
 
   render() {

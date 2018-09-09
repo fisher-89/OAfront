@@ -1,32 +1,41 @@
 import React from 'react';
 import { connect } from 'dva';
+import { makeProps } from '../../../../utils/utils';
 
-export default (Compoent) => {
+function makeLoading(loading) {
+  const commoLoading = (
+    loading.effects['customer/fetchNotes'] ||
+    loading.effects['customer/fetchNoteTypes'] ||
+    loading.effects['customer/customerStaffBrandsAuth']
+  );
+  return {
+    fetchBrand: loading.effects['brand/fetchBrand'],
+    fetchDataSource: (
+      commoLoading ||
+      loading.effects['customer/deleteNotes']
+    ),
+    submit: (
+      commoLoading ||
+      loading.effects['customer/editNotes'] ||
+      loading.effects['customer/addNotes']
+    ),
+  };
+}
+
+export default type => (Compoent) => {
   @connect(({ customer, brand, loading }) => ({
     brand: brand.brand,
     notes: customer.notes,
     noteTypes: customer.noteTypes,
     notesDetails: customer.notesDetails,
     staffBrandsAuth: customer.staffBrandsAuth,
-    loading: (
-      loading.effects['customer/fetchNotes'] ||
-      loading.effects['brand/fetchBrand'] ||
-      loading.effects['customer/editNotes'] ||
-      loading.effects['customer/addNotes'] ||
-      loading.effects['customer/deleteNotes'] ||
-      loading.effects['customer/fetchNoteTypes'] ||
-      loading.effects['customer/customerStaffBrandsAuth']
-    ),
+    loading: makeLoading(loading),
   }))
   class NewCompoent extends React.PureComponent {
     componentWillMount() {
       this.fetchBrand();
       this.fetchNoteTypes();
-    }
-
-    fetchNoteTypes = () => {
-      const { dispatch } = this.props;
-      dispatch({ type: 'customer/fetchNoteTypes' });
+      this.fetchStaffBrandsAuth();
     }
 
     makeParams = (values) => {
@@ -39,17 +48,15 @@ export default (Compoent) => {
       return params;
     }
 
-    delete = (id, onError, onSuccess) => {
+    deleted = (id) => {
       const { dispatch } = this.props;
       dispatch({
         type: 'customer/deleteNotes',
         payload: { id },
-        onError,
-        onSuccess,
       });
     }
 
-    submit = (values, onError, onSuccess) => {
+    submit = (values, onError) => {
       const { dispatch } = this.props;
       const params = this.makeParams(values);
       const { id } = params;
@@ -57,13 +64,10 @@ export default (Compoent) => {
         type: !id ? 'customer/addNotes' : 'customer/editNotes',
         payload: params,
         onError: errors => onError(errors, { client_id: 'client', client_name: 'client_name' }),
-        onSuccess,
+        onSuccess: () => {
+          this.props.history('/client/notepad/list');
+        },
       });
-    }
-
-    fetchBrand = () => {
-      const { dispatch } = this.props;
-      dispatch({ type: 'brand/fetchBrand' });
     }
 
     fetchDataSource = (params) => {
@@ -71,25 +75,25 @@ export default (Compoent) => {
       dispatch({ type: 'customer/fetchNotes', payload: params });
     }
 
+    fetchBrand = () => {
+      const { dispatch } = this.props;
+      dispatch({ type: 'brand/fetchBrand' });
+    }
+
     fetchStaffBrandsAuth = () => {
       const { dispatch } = this.props;
       dispatch({ type: 'customer/customerStaffBrandsAuth' });
     }
 
-    makeProps = () => {
-      const response = {
-        ...this.props,
-        submit: this.submit,
-        deleted: this.delete,
-        fetch: this.fetchDataSource,
-        fetchStaffBrandsAuth: this.fetchStaffBrandsAuth,
-      };
-      return response;
+    fetchNoteTypes = () => {
+      const { dispatch } = this.props;
+      dispatch({ type: 'customer/fetchNoteTypes' });
     }
+
 
     render() {
       return (
-        <Compoent {...this.makeProps()} />
+        <Compoent {...makeProps(this, type)} />
       );
     }
   }

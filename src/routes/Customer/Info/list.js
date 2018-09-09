@@ -12,14 +12,14 @@ import { getFiltersData } from '../../../utils/utils';
 
 
 @connect(({ customer }) => ({ customer: customer.customer }))
-@store
+@store()
 export default class extends PureComponent {
   makeColumns = () => {
     const { source, tags, brands, deleted, staffBrandsAuth } = this.props;
     const onClick = (name, id) => {
       this.props.history.push(`/client/customer/list/${name}/${id}`);
     };
-    const sourceData = source.filter(item => staffBrandsAuth.indexOf(item.id) !== -1);
+    const brandsData = brands.filter(item => staffBrandsAuth.indexOf(item.id) !== -1);
     const columns = [
       {
         align: 'center',
@@ -39,8 +39,8 @@ export default class extends PureComponent {
         align: 'center',
         title: '客户来源',
         dataIndex: 'source_id',
-        filters: getFiltersData(sourceData),
-        render: key => OATable.findRenderKey(customerStatus, key).name,
+        filters: getFiltersData(source),
+        render: key => OATable.findRenderKey(source, key).name,
       },
       {
         align: 'center',
@@ -54,9 +54,9 @@ export default class extends PureComponent {
         width: 300,
         align: 'center',
         title: '合作品牌',
-        filters: getFiltersData(brands),
+        filters: getFiltersData(brandsData),
         dataIndex: 'brands.brand_id',
-        render: (_, record) => OATable.analysisColumn(brands, record.brands, 'brand_id'),
+        render: (_, record) => OATable.analysisColumn(brandsData, record.brands, 'brand_id'),
       },
       {
         // width: 120,
@@ -115,7 +115,7 @@ export default class extends PureComponent {
         </Button>
       ),
     ];
-    const { loading, customer, fetch } = this.props;
+    const { loading, customer, fetchDataSource } = this.props;
     return (
       <OATable
         serverSide
@@ -123,8 +123,8 @@ export default class extends PureComponent {
         data={customer.data}
         total={customer.total}
         columns={this.makeColumns()}
-        fetchDataSource={fetch}
         extraOperator={extraOperator}
+        fetchDataSource={fetchDataSource}
       />
     );
   }

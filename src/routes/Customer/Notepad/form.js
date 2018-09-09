@@ -61,8 +61,8 @@ const rowGutter = { sm: 16, lg: 8 };
 const colSpan = { push: 1, sm: rowGutter.sm / 2, lg: rowGutter.lg / 2 };
 
 
+@store(['submit', 'fetchDataSource'])
 @OAForm.create()
-@store
 export default class extends React.PureComponent {
   state = {
     fileList: [],
@@ -70,10 +70,9 @@ export default class extends React.PureComponent {
   }
 
   componentWillMount() {
-    const { fetchStaffBrandsAuth, fetch, match } = this.props;
+    const { fetchDataSource, match } = this.props;
     const { id } = match.params;
-    if (id) fetch({ id });
-    fetchStaffBrandsAuth();
+    if (id) fetchDataSource({ id });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -147,9 +146,7 @@ export default class extends React.PureComponent {
     const { submit } = this.props;
     const { attachments } = this.state;
     const data = attachments.map(item => item.url);
-    submit({ ...values, attachments: data }, onError, () => {
-      this.props.history('/client/notepad/list');
-    });
+    submit({ ...values, attachments: data }, onError);
   }
 
   render() {
