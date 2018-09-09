@@ -26,7 +26,6 @@ export default {
       const params = { ...payload };
       const response = yield call(addAuth, params);
       if (response.errors) { onError(response.errors); return; }
-      if (response.message) { return; }
       yield put({
         type: 'add',
         payload: {
@@ -34,6 +33,7 @@ export default {
           data: response,
         },
       });
+      if (response.message) { return; }
       onSuccess(response);
     } catch (err) { return err; }
   },
@@ -63,10 +63,9 @@ export default {
       delete params.id;
       const response = yield call(deleteAuth, id);
       if (response.errors) { onError(response.errors); return; }
-      if (response.message) { return; }
       yield put({
         type: 'delete',
-        payload: { id, store },
+        payload: { id, store, data: response },
       });
       onSuccess(response);
     } catch (err) { return err; }

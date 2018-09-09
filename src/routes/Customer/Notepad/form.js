@@ -72,7 +72,10 @@ export default class extends React.PureComponent {
   componentWillMount() {
     const { fetchDataSource, match } = this.props;
     const { id } = match.params;
-    if (id) fetchDataSource({ id });
+    if (id) {
+      this.id = id;
+      fetchDataSource({ id });
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -146,12 +149,13 @@ export default class extends React.PureComponent {
     const { submit } = this.props;
     const { attachments } = this.state;
     const data = attachments.map(item => item.url);
-    submit({ ...values, attachments: data }, onError);
+    const params = { ...values, attachments: data };
+    if (this.id) params.id = this.id;
+    submit(params, onError);
   }
 
   render() {
     const {
-      match,
       brand,
       noteTypes,
       notesDetails,
@@ -160,7 +164,7 @@ export default class extends React.PureComponent {
       validatorRequired,
       form: { getFieldDecorator },
     } = this.props;
-    const { id } = match.params;
+    const { id } = this;
     const { fileList } = this.state;
     const brandOption = brand.filter(item => staffBrandsAuth.indexOf(item.id) !== -1);
     let initialValue = {};
@@ -240,7 +244,7 @@ export default class extends React.PureComponent {
 
         <FormItem label="品牌选择" {...formItemLayout} required>
           {getFieldDecorator('brands', {
-            initialValue: initialValue.brands,
+            initialValue: initialValue.brands ? initialValue.brands.map(item => `${item}`) : [],
             rules: [validatorRequired],
           })(
             <Select placeholder="请输入" mode="multiple">

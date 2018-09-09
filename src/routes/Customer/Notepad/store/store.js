@@ -64,8 +64,9 @@ export default type => (Compoent) => {
         type: !id ? 'customer/addNotes' : 'customer/editNotes',
         payload: params,
         onError: errors => onError(errors, { client_id: 'client', client_name: 'client_name' }),
-        onSuccess: () => {
-          this.props.history('/client/notepad/list');
+        onSuccess: ({ message }) => {
+          if (message) return;
+          this.props.history.push('/client/notepad/list');
         },
       });
     }

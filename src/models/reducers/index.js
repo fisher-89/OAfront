@@ -28,7 +28,7 @@ export default {
       notification.error({
         message: data.message,
       });
-      return;
+      return state;
     }
     notification.success({
       message: '添加成功',
@@ -54,7 +54,7 @@ export default {
       notification.error({
         message: data.message,
       });
-      return;
+      return { ...state };
     }
     notification.success({
       message: '编辑成功',
@@ -66,7 +66,7 @@ export default {
       }
     });
 
-    const dataSource = Array.isArray(state[store]) ? state[store] : state[store].data;
+    const dataSource = Array.isArray(state[store]) ? state[store] : (state[store].data || []);
 
     let updated = false;
     const newStore = dataSource.map((item) => {
@@ -96,7 +96,13 @@ export default {
     };
   },
   delete(state, action) {
-    const { store, id } = action.payload;
+    const { store, id, data } = action.payload;
+    if (data.message) {
+      notification.error({
+        message: data.message,
+      });
+      return { ...state };
+    }
     notification.success({
       message: '删除成功',
     });

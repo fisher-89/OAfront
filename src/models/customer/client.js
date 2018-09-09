@@ -79,12 +79,10 @@ export default {
       delete params.id;
       const response = yield call(deleteCustomer, id || '');
       if (response.errors) { onError(response.errors); return; }
-      if (response.message) { return; }
       yield put({
         type: 'delete',
-        payload: { id, store },
+        payload: { id, store, data: response },
       });
-      if (response.message) { return; }
       onSuccess(response);
     } catch (err) { return err; }
   },

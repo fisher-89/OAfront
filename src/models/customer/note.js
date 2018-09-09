@@ -62,7 +62,7 @@ export default {
       if (response.errors) { onError(response.errors); return; }
       yield put({
         type: 'delete',
-        payload: { id, store },
+        payload: { id, store, data: response },
       });
       onSuccess(response);
     } catch (err) { return err; }
