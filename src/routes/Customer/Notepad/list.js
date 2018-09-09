@@ -43,7 +43,7 @@ export default class extends PureComponent {
       },
       {
         // width: 240,
-        search: true,
+        searcher: true,
         title: '标题',
         align: 'center',
         dataIndex: 'title',
