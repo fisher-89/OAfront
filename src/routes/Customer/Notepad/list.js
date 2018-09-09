@@ -16,7 +16,8 @@ export default class extends PureComponent {
   }
 
   makeColumns = () => {
-    const { deleted, brand } = this.props;
+    const { deleted, brand, staffBrandsAuth } = this.props;
+    const brandsData = brand.filter(item => staffBrandsAuth.indexOf(item.id) !== -1);
     const columns = [
       {
         // width: 80,
@@ -37,8 +38,8 @@ export default class extends PureComponent {
         align: 'center',
         title: '合作品牌',
         dataIndex: 'brands.brand_id',
-        filters: getFiltersData(brand),
-        render: (_, record) => OATable.analysisColumn(brand, record.brands, false),
+        filters: getFiltersData(brandsData),
+        render: (_, record) => OATable.analysisColumn(brandsData, record.brands, false),
       },
       {
         // width: 240,
