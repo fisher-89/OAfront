@@ -4,7 +4,7 @@ import {
   Select,
   InputNumber,
 } from 'antd';
-import store from './store';
+import store from './store/store';
 import OAForm, { OAModal } from '../../../components/OAForm';
 
 const FormItem = OAForm.Item;

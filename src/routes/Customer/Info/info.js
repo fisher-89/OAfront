@@ -12,7 +12,7 @@ import Notepad from '../Notepad/list';
 import ActionLog from './log';
 import styles from './index.less';
 import district from '../../../assets/district';
-import store from './store';
+import store from './store/store';
 import { customerStatus } from '../../../assets/customer';
 import { findRenderKey, analysisData } from '../../../utils/utils';
 

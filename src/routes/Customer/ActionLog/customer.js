@@ -4,7 +4,7 @@ import {
   Card,
   Divider,
 } from 'antd';
-import store from './store';
+import store from './store/store';
 import OATable from '../../../components/OATable';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 

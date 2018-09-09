@@ -2,7 +2,7 @@ import React from 'react';
 import { Tabs } from 'antd';
 import NoteInfo from './Info';
 import ChangeFields from './changeFields';
-import store from '../store';
+import store from '../store/store';
 
 const { TabPane } = Tabs;
 

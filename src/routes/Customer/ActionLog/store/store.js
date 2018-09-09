@@ -1,14 +1,16 @@
 import React from 'react';
 import { connect } from 'dva';
+import { makeProps } from '../../../../utils/utils';
+
 
 export default type => (Compoent) => {
   @connect(({ customer, loading }) => ({
     noteLogs: customer.noteLogs,
     clientLogs: customer.clientLogs,
-    loading: (
-      loading.effects['customer/fetchClientLogs'] ||
-      loading.effects['customer/fetchNoteLogs']
-    ),
+    loading: {
+      fetchClientLogs: loading.effects['customer/fetchClientLogs'],
+      fetchNoteLogs: loading.effects['customer/fetchNoteLogs'],
+    },
   }))
   class NewCompoent extends React.PureComponent {
     fetchClientLogs = (params) => {
@@ -21,22 +23,10 @@ export default type => (Compoent) => {
       dispatch({ type: 'customer/fetchNoteLogs', payload: params });
     }
 
-    makeProps = () => {
-      const response = { loading: this.props.loading };
-      if (type.indexOf('fetchClientLogs')) {
-        response.fetchClientLogs = this.fetchClientLogs;
-        response.clientLogs = this.props.clientLogs;
-      }
-      if (type.indexOf('fetchNoteLogs')) {
-        response.fetchNoteLogs = this.fetchNoteLogs;
-        response.noteLogs = this.props.response;
-      }
-      return response;
-    }
 
     render() {
       return (
-        <Compoent {...this.makeProps()} />
+        <Compoent {...makeProps(this, type)} />
       );
     }
   }

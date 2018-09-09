@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tag, Card, Button, Divider } from 'antd';
-import store from './store';
+import store from '../store/type';
 import TagTypeForm from './form';
 import OATable from '../../../../components/OATable';
 import PageHeaderLayout from '../../../../layouts/PageHeaderLayout';

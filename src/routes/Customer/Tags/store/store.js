@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'dva';
-import { makeProps } from '../../../utils/utils';
+import { makeProps } from '../../../../utils/utils';
 
 
 export default type => (Compoent) => {

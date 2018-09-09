@@ -3,7 +3,7 @@ import {
   Input,
   Select,
 } from 'antd';
-import store from '../store';
+import store from '../store/store';
 import OAForm, {
   OAModal,
   SearchTable,

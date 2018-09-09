@@ -16,7 +16,7 @@ import OAForm, {
 import { nation } from '../../../assets/nation';
 import { province } from '../../../assets/province';
 import { customerStatus } from '../../../assets/customer';
-import store from './store';
+import store from './store/store';
 
 const RadioGroup = Radio.Group;
 const FormItem = OAForm.Item;

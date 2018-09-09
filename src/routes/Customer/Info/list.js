@@ -5,7 +5,7 @@ import {
   Divider,
 } from 'antd';
 import moment from 'moment';
-import store from './store';
+import store from './store/store';
 import OATable from '../../../components/OATable';
 import { customerStatus } from '../../../assets/customer';
 import { getFiltersData } from '../../../utils/utils';

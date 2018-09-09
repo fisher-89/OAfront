@@ -5,7 +5,7 @@ import {
   Drawer,
   Divider,
 } from 'antd';
-import store from './store';
+import store from './store/store';
 import OATable from '../../../components/OATable';
 import NotepadInfo from './notepad/index';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';

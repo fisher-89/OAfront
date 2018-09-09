@@ -3,7 +3,7 @@ import {
   Button,
   Divider,
 } from 'antd';
-import store from './store';
+import store from './store/store';
 import OATable from '../../../components/OATable';
 import { getFiltersData } from '../../../utils/utils';
 

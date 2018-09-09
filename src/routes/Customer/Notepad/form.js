@@ -12,7 +12,7 @@ import OAForm, {
   SearchTable,
 } from '../../../components/OAForm';
 import Upload from '../../../components/OATable/upload';
-import store from './store';
+import store from './store/store';
 import upload from '../../../utils/upload';
 
 const FormItem = OAForm.Item;

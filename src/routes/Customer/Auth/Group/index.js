@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Divider, Button } from 'antd';
-import store from '../store';
+import store from '../store/store';
 import AuthForm from './form';
 import OATable from '../../../../components/OATable';
 import { getFiltersData } from '../../../../utils/utils';

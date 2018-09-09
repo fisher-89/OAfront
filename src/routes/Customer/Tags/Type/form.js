@@ -6,7 +6,7 @@ import {
 import {
   SketchPicker,
 } from 'react-color';
-import store from './store';
+import store from '../store/type';
 import OAForm, { OAModal } from '../../../../components/OAForm';
 
 const FormItem = OAForm.Item;
