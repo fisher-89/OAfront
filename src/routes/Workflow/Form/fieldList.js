@@ -1,6 +1,7 @@
 import React from 'react';
 import { List } from '../../../components/OAForm';
 import ListForm, { labelText, fieldsTypes } from './listForm';
+import district from '../../../assets/district';
 import { getAvailableText } from './ListFormComponent/RadioSelect';
 
 export default class FieldList extends React.Component {
@@ -30,6 +31,14 @@ export default class FieldList extends React.Component {
       if (valueTemp.default_value === value.type) {
         valueTemp.default_value = `当前${valueTemp.type.replace(/(（.*）)|控件/, '')}`;
       }
+    }
+
+    if (value.type === 'region' && value.default_value) {
+      const addressValue = Object.keys(value.default_value).map((key) => {
+        const addr = district.find(item => `${item.id}` === `${value.default_value[key]}`);
+        return addr ? addr.name : value.default_value[key];
+      });
+      valueTemp.default_value = addressValue.join('');
     }
 
     Object.keys(labelText).forEach((key) => {
