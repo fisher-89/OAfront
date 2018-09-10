@@ -9,7 +9,10 @@ import { getFiltersData } from '../../../utils/utils';
 
 @store()
 export default class extends PureComponent {
-  state = {};
+  constructor(props) {
+    super(props);
+    this.user = window.user ? window.user : {};
+  }
 
   handleLink = (name, id) => {
     this.props.history.push(`/client/notepad/list/${name}/${id}`);
@@ -56,12 +59,19 @@ export default class extends PureComponent {
       },
       {
         title: '操作',
-        render: ({ id }) => {
+        render: (_, record) => {
+          const { id } = record;
+          let color;
+          const clickAble = this.user.staff_sn === record.recorder_sn;
+          if (!clickAble) {
+            color = '#8e8e8e';
+          }
+          const style = color ? { color } : {};
           return (
             <Fragment>
-              <a onClick={() => this.handleLink('edit', id)}>编辑</a>
+              <a style={style} onClick={() => { if (clickAble) this.handleLink('edit', id); }}>编辑</a>
               <Divider type="vertical" />
-              <a onClick={() => deleted(id)}>删除</a>
+              <a style={style} onClick={() => { if (clickAble) deleted(id); }}>删除</a>
             </Fragment>
           );
         },

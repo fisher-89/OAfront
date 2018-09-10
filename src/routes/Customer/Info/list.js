@@ -14,6 +14,11 @@ import { getFiltersData } from '../../../utils/utils';
 @connect(({ customer }) => ({ customer: customer.customer }))
 @store()
 export default class extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.user = window.user ? window.user : {};
+  }
+
   makeColumns = () => {
     const { source, tags, brands, deleted, staffBrandsAuth } = this.props;
     const onClick = (name, id) => {
@@ -83,15 +88,33 @@ export default class extends PureComponent {
       },
       {
         title: '操作',
-        render: (rowData) => {
+        render: (_, rowData) => {
+          let color;
+          const clickAble = this.user.staff_sn === rowData.recorder_sn;
+          if (!clickAble) {
+            color = '#8e8e8e';
+          }
+          const style = color ? { color } : {};
           return (
             <Fragment>
-              <a onClick={() => onClick('info', rowData.id)}>查看</a>
+              <a
+                style={style}
+                onClick={() => {
+                  if (clickAble) onClick('info', rowData.id);
+                }}
+              >查看
+              </a>
               <Divider type="vertical" />
-              <a onClick={() => onClick('edit', rowData.id)}>编辑</a>
+              <a
+                style={style}
+                onClick={() => {
+                  if (clickAble) onClick('edit', rowData.id);
+                }}
+              >编辑
+              </a>
               <Divider type="vertical" />
-              <a onClick={() => deleted(rowData.id)}>删除</a>
-            </Fragment>
+              <a style={style} onClick={() => { if (clickAble) deleted(rowData.id); }}>删除</a>
+            </Fragment >
           );
         },
       },

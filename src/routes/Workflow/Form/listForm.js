@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment';
 import { connect } from 'dva';
 import classNames from 'classnames';
 import {
@@ -17,6 +18,7 @@ import OAForm, {
   InputTags,
   TreeSelect,
   SearchTable,
+  DatePicker,
 } from '../../../components/OAForm';
 import {
   RadioDate,
@@ -26,6 +28,7 @@ import {
   RadioSelect,
   RadioDepartment,
 } from './ListFormComponent';
+import TimePicker from './ListFormComponent/timePicker';
 import TagInput from '../../../components/TagInput';
 import styles from './index.less';
 
@@ -92,15 +95,19 @@ const fieldScale = ['int'];
 
 const fieldOptions = ['select'];
 
+const timePickerCom = ['time', 'date', 'datetime'];
+
 const defaultValueComponent = [...fieldScale, 'text'];
 
 const fieldIsCheckbox = ['department', 'staff', 'shop', ...fieldOptions];
 
 const fieldMinAndMax = [
-  ...defaultValueComponent,
-  ...fieldIsCheckbox,
   'array',
+  ...timePickerCom,
+  ...fieldIsCheckbox,
+  ...defaultValueComponent,
 ];
+
 
 @connect(({ department, workflow, loading }) => ({
   loading: (
@@ -133,8 +140,9 @@ export default class extends React.PureComponent {
   }
 
   getDateComponent = (initialValue, type) => {
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, getFieldsValue } = this.props.form;
     const fieldType = this.getFieldTypeText(type);
+    const { min, max } = getFieldsValue(['min', 'max']);
     return getFieldDecorator('default_value', {
       initialValue: initialValue || '',
       rules: [{
@@ -144,13 +152,19 @@ export default class extends React.PureComponent {
       <RadioDate
         type={type}
         fieldType={fieldType}
+        disabledDate={(currentDate) => {
+          const validateTime = validateFieldsDisabledTime(min, max);
+          if (!validateTime) return validateTime;
+          return !(validateTime.min < currentDate && validateTime.max > currentDate);
+        }}
       />
     );
   }
 
   getTimeComponent = (initialValue, type) => {
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, getFieldsValue } = this.props.form;
     const fieldType = this.getFieldTypeText(type);
+    const { min, max } = getFieldsValue(['min', 'max']);
     return getFieldDecorator('default_value', {
       initialValue: initialValue || '',
       rules: [{
@@ -160,6 +174,20 @@ export default class extends React.PureComponent {
       <RadioTime
         type={type}
         fieldType={fieldType}
+        disabledHours={(disabledValue) => {
+          const validateTime = validateFieldsDisabledTime(min, max);
+          if (!validateTime) return validateTime;
+          const maxHour = validateTime.max.hour();
+          const minHour = validateTime.min.hour();
+          return disabledValue < minHour && disabledValue > maxHour;
+        }}
+        disabledMinutes={(disabledValue) => {
+          const validateTime = validateFieldsDisabledTime(min, max);
+          if (!validateTime) return validateTime;
+          const maxHour = validateTime.max.minutes();
+          const minHour = validateTime.min.minutes();
+          return disabledValue < minHour && disabledValue > maxHour;
+        }}
       />
     );
   }
@@ -416,16 +444,8 @@ export default class extends React.PureComponent {
   };
 
   makeFieldBlockCls = (fieldType) => {
-    const isCheckBoxData = fieldMinAndMax.filter(item =>
-      [...defaultValueComponent, 'array'].indexOf(item) === -1);
-    const { getFieldValue } = this.props.form;
-    const isCheckBox = getFieldValue('is_checkbox');
-
     const maxAndMinCls = classNames({
-      [styles.disblock]:
-        fieldMinAndMax.indexOf(fieldType) === -1 || (
-          !isCheckBox && isCheckBoxData.indexOf(fieldType) !== -1
-        ),
+      [styles.disblock]: fieldMinAndMax.indexOf(fieldType) === -1,
     });
     const scaleCls = classNames({
       [styles.disblock]: fieldScale.indexOf(fieldType) === -1,
@@ -460,11 +480,26 @@ export default class extends React.PureComponent {
     };
   }
 
+  validateFieldsDisabledTime = (min, max) => {
+    if (
+      max === '' || max === undefined ||
+      min === '' || min === undefined ||
+      !moment(min).isValid || !moment(max).isValid) {
+      return false;
+    }
+    return { min: moment(min), max: moment(max) };
+  }
+
   validateFiledsMinAndMax = (_, __, cb) => {
     const { getFieldsValue, validateFields } = this.props.form;
-    const { min, max } = getFieldsValue(['max', 'min']);
+    const { min, max, type } = getFieldsValue(['max', 'min', 'type']);
     if (min !== undefined && max !== undefined) {
       validateFields(['default_value'], { force: true });
+      if (timePickerCom.indexOf(type) !== -1) {
+        if (moment(min).isValid() && moment(max).isValid() && moment(min) > moment(max)) {
+          cb('最小值时间不能大于最大值时间');
+        }
+      }
       if (min > max) {
         cb('最小值不能大于最大值');
       }
@@ -662,6 +697,62 @@ export default class extends React.PureComponent {
     return [render, extarRender] || null;
   }
 
+  renderMinAndMax = (maxAndMinCls) => {
+    const { initialValue } = this.props;
+    const { getFieldValue, getFieldDecorator } = this.props.form;
+    const { labelValue } = this;
+    const typeValue = getFieldValue('type');
+    const format = typeValue === 'date' ? 'YYYY-MM-DD' : 'YYYY-MM-DD HH:mm:ss';
+    return (
+      <React.Fragment>
+        <Col {...fieldsBoxLayout} className={maxAndMinCls}>
+          <FormItem label={labelValue.min} {...fieldsItemLayout}>
+            {
+              getFieldDecorator('min', {
+                initialValue: initialValue.min || '',
+                rules: [{
+                  validator: this.validateFiledsMinAndMax,
+                }],
+              })(
+                (typeValue === 'date' || typeValue === 'datetime') ? (
+                  <DatePicker format={format} showTime={typeValue !== 'date'} />
+                ) : typeValue === 'time' ?
+                    (
+                      <TimePicker format="HH:mm:ss" />
+                    ) :
+                    (
+                      <Input placeholder="请输入" min={0} style={{ width: '100%' }} />
+                    )
+              )
+            }
+          </FormItem>
+        </Col>
+        <Col {...fieldsBoxLayout} className={maxAndMinCls}>
+          <FormItem label={labelValue.max} {...fieldsItemLayout}>
+            {
+              getFieldDecorator('max', {
+                initialValue: initialValue.max || '',
+                rules: [{
+                  validator: this.validateFiledsMinAndMax,
+                }],
+              })(
+                (typeValue === 'date' || typeValue === 'datetime') ? (
+                  <DatePicker format={format} showTime={typeValue !== 'date'} />
+                ) : typeValue === 'time' ?
+                    (
+                      <TimePicker format="HH:mm:ss" />
+                    ) :
+                    (
+                      <Input placeholder="请输入" min={0} style={{ width: '100%' }} />
+                    )
+              )
+            }
+          </FormItem>
+        </Col>
+      </React.Fragment>
+    );
+  }
+
   render() {
     const {
       initialValue, validator, dataSource, form, validateFields, validatorRequired,
@@ -809,34 +900,7 @@ export default class extends React.PureComponent {
                 }
               </FormItem>
             </Col>
-            <Col {...fieldsBoxLayout} className={maxAndMinCls}>
-              <FormItem label={labelValue.min} {...fieldsItemLayout}>
-                {
-                  getFieldDecorator('min', {
-                    initialValue: initialValue.min || '',
-                    rules: [{
-                      validator: this.validateFiledsMinAndMax,
-                    }],
-                  })(
-                    <Input placeholder="请输入" min={0} style={{ width: '100%' }} />
-                  )
-                }
-              </FormItem>
-            </Col>
-            <Col {...fieldsBoxLayout} className={maxAndMinCls}>
-              <FormItem label={labelValue.max} {...fieldsItemLayout}>
-                {
-                  getFieldDecorator('max', {
-                    initialValue: initialValue.max || '',
-                    rules: [{
-                      validator: this.validateFiledsMinAndMax,
-                    }],
-                  })(
-                    <Input placeholder="请输入" min={0} style={{ width: '100%' }} />
-                  )
-                }
-              </FormItem>
-            </Col>
+            {this.renderMinAndMax(maxAndMinCls)}
             <Col {...fieldsBoxLayout} className={scaleCls}>
               <FormItem label={labelValue.scale} {...fieldsItemLayout}>
                 {
