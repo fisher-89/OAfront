@@ -390,6 +390,8 @@ export default class extends React.PureComponent {
       defaultValue = availableOptions.find(item => `${item.value}` === defaultValue) || defaultValue;
     } else if (!defaultValue && availableOptions.length) {
       defaultValue = value.is_checkbox ? [] : {};
+    } else if (value.type === 'region' && !defaultValue) {
+      defaultValue = {};
     }
     const params = {
       region_level: null,
