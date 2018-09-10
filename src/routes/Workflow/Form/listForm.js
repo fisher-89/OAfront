@@ -517,13 +517,13 @@ export default class extends React.PureComponent {
   }
 
   validateFiledsDefaultValue = (_, value, cb) => {
-    if (value !== undefined && value !== '') {
-      const { getFieldsValue, getFieldValue } = this.props.form;
-      const minAndMaxAndType = getFieldsValue(['max', 'min', 'type']);
+    const { getFieldsValue, getFieldValue } = this.props.form;
+    const minAndMaxAndType = getFieldsValue(['max', 'min', 'type']);
+    const { type } = minAndMaxAndType;
+    if (value !== undefined && value !== '' && timePickerCom.indexOf(type) === -1) {
       const scale = getFieldValue('scale');
       const min = parseFloat(minAndMaxAndType.min);
       const max = parseFloat(minAndMaxAndType.max);
-      const { type } = minAndMaxAndType;
       const minAble = min !== undefined && min !== '';
       const maxAble = max !== undefined && max !== '';
       if (Array.isArray(value)) {
