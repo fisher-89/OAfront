@@ -2,7 +2,6 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Button, Divider } from 'antd';
 import Ellipsis from '../../../../../components/Ellipsis/index';
-
 import OATable from '../../../../../components/OATable/index';
 
 @connect(({ reimbursement, loading }) => ({
