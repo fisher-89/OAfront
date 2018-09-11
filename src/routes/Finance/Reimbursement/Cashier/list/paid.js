@@ -212,7 +212,7 @@ export default class extends PureComponent {
         serverSide
         loading={loading}
         extraOperator={[
-          <Button key="export" onClick={this.confirmExport} loading={exportLoading} icon="download">导出</Button>,
+          <Button key="export" onClick={this.confirmExport} loading={exportLoading} icon="download">导 出</Button>,
         ]}
         columns={this.makeColumns()}
         dataSource={paidList.data}
