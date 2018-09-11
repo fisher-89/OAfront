@@ -55,6 +55,7 @@
         "react-document-title": "^2.0.3",
         "react-dom": "^16.2.0",
         "react-fittext": "^1.0.0",
+        "react-lz-editor": "^0.12.1",
         "rollbar": "^2.3.4",
         "url-polyfill": "^1.0.13",
         "xlsx": "^0.14.0"
