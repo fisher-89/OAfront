@@ -56,7 +56,7 @@ export default class extends PureComponent {
     return (
       <React.Fragment>
         <Row>
-          <Col span={detailVisible ? 8 : 24} style={{ paddingRight: 10 }}>
+          <Col span={detailVisible ? 9 : 24} style={{ paddingRight: 10 }}>
             <Card bordered={false}>
               <Tabs>
                 <TabPane tab="待审" key="processing" style={{ minHeight: 500 }}>
@@ -82,7 +82,7 @@ export default class extends PureComponent {
               </Tabs>
             </Card>
           </Col>
-          <Col span={detailVisible ? 16 : 0}>
+          <Col span={detailVisible ? 15 : 0}>
             <Card bordered={false}>
               <Detail
                 info={detail}

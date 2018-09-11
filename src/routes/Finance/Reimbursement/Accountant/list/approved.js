@@ -1,10 +1,11 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Button, Modal } from 'antd';
+import { Button, Modal, Divider } from 'antd';
+import 'print-js';
 import XLSX from 'xlsx';
 import Ellipsis from '../../../../../components/Ellipsis';
-
 import OATable from '../../../../../components/OATable';
+import PrintPage from '../../print';
 
 @connect(({ reimbursement, loading }) => ({
   approvedList: reimbursement.approvedList,
@@ -16,6 +17,8 @@ import OATable from '../../../../../components/OATable';
 }))
 
 export default class extends PureComponent {
+  state = { printData: null };
+
   fetchApprovedList = (params) => {
     const { dispatch } = this.props;
     this.currentParams = params;
@@ -123,14 +126,26 @@ export default class extends PureComponent {
       {
         title: '操作',
         render: (rowData) => {
-          return (
-            <a onClick={() => showDetail(rowData)}>查看详情</a>
-          );
+          return [
+            <a key="print" onClick={() => this.handlePrint(rowData)}>打印</a>,
+            <Divider key="devider1" type="vertical" />,
+            <a key="showDetail" onClick={() => showDetail(rowData)}>查看详情</a>,
+          ];
         },
       },
     ];
 
     return columnsLeftFixed.concat(visible ? [] : columnsMiddle).concat(columnsRight);
+  }
+
+  handlePrint = (rowData) => {
+    this.setState({ printData: rowData }, () => {
+      printJS({
+        printable: 'printing-page',
+        type: 'html',
+        targetStyles: ['border', 'padding', 'text-align', 'font-size', 'font-weight', 'color'],
+      });
+    });
   }
 
   confirmExport = () => {
@@ -196,20 +211,26 @@ export default class extends PureComponent {
 
   render() {
     const { approvedList, loading, exportLoading } = this.props;
+    const { printData } = this.state;
     return (
-      <OATable
-        bordered
-        serverSide
-        loading={loading}
-        extraOperator={[
-          <Button key="export" onClick={this.confirmExport} loading={exportLoading} icon="download">导出</Button>,
-        ]}
-        columns={this.makeColumns()}
-        dataSource={approvedList.data}
-        total={approvedList.total}
-        fetchDataSource={this.fetchApprovedList}
-        scroll={{ x: 'auto' }}
-      />
+      <React.Fragment>
+        <OATable
+          bordered
+          serverSide
+          loading={loading}
+          extraOperator={[
+            <Button key="export" onClick={this.confirmExport} loading={exportLoading} icon="download">导 出</Button>,
+          ]}
+          columns={this.makeColumns()}
+          dataSource={approvedList.data}
+          total={approvedList.total}
+          fetchDataSource={this.fetchApprovedList}
+          scroll={{ x: 'auto' }}
+        />
+        <div id="printing-page">
+          <PrintPage data={printData} />
+        </div>
+      </React.Fragment>
     );
   }
 }

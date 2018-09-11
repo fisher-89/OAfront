@@ -174,7 +174,7 @@ export default class extends PureComponent {
           共计金额 {totalCost} 元
         </span>
       ),
-      <Button key="export" onClick={this.handleExport} icon="download">导出</Button>,
+      <Button key="export" onClick={this.handleExport} icon="download">导 出</Button>,
     ];
   }
 
