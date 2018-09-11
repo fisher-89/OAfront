@@ -343,7 +343,7 @@ class addForm extends PureComponent {
                 forceRender
                 key={pane.key}
               >
-                <FormItem label="名称" {...formItemLayout}>
+                <FormItem label="名称" {...formItemLayout} required>
                   {getFieldDecorator(`grids.${index}.name`, {
                     initialValue: grids && grids[index] ? grids[index].name : '',
                     rules: [validatorRequired],
@@ -351,7 +351,7 @@ class addForm extends PureComponent {
                     <Input placeholder="请输入" />
                   )}
                 </FormItem>
-                <FormItem label="键名" {...formItemLayout}>
+                <FormItem label="键名" {...formItemLayout} required>
                   {getFieldDecorator(`grids.${index}.key`, {
                     initialValue: grids && grids[index] ? grids[index].key : '',
                     rules: [validatorRequired],
@@ -359,7 +359,7 @@ class addForm extends PureComponent {
                     <Input placeholder="请输入" />
                   )}
                 </FormItem>
-                <FormItem label="表单控件" {...formItemLayout}>
+                <FormItem label="表单控件" {...formItemLayout} required>
                   {getFieldDecorator(`grids.${index}.fields`, {
                     initialValue: grids && grids[index] ? grids[index].fields : [],
                     rules: [validatorRequired],
