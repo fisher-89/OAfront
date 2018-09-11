@@ -15,7 +15,7 @@ const { Option } = Select;
 @connect(({ brand, department, position, loading }) => ({
   brand: brand.brand,
   brandLoading: loading.models.brand,
-  department: department.department,
+  department: department.tree,
   departmentLoading: loading.models.department,
   position: position.position,
   positionLoading: loading.models.position,

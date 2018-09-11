@@ -19,7 +19,7 @@ export async function queryCurrent() {
 export async function fetchStaff(params) {
   return request('/api/staff', {
     method: 'GET',
-    body: { ...params },
+    body: params,
   });
 }
 

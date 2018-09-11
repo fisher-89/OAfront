@@ -21,7 +21,7 @@ export default class TreeFilter extends PureComponent {
     const { treeFilters: { parentId, title, value } } = this.props;
     let pid = pId;
     if (pId === undefined) {
-      pid = 0;
+      pid = null;
     }
     data.forEach((item) => {
       if (item[parentId] === pid) {
@@ -82,7 +82,7 @@ export default class TreeFilter extends PureComponent {
   render() {
     const { handleConfirm, treeFilters: { data } } = this.props;
     const { checkedKeys, selectChild } = this.state;
-    const treeData = this.markTreeData(data, 0);
+    const treeData = this.markTreeData(data, null);
     const result = selectChild ? checkedKeys : checkedKeys.checked;
     return (
       <div className="ant-table-filter-dropdown ant-table-tree-filter">

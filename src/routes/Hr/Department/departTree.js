@@ -27,7 +27,7 @@ export default class extends PureComponent {
 
   componentDidMount() {
     const { dispatch } = this.props;
-    dispatch({ type: 'department/fetchDepartment' });
+    dispatch({ type: 'department/fetchTreeDepart' });
   }
 
   handleModalVisible = (flag) => {
