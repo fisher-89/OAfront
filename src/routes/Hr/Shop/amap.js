@@ -67,7 +67,6 @@ export default class extends PureComponent {
       labelCol: { span: 6 },
       wrapperCol: { span: 16 },
     };
-    console.log(poiInfo);
     return (
       <OAModal
         title="店铺定位表单"
