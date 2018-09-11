@@ -153,18 +153,23 @@ export default class extends React.PureComponent {
         type={type}
         fieldType={fieldType}
         disabledDate={(currentDate) => {
-          const validateTime = validateFieldsDisabledTime(min, max);
+          const validateTime = this.validateFieldsDisabledTime(min, max);
           if (!validateTime) return validateTime;
-          return !(validateTime.min < currentDate && validateTime.max > currentDate);
+          if (validateTime.min && validateTime.max) {
+            return !(validateTime.min < currentDate && validateTime.max > currentDate);
+          }
+          return !(
+            (validateTime.min && validateTime.min < currentDate) ||
+            (validateTime.max && validateTime.max > currentDate)
+          );
         }}
       />
     );
   }
 
   getTimeComponent = (initialValue, type) => {
-    const { getFieldDecorator, getFieldsValue } = this.props.form;
+    const { getFieldDecorator } = this.props.form;
     const fieldType = this.getFieldTypeText(type);
-    const { min, max } = getFieldsValue(['min', 'max']);
     return getFieldDecorator('default_value', {
       initialValue: initialValue || '',
       rules: [{
@@ -174,20 +179,6 @@ export default class extends React.PureComponent {
       <RadioTime
         type={type}
         fieldType={fieldType}
-        disabledHours={(disabledValue) => {
-          const validateTime = validateFieldsDisabledTime(min, max);
-          if (!validateTime) return validateTime;
-          const maxHour = validateTime.max.hour();
-          const minHour = validateTime.min.hour();
-          return disabledValue < minHour && disabledValue > maxHour;
-        }}
-        disabledMinutes={(disabledValue) => {
-          const validateTime = validateFieldsDisabledTime(min, max);
-          if (!validateTime) return validateTime;
-          const maxHour = validateTime.max.minutes();
-          const minHour = validateTime.min.minutes();
-          return disabledValue < minHour && disabledValue > maxHour;
-        }}
       />
     );
   }
@@ -481,27 +472,52 @@ export default class extends React.PureComponent {
   }
 
   validateFieldsDisabledTime = (min, max) => {
+    const { getFieldValue } = this.props.form;
+    const type = getFieldValue('type');
+    let momentMin;
+    let momentMax;
+    let minIsValid = true;
+    let maxIsValid = true;
+    if (type === 'time') {
+      const momentDay = moment().format('YYYY-MM-DD');
+      momentMin = min ? moment(`${momentDay} ${min}`) : false;
+      momentMax = max ? moment(`${momentDay} ${max}`) : false;
+      minIsValid = momentMin ? momentMin.isValid() : false;
+      maxIsValid = momentMax ? momentMax.isValid() : false;
+    } else {
+      momentMin = min ? moment(min) : false;
+      momentMax = max ? moment(max) : false;
+      minIsValid = momentMin ? momentMin.isValid() : false;
+      maxIsValid = momentMax ? momentMax.isValid() : false;
+    }
     if (
-      max === '' || max === undefined ||
-      min === '' || min === undefined ||
-      !moment(min).isValid || !moment(max).isValid) {
+      max === '' && max === undefined &&
+      min === '' && min === undefined &&
+      !minIsValid && !maxIsValid) {
       return false;
     }
-    return { min: moment(min), max: moment(max) };
+    return {
+      min: momentMin,
+      max: momentMax,
+    };
   }
 
   validateFiledsMinAndMax = (_, __, cb) => {
     const { getFieldsValue, validateFields } = this.props.form;
     const { min, max, type } = getFieldsValue(['max', 'min', 'type']);
     if (min !== undefined && max !== undefined) {
-      validateFields(['default_value'], { force: true });
       if (timePickerCom.indexOf(type) !== -1) {
-        if (moment(min).isValid() && moment(max).isValid() && moment(min) > moment(max)) {
-          cb('最小值时间不能大于最大值时间');
+        const momentMaxAndMin = this.validateFieldsDisabledTime(min, max);
+        if (momentMaxAndMin) {
+          if (min && max && min > max) {
+            cb('最小值时间不能大于最大值时间');
+          }
         }
-      }
-      if (min > max) {
-        cb('最小值不能大于最大值');
+      } else {
+        validateFields(['default_value'], { force: true });
+        if (min > max) {
+          cb('最小值不能大于最大值');
+        }
       }
     }
     cb();
@@ -520,6 +536,21 @@ export default class extends React.PureComponent {
     const { getFieldsValue, getFieldValue } = this.props.form;
     const minAndMaxAndType = getFieldsValue(['max', 'min', 'type']);
     const { type } = minAndMaxAndType;
+    if (type === 'time' && value !== undefined && value !== '' && value !== null) {
+      const momentMaxAndMin = this.validateFieldsDisabledTime(
+        minAndMaxAndType.min, minAndMaxAndType.max
+      );
+      if (momentMaxAndMin) {
+        const day = moment().format('YYYY-MM-DD');
+        const valueMoment = moment(`${day} ${value}`);
+        if (
+          (momentMaxAndMin.min && momentMaxAndMin.min > valueMoment) ||
+          (momentMaxAndMin.max && momentMaxAndMin.max < valueMoment)
+        ) {
+          cb('所选时间不在最小时间和最大时间范围');
+        }
+      }
+    }
     if (value !== undefined && value !== '' && timePickerCom.indexOf(type) === -1) {
       const scale = getFieldValue('scale');
       const min = parseFloat(minAndMaxAndType.min);
@@ -718,7 +749,7 @@ export default class extends React.PureComponent {
                   <DatePicker format={format} showTime={typeValue !== 'date'} />
                 ) : typeValue === 'time' ?
                     (
-                      <TimePicker format="HH:mm:ss" />
+                      <TimePicker />
                     ) :
                     (
                       <Input placeholder="请输入" min={0} style={{ width: '100%' }} />
@@ -740,7 +771,7 @@ export default class extends React.PureComponent {
                   <DatePicker format={format} showTime={typeValue !== 'date'} />
                 ) : typeValue === 'time' ?
                     (
-                      <TimePicker format="HH:mm:ss" />
+                      <TimePicker />
                     ) :
                     (
                       <Input placeholder="请输入" min={0} style={{ width: '100%' }} />
@@ -784,6 +815,7 @@ export default class extends React.PureComponent {
       <OAModal
         width={800}
         {...modalProps}
+        visible
         onSubmit={validateFields(this.handleOk)}
       >
         <Card className={styles.cardTitle} title="控件信息" bordered={false}>
