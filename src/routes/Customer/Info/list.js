@@ -24,7 +24,6 @@ export default class extends PureComponent {
     const onClick = (name, id) => {
       this.props.history.push(`/client/customer/list/${name}/${id}`);
     };
-    const brandsData = brands.filter(item => staffBrandsAuth.indexOf(item.id) !== -1);
     const columns = [
       {
         align: 'center',
@@ -59,9 +58,9 @@ export default class extends PureComponent {
         width: 300,
         align: 'center',
         title: '合作品牌',
-        filters: getFiltersData(brandsData),
+        filters: getFiltersData(brands),
         dataIndex: 'brands.brand_id',
-        render: (_, record) => OATable.analysisColumn(brandsData, record.brands, 'brand_id'),
+        render: (_, record) => OATable.analysisColumn(brands, record.brands, 'brand_id'),
       },
       {
         // width: 120,
@@ -90,7 +89,12 @@ export default class extends PureComponent {
         title: '操作',
         render: (_, rowData) => {
           let color;
-          const clickAble = this.user.staff_sn === rowData.recorder_sn;
+          let clickAble = false;
+          rowData.brands.forEach((item) => {
+            if (staffBrandsAuth.indexOf(item.brand_id) !== -1) {
+              clickAble = true;
+            }
+          });
           if (!clickAble) {
             color = '#8e8e8e';
           }
@@ -98,9 +102,8 @@ export default class extends PureComponent {
           return (
             <Fragment>
               <a
-                style={style}
                 onClick={() => {
-                  if (clickAble) onClick('info', rowData.id);
+                  onClick('info', rowData.id);
                 }}
               >查看
               </a>

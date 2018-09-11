@@ -90,10 +90,10 @@ const menuData = [
             name: '客户资料',
             path: 'customer',
           },
-          {
-            name: '记事本',
-            path: 'notepad',
-          },
+          // {
+          //   name: '记事本',
+          //   path: 'notepad',
+          // },
         ],
       },
     ],
