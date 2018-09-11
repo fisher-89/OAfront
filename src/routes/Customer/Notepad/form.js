@@ -14,6 +14,7 @@ import OAForm, {
 import Upload from '../../../components/OATable/upload';
 import store from './store/store';
 import upload from '../../../utils/upload';
+import Editor from './editor';
 
 const FormItem = OAForm.Item;
 const { Option } = Select;
@@ -210,7 +211,7 @@ export default class extends React.PureComponent {
             initialValue: initialValue.content,
             rules: [validatorRequired],
           })(
-            <Input.TextArea placeholder="请输入" autosize={{ minRows: 10, maxRows: 10 }} />
+            <Editor />
           )}
         </FormItem>
         <FormItem {...formItemLayout} label="附件">

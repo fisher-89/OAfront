@@ -19,38 +19,40 @@ import StaffInfo from './staffInfo';
 import MoreSearch from './moreSearch';
 import EditTransfer from './editTransfer';
 import EditLeave from './editLeave';
-import request from '../../../utils/request';
 import OATable from '../../../components/OATable';
 import EditStaff from './edit';
 
 import {
   getBrandAuthority,
   getDepartmentAuthority,
-  makePositionData,
 } from '../../../utils/utils';
 
 const { TabPane } = Tabs;
+const status = [
+  { value: 1, text: '试用期' },
+  { value: 2, text: '在职' },
+  { value: 3, text: '停薪留职' },
+  { value: -1, text: '离职' },
+  { value: -2, text: '自动离职' },
+  { value: -3, text: '开除' },
+  { value: -4, text: '劝退' },
+];
+const staffProperty = ['无', '108将', '36天罡', '24金刚', '18罗汉'];
 
-@connect(({ staffs, brand, department, position, loading }) => ({
+@connect(({ staffs, brand, department, loading }) => ({
+  staff: staffs.staff,
   brand: brand.brand,
   brandLoading: loading.models.brand,
-  department: department.department,
-  departmentLoading: loading.models.department,
+  department: department.tree,
   staffInfo: staffs.staffDetails,
   staffLoading: loading.models.staffs,
-  position: position.position,
-  positionLoading: loading.models.position,
 }))
 
 export default class extends PureComponent {
   state = {
-    total: 0,
-    staff: [],
-    loading: false,
     moreInfo: null,
     visible: false,
     panes: [],
-    filterPosition: [],
     activeKey: 'staff_list',
     staffSn: '',
     editVisible: false,
@@ -59,19 +61,10 @@ export default class extends PureComponent {
     editStaff: {},
   };
 
-  componentDidMount() {
+  componentWillMount() {
     const { dispatch } = this.props;
     dispatch({ type: 'brand/fetchBrand' });
-    dispatch({ type: 'position/fetchPosition' });
-    dispatch({ type: 'department/fetchDepartment', payload: {} });
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const { position } = nextProps;
-    const { filterPosition } = this.state;
-    if (nextProps.position !== this.props.position && filterPosition.length === 0) {
-      this.setState(({ filterPosition: [...position] }));
-    }
+    dispatch({ type: 'department/fetchTreeDepart' });
   }
 
   onEdit = (targetKey, action) => {
@@ -79,6 +72,7 @@ export default class extends PureComponent {
   };
 
   fetchStaff = (param) => {
+    const { dispatch } = this.props;
     this.searchFilter = param;
     if (this.moreSearch) {
       this.searchFilter.filters = {
@@ -86,31 +80,7 @@ export default class extends PureComponent {
         ...this.moreSearch.state.formFilter,
       };
     }
-    this.handleVisibleChange(false);
-
-    const { position, brand } = this.props;
-    let { filterPosition } = this.state;
-    if (this.searchFilter.filters.brand_id) {
-      const brandId = this.searchFilter.filters.brand_id;
-      const pushPosition = makePositionData(brandId, brand);
-      if (pushPosition.length > 0) {
-        filterPosition = pushPosition;
-      }
-    } else {
-      filterPosition = position;
-    }
-    this.setState({ loading: true });
-    request('/api/table/staff', {
-      method: 'POST',
-      body: this.searchFilter,
-    }).then((response) => {
-      this.setState({
-        loading: false,
-        staff: response.data,
-        total: response.total,
-        filterPosition: [...filterPosition],
-      });
-    });
+    dispatch({ type: 'staffs/fetchStaff', payload: this.searchFilter });
   };
 
   fetchStaffInfo = (param) => {
@@ -127,41 +97,6 @@ export default class extends PureComponent {
     }
     this.setState({ visible });
   };
-
-  // filtersInfo = (deleteInfo) => {
-  //   const { filters } = this.searchFilters;
-  //   if (filters.info) {
-  //     Object.keys(deleteInfo).forEach((key) => {
-  //       if (deleteInfo[key] === null) {
-  //         delete this.searchFilters.filters.info[key];
-  //       }
-  //     });
-  //     if (Object.keys(this.searchFilters.filters.info).length === 0) {
-  //       delete this.searchFilters.filters.info;
-  //     }
-  //   }
-  // };
-
-  // moreSearch = (info) => {
-  //   let moreInfo = info;
-  //   Object.keys(moreInfo).every((key) => {
-  //     if (moreInfo[key] === null) {
-  //       moreInfo = null;
-  //       return false;
-  //     }
-  //     return true;
-  //   });
-  //   this.setState({ moreInfo, visible: false }, () => {
-  //     const { filters } = this.searchFilters;
-  //     let searchInfo = { ...info };
-  //     if (filters.info) {
-  //       searchInfo = { ...filters.info, ...info };
-  //     }
-  //     this.searchFilters.filters.info = searchInfo;
-  //     this.filtersInfo(searchInfo);
-  //     this.fetchStaff({});
-  //   });
-  // };
 
   showUserInfo = (info) => {
     const { panes } = this.state;
@@ -365,27 +300,12 @@ export default class extends PureComponent {
   };
 
   makeColumns = () => {
-    const { brand, department, position } = this.props;
-    const { filterPosition } = this.state;
-
+    const { brand, department } = this.props;
     const gender = [{ value: 1, text: '男' }, { value: 2, text: '女' }];
     const genderText = {};
     gender.forEach((item) => {
       genderText[item.value] = item;
     });
-
-    const status = [
-      { value: 1, text: '试用期' },
-      { value: 2, text: '在职' },
-      { value: 3, text: '停薪留职' },
-      { value: -1, text: '离职' },
-      { value: -2, text: '自动离职' },
-      { value: -3, text: '开除' },
-      { value: -4, text: '劝退' },
-    ];
-
-    const staffProperty = ['无', '108将', '36天罡', '24金刚', '18罗汉'];
-
 
     const brandFilters = [];
     if (brand) {
@@ -427,17 +347,10 @@ export default class extends PureComponent {
         },
       }, {
         title: '职位',
-        dataIndex: 'position_id',
-        filters: filterPosition && filterPosition.map((item) => {
-          return { text: item.name, value: item.id };
-        }),
-        render: (val) => {
-          const data = position && position.filter(item => item.id === val)[0];
-          return data ? data.name : '';
-        },
+        dataIndex: 'position.name',
       }, {
         title: '部门',
-        dataIndex: 'department_id',
+        dataIndex: 'department.full_name',
         width: 200,
         treeFilters: {
           title: 'full_name',
@@ -449,16 +362,6 @@ export default class extends PureComponent {
               disabled: !getDepartmentAuthority(item.id),
             };
           }),
-        },
-        render: (val) => {
-          const data = department && department.filter(item => item.id === val)[0];
-          const fullName = data ? data.full_name : '';
-          const content = (
-            <Tooltip title={fullName} placement="right">
-              {fullName}
-            </Tooltip>
-          );
-          return content;
         },
       },
       {
@@ -590,16 +493,9 @@ export default class extends PureComponent {
   };
 
   render() {
-    const {
-      staff,
-      panes,
-      total,
-      loading,
-      activeKey,
-    } = this.state;
-    const { staffLoading, staffInfo } = this.props;
-    const columns = this.makeColumns();
-    const districtComponent = this.makeExtraOperator();
+    const { panes, activeKey } = this.state;
+    const { staffLoading, staffInfo, staff } = this.props;
+    console.log(this.props.department);
     return (
       <Fragment>
         <Tabs
@@ -617,12 +513,13 @@ export default class extends PureComponent {
           >
             <OATable
               serverSide
-              data={staff}
-              total={total}
-              columns={columns}
-              loading={loading}
+              loading={staffLoading}
               scroll={{ x: 300 }}
-              extraOperator={districtComponent}
+              columns={this.makeColumns()}
+              dataSource={staff && staff.data}
+              total={staff && staff.total}
+              filtered={staff && staff.filtered}
+              extraOperator={this.makeExtraOperator()}
               fetchDataSource={this.fetchStaff}
             />
           </TabPane>
