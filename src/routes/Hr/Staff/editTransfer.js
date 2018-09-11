@@ -13,21 +13,15 @@ const { Option } = Select;
 
 @OAForm.create()
 @connect(({ brand, department, position, loading }) => ({
-  brand: brand.brand,
+  brand: brand.all,
   brandLoading: loading.models.brand,
   department: department.tree,
   departmentLoading: loading.models.department,
-  position: position.position,
+  position: position.all,
   positionLoading: loading.models.position,
 }))
 
 export default class extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-    };
-  }
-
   handleChange = (value, type) => {
     const { brand, position } = this.props;
     let newPosition = makePositionData(value.toString(), brand);
@@ -86,7 +80,6 @@ export default class extends PureComponent {
       validateFields,
       form: { getFieldDecorator, setFieldsValue },
     } = this.props;
-
     const formItemLayout = {
       labelCol: {
         span: 7,

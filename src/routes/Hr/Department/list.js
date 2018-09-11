@@ -13,7 +13,7 @@ import { customerAuthority, getBrandAuthority } from '../../../utils/utils';
 const { TabPane } = Tabs;
 
 @connect(({ department, brand, loading }) => ({
-  brand: brand.brand,
+  brand: brand.all,
   treeList: department.tree,
   department: department.department,
   fLoading: loading.effects['department/fetchDepartment'],
@@ -27,7 +27,7 @@ export default class extends PureComponent {
 
   componentDidMount() {
     const { dispatch } = this.props;
-    dispatch({ type: 'brand/fetchBrand' });
+    dispatch({ type: 'brand/fetchBrandAll' });
     dispatch({ type: 'department/fetchTreeDepart' });
   }
 
