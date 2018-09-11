@@ -155,17 +155,19 @@ export default class extends PureComponent {
             fetchDataSource={this.fetchDepartment}
           />
         </Col>
-        {(customerAuthority(151) || customerAuthority(138)) &&
-          (
-            <DepartForm
-              visible={visible}
-              initialValue={editInfo}
-              onCancel={this.handleModalVisible}
-              treeData={treeList}
-              onClose={() => this.setState({ editInfo: {} })}
-            />
-          )
-        }
+        <Col span={20}>
+          {(customerAuthority(151) || customerAuthority(138)) &&
+            (
+              <DepartForm
+                visible={visible}
+                initialValue={editInfo}
+                onCancel={this.handleModalVisible}
+                treeData={treeList}
+                onClose={() => this.setState({ editInfo: {} })}
+              />
+            )
+          }
+        </Col>
       </Row>
     );
   }

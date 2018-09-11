@@ -20,8 +20,8 @@ const status = [
 @connect(({ staffs, department, brand, position, loading }) => ({
   brand: brand.brand,
   brandLoading: loading.models.brand,
-  department: department.department,
-  departmentLoading: loading.effects['department/fetchDepart'],
+  department: department.tree,
+  departmentLoading: loading.effects['department/fetchTreeDepart'],
   staffSearcherTotal: staffs.totalResult,
   staffSearcherResult: staffs.tableResult,
   staffsLoading: loading.effects['staffs/fetchStaff'],
