@@ -16,8 +16,8 @@ const { TreeNode } = Tree;
 
 @connect(({ department, loading }) => ({
   dataSource: department.tree,
-  loading: loading.effects['department/fetchDepart'],
-  sortLoading: loading.effects['department/fetchDepart'],
+  loading: loading.effects['department/fetchDepartment'],
+  sortLoading: loading.effects['department/fetchDepartment'],
 }))
 export default class extends PureComponent {
   state = {
@@ -27,7 +27,7 @@ export default class extends PureComponent {
 
   componentDidMount() {
     const { dispatch } = this.props;
-    dispatch({ type: 'department/fetchDepart' });
+    dispatch({ type: 'department/fetchDepartment' });
   }
 
   handleModalVisible = (flag) => {
@@ -53,7 +53,7 @@ export default class extends PureComponent {
       cancelText: '取消',
       onOk: () => {
         dispatch({
-          type: 'department/deleteDepart',
+          type: 'department/deleteDepartment',
           payload: { id },
         });
       },

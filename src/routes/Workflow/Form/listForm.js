@@ -440,7 +440,7 @@ export default class extends React.PureComponent {
 
   fetchDepartment = () => {
     const { dispatch } = this.props;
-    dispatch({ type: 'department/fetchDepart' });
+    dispatch({ type: 'department/fetchDepartment' });
   };
 
   makeFieldBlockCls = (fieldType) => {
