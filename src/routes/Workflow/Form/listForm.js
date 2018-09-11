@@ -815,7 +815,6 @@ export default class extends React.PureComponent {
       <OAModal
         width={800}
         {...modalProps}
-        visible
         onSubmit={validateFields(this.handleOk)}
       >
         <Card className={styles.cardTitle} title="控件信息" bordered={false}>
