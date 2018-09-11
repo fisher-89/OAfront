@@ -33,7 +33,7 @@ export default class extends PureComponent {
     const { dispatch, onError } = this.props;
 
     dispatch({
-      type: values.id ? 'department/editDepart' : 'department/addDepart',
+      type: values.id ? 'department/editDepartment' : 'department/addDepartment',
       payload: {
         ...manager,
         ...values,

@@ -1,17 +1,17 @@
 import {
-  fetchDepart,
-  addDepart,
-  editDepart,
-  deleteDepart,
+  fetchDepartment,
+  addDepartment,
+  editDepartment,
+  deleteDepartment,
 } from '../../services/department';
 
 const store = 'department';
 
 export default {
-  * fetchDepart({ payload }, { call, put }) {
+  * fetchDepartment({ payload }, { call, put }) {
     try {
       const params = { ...payload };
-      const response = yield call(fetchDepart, params);
+      const response = yield call(fetchDepartment, params);
       yield put({
         type: 'save',
         payload: {
@@ -23,12 +23,12 @@ export default {
       return err;
     }
   },
-  * addDepart({ payload, onSuccess, onError }, { call, put }) {
+  * addDepartment({ payload, onSuccess, onError }, { call, put }) {
     try {
       const params = {
         ...payload,
       };
-      const response = yield call(addDepart, params);
+      const response = yield call(addDepartment, params);
       if (response.errors && onError) {
         onError(response.errors);
       } else {
@@ -43,14 +43,14 @@ export default {
       }
     } catch (err) { return err; }
   },
-  * editDepart({ payload, onSuccess, onError }, { call, put }) {
+  * editDepartment({ payload, onSuccess, onError }, { call, put }) {
     try {
       const params = {
         ...payload,
       };
       const { id } = payload;
       delete params.id;
-      const response = yield call(editDepart, params, id);
+      const response = yield call(editDepartment, params, id);
       if (response.errors && onError) {
         onError(response.errors);
       } else {
@@ -66,10 +66,10 @@ export default {
       }
     } catch (error) { return error; }
   },
-  * deleteDepart({ payload }, { call, put }) {
+  * deleteDepartment({ payload }, { call, put }) {
     try {
       const { id } = payload;
-      const response = yield call(deleteDepart, id);
+      const response = yield call(deleteDepartment, id);
       if (response.error) {
         notification.error({
           message: '删除失败',
