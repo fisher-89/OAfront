@@ -1,6 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import {
-  Tabs,
+  Row,
+  Col,
   Modal,
   Divider,
 } from 'antd';
@@ -9,8 +10,6 @@ import OATable from '../../../components/OATable';
 import DepartTree from './departTree';
 import DepartForm from './departForm';
 import { customerAuthority, getBrandAuthority } from '../../../utils/utils';
-
-const { TabPane } = Tabs;
 
 @connect(({ department, brand, loading }) => ({
   brand: brand.all,
@@ -21,7 +20,6 @@ const { TabPane } = Tabs;
 export default class extends PureComponent {
   state = {
     visible: false,
-    activeKey: 'depart_list',
     editInfo: {},
   };
 
@@ -69,10 +67,6 @@ export default class extends PureComponent {
         filters,
       },
     });
-  };
-
-  tabsChange = (activeKey) => {
-    this.setState({ activeKey });
   };
 
   makeColumns = () => {
@@ -144,40 +138,23 @@ export default class extends PureComponent {
   render() {
     const columns = this.makeColumns();
     const { fLoading, department, treeList } = this.props;
-    const { visible, editInfo, activeKey } = this.state;
+    const { visible, editInfo } = this.state;
     return (
-      <Fragment>
-        <Tabs
-          hideAdd
-          animated
-          type="editable-card"
-          onEdit={this.onEdit}
-          activeKey={activeKey}
-          onChange={this.tabsChange}
-        >
-          <TabPane
-            tab="部门列表"
-            key="depart_list"
-            closable={false}
-          >
-            <OATable
-              serverSide
-              columns={columns}
-              loading={fLoading}
-              dataSource={department && department.data}
-              total={department.total || 0}
-              filtered={department.filtered || 0}
-              fetchDataSource={this.fetchDepartment}
-            />
-          </TabPane>
-          <TabPane
-            tab="部门结构"
-            key="depart_s_list"
-            closable={false}
-          >
-            <DepartTree fetchDataSource={typeId => this.setTypeId(typeId)} />
-          </TabPane>
-        </Tabs>
+      <Row>
+        <Col span={4} style={{ borderRight: '1px solid #e8e8e8' }}>
+          <DepartTree fetchDataSource={typeId => this.setTypeId(typeId)} />
+        </Col>
+        <Col span={20}>
+          <OATable
+            serverSide
+            columns={columns}
+            loading={fLoading}
+            dataSource={department && department.data}
+            total={department.total || 0}
+            filtered={department.filtered || 0}
+            fetchDataSource={this.fetchDepartment}
+          />
+        </Col>
         {(customerAuthority(151) || customerAuthority(138)) &&
           (
             <DepartForm
@@ -189,7 +166,7 @@ export default class extends PureComponent {
             />
           )
         }
-      </Fragment>
+      </Row>
     );
   }
 }
