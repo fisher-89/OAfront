@@ -34,7 +34,7 @@ export default (Component) => {
       if (radioGroupValue === 1) {
         delete newProps.value;
       }
-      delete newProps.type;
+      // delete newProps.type;
       delete newProps.valueType;
       return (
         <React.Fragment>

@@ -4,15 +4,15 @@ import { TimePicker } from 'antd';
 
 export default class extends React.PureComponent {
   render() {
-    const { value, onChange, format } = this.props;
-    const momentValue = value ? { value: moment(value, format) } : { value: undefined };
+    const { value, onChange } = this.props;
+    const momentValue = value ? { value: moment(value, 'HH:mm:ss') } : { value: undefined };
     return (
       <TimePicker
-        format={format}
+        format="HH:mm:ss"
         {...this.props}
         {...momentValue}
-        onChange={(changeValue) => {
-          if (onChange) onChange(moment(changeValue).format(format));
+        onChange={(_, timeStr) => {
+          if (onChange) onChange(timeStr);
         }}
       />
     );

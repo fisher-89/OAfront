@@ -48,6 +48,7 @@
         "rc-queue-anim": "^1.5.0",
         "rc-viewer": "^0.0.9",
         "react": "^16.2.0",
+        "react-amap": "^1.2.7",
         "react-color": "^2.14.1",
         "react-container-query": "^0.9.1",
         "react-dnd": "^2.6.0",

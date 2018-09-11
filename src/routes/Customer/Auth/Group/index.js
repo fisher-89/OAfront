@@ -23,6 +23,13 @@ export default class extends React.PureComponent {
     const filters = getFiltersData(brand);
     const columns = [
       {
+        width: 80,
+        align: 'center',
+        sorter: true,
+        title: '序号',
+        dataIndex: 'id',
+      },
+      {
         searcher: true,
         title: '分组名称',
         dataIndex: 'name',

@@ -8,7 +8,7 @@ import {
 } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
-import Notepad from '../Notepad/list';
+// import Notepad from '../Notepad/list';
 import ActionLog from './log';
 import styles from './index.less';
 import district from '../../../assets/district';
@@ -116,9 +116,6 @@ export default class extends React.PureComponent {
               data={customerInfo}
               {...customerInfoProps}
             />
-          </TabPane>
-          <TabPane tab="记事本" key="2">
-            <Notepad customerId={this.id} history={this.props.history} />
           </TabPane>
           <TabPane tab="操作日志" key="3">
             <ActionLog type="user" />

@@ -11,53 +11,11 @@ export default (Compoent) => {
       loading.effects['brand/fetchBrand'] ||
       loading.effects['customer/fetchSource'] ||
       loading.effects['customer/fetchTags'] ||
-      loading.effects['customer/fetchCustomer'] ||
-      loading.effects['customer/customerStaffBrandsAuth']
+      loading.effects['customer/fetchCustomer']
+      // loading.effects['customer/customerStaffBrandsAuth']
     ),
   }))
   class NewCompoent extends React.PureComponent {
-    makeParams = (values) => {
-      const params = {
-        ...values,
-        vindicator_sn: values.vindicator.staff_sn || '',
-        vindicator_name: values.vindicator.staff_name || '',
-      };
-      delete params.vindicator;
-      return params;
-    }
-
-    delete = (id, onError, onSuccess) => {
-      const { dispatch } = this.props;
-      dispatch({
-        type: 'customer/deleteCustomer',
-        payload: { id },
-        onError,
-        onSuccess,
-      });
-    }
-
-    update = (values, onError, onSuccess) => {
-      const { dispatch } = this.props;
-      const params = this.makeParams(values);
-      dispatch({
-        type: 'customer/editCustomer',
-        payload: params,
-        onError: errors => onError(errors, { vindicator_name: 'vindicator' }),
-        onSuccess,
-      });
-    }
-
-    add = (values, onError, onSuccess) => {
-      const { dispatch } = this.props;
-      const params = this.makeParams(values);
-      dispatch({
-        type: 'customer/addCustomer',
-        payload: params,
-        onError: errors => onError(errors, { vindicator_name: 'vindicator' }),
-        onSuccess,
-      });
-    }
-
     fetchDataSource = (params) => {
       const { dispatch } = this.props;
       this.fetchStore();
@@ -75,7 +33,7 @@ export default (Compoent) => {
       dispatch({ type: 'customer/fetchSource' });
       dispatch({ type: 'customer/fetchTags' });
       dispatch({ type: 'brand/fetchBrand' });
-      this.fetchStaffBrandsAuth();
+      // this.fetchStaffBrandsAuth();
     }
 
     fetchStaffBrandsAuth = () => {
@@ -86,9 +44,6 @@ export default (Compoent) => {
     makeProps = () => {
       const response = {
         ...this.props,
-        add: this.add,
-        delete: this.delete,
-        update: this.update,
         fetch: this.fetchDataSource,
         fetchTagsType: this.fetchTagsType,
       };

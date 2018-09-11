@@ -16,7 +16,7 @@ const { TabPane } = Tabs;
   brand: brand.brand,
   treeList: department.tree,
   department: department.department,
-  fLoading: loading.effects['department/fetchDepart'],
+  fLoading: loading.effects['department/fetchDepartment'],
 }))
 export default class extends PureComponent {
   state = {
@@ -48,7 +48,7 @@ export default class extends PureComponent {
       cancelText: '取消',
       onOk: () => {
         dispatch({
-          type: 'department/deleteDepart',
+          type: 'department/deleteDepartment',
           payload: { id },
         });
       },
@@ -63,7 +63,7 @@ export default class extends PureComponent {
     const { dispatch } = this.props;
     const { filters } = params;
     dispatch({
-      type: 'department/fetchDepart',
+      type: 'department/fetchDepartment',
       payload: {
         ...params,
         filters,

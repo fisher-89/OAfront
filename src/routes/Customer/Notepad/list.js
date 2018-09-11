@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import {
   Button,
-  Divider,
+  // Divider,
 } from 'antd';
 import store from './store/store';
 import OATable from '../../../components/OATable';
@@ -69,8 +69,6 @@ export default class extends PureComponent {
           const style = color ? { color } : {};
           return (
             <Fragment>
-              <a style={style} onClick={() => { if (clickAble) this.handleLink('edit', id); }}>编辑</a>
-              <Divider type="vertical" />
               <a style={style} onClick={() => { if (clickAble) deleted(id); }}>删除</a>
             </Fragment>
           );

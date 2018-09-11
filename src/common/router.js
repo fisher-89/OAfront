@@ -182,6 +182,9 @@ export const getRouterData = (app) => {
     '/hr/brand': {
       component: dynamicWrapper(app, ['position', 'brand'], () => import('../routes/Hr/Brand')),
     },
+    '/hr/shop': {
+      component: dynamicWrapper(app, ['department', 'shop', 'brand'], () => import('../routes/Hr/Shop')),
+    },
     '/hr/staff/edit/:staff_sn': {
       component: dynamicWrapper(app, [], () => import('../routes/Hr/Staff/edit')),
     },
