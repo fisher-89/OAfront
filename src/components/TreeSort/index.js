@@ -8,6 +8,7 @@ const { TreeNode } = Tree;
 
 
 const defaultProps = {
+  rootPid: null,
   sorter: false,
   dataSource: [],
   isEdit: true,
@@ -33,17 +34,17 @@ const defaultProps = {
 export default class TreeSorter extends PureComponent {
   constructor(props) {
     super(props);
-    const { dataSource } = props;
-    const treeData = this.markTreeData(dataSource || []);
+    const { dataSource, rootPid } = props;
+    const treeData = this.markTreeData(dataSource || [], rootPid);
     this.state = {
       treeData: treeData || [],
     };
   }
 
   componentWillReceiveProps(nextProps) {
-    const { dataSource } = nextProps;
+    const { dataSource, rootPid } = nextProps;
     if (JSON.stringify(dataSource) !== JSON.stringify(this.props.dataSource)) {
-      const treeData = this.markTreeData(dataSource || []);
+      const treeData = this.markTreeData(dataSource || [], rootPid);
       this.setState({ treeData: [...treeData] });
     }
   }
