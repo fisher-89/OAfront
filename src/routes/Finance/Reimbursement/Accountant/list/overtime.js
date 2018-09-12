@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import { Button, Divider } from 'antd';
 import Ellipsis from '../../../../../components/Ellipsis/index';
 import OATable from '../../../../../components/OATable/index';
+import PrintPage from '../../print';
 
 @connect(({ reimbursement, loading }) => ({
   overtimeList: reimbursement.overtimeList,
@@ -11,6 +12,8 @@ import OATable from '../../../../../components/OATable/index';
 }))
 
 export default class extends PureComponent {
+  state = { printData: null };
+
   fetchProcessingList = (params) => {
     const { dispatch } = this.props;
     dispatch({ type: 'reimbursement/fetchOvertimeList', payload: params });
@@ -111,8 +114,10 @@ export default class extends PureComponent {
         title: '操作',
         render: (rowData) => {
           return [
-            <a key="approve" onClick={() => this.handleApprove(rowData)}>通过</a>,
+            <a key="print" onClick={() => this.handlePrint(rowData)}>打印</a>,
             <Divider key="devider1" type="vertical" />,
+            <a key="approve" onClick={() => this.handleApprove(rowData)}>通过</a>,
+            <Divider key="devider2" type="vertical" />,
             <a key="showDetail" onClick={() => showDetail(rowData)}>查看详情</a>,
           ];
         },
@@ -140,22 +145,37 @@ export default class extends PureComponent {
     });
   }
 
+  handlePrint = (rowData) => {
+    this.setState({ printData: rowData }, () => {
+      printJS({
+        printable: 'printing-page',
+        type: 'html',
+        targetStyles: ['border', 'padding', 'text-align', 'font-size', 'font-weight', 'color'],
+      });
+    });
+  }
+
   render() {
     const { overtimeList, loading, openPackageList } = this.props;
+    const { printData } = this.state;
     return (
-      <OATable
-        bordered
-        serverSide={false}
-        extraOperator={[
-          <Button key="submit" onClick={openPackageList}>批量送审</Button>,
-        ]}
-        loading={loading}
-        columns={this.makeColumns()}
-        dataSource={overtimeList}
-        fetchDataSource={this.fetchProcessingList}
-        scroll={{ x: 'auto' }}
-      />
-
+      <React.Fragment>
+        <OATable
+          bordered
+          serverSide={false}
+          extraOperator={[
+            <Button key="submit" onClick={openPackageList}>批量送审</Button>,
+          ]}
+          loading={loading}
+          columns={this.makeColumns()}
+          dataSource={overtimeList}
+          fetchDataSource={this.fetchProcessingList}
+          scroll={{ x: 'auto' }}
+        />
+        <div id="printing-page">
+          <PrintPage data={printData} />
+        </div>
+      </React.Fragment>
     );
   }
 }
