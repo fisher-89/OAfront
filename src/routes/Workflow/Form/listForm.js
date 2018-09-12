@@ -108,6 +108,7 @@ const fieldMinAndMax = [
   ...defaultValueComponent,
 ];
 
+const requiredCheckBox = [...fieldScale, 'array'];
 
 @connect(({ department, workflow, loading }) => ({
   loading: (
@@ -435,8 +436,13 @@ export default class extends React.PureComponent {
   };
 
   makeFieldBlockCls = (fieldType) => {
+    const { getFieldValue } = this.props.form;
+    const multiple = getFieldValue('is_checkbox');
+    const maxAndMinIndexOf = fieldMinAndMax.indexOf(fieldType);
     const maxAndMinCls = classNames({
-      [styles.disblock]: fieldMinAndMax.indexOf(fieldType) === -1,
+      [styles.disblock]: maxAndMinIndexOf === -1 || (
+        !multiple && maxAndMinIndexOf !== -1 && requiredCheckBox.indexOf(fieldType) === -1
+      ),
     });
     const scaleCls = classNames({
       [styles.disblock]: fieldScale.indexOf(fieldType) === -1,

@@ -10,7 +10,7 @@ const menuData = [
     authority: '174',
     children: [
       {
-        name: '客户资料',
+        name: '客户信息',
         path: 'customer',
         children: [
           {
@@ -28,7 +28,7 @@ const menuData = [
             hideInMenu: true,
           },
           {
-            name: '查看资料',
+            name: '客户列表',
             path: 'list',
           },
           {
