@@ -4,17 +4,21 @@ import { connect } from 'dva';
 import { getBrandAuthority, getDepartmentAuthority } from '../../../../utils/utils';
 import SearchTable from '../index';
 
-@connect(({ department, brand, shop, loading }) => ({
+@connect(({ department, brand, tableShop, loading }) => ({
   brand: brand.brand,
   brandLoading: loading.models.brand,
   department: department.department,
   departmentLoading: loading.effects['department/fetchDepartment'],
-  shop: shop.shop,
-  shopTotal: shop.total,
-  shopLoading: loading.models.shop,
+  searcherTotal: tableShop.totalResult,
+  searcherResult: tableShop.tableResult,
+  shopLoading: loading.models.tableShop,
 }))
 
 export default class Shop extends PureComponent {
+  state = {
+    searcherParams: '',
+  };
+
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({ type: 'brand/fetchBrand' });
@@ -23,7 +27,9 @@ export default class Shop extends PureComponent {
 
   fetchShop = (params) => {
     const { dispatch } = this.props;
-    dispatch({ type: 'shop/fetchShop', payload: params });
+    this.setState({ searcherParams: JSON.stringify(params) }, () => {
+      dispatch({ type: 'shop/fetchShop', payload: params });
+    });
   };
 
   makeColumns = () => {
@@ -112,18 +118,18 @@ export default class Shop extends PureComponent {
 
   makeShopProps = () => {
     const {
-      shop,
-      shopTotal,
       shopLoading,
       brandLoading,
+      searcherTotal,
+      searcherResult,
       departmentLoading,
     } = this.props;
-
+    const { searcherParams } = this.state;
     const tableProps = {
-      data: shop,
-      total: shopTotal,
       index: 'shop_sn',
       scroll: { x: 760 },
+      total: searcherTotal[searcherParams],
+      data: searcherResult[searcherParams],
       loading: (shopLoading || brandLoading || departmentLoading),
     };
 

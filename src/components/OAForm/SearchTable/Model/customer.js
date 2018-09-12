@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react';
-import { connect } from 'dva';
 import moment from 'moment';
 import store from './store';
 import SearchTable from '../index';
@@ -7,10 +6,12 @@ import OATable from '../../../OATable';
 import { customerStatus } from '../../../../assets/customer';
 import { getFiltersData } from '../../../../utils/utils';
 
-
-@connect(({ customer }) => ({ customer: customer.customer }))
 @store
 export default class Customer extends PureComponent {
+  state = {
+    searcherParams: '',
+  };
+
   makeColumns = () => {
     const { source, tags, brands } = this.props;
 
@@ -87,13 +88,15 @@ export default class Customer extends PureComponent {
   makeStaffProps = () => {
     const {
       loading,
-      customer,
+      searcherTotal,
+      searcherResult,
     } = this.props;
+    const { searcherParams } = this.state;
     const tableProps = {
       index: 'id',
       scroll: { x: 1200 },
-      total: customer.total,
-      data: customer.data,
+      total: searcherTotal[searcherParams],
+      data: searcherResult[searcherParams],
       loading,
     };
     tableProps.columns = this.makeColumns();
@@ -105,7 +108,11 @@ export default class Customer extends PureComponent {
       ...this.props,
       tableProps: {
         ...this.makeStaffProps(),
-        fetchDataSource: this.props.fetch,
+        fetchDataSource: (params) => {
+          this.setState({ searcherParams: JSON.stringify(params) }, () => {
+            this.props.fetch(params);
+          });
+        },
       },
     };
     return response;

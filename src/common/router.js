@@ -68,7 +68,7 @@ function getFlatMenuData(menus) {
 export const getRouterData = (app) => {
   const routerConfig = {
     '/': {
-      component: dynamicWrapper(app, ['login', 'currentUser'], () => import('../layouts/BasicLayout')),
+      component: dynamicWrapper(app, ['login', 'currentUser', 'tableShop'], () => import('../layouts/BasicLayout')),
     },
     '/dashboard/analysis': {
       component: dynamicWrapper(app, ['point'], () => import('../routes/Dashboard/Analysis')),
@@ -76,7 +76,7 @@ export const getRouterData = (app) => {
 
     /** 客户端管理 */
     '/client/customer/list': {
-      component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/Info')),
+      component: dynamicWrapper(app, [], () => import('../routes/Customer/Info')),
     },
     '/client/customer/list/info/:id': {
       component: dynamicWrapper(app, ['customer'], () => import('../routes/Customer/Info/info')),
@@ -95,23 +95,23 @@ export const getRouterData = (app) => {
     },
 
     '/client/notepad/list': {
-      component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/Notepad')),
+      component: dynamicWrapper(app, [], () => import('../routes/Customer/Notepad')),
     },
     '/client/notepad/list/add': {
-      component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/Notepad/add')),
+      component: dynamicWrapper(app, ['tableClients'], () => import('../routes/Customer/Notepad/add')),
     },
     '/client/notepad/list/edit/:id': {
-      component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/Notepad/add')),
+      component: dynamicWrapper(app, [], () => import('../routes/Customer/Notepad/add')),
     },
 
     '/client/action-log/customer': {
-      component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/ActionLog/customer')),
+      component: dynamicWrapper(app, [], () => import('../routes/Customer/ActionLog/customer')),
     },
     '/client/auth/group': {
-      component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/Auth/Group')),
+      component: dynamicWrapper(app, [], () => import('../routes/Customer/Auth/Group')),
     },
     '/client/action-log/notepad': {
-      component: dynamicWrapper(app, ['nation'], () => import('../routes/Customer/ActionLog/notepad')),
+      component: dynamicWrapper(app, [], () => import('../routes/Customer/ActionLog/notepad')),
     },
 
     /** 报销系统 */

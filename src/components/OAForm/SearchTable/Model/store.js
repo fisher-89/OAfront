@@ -2,16 +2,18 @@ import React from 'react';
 import { connect } from 'dva';
 
 export default (Compoent) => {
-  @connect(({ customer, brand, loading }) => ({
+  @connect(({ customer, tableClients, brand, loading }) => ({
     brands: brand.brand,
     source: customer.source,
     tags: customer.tags,
     staffBrandsAuth: customer.staffBrandsAuth,
+    searcherTotal: tableClients.totalResult,
+    searcherResult: tableClients.tableResult,
     loading: (
       loading.effects['brand/fetchBrand'] ||
       loading.effects['customer/fetchSource'] ||
       loading.effects['customer/fetchTags'] ||
-      loading.effects['customer/fetchCustomer']
+      loading.effects['tableClients/fetchCustomer']
       // loading.effects['customer/customerStaffBrandsAuth']
     ),
   }))
@@ -19,7 +21,7 @@ export default (Compoent) => {
     fetchDataSource = (params) => {
       const { dispatch } = this.props;
       this.fetchStore();
-      dispatch({ type: 'customer/fetchCustomer', payload: params });
+      dispatch({ type: 'tableClients/fetchCustomer', payload: params });
     }
 
     fetchTagsType = () => {
@@ -45,7 +47,6 @@ export default (Compoent) => {
       const response = {
         ...this.props,
         fetch: this.fetchDataSource,
-        fetchTagsType: this.fetchTagsType,
       };
       return response;
     }
