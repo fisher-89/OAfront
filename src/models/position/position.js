@@ -2,23 +2,29 @@ import {
   fetchPosition,
   addPosition,
   editPosition,
-  deletePosition } from '../../services/position';
+  deletePosition,
+} from '../../services/position';
 
 const store = 'position';
 
 export default {
-  * fetchPosition({ payload }, { call, put }) {
+  * fetchPosition({ payload }, { call, put, select }) {
     try {
-      const params = { ...payload };
-      const response = yield call(fetchPosition, params);
-      yield put({
-        type: 'save',
-        payload: {
-          store,
-          data: response,
-        },
-      });
-    } catch (err) { return err; }
+      const { update } = payload || {};
+      let response = yield select(model => model[store][store]);
+      if (!response.length || update) {
+        response = yield call(fetchPosition);
+        yield put({
+          type: 'save',
+          payload: {
+            store,
+            data: response,
+          },
+        });
+      }
+    } catch (err) {
+      return err;
+    }
   },
   * addPosition({ payload, onSuccess, onError }, { call, put }) {
     try {
@@ -36,7 +42,9 @@ export default {
         });
         onSuccess(response);
       }
-    } catch (error) { return error; }
+    } catch (error) {
+      return error;
+    }
   },
   * editPosition({ payload, onSuccess, onError }, { call, put }) {
     try {
@@ -56,7 +64,9 @@ export default {
         });
         onSuccess(response);
       }
-    } catch (error) { return error; }
+    } catch (error) {
+      return error;
+    }
   },
   * deletePosition({ payload }, { call, put }) {
     try {
@@ -76,6 +86,8 @@ export default {
           },
         });
       }
-    } catch (error) { return error; }
+    } catch (error) {
+      return error;
+    }
   },
 };

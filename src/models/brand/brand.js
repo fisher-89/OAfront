@@ -2,23 +2,29 @@ import {
   fetchBrand,
   addBrand,
   editBrand,
-  deleteBrand } from '../../services/brand';
+  deleteBrand,
+} from '../../services/brand';
 
 const store = 'brand';
 
 export default {
-  * fetchBrand({ payload }, { call, put }) {
+  * fetchBrand({ payload }, { call, put, select }) {
     try {
-      const params = { ...payload };
-      const response = yield call(fetchBrand, params);
-      yield put({
-        type: 'save',
-        payload: {
-          store,
-          data: response,
-        },
-      });
-    } catch (err) { return err; }
+      const { update } = payload || {};
+      let response = yield select(model => model[store][store]);
+      if (!response.length || update) {
+        response = yield call(fetchBrand);
+        yield put({
+          type: 'save',
+          payload: {
+            store,
+            data: response,
+          },
+        });
+      }
+    } catch (err) {
+      return err;
+    }
   },
   * addBrand({ payload, onSuccess, onError }, { call, put }) {
     try {
@@ -36,7 +42,9 @@ export default {
         });
         onSuccess(response);
       }
-    } catch (error) { return error; }
+    } catch (error) {
+      return error;
+    }
   },
   * editBrand({ payload, onSuccess, onError }, { call, put }) {
     try {
@@ -56,7 +64,9 @@ export default {
         });
         onSuccess(response);
       }
-    } catch (error) { return error; }
+    } catch (error) {
+      return error;
+    }
   },
   * deleteBrand({ payload }, { call, put }) {
     try {
@@ -76,6 +86,8 @@ export default {
           },
         });
       }
-    } catch (error) { return error; }
+    } catch (error) {
+      return error;
+    }
   },
 };

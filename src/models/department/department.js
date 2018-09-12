@@ -8,17 +8,20 @@ import {
 const store = 'department';
 
 export default {
-  * fetchDepartment({ payload }, { call, put }) {
+  * fetchDepartment({ payload }, { call, put, select }) {
     try {
-      const params = { ...payload };
-      const response = yield call(fetchDepartment, params);
-      yield put({
-        type: 'save',
-        payload: {
-          store,
-          data: response,
-        },
-      });
+      const { update } = payload || {};
+      let response = yield select(model => model[store][store]);
+      if (!response.length || update) {
+        response = yield call(fetchDepartment);
+        yield put({
+          type: 'save',
+          payload: {
+            store,
+            data: response,
+          },
+        });
+      }
     } catch (err) {
       return err;
     }
@@ -41,7 +44,9 @@ export default {
         });
         onSuccess(response);
       }
-    } catch (err) { return err; }
+    } catch (err) {
+      return err;
+    }
   },
   * editDepartment({ payload, onSuccess, onError }, { call, put }) {
     try {
@@ -64,7 +69,9 @@ export default {
         });
         onSuccess(response);
       }
-    } catch (error) { return error; }
+    } catch (error) {
+      return error;
+    }
   },
   * deleteDepartment({ payload }, { call, put }) {
     try {
@@ -84,6 +91,8 @@ export default {
           },
         });
       }
-    } catch (error) { return error; }
+    } catch (error) {
+      return error;
+    }
   },
 };
