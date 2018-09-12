@@ -165,7 +165,7 @@ export default class extends PureComponent {
   handlePrint = (rowData) => {
     this.setState({ printData: rowData }, () => {
       printJS({
-        printable: 'printing-page',
+        printable: 'processing-printing-page',
         type: 'html',
         targetStyles: ['border', 'padding', 'text-align', 'font-size', 'font-weight', 'color'],
       });
@@ -190,7 +190,7 @@ export default class extends PureComponent {
           fetchDataSource={this.fetchProcessingList}
           scroll={{ x: 'auto' }}
         />
-        <div id="printing-page">
+        <div id="processing-printing-page">
           <PrintPage data={printData} />
         </div>
       </React.Fragment>
