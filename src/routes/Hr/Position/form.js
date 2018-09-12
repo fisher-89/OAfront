@@ -12,20 +12,9 @@ import OAForm, {
 const FormItem = OAForm.Item;
 const { Option } = Select;
 
-@connect(({ brand, loading }) => ({
-  brand: brand.all,
-  loading: (
-    loading.effects['position/addPosition'] ||
-    loading.effects['position/editPosition']
-  ),
-}))
+@connect(({ brand }) => ({ brand }))
 @OAForm.create()
 export default class extends PureComponent {
-  componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch({ type: 'brand/fetchBrandAll' });
-  }
-
   handleError = (error) => {
     const { onError } = this.props;
     onError(error);
@@ -46,7 +35,7 @@ export default class extends PureComponent {
 
   render() {
     const {
-      brand,
+      dataSource,
       handleVisible,
       visible,
       initialValue,
@@ -114,7 +103,7 @@ export default class extends PureComponent {
               mode="multiple"
               placeholder="请选择"
             >
-              {brand.map(item => (
+              {dataSource.map(item => (
                 <Option key={`${item.id}`}>{item.name}</Option>
               ))}
             </Select>
