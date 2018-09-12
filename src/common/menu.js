@@ -254,6 +254,18 @@ const menuData = [
     ],
   },
   {
+    name: '系统管理',
+    icon: 'setting',
+    path: 'system',
+    authority: '7',
+    children: [
+      {
+        name: '权限管理',
+        path: 'authority',
+      },
+    ],
+  },
+  {
     name: '工作流配置',
     icon: 'form',
     path: 'workflow',
