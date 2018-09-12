@@ -103,7 +103,7 @@ export default class extends Component {
         const { expenseTypes } = this.props;
         return (
           <Tooltip title={expenseTypes.filter(item => item.id === cellData)[0].name}>
-            <Avatar size="small" src={`http://${expenseTypes.filter(item => item.id === cellData)[0].pic_path}`} />
+            <Avatar size="small" src={`${expenseTypes.filter(item => item.id === cellData)[0].pic_path}`} />
           </Tooltip>
         );
       },
