@@ -18,7 +18,7 @@ const { Option } = Select;
 
 @OAForm.create()
 @connect(({ brand, department, loading }) => ({
-  brand: brand.brand,
+  brand: brand.all,
   department: department.tree,
   loading: (
     loading.effects['shop/addShop'] ||
@@ -28,7 +28,7 @@ const { Option } = Select;
 export default class extends PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
-    dispatch({ type: 'brand/fetchBrand', payload: {} });
+    dispatch({ type: 'brand/fetchBrandAll', payload: {} });
     dispatch({ type: 'department/fetchTreeDepart', payload: {} });
   }
 

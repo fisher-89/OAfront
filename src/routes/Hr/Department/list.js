@@ -1,6 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import {
-  Tabs,
+  Row,
+  Col,
   Modal,
   Divider,
 } from 'antd';
@@ -10,10 +11,8 @@ import DepartTree from './departTree';
 import DepartForm from './departForm';
 import { customerAuthority, getBrandAuthority } from '../../../utils/utils';
 
-const { TabPane } = Tabs;
-
 @connect(({ department, brand, loading }) => ({
-  brand: brand.brand,
+  brand: brand.all,
   treeList: department.tree,
   department: department.department,
   fLoading: loading.effects['department/fetchDepartment'],
@@ -21,13 +20,12 @@ const { TabPane } = Tabs;
 export default class extends PureComponent {
   state = {
     visible: false,
-    activeKey: 'depart_list',
     editInfo: {},
   };
 
   componentDidMount() {
     const { dispatch } = this.props;
-    dispatch({ type: 'brand/fetchBrand' });
+    dispatch({ type: 'brand/fetchBrandAll' });
     dispatch({ type: 'department/fetchTreeDepart' });
   }
 
@@ -69,10 +67,6 @@ export default class extends PureComponent {
         filters,
       },
     });
-  };
-
-  tabsChange = (activeKey) => {
-    this.setState({ activeKey });
   };
 
   makeColumns = () => {
@@ -144,52 +138,37 @@ export default class extends PureComponent {
   render() {
     const columns = this.makeColumns();
     const { fLoading, department, treeList } = this.props;
-    const { visible, editInfo, activeKey } = this.state;
+    const { visible, editInfo } = this.state;
     return (
-      <Fragment>
-        <Tabs
-          hideAdd
-          animated
-          type="editable-card"
-          onEdit={this.onEdit}
-          activeKey={activeKey}
-          onChange={this.tabsChange}
-        >
-          <TabPane
-            tab="部门列表"
-            key="depart_list"
-            closable={false}
-          >
-            <OATable
-              serverSide
-              columns={columns}
-              loading={fLoading}
-              dataSource={department && department.data}
-              total={department.total || 0}
-              filtered={department.filtered || 0}
-              fetchDataSource={this.fetchDepartment}
-            />
-          </TabPane>
-          <TabPane
-            tab="部门结构"
-            key="depart_s_list"
-            closable={false}
-          >
-            <DepartTree fetchDataSource={typeId => this.setTypeId(typeId)} />
-          </TabPane>
-        </Tabs>
-        {(customerAuthority(151) || customerAuthority(138)) &&
-          (
-            <DepartForm
-              visible={visible}
-              initialValue={editInfo}
-              onCancel={this.handleModalVisible}
-              treeData={treeList}
-              onClose={() => this.setState({ editInfo: {} })}
-            />
-          )
-        }
-      </Fragment>
+      <Row>
+        <Col span={4} style={{ borderRight: '1px solid #e8e8e8' }}>
+          <DepartTree fetchDataSource={typeId => this.setTypeId(typeId)} />
+        </Col>
+        <Col span={20}>
+          <OATable
+            serverSide
+            columns={columns}
+            loading={fLoading}
+            dataSource={department && department.data}
+            total={department.total || 0}
+            filtered={department.filtered || 0}
+            fetchDataSource={this.fetchDepartment}
+          />
+        </Col>
+        <Col span={20}>
+          {(customerAuthority(151) || customerAuthority(138)) &&
+            (
+              <DepartForm
+                visible={visible}
+                initialValue={editInfo}
+                onCancel={this.handleModalVisible}
+                treeData={treeList}
+                onClose={() => this.setState({ editInfo: {} })}
+              />
+            )
+          }
+        </Col>
+      </Row>
     );
   }
 }

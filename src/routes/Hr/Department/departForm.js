@@ -12,8 +12,8 @@ import { markTreeData } from '../../../utils/utils';
 const { Option } = Select;
 const FormItem = OAForm.Item;
 @connect(({ brand, loading }) => ({
-  brand: brand.brand,
-  loading: loading.effects['brand/fetchBrand'],
+  brand: brand.all,
+  loading: loading.effects['brand/fetchBrandAll'],
 }))
 @OAForm.create()
 export default class extends PureComponent {

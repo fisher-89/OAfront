@@ -39,13 +39,15 @@ const status = [
 ];
 const staffProperty = ['无', '108将', '36天罡', '24金刚', '18罗汉'];
 
-@connect(({ staffs, brand, department, loading }) => ({
+@connect(({ staffs, brand, department, position, loading }) => ({
   staff: staffs.staff,
-  brand: brand.brand,
+  brand: brand.all,
   brandLoading: loading.models.brand,
   department: department.tree,
   staffInfo: staffs.staffDetails,
   staffLoading: loading.models.staffs,
+  position: position.all,
+  positionLoading: loading.models.position,
 }))
 
 export default class extends PureComponent {
@@ -63,7 +65,8 @@ export default class extends PureComponent {
 
   componentWillMount() {
     const { dispatch } = this.props;
-    dispatch({ type: 'brand/fetchBrand' });
+    dispatch({ type: 'brand/fetchBrandAll' });
+    dispatch({ type: 'position/fetchPositionAll' });
     dispatch({ type: 'department/fetchTreeDepart' });
   }
 
@@ -495,7 +498,6 @@ export default class extends PureComponent {
   render() {
     const { panes, activeKey } = this.state;
     const { staffLoading, staffInfo, staff } = this.props;
-    console.log(this.props.department);
     return (
       <Fragment>
         <Tabs

@@ -13,7 +13,7 @@ const FormItem = OAForm.Item;
 const { Option } = Select;
 
 @connect(({ brand, loading }) => ({
-  brand: brand.brand,
+  brand: brand.all,
   loading: (
     loading.effects['position/addPosition'] ||
     loading.effects['position/editPosition']
@@ -23,7 +23,7 @@ const { Option } = Select;
 export default class extends PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
-    dispatch({ type: 'brand/fetchBrand' });
+    dispatch({ type: 'brand/fetchBrandAll' });
   }
 
   handleError = (error) => {
