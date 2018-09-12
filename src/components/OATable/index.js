@@ -148,6 +148,7 @@ class OATable extends PureComponent {
     if (!fetch) {
       if (!serverSide && update) {
         params.update = update;
+        urlPath.update = update;
       }
       fetchDataSource(urlPath, params);
     } else {
