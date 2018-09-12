@@ -4,20 +4,20 @@ import { fetchTags, addTags, editTags, deleteTags } from '../../services/custome
 const store = 'tags';
 
 export default {
-  * fetchTags({ update }, { call, put, select }) {
+  * fetchTags({ payload }, { call, put, select }) {
     try {
-      let response;
-      response = yield select(model => model.customer[store]);
+      const { update } = payload || {};
+      let response = yield select(model => model.customer[store]);
       if (!response.length || update) {
         response = yield call(fetchTags);
+        yield put({
+          type: 'save',
+          payload: {
+            store,
+            data: response,
+          },
+        });
       }
-      yield put({
-        type: 'save',
-        payload: {
-          store,
-          data: response,
-        },
-      });
     } catch (err) { return err; }
   },
   * addTags({ payload, onError, onSuccess }, { call, put }) {
