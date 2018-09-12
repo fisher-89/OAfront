@@ -18,7 +18,7 @@ export default class extends PureComponent {
       header.push(<th key={i} style={{ width: 40 }} />);
     }
     return data && (
-      <div style={{ height: 0 }}>
+      <div style={{ height: 0, overflow: 'hidden' }}>
         <table style={{ width: 960 }} className={styles.printTable}>
           <thead>
             <tr>{header}</tr>
