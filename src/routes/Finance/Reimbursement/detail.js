@@ -170,7 +170,7 @@ export default class extends Component {
                     >
                       <img
                         alt="发票"
-                        src={`http://${bill.pic_path}`}
+                        src={`${bill.pic_path}`}
                         style={{
                           position: 'absolute',
                           left: '-20%',
