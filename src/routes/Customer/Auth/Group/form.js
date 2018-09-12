@@ -95,12 +95,10 @@ export default class extends React.PureComponent {
           )}
         </FormItem>
 
-        <FormItem
-          {...formItemLayout}
-          label="员工权限"
-        >
+        <FormItem {...formItemLayout} label="员工权限" required>
           {getFieldDecorator('staffs', {
             initialValue: initialValue.staffs || [],
+            rules: [validatorRequired],
           })(
             <SearchTable.Staff multiple />
           )}
