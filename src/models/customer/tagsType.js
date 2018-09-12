@@ -4,20 +4,20 @@ import { fetchTagsType, addTagsType, editTagsType, deleteTagsType } from '../../
 const store = 'tagsType';
 
 export default {
-  * fetchTagsType({ update }, { call, put, select }) {
+  * fetchTagsType({ payload }, { call, put, select }) {
     try {
-      let response;
-      response = yield select(model => model.customer[store]);
+      const { update } = payload || {};
+      let response = yield select(model => model.customer[store]);
       if (!response.length || update) {
         response = yield call(fetchTagsType);
+        yield put({
+          type: 'save',
+          payload: {
+            store,
+            data: response,
+          },
+        });
       }
-      yield put({
-        type: 'save',
-        payload: {
-          store,
-          data: response,
-        },
-      });
     } catch (err) { return err; }
   },
   * addTagsType({ payload, onError, onSuccess }, { call, put }) {

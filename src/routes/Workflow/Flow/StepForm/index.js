@@ -160,32 +160,6 @@ export default class StepForm extends React.PureComponent {
     });
   };
 
-  // editDataList = (d) => {
-  //   this.setState({
-  //     editFields: {
-  //       targetKeys: [],
-  //       selectedKeys: [],
-  //       data: [],
-  //     },
-  //     requireFields: {
-  //       selectedKeys: [],
-  //       targetKeys: [],
-  //       data: [],
-  //     },
-  //   });
-  //   if (!d) return;
-  //   const { hiddenData } = this.props;
-  //   const editData = [];
-  //   if (hiddenData.length > 0) {
-  //     hiddenData.forEach((item) => {
-  //       if (d.indexOf(item.key) === -1) {
-  //         editData.push(item);
-  //       }
-  //     });
-  //   }
-  //   this.setState({ editData });
-  // };
-
   handleEditChange = (nextTargetKeys) => {
     const { editFields, editData } = this.state;
     const data = [];
@@ -308,7 +282,7 @@ export default class StepForm extends React.PureComponent {
     data.forEach((item) => {
       if (item.parent_id === pid) {
         const temp = {
-          label: item.full_name,
+          title: item.full_name,
           value: item.id.toString(),
           key: `${key}-${item.id}`,
           children: [],

@@ -4,20 +4,20 @@ import { fetchNoteTypes, addNoteTypes, editNoteTypes, deleteNoteTypes } from '..
 const store = 'noteTypes';
 
 export default {
-  * fetchNoteTypes({ update }, { call, put, select }) {
+  * fetchNoteTypes({ payload }, { call, put, select }) {
     try {
-      let response;
-      response = yield select(model => model.customer[store]);
+      const { update } = payload || {};
+      let response = yield select(model => model.customer[store]);
       if (!response.length || update) {
         response = yield call(fetchNoteTypes);
+        yield put({
+          type: 'save',
+          payload: {
+            store,
+            data: response,
+          },
+        });
       }
-      yield put({
-        type: 'save',
-        payload: {
-          store,
-          data: response,
-        },
-      });
     } catch (err) { return err; }
   },
   * addNoteTypes({ payload, onError, onSuccess }, { call, put }) {

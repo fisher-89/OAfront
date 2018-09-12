@@ -7,20 +7,20 @@ export default {
     list: [],
   },
   effects: {
-    * fetchNation({ update }, { call, put, select }) {
+    * fetchNation({ payload }, { call, put, select }) {
       try {
-        let response;
-        response = yield select(model => model.nation.list);
+        const { update } = payload || {};
+        let response = yield select(model => model.nation.list);
         if (!response.length || update) {
           response = yield call(fetchNation);
+          yield put({
+            type: 'save',
+            payload: {
+              store: 'list',
+              data: response,
+            },
+          });
         }
-        yield put({
-          type: 'save',
-          payload: {
-            store: 'list',
-            data: response,
-          },
-        });
       } catch (err) { return err; }
     },
   },

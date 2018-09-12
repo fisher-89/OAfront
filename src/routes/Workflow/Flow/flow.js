@@ -36,8 +36,6 @@ const RadioGroup = Radio.Group;
   flow: workflow.flowDetails,
   loading: loading.models.workflow,
   staffInfo: staffs.staffDetails,
-  staffSearcherResult: staffs.tableResult,
-  staffSearcherTotal: staffs.total,
   staffsLoading: loading.effects['staffs/fetchStaffForSearchTable'],
   department: department.department,
   departmentLoading: loading.effects['department/fetchDepartment'],
