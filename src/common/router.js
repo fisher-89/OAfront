@@ -202,9 +202,9 @@ export const getRouterData = (app) => {
     },
 
     /**  系统 */
-    'system/authority': {
-      component: dynamicWrapper(app, ['authority'], () => import('../routes/System/Auth')),
-    },
+    // 'system/authority': {
+    //   component: dynamicWrapper(app, ['brand'], () => import('../routes/System/Auth')),
+    // },
 
 
     /** 工作流 */
