@@ -22,12 +22,9 @@ export default type => (Compoent) => {
       this.fetchTagsType();
     }
 
-    fetchTags = (_, params) => {
+    fetchTags = (params) => {
       const { dispatch } = this.props;
-      const newParams = { ...params };
-      delete newParams.update;
-      const { update } = params;
-      dispatch({ type: 'customer/fetchTags', payload: params, update });
+      dispatch({ type: 'customer/fetchTags', payload: params });
     }
 
     fetchTagsType = (params) => {
