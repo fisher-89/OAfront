@@ -52,6 +52,10 @@ const menuData = [
         path: 'notepad',
         children: [
           {
+            name: '事件列表',
+            path: 'list',
+          },
+          {
             name: '录入事件',
             path: 'list/add',
           },
@@ -59,10 +63,6 @@ const menuData = [
             name: '编辑事件',
             path: 'list/edit/:id',
             hideInMenu: true,
-          },
-          {
-            name: '事件记录',
-            path: 'list',
           },
         ],
       },
