@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import { Button, Divider, Checkbox } from 'antd';
 import Ellipsis from '../../../../../components/Ellipsis/index';
 import OATable from '../../../../../components/OATable/index';
+import PrintPage from '../../print';
 
 @connect(({ reimbursement, loading }) => ({
   processingList: reimbursement.processingList,
@@ -13,6 +14,7 @@ import OATable from '../../../../../components/OATable/index';
 export default class extends PureComponent {
   state = {
     isRejected: false,
+    printData: null,
   };
 
   fetchProcessingList = (params) => {
@@ -115,8 +117,10 @@ export default class extends PureComponent {
         title: '操作',
         render: (rowData) => {
           return [
-            <a key="approve" onClick={() => this.handleApprove(rowData)}>通过</a>,
+            <a key="print" onClick={() => this.handlePrint(rowData)}>打印</a>,
             <Divider key="devider1" type="vertical" />,
+            <a key="approve" onClick={() => this.handleApprove(rowData)}>通过</a>,
+            <Divider key="devider2" type="vertical" />,
             <a key="showDetail" onClick={() => showDetail(rowData)}>查看详情</a>,
           ];
         },
@@ -158,23 +162,38 @@ export default class extends PureComponent {
     });
   }
 
+  handlePrint = (rowData) => {
+    this.setState({ printData: rowData }, () => {
+      printJS({
+        printable: 'printing-page',
+        type: 'html',
+        targetStyles: ['border', 'padding', 'text-align', 'font-size', 'font-weight', 'color'],
+      });
+    });
+  }
+
   render() {
     const { processingList, loading, openPackageList } = this.props;
-    const { isRejected } = this.state;
+    const { isRejected, printData } = this.state;
     return (
-      <OATable
-        bordered
-        serverSide={false}
-        extraOperator={[
-          <Button key="submit" onClick={openPackageList}>批量送审</Button>,
-          <Checkbox key="isRejected" onChange={this.toggleIsRejected} style={{ marginLeft: 20 }}>仅显示重审</Checkbox>,
-        ]}
-        loading={loading}
-        columns={this.makeColumns()}
-        dataSource={isRejected ? this.fetchRejectedList() : processingList}
-        fetchDataSource={this.fetchProcessingList}
-        scroll={{ x: 'auto' }}
-      />
+      <React.Fragment>
+        <OATable
+          bordered
+          serverSide={false}
+          extraOperator={[
+            <Button key="submit" onClick={openPackageList}>批量送审</Button>,
+            <Checkbox key="isRejected" onChange={this.toggleIsRejected} style={{ marginLeft: 20 }}>仅显示重审</Checkbox>,
+          ]}
+          loading={loading}
+          columns={this.makeColumns()}
+          dataSource={isRejected ? this.fetchRejectedList() : processingList}
+          fetchDataSource={this.fetchProcessingList}
+          scroll={{ x: 'auto' }}
+        />
+        <div id="printing-page">
+          <PrintPage data={printData} />
+        </div>
+      </React.Fragment>
     );
   }
 }

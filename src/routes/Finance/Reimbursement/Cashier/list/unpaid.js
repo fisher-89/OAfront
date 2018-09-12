@@ -151,6 +151,7 @@ export default class extends PureComponent {
               selectedRowKeys: list.map(item => item.id),
             });
           }}
+          style={{ marginLeft: 20 }}
         >
           全选
         </Button>
