@@ -41,12 +41,12 @@ const staffProperty = ['无', '108将', '36天罡', '24金刚', '18罗汉'];
 
 @connect(({ staffs, brand, department, position, loading }) => ({
   staff: staffs.staff,
-  brand: brand.all,
+  brand: brand.brand,
   brandLoading: loading.models.brand,
-  department: department.tree,
+  department: department.department,
   staffInfo: staffs.staffDetails,
   staffLoading: loading.models.staffs,
-  position: position.all,
+  position: position.position,
   positionLoading: loading.models.position,
 }))
 
@@ -65,9 +65,9 @@ export default class extends PureComponent {
 
   componentWillMount() {
     const { dispatch } = this.props;
-    dispatch({ type: 'brand/fetchBrandAll' });
-    dispatch({ type: 'position/fetchPositionAll' });
-    dispatch({ type: 'department/fetchTreeDepart' });
+    dispatch({ type: 'brand/fetchBrand' });
+    dispatch({ type: 'position/fetchPosition' });
+    dispatch({ type: 'department/fetchDepartment' });
   }
 
   onEdit = (targetKey, action) => {

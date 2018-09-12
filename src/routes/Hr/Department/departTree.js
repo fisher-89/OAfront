@@ -14,20 +14,11 @@ import './department.less';
 
 const { TreeNode } = Tree;
 
-@connect(({ department, loading }) => ({
-  dataSource: department.tree,
-  loading: loading.effects['department/fetchDepartment'],
-  sortLoading: loading.effects['department/fetchDepartment'],
-}))
+@connect(({ department }) => ({ department }))
 export default class extends PureComponent {
   state = {
     visible: false,
     editInfo: {},
-  }
-
-  componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch({ type: 'department/fetchTreeDepart' });
   }
 
   handleModalVisible = (flag) => {
@@ -145,7 +136,7 @@ export default class extends PureComponent {
 
   render() {
     const { visible, editInfo } = this.state;
-    const { dataSource, loading, sortLoading } = this.props;
+    const { dataSource, loading } = this.props;
     return (
       <QueueAnim type="left">
         {
@@ -167,10 +158,11 @@ export default class extends PureComponent {
           )
         }
         <TreeSort
+          rootPid={0}
           sorter={customerAuthority(151)}
           key="treeSort"
           showLine
-          loading={loading || sortLoading}
+          loading={loading}
           renderTreeNodes={this.renderTreeNodes}
           dataSource={dataSource}
           onChange={this.handleOnchange}

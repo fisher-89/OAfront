@@ -18,8 +18,8 @@ const { Option } = Select;
 
 @OAForm.create()
 @connect(({ brand, department, loading }) => ({
-  brand: brand.all,
-  department: department.tree,
+  brand: brand.brand,
+  department: department.department,
   loading: (
     loading.effects['shop/addShop'] ||
     loading.effects['shop/editShop']
@@ -28,8 +28,8 @@ const { Option } = Select;
 export default class extends PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
-    dispatch({ type: 'brand/fetchBrandAll', payload: {} });
-    dispatch({ type: 'department/fetchTreeDepart', payload: {} });
+    dispatch({ type: 'brand/fetchBrand' });
+    dispatch({ type: 'department/fetchDepartment' });
   }
 
   handleError = (error) => {
@@ -77,7 +77,7 @@ export default class extends PureComponent {
 
     const info = initialValue;
     this.makeDecoratorValue(info);
-    const newTreeData = markTreeData(department, { value: 'id', lable: 'name', parentId: 'parent_id' }, null);
+    const newTreeData = markTreeData(department, { value: 'id', lable: 'name', parentId: 'parent_id' }, 0);
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 16 },

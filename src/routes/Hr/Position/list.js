@@ -20,9 +20,9 @@ export default class extends PureComponent {
     editInfo: {},
   }
 
-  fetchPosition = (params) => {
+  componentDidMount() {
     const { dispatch } = this.props;
-    dispatch({ type: 'position/fetchPosition', payload: params });
+    dispatch({ type: 'position/fetchPosition' });
   }
 
   handleModalVisible = (flag) => {
@@ -139,6 +139,7 @@ export default class extends PureComponent {
           (customerAuthority(63) || customerAuthority(64)) &&
           (
             <PositionForm
+              dataSource={position}
               initialValue={editInfo}
               visible={visible}
               onCancel={() => { this.setState({ editInfo: {} }); }}
@@ -147,14 +148,11 @@ export default class extends PureComponent {
           )
         }
         <OATable
-          serverSide
+          serverSide={false}
           loading={fLoading || dLoading || false}
           extraOperator={this.makeExtraOperator()}
           columns={this.makeColumns()}
-          dataSource={position && position.data}
-          total={position && position.total}
-          filtered={position && position.filtered}
-          fetchDataSource={this.fetchPosition}
+          dataSource={position}
         />
       </React.Fragment>
     );

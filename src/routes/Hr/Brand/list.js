@@ -20,9 +20,9 @@ export default class extends PureComponent {
     editInfo: {},
   }
 
-  fetchBrand = (params) => {
+  componentDidMount() {
     const { dispatch } = this.props;
-    dispatch({ type: 'brand/fetchBrand', payload: params });
+    dispatch({ type: 'brand/fetchBrand' });
   }
 
   handleModalVisible = (flag) => {
@@ -131,14 +131,11 @@ export default class extends PureComponent {
           )
         }
         <OATable
-          serverSide
+          serverSide={false}
           loading={fLoading || dLoading || false}
           extraOperator={this.makeExtraOperator()}
           columns={this.makeColumns()}
-          dataSource={brand && brand.data}
-          total={brand && brand.total}
-          filtered={brand && brand.filtered}
-          fetchDataSource={this.fetchBrand}
+          dataSource={brand}
         />
       </React.Fragment>
     );

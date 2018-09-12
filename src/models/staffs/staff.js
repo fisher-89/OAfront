@@ -3,8 +3,32 @@ import { fetchStaff, fetchStaffInfo, editStaff, deleteStaff } from '../../servic
 const store = 'staff';
 
 export default {
-  * fetchStaff() {
-    //
+  * fetchStaff({ payload }, { call, put }) {
+    try {
+      const staffSn = payload.staff_sn;
+      const params = { ...payload };
+      const response = yield call(fetchStaff, params);
+      if (staffSn) {
+        yield put({
+          type: 'save',
+          payload: {
+            store,
+            staffSn,
+            data: response,
+          },
+        });
+      } else {
+        yield put({
+          type: 'save',
+          payload: {
+            store,
+            data: response,
+          },
+        });
+      }
+    } catch (err) {
+      return err;
+    }
   },
   * fetchStaffForSearchTable({ payload }, { call, put, select }) {
     try {

@@ -12,8 +12,7 @@ import DepartForm from './departForm';
 import { customerAuthority, getBrandAuthority } from '../../../utils/utils';
 
 @connect(({ department, brand, loading }) => ({
-  brand: brand.all,
-  treeList: department.tree,
+  brand: brand.brand,
   department: department.department,
   fLoading: loading.effects['department/fetchDepartment'],
 }))
@@ -25,8 +24,8 @@ export default class extends PureComponent {
 
   componentDidMount() {
     const { dispatch } = this.props;
-    dispatch({ type: 'brand/fetchBrandAll' });
-    dispatch({ type: 'department/fetchTreeDepart' });
+    dispatch({ type: 'brand/fetchBrand' });
+    dispatch({ type: 'department/fetchDepartment' });
   }
 
   onEdit = (targetKey, action) => {
@@ -59,13 +58,9 @@ export default class extends PureComponent {
 
   fetchDepartment = (params) => {
     const { dispatch } = this.props;
-    const { filters } = params;
     dispatch({
       type: 'department/fetchDepartment',
-      payload: {
-        ...params,
-        filters,
-      },
+      payload: params,
     });
   };
 
@@ -137,22 +132,19 @@ export default class extends PureComponent {
 
   render() {
     const columns = this.makeColumns();
-    const { fLoading, department, treeList } = this.props;
+    const { fLoading, department } = this.props;
     const { visible, editInfo } = this.state;
     return (
       <Row>
         <Col span={4} style={{ borderRight: '1px solid #e8e8e8' }}>
-          <DepartTree fetchDataSource={typeId => this.setTypeId(typeId)} />
+          <DepartTree dataSource={department} fetchDataSource={typeId => this.setTypeId(typeId)} />
         </Col>
         <Col span={20}>
           <OATable
-            serverSide
+            serverSide={false}
             columns={columns}
             loading={fLoading}
-            dataSource={department && department.data}
-            total={department.total || 0}
-            filtered={department.filtered || 0}
-            fetchDataSource={this.fetchDepartment}
+            dataSource={department}
           />
         </Col>
         <Col span={20}>
@@ -162,7 +154,7 @@ export default class extends PureComponent {
                 visible={visible}
                 initialValue={editInfo}
                 onCancel={this.handleModalVisible}
-                treeData={treeList}
+                treeData={department}
                 onClose={() => this.setState({ editInfo: {} })}
               />
             )
