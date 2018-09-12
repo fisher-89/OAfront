@@ -14,7 +14,6 @@ export default (Compoent) => {
       loading.effects['customer/fetchSource'] ||
       loading.effects['customer/fetchTags'] ||
       loading.effects['tableClients/fetchCustomer']
-      // loading.effects['customer/customerStaffBrandsAuth']
     ),
   }))
   class NewCompoent extends React.PureComponent {
