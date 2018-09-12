@@ -1,8 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
 import {
   Button,
-  // Divider,
+  Divider,
 } from 'antd';
+import NoteInfo from './info';
 import store from './store/store';
 import OATable from '../../../components/OATable';
 import { getFiltersData } from '../../../utils/utils';
@@ -12,6 +13,10 @@ export default class extends PureComponent {
   constructor(props) {
     super(props);
     this.user = window.user ? window.user : {};
+    this.state = {
+      initialValue: {},
+      visible: false,
+    };
   }
 
   handleLink = (name, id) => {
@@ -19,8 +24,7 @@ export default class extends PureComponent {
   }
 
   makeColumns = () => {
-    const { deleted, brand, staffBrandsAuth } = this.props;
-    const brandsData = brand.filter(item => staffBrandsAuth.indexOf(item.id) !== -1);
+    const { deleted, brand } = this.props;
     const columns = [
       {
         // width: 80,
@@ -41,8 +45,8 @@ export default class extends PureComponent {
         align: 'center',
         title: '合作品牌',
         dataIndex: 'brands.brand_id',
-        filters: getFiltersData(brandsData),
-        render: (_, record) => OATable.analysisColumn(brandsData, record.brands, false),
+        filters: getFiltersData(brand),
+        render: (_, record) => OATable.analysisColumn(brand, record.brands, false),
       },
       {
         // width: 240,
@@ -52,10 +56,11 @@ export default class extends PureComponent {
         dataIndex: 'title',
       },
       {
-        // width: 400,
-        title: '内容',
+        // width: 160,
         align: 'center',
-        dataIndex: 'content',
+        title: '记录人',
+        searcher: true,
+        dataIndex: 'recorder_name',
       },
       {
         title: '操作',
@@ -69,6 +74,15 @@ export default class extends PureComponent {
           const style = color ? { color } : {};
           return (
             <Fragment>
+              <a onClick={() => {
+                this.setState({
+                  initialValue: record,
+                  visible: true,
+                });
+              }}
+              >查看
+              </a>
+              <Divider type="vertical" />
               <a style={style} onClick={() => { if (clickAble) deleted(id); }}>删除</a>
             </Fragment>
           );
@@ -91,6 +105,7 @@ export default class extends PureComponent {
 
   render() {
     const { notes, loading } = this.props;
+    const { visible, initialValue } = this.state;
     const extraOperator = [
       (
         <Button
@@ -106,15 +121,28 @@ export default class extends PureComponent {
       ),
     ];
     return (
-      <OATable
-        serverSide
-        data={notes.data}
-        loading={loading}
-        total={notes.total}
-        columns={this.makeColumns()}
-        fetchDataSource={this.fetchDataSource}
-        extraOperator={extraOperator}
-      />
+      <React.Fragment>
+        <NoteInfo
+          visible={visible}
+          brand={this.props.brand}
+          initialValue={initialValue}
+          onClose={() => {
+            this.setState({
+              initialValue: {},
+              visible: false,
+            });
+          }}
+        />
+        <OATable
+          serverSide
+          data={notes.data}
+          loading={loading}
+          total={notes.total}
+          columns={this.makeColumns()}
+          fetchDataSource={this.fetchDataSource}
+          extraOperator={extraOperator}
+        />
+      </React.Fragment>
     );
   }
 }

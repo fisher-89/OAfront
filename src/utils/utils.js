@@ -607,5 +607,5 @@ export function findRenderKey(dataSource, key = '', index = 'id') {
 export function analysisData(dataSource, key, keyIndex, name, dataSourceIndex) {
   const keysValue = (key || [])
     .map(item => (keyIndex && item[keyIndex] !== undefined ? item[keyIndex] : item));
-  return getDataSourceIndex(dataSource || [], keysValue, name, dataSourceIndex);
+  return getDataSourceIndex(dataSource, keysValue, name, dataSourceIndex);
 }

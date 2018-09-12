@@ -5,8 +5,8 @@ import { Form } from 'antd';
 const FormItem = Form.Item;
 
 const formItemLayout = {
-  labelCol: { span: 8, pull: 2 },
-  wrapperCol: { span: 16, pull: 2 },
+  labelCol: { span: 8, pull: 4 },
+  wrapperCol: { span: 16, pull: 4 },
 };
 
 export default class extends React.PureComponent {
