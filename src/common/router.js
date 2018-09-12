@@ -172,18 +172,23 @@ export const getRouterData = (app) => {
     /** HR 管理 */
     '/hr/staff': {
       component: dynamicWrapper(app, ['staffs', 'department', 'brand', 'position', 'shop'], () => import('../routes/Hr/Staff')),
+      authority: '37',
     },
     '/hr/department': {
       component: dynamicWrapper(app, ['department', 'position', 'brand'], () => import('../routes/Hr/Department')),
+      authority: '38',
     },
     '/hr/position': {
       component: dynamicWrapper(app, ['position', 'brand'], () => import('../routes/Hr/Position')),
+      authority: '42',
     },
     '/hr/brand': {
       component: dynamicWrapper(app, ['position', 'brand'], () => import('../routes/Hr/Brand')),
+      authority: '42',
     },
     '/hr/shop': {
       component: dynamicWrapper(app, ['department', 'shop', 'brand'], () => import('../routes/Hr/Shop')),
+      authority: '70',
     },
     '/hr/staff/edit/:staff_sn': {
       component: dynamicWrapper(app, [], () => import('../routes/Hr/Staff/edit')),
@@ -210,30 +215,39 @@ export const getRouterData = (app) => {
     /** 工作流 */
     '/workflow/flow': {
       component: dynamicWrapper(app, ['workflow'], () => import('../routes/Workflow/Flow')),
+      authority: '51',
     },
     '/workflow/flow/add': {
       component: dynamicWrapper(app, ['workflow', 'staffs', 'department', 'roles'], () => import('../routes/Workflow/Flow/flow')),
+      authority: '51',
     },
     '/workflow/flow/edit/:id': {
       component: dynamicWrapper(app, ['workflow', 'staffs', 'department', 'roles'], () => import('../routes/Workflow/Flow/flow')),
+      authority: '51',
     },
     '/workflow/flow/type': {
       component: dynamicWrapper(app, ['workflow'], () => import('../routes/Workflow/Flow/type')),
+      authority: '51',
     },
     '/workflow/form': {
       component: dynamicWrapper(app, ['workflow'], () => import('../routes/Workflow/Form')),
+      authority: '51',
     },
     '/workflow/form/add': {
       component: dynamicWrapper(app, ['workflow'], () => import('../routes/Workflow/Form/form')),
+      authority: '51',
     },
     '/workflow/form/edit/:id': {
       component: dynamicWrapper(app, ['workflow'], () => import('../routes/Workflow/Form/form')),
+      authority: '51',
     },
     '/workflow/form/type': {
       component: dynamicWrapper(app, ['workflow'], () => import('../routes/Workflow/Form/type')),
+      authority: '51',
     },
     '/workflow/validator': {
       component: dynamicWrapper(app, ['workflow'], () => import('../routes/Workflow/Validator')),
+      authority: '51',
     },
 
 
