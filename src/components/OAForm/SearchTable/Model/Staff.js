@@ -20,8 +20,8 @@ const status = [
 @connect(({ staffs, department, brand, position, loading }) => ({
   brand: brand.brand,
   brandLoading: loading.models.brand,
-  department: department.tree,
-  departmentLoading: loading.effects['department/fetchTreeDepart'],
+  department: department.department,
+  departmentLoading: loading.effects['department/fetchDepartment'],
   staffSearcherTotal: staffs.totalResult,
   staffSearcherResult: staffs.tableResult,
   staffsLoading: loading.effects['staffs/fetchStaffForSearchTable'],
@@ -53,7 +53,7 @@ export default class Staff extends PureComponent {
     dispatch({ type: 'staffs/fetchStaffForSearchTable', payload: newParams });
     dispatch({ type: 'brand/fetchBrand' });
     dispatch({ type: 'position/fetchPosition' });
-    dispatch({ type: 'department/fetchDepart' });
+    dispatch({ type: 'department/fetchDepartment' });
     if (params.filters && params.filters.brand_id) {
       const pushPosition = this.makePositionData(params.filters.brand_id);
       if (pushPosition.length > 0) {
