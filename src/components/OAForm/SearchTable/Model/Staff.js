@@ -24,7 +24,7 @@ const status = [
   departmentLoading: loading.effects['department/fetchTreeDepart'],
   staffSearcherTotal: staffs.totalResult,
   staffSearcherResult: staffs.tableResult,
-  staffsLoading: loading.effects['staffs/fetchStaff'],
+  staffsLoading: loading.effects['staffs/fetchStaffForSearchTable'],
   position: position.position,
   positionLoading: loading.models.position,
 }))
@@ -50,7 +50,7 @@ export default class Staff extends PureComponent {
     if (this.props.filters.content) {
       newParams.filters += this.props.filters.content;
     }
-    dispatch({ type: 'staffs/fetchStaff', payload: newParams });
+    dispatch({ type: 'staffs/fetchStaffForSearchTable', payload: newParams });
     dispatch({ type: 'brand/fetchBrand' });
     dispatch({ type: 'position/fetchPosition' });
     dispatch({ type: 'department/fetchDepart' });

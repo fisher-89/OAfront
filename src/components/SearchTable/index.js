@@ -199,7 +199,7 @@ const type = {
   staffSearcherTotal: staffs.total,
   staffSearcherResult: staffs.tableResult,
   staffDetails: staffs.details,
-  staffsLoading: loading.effects['staffs/fetchStaff'],
+  staffsLoading: loading.effects['staffs/fetchStaffForSearchTable'],
   position: position.position,
   positionLoading: loading.models.position,
   shop: shop.shop,
@@ -352,7 +352,7 @@ export default class extends React.PureComponent {
   fetchStaff = (params) => {
     const { dispatch, position } = this.props;
     let { filterPosition } = this.state;
-    dispatch({ type: 'staffs/fetchStaff', payload: params });
+    dispatch({ type: 'staffs/fetchStaffForSearchTable', payload: params });
     if (params.filters && params.filters.brand_id) {
       const pushPosition = this.makePositionData(params.filters.brand_id);
       if (pushPosition.length > 0) {

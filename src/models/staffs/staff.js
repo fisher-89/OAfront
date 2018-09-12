@@ -3,7 +3,10 @@ import { fetchStaff, fetchStaffInfo, editStaff, deleteStaff } from '../../servic
 const store = 'staff';
 
 export default {
-  * fetchStaff({ payload }, { call, put, select }) {
+  * fetchStaff() {
+    //
+  },
+  * fetchStaffForSearchTable({ payload }, { call, put, select }) {
     try {
       const staffSn = payload.staff_sn;
       const params = {
@@ -47,7 +50,9 @@ export default {
           });
         }
       }
-    } catch (err) { return err; }
+    } catch (err) {
+      return err;
+    }
   },
   * fetchStaffInfo({ payload }, { call, put }) {
     try {
@@ -64,7 +69,9 @@ export default {
           },
         });
       }
-    } catch (err) { return err; }
+    } catch (err) {
+      return err;
+    }
   },
   * editStaff({ payload }, { call, put }) {
     try {
@@ -84,7 +91,9 @@ export default {
           },
         });
       }
-    } catch (err) { return err; }
+    } catch (err) {
+      return err;
+    }
   },
   * deleteStaff({ payload }, { call, put }) {
     try {
@@ -104,6 +113,8 @@ export default {
           },
         });
       }
-    } catch (err) { return err; }
+    } catch (err) {
+      return err;
+    }
   },
 };

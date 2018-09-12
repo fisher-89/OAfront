@@ -38,7 +38,7 @@ const RadioGroup = Radio.Group;
   staffInfo: staffs.staffDetails,
   staffSearcherResult: staffs.tableResult,
   staffSearcherTotal: staffs.total,
-  staffsLoading: loading.effects['staffs/fetchStaff'],
+  staffsLoading: loading.effects['staffs/fetchStaffForSearchTable'],
   department: department.department,
   departmentLoading: loading.effects['department/fetchDepartment'],
   roles: roles.roles,
@@ -207,7 +207,7 @@ export default class Flow extends React.PureComponent {
   fetchUser = (data) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'staffs/fetchStaff',
+      type: 'staffs/fetchStaffForSearchTable',
       payload: { staff_sn: data, filters: `staff_sn=[${data}];status_id>0` },
     });
   };
