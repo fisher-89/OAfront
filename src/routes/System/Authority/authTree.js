@@ -4,6 +4,7 @@ import {
   Tree,
   Icon,
   Modal,
+  Tooltip,
 } from 'antd';
 import { connect } from 'dva';
 import QueueAnim from 'rc-queue-anim';
@@ -91,12 +92,19 @@ export default class extends PureComponent {
     });
   }
 
+  showTitle = (item) => {
+    return (
+      <div>{item.id} | {item.auth_name}</div>
+    );
+  }
 
   renderTreeNodes = (data) => {
     return data.map((item) => {
       const content = (
         <React.Fragment>
-          <a className="title-content">{item.auth_name}</a>
+          <Tooltip placement="top" title={this.showTitle(item)}>
+            <a className="title-content">{item.auth_name}</a>
+          </Tooltip>
           <div className="selected-Icon">
             {customerAuthority(151) &&
               (
