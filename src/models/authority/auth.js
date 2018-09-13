@@ -4,20 +4,23 @@ import {
   editAuth,
   deleteAuth } from '../../services/authority';
 
-const store = 'auth';
+const store = 'authority';
 
 export default {
-  * fetchAuth({ payload }, { call, put }) {
+  * fetchAuth({ payload }, { call, put, select }) {
     try {
-      const params = { ...payload };
-      const response = yield call(fetchAuth, params);
-      yield put({
-        type: 'save',
-        payload: {
-          store,
-          data: response,
-        },
-      });
+      const { update } = payload || {};
+      let response = yield select(model => model[store][store]);
+      if (!response.length || update) {
+        response = yield call(fetchAuth);
+        yield put({
+          type: 'save',
+          payload: {
+            store,
+            data: response,
+          },
+        });
+      }
     } catch (err) { return err; }
   },
   * addAuth({ payload, onSuccess, onError }, { call, put }) {

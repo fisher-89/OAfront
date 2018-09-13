@@ -13,7 +13,7 @@ import AuthForm from './form';
 import AuthTree from './authTree';
 import { customerAuthority } from '../../../utils/utils';
 @connect(({ authority, loading }) => ({
-  authority: authority.auth,
+  authority: authority.authority,
   fLoading: loading.effects['authority/fetchAuth'],
   loading: (
     loading.effects['authority/addAuth'] ||
@@ -29,6 +29,12 @@ export default class extends PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({ type: 'authority/fetchAuth' });
+  }
+
+  fetchAuth = (params) => {
+    console.log(params);
+    const { dispatch } = this.props;
+    dispatch({ type: 'authority/fetchAuth', payload: params });
   }
 
   handleModalVisible = (flag) => {
@@ -161,6 +167,7 @@ export default class extends PureComponent {
             extraOperator={this.makeExtraOperator()}
             columns={this.makeColumns()}
             dataSource={authority}
+            fetchDataSource={this.fetchAuth}
           />
         </Col>
       </Row>

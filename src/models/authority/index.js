@@ -4,7 +4,7 @@ import defaultReducers from '../reducers';
 export default {
   namespace: 'authority',
   state: {
-    auth: [],
+    authority: [],
   },
   effects: {
     ...authEffects,
