@@ -9,7 +9,6 @@ export default {
   },
   effects: {
     ...positionEffects,
-    ...positionEffectsAll,
   },
   reducers: {
     ...defaultReducers,
