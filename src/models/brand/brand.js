@@ -72,20 +72,14 @@ export default {
     try {
       const { id } = payload;
       const response = yield call(deleteBrand, id);
-      if (response.error) {
-        notification({
-          message: '删除失败',
-          description: response.error,
-        });
-      } else {
-        yield put({
-          type: 'delete',
-          payload: {
-            store,
-            id,
-          },
-        });
-      }
+      yield put({
+        type: 'delete',
+        payload: {
+          store,
+          id,
+          data: response,
+        },
+      });
     } catch (error) {
       return error;
     }

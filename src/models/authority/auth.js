@@ -1,4 +1,3 @@
-import { notification } from 'antd';
 import {
   fetchAuth,
   addAuth,
@@ -67,19 +66,14 @@ export default {
     try {
       const { id } = payload;
       const response = yield call(deleteAuth, id);
-      if (response.errors) {
-        notification.error({
-          message: '删除失败',
-        });
-      } else {
-        yield put({
-          type: 'delete',
-          payload: {
-            store,
-            id,
-          },
-        });
-      }
+      yield put({
+        type: 'delete',
+        payload: {
+          store,
+          id,
+          data: response,
+        },
+      });
     } catch (error) {
       return error;
     }

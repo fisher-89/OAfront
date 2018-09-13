@@ -1,5 +1,5 @@
 import departmentEffects from './department';
-import defaultReducers from '../reducers/default';
+import defaultReducers from '../reducers';
 
 export default {
   namespace: 'department',
