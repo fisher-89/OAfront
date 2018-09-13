@@ -67,7 +67,7 @@ export default class extends PureComponent {
       },
       {
         title: '关联 URI',
-        dataIndex: 'access_url',
+        dataIndex: 'full_url',
       },
       {
         title: '是否为菜单',
@@ -123,7 +123,7 @@ export default class extends PureComponent {
           style={{ marginLeft: '10px' }}
           onClick={() => this.handleModalVisible(true)}
         >
-          添加菜单
+          添加权限菜单
         </Button>
       ));
     }
@@ -139,6 +139,7 @@ export default class extends PureComponent {
           (customerAuthority(63) || customerAuthority(64)) &&
           (
             <AuthForm
+              treeData={authority}
               loading={loading}
               initialValue={editInfo}
               visible={visible}

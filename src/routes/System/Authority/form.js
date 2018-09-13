@@ -2,11 +2,13 @@ import React, { PureComponent } from 'react';
 import {
   Input,
   Radio,
+  TreeSelect,
 } from 'antd';
 import { connect } from 'dva';
 import OAForm, {
   OAModal,
 } from '../../../components/OAForm';
+import { markTreeData } from '../../../utils/utils';
 
 const FormItem = OAForm.Item;
 
@@ -35,7 +37,7 @@ export default class extends PureComponent {
       ...params,
     };
     dispatch({
-      type: params.id ? 'authority/editAuth' : 'brand/addAuth',
+      type: params.id ? 'authority/editAuth' : 'authority/addAuth',
       payload: body,
       onError: this.handleError,
       onSuccess: () => this.props.handleVisible(false),
@@ -44,6 +46,7 @@ export default class extends PureComponent {
 
   render() {
     const {
+      treeData,
       handleVisible,
       visible,
       initialValue,
@@ -55,6 +58,7 @@ export default class extends PureComponent {
       labelCol: { span: 6 },
       wrapperCol: { span: 16 },
     };
+    const newTreeData = markTreeData(treeData, { value: 'id', lable: 'auth_name', parentId: 'parent_id' }, 0);
 
     return (
       <OAModal
@@ -88,6 +92,18 @@ export default class extends PureComponent {
               <Input placeholder="请输入" style={{ width: '100%' }} />
             )
           }
+        </FormItem>
+        <FormItem {...formItemLayout} label="上级权限菜单" >
+          {getFieldDecorator('parent_id', {
+            initialValue: initialValue.parent_id ? initialValue.parent_id.toString() : null,
+          })(
+            <TreeSelect
+              placeholder="上级权限菜单默认为空"
+              treeDefaultExpandAll
+              treeData={newTreeData}
+              dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+            />
+          )}
         </FormItem>
         <FormItem {...formItemLayout} label="是否为菜单" >
           {getFieldDecorator('is_menu', {
