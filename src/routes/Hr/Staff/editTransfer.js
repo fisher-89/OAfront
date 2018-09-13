@@ -13,11 +13,11 @@ const { Option } = Select;
 
 @OAForm.create()
 @connect(({ brand, department, position, loading }) => ({
-  brand: brand.all,
+  brand: brand.brand,
   brandLoading: loading.models.brand,
-  department: department.tree,
+  department: department.department,
   departmentLoading: loading.models.department,
-  position: position.all,
+  position: position.position,
   positionLoading: loading.models.position,
 }))
 
