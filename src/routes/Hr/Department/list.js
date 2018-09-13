@@ -135,9 +135,9 @@ export default class extends PureComponent {
     const { fLoading, department } = this.props;
     const { visible, editInfo } = this.state;
     return (
-      <Row>
+      <Row gutter={16}>
         <Col span={4} style={{ borderRight: '1px solid #e8e8e8' }}>
-          <DepartTree dataSource={department} fetchDataSource={typeId => this.setTypeId(typeId)} />
+          <DepartTree dataSource={department} />
         </Col>
         <Col span={20}>
           <OATable
