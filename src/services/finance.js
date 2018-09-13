@@ -116,6 +116,15 @@ export async function sendReimbursementPackages(params) {
   });
 }
 
+export async function withdrawReimbuserment(params) {
+  return request(`/api/finance/reimburse/withdraw/${params.id}`, {
+    method: 'PATCH',
+    body: {
+      ...params,
+    },
+  });
+}
+
 export async function payReimbursements(params) {
   return request('/api/finance/reimburse/pay', {
     method: 'PATCH',

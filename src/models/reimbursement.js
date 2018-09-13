@@ -12,6 +12,7 @@ import {
   approveByAccountant,
   rejectByAccountant,
   sendReimbursementPackages,
+  withdrawReimbuserment,
   payReimbursements,
   rejectReimbursementByCashier,
   fetchAllFundsAttribution,
@@ -25,7 +26,6 @@ export default {
   state: {
     processingList: [],
     overtimeList: [],
-    beingRejectedList: [],
     approvedList: [],
     rejectedList: [],
     packageList: [],
@@ -170,7 +170,7 @@ export default {
         return err;
       }
     },
-    * approveByAccountant({ payload }, { call, put, select }) {
+    * approveByAccountant({ payload, onSuccess }, { call, put, select }) {
       try {
         const response = yield call(approveByAccountant, payload);
         if (response) {
@@ -179,6 +179,7 @@ export default {
             payload: {
               id: payload.id,
               data: response,
+              onSuccess,
             },
           });
           const detailInfo = yield select(state => state.reimbursement.detailInfo);
@@ -233,6 +234,22 @@ export default {
         }
       } catch (err) {
         return err;
+      }
+    },
+    * withdraw({ payload, onSuccess }, { call, put, select }) {
+      const response = yield call(withdrawReimbuserment, payload);
+      if (response) {
+        const processingList = yield select(state => state.reimbursement.processingList);
+        processingList.push(response);
+        yield put({
+          type: 'save',
+          payload: {
+            store: 'processingList',
+            data: processingList,
+          },
+        });
+        onSuccess();
+        notification.success({ message: '撤回成功' });
       }
     },
     * pay({ payload, onSuccess }, { call, put, select }) {
@@ -336,7 +353,7 @@ export default {
   reducers: {
     ...reducers,
     afterApproveByAccountant(state, action) {
-      const { id, data } = action.payload;
+      const { id, data, onSuccess } = action.payload;
       if (data.errors) {
         const errorDescription = Object.keys(data.errors).map((key) => {
           return data.errors[key];
@@ -347,11 +364,13 @@ export default {
         notification.error({ message: data.message });
         return state;
       }
+      if (onSuccess) {
+        onSuccess();
+      }
       const newState = {
         ...state,
         processingList: state.processingList.filter(item => item.id !== id),
         overtimeList: state.overtimeList.filter(item => item.id !== id),
-        beingRejectedList: state.beingRejectedList.filter(item => item.id !== id),
       };
       return newState;
     },
@@ -374,7 +393,6 @@ export default {
         ...state,
         processingList: state.processingList.filter(item => item.id !== id),
         overtimeList: state.overtimeList.filter(item => item.id !== id),
-        beingRejectedList: state.beingRejectedList.filter(item => item.id !== id),
       };
       return newState;
     },

@@ -126,11 +126,16 @@ export default class extends PureComponent {
       {
         title: '操作',
         render: (rowData) => {
-          return [
+          const actions = [
             <a key="print" onClick={() => this.handlePrint(rowData)}>打印</a>,
             <Divider key="devider1" type="vertical" />,
-            <a key="showDetail" onClick={() => showDetail(rowData)}>查看详情</a>,
           ];
+          if (rowData.status_id === 4 && !rowData.process_instance_id) {
+            actions.push(<a key="withdraw" onClick={() => this.handleWithdraw(rowData)}>撤回</a>);
+            actions.push(<Divider key="devider2" type="vertical" />);
+          }
+          actions.push(<a key="showDetail" onClick={() => showDetail(rowData)}>查看详情</a>);
+          return actions;
         },
       },
     ];
@@ -145,6 +150,19 @@ export default class extends PureComponent {
         type: 'html',
         targetStyles: ['border', 'padding', 'text-align', 'font-size', 'font-weight', 'color'],
       });
+    });
+  }
+
+  handleWithdraw = (rowData) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'reimbursement/withdraw',
+      payload: {
+        id: rowData.id,
+      },
+      onSuccess: () => {
+        dispatch({ type: 'reimbursement/fetchApprovedList', payload: this.currentParams });
+      },
     });
   }
 

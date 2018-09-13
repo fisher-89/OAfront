@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Button, Divider, Checkbox } from 'antd';
+import { Button, Divider, Checkbox, notification } from 'antd';
 import Ellipsis from '../../../../../components/Ellipsis/index';
 import OATable from '../../../../../components/OATable/index';
 import PrintPage from '../../print';
@@ -145,6 +145,9 @@ export default class extends PureComponent {
     dispatch({
       type: 'reimbursement/approveByAccountant',
       payload,
+      onSuccess: () => {
+        notification.success({ message: `报销单 ${rowData.reim_sn} 已通过` });
+      },
     });
   }
 
