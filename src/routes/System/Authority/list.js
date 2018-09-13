@@ -1,5 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import {
+  Row,
+  Col,
   Modal,
   Button,
   Divider,
@@ -8,6 +10,7 @@ import { connect } from 'dva';
 
 import OATable from '../../../components/OATable';
 import AuthForm from './form';
+import AuthTree from './authTree';
 import { customerAuthority } from '../../../utils/utils';
 @connect(({ authority, loading }) => ({
   authority: authority.auth,
@@ -123,7 +126,7 @@ export default class extends PureComponent {
           style={{ marginLeft: '10px' }}
           onClick={() => this.handleModalVisible(true)}
         >
-          添加权限菜单
+        权限菜单
         </Button>
       ));
     }
@@ -134,28 +137,33 @@ export default class extends PureComponent {
     const { authority, fLoading, loading } = this.props;
     const { visible, editInfo } = this.state;
     return (
-      <React.Fragment>
-        {
-          (customerAuthority(63) || customerAuthority(64)) &&
-          (
-            <AuthForm
-              treeData={authority}
-              loading={loading}
-              initialValue={editInfo}
-              visible={visible}
-              onCancel={() => { this.setState({ editInfo: {} }); }}
-              handleVisible={this.handleModalVisible}
-            />
-          )
-        }
-        <OATable
-          serverSide={false}
-          loading={fLoading || false}
-          extraOperator={this.makeExtraOperator()}
-          columns={this.makeColumns()}
-          dataSource={authority}
-        />
-      </React.Fragment>
+      <Row>
+        <Col span={4} style={{ borderRight: '1px solid #e8e8e8' }}>
+          <AuthTree dataSource={authority} handleVisible={this.handleModalVisible} />
+        </Col>
+        <Col span={20}>
+          {
+            (customerAuthority(63) || customerAuthority(64)) &&
+            (
+              <AuthForm
+                treeData={authority}
+                loading={loading}
+                initialValue={editInfo}
+                visible={visible}
+                onCancel={() => { this.setState({ editInfo: {} }); }}
+                handleVisible={this.handleModalVisible}
+              />
+            )
+          }
+          <OATable
+            serverSide={false}
+            loading={fLoading || false}
+            extraOperator={this.makeExtraOperator()}
+            columns={this.makeColumns()}
+            dataSource={authority}
+          />
+        </Col>
+      </Row>
     );
   }
 }
