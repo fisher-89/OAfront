@@ -25,6 +25,11 @@ export default class extends PureComponent {
     dispatch({ type: 'brand/fetchBrand' });
   }
 
+  fetchBrand = (params) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'brand/fetchBrand', payload: params });
+  }
+
   handleModalVisible = (flag) => {
     this.setState({ visible: !!flag });
   }
@@ -136,6 +141,7 @@ export default class extends PureComponent {
           extraOperator={this.makeExtraOperator()}
           columns={this.makeColumns()}
           dataSource={brand}
+          fetchDataSource={this.fetchBrand}
         />
       </React.Fragment>
     );

@@ -28,8 +28,9 @@ export default class extends PureComponent {
     dispatch({ type: 'department/fetchDepartment' });
   }
 
-  onEdit = (targetKey, action) => {
-    this[action](targetKey);
+  fetchDepartment = (params) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'department/fetchDepartment', payload: params });
   }
 
   handleEdit = (rowData) => {
@@ -55,14 +56,6 @@ export default class extends PureComponent {
   handleModalVisible = (flag) => {
     this.setState({ visible: !!flag });
   }
-
-  fetchDepartment = (params) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'department/fetchDepartment',
-      payload: params,
-    });
-  };
 
   makeColumns = () => {
     const { brand } = this.props;
@@ -145,6 +138,7 @@ export default class extends PureComponent {
             columns={columns}
             loading={fLoading}
             dataSource={department}
+            fetchDataSource={this.fetchDepartment}
           />
         </Col>
         <Col span={20}>

@@ -32,7 +32,6 @@ export default class extends PureComponent {
   }
 
   fetchAuth = (params) => {
-    console.log(params);
     const { dispatch } = this.props;
     dispatch({ type: 'authority/fetchAuth', payload: params });
   }
