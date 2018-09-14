@@ -24,7 +24,7 @@ export default class TreeFilter extends PureComponent {
       pid = null;
     }
     data.forEach((item) => {
-      if (item[parentId] === pid) {
+      if (item[parentId] === pid || !pid) {
         const temp = {
           title: item[title],
           key: `${item[value]}`,

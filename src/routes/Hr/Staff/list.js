@@ -28,16 +28,6 @@ import {
 } from '../../../utils/utils';
 
 const { TabPane } = Tabs;
-const status = [
-  { value: 1, text: '试用期' },
-  { value: 2, text: '在职' },
-  { value: 3, text: '停薪留职' },
-  { value: -1, text: '离职' },
-  { value: -2, text: '自动离职' },
-  { value: -3, text: '开除' },
-  { value: -4, text: '劝退' },
-];
-const staffProperty = ['无', '108将', '36天罡', '24金刚', '18罗汉'];
 
 @connect(({ staffs, brand, department, position, loading }) => ({
   staff: staffs.staff,
@@ -305,12 +295,12 @@ export default class extends PureComponent {
   makeColumns = () => {
     const { brand, department } = this.props;
     const gender = [{ value: 1, text: '男' }, { value: 2, text: '女' }];
+    const staffProperty = ['无', '108将', '36天罡', '24金刚', '18罗汉'];
     const genderText = {};
+    const brandFilters = [];
     gender.forEach((item) => {
       genderText[item.value] = item;
     });
-
-    const brandFilters = [];
     if (brand) {
       brand.forEach((item) => {
         if (getBrandAuthority(item.id)) {
@@ -318,6 +308,15 @@ export default class extends PureComponent {
         }
       });
     }
+    const status = [
+      { value: 1, text: '试用期' },
+      { value: 2, text: '在职' },
+      { value: 3, text: '停薪留职' },
+      { value: -1, text: '离职' },
+      { value: -2, text: '自动离职' },
+      { value: -3, text: '开除' },
+      { value: -4, text: '劝退' },
+    ];
 
     return [
       {
@@ -356,7 +355,7 @@ export default class extends PureComponent {
         dataIndex: 'department.full_name',
         width: 200,
         treeFilters: {
-          title: 'full_name',
+          title: 'name',
           value: 'id',
           parentId: 'parent_id',
           data: department && department.map((item) => {
