@@ -317,8 +317,9 @@ export default class extends Component {
               {info.second_rejected_at && (<Col span={24}>驳回理由：{info.second_reject_remarks}</Col>)}
               {info.reject_time && (<Col span={24}>驳回理由：{info.reject_remarks}</Col>)}
             </Row>
+
             <h3>
-              金额：{auditedCost !== null && parseFloat(auditedCost) !== parseFloat(approvedCost) ?
+              金额：{auditedCost !== null && (`${auditedCost}` !== `${approvedCost}`) ?
               (<span>￥ {auditedCost}（原金额：<span style={{ color: 'red' }}>￥ {approvedCost}</span>）</span>)
               : `￥ ${approvedCost}`}
             </h3>
