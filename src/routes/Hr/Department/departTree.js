@@ -98,7 +98,7 @@ export default class extends PureComponent {
         <React.Fragment>
           <a className="title-content">{item.name}</a>
           <div className="selected-Icon">
-            {customerAuthority(151) &&
+            {customerAuthority(40) &&
               (
                 <Icon
                   className="icon-form"
@@ -108,7 +108,7 @@ export default class extends PureComponent {
                 />
               )
             }
-            {customerAuthority(152) &&
+            {customerAuthority(41) &&
               (
                 <Icon
                   className="icon-delete"
@@ -140,7 +140,7 @@ export default class extends PureComponent {
     return (
       <QueueAnim type="left">
         {
-          customerAuthority(138) &&
+          customerAuthority(39) &&
           (
             <div
               key="add"
@@ -159,7 +159,7 @@ export default class extends PureComponent {
         }
         <TreeSort
           rootPid={0}
-          sorter={customerAuthority(151)}
+          sorter={customerAuthority(65)}
           key="treeSort"
           showLine
           loading={loading}
@@ -167,7 +167,7 @@ export default class extends PureComponent {
           dataSource={dataSource}
           onChange={this.handleOnchange}
         />
-        {(customerAuthority(151) || customerAuthority(138)) &&
+        {(customerAuthority(39) || customerAuthority(40)) &&
           (
             <DepartForm
               visible={visible}
