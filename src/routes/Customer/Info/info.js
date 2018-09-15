@@ -14,7 +14,7 @@ import styles from './index.less';
 import ActionLog from '../ActionLog/customer';
 import district from '../../../assets/district';
 import { customerStatus } from '../../../assets/customer';
-import { findRenderKey, analysisData } from '../../../utils/utils';
+import { findRenderKey, analysisData, customerAuthority } from '../../../utils/utils';
 
 const FormItem = Form.Item;
 const formItemLayout = {
@@ -117,9 +117,11 @@ export default class extends React.PureComponent {
               {...customerInfoProps}
             />
           </TabPane>
-          <TabPane tab="操作日志" key="3" style={{ minHeight: 300 }}>
-            <ActionLog type="user" clientId={this.id} />
-          </TabPane>
+          {customerAuthority(184) && (
+            <TabPane tab="操作日志" key="3" style={{ minHeight: 300 }}>
+              <ActionLog type="user" clientId={this.id} />
+            </TabPane>
+          )}
         </Tabs>
       </React.Fragment>
     );

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Drawer, Table } from 'antd';
+import { Drawer, Table, Button } from 'antd';
+import store from './store/store';
 
 const columns = [{
   title: '变更信息',
@@ -9,8 +10,17 @@ const columns = [{
   dataIndex: 'create_at',
 }];
 
-
+@store('clientReduction')
 export default class extends React.PureComponent {
+  handleClick = () => {
+    const { initialValue: { id }, clientReduction } = this.props;
+    if (id) {
+      clientReduction(id, () => {
+        this.props.onClose();
+      });
+    }
+  }
+
   render() {
     const restProps = { ...this.props };
     const { initialValue } = restProps;
@@ -22,7 +32,8 @@ export default class extends React.PureComponent {
         key: index,
         name: key,
         create_at: initialValue.created_at,
-        ...changes[key],
+        dirty: changes[key][0] || changes[key].dirty,
+        original: changes[key][1] || changes[key].original,
       });
     });
     const expandedRowRender = record => (
@@ -45,6 +56,34 @@ export default class extends React.PureComponent {
           pagination={false}
           expandedRowRender={expandedRowRender}
         />
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            width: '100%',
+            borderTop: '1px solid #e8e8e8',
+            padding: '10px 16px',
+            textAlign: 'right',
+            left: 0,
+            background: '#fff',
+            borderRadius: '0 0 4px 4px',
+          }}
+        >
+          <Button
+            style={{
+              marginRight: 8,
+            }}
+            onClick={this.props.onClose}
+          >
+            取消
+          </Button>
+          <Button
+            type="primary"
+            onClick={this.handleClick}
+            disabled={initialValue.restore_sn !== 1}
+          >还原
+          </Button>
+        </div>
       </Drawer>
     );
   }

@@ -12,6 +12,7 @@ export default type => (Compoent) => {
       fetchClientLogs: loading.effects['customer/fetchClientLogs'],
       fetchNoteLogs: loading.effects['customer/fetchNoteLogs'],
       fetchBrand: loading.effects['customer/fetchBrand'],
+      clientReduction: loading.effects['customer/clientReduction'],
     },
   }))
   class NewCompoent extends React.PureComponent {
@@ -28,6 +29,15 @@ export default type => (Compoent) => {
     fetchBrand = () => {
       const { dispatch } = this.props;
       dispatch({ type: 'brand/fetchBrand' });
+    }
+
+    clientReduction = (id, onSuccess) => {
+      const { dispatch } = this.props;
+      dispatch({
+        type: 'customer/clientReduction',
+        payload: { id },
+        onSuccess,
+      });
     }
 
     render() {

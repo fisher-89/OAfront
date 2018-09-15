@@ -120,11 +120,15 @@ export async function fetchNoteLogs(params) {
   return request('/api/crm/note/logs', { method: 'GET', body: params });
 }
 
-/** 客户资料列表 */
+/** 客户资料日志列表 */
 export async function fetchClientLogs(params) {
   return request('/api/crm/client/logs', { method: 'GET', body: params });
 }
 
+/** 客户资料日志还原 */
+export async function clientReduction(id) {
+  return request(`/api/crm/client/logs/${id}`, { method: 'GET' });
+}
 
 /** 客户管理权限列表 */
 export async function fetchAuth(params) {

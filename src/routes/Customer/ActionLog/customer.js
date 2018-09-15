@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Card } from 'antd';
+import { Card, Badge, Tooltip, Icon } from 'antd';
 import store from './store/store';
 import CustomerLogInfo from './customerLogInfo';
 import OATable from '../../../components/OATable';
@@ -27,6 +27,7 @@ export default class extends PureComponent {
         align: 'center',
         dataIndex: 'id',
         sorter: true,
+        defaultSortOrder: 'descend',
       },
       {
         title: '客户姓名',
@@ -67,6 +68,32 @@ export default class extends PureComponent {
         searcher: true,
       },
       {
+        align: 'center',
+        title: '状态',
+        dataIndex: 'restore_time',
+        render: (_, record) => {
+          let status = '';
+          if (record.restore_time) {
+            status = <Badge status="default" text="已还原" />;
+          } else if (record.restore_sn === 0) {
+            status = (
+              <Tooltip title="请先还原上一条数据" placement="topLeft" arrowPointAtCenter>
+                <Badge status="warning" text="待操作" />&nbsp;<Icon type="question-circle" />
+              </Tooltip>
+            );
+          } else if (record.restore_sn === 1) {
+            status = <Badge status="success" text="可还原" />;
+          } else if (record.restore_sn === -1) {
+            status = (
+              <Tooltip title="已删除数据不可被还原" placement="topLeft" arrowPointAtCenter>
+                <Badge status="error" text="已删除" />&nbsp;<Icon type="question-circle" />
+              </Tooltip>
+            );
+          }
+          return status;
+        },
+      },
+      {
         title: '操作',
         render: (_, record) => {
           const disabled = Array.isArray(record.changes);
@@ -86,7 +113,7 @@ export default class extends PureComponent {
                   });
                 }}
               >
-                还原修改
+                查看
               </a>
             </Fragment>
           );
@@ -109,9 +136,9 @@ export default class extends PureComponent {
     const { visible, initialValue } = this.state;
     let data = [];
     let total = 0;
-    if (Array.isArray(clientLogs)) {
-      data = clientLogs;
-      total = clientLogs.length;
+    if (type) {
+      data = Array.isArray(clientLogs) ? clientLogs : [];
+      total = Array.isArray(clientLogs) ? clientLogs.length : 0;
     } else {
       ({ data, total } = clientLogs);
     }
