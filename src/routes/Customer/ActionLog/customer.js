@@ -69,7 +69,7 @@ export default class extends PureComponent {
       },
       {
         title: '状态',
-        dataIndex: 'restore_time',
+        dataIndex: 'restore_sn',
         render: (_, record) => {
           let status = '';
           if (record.restore_time) {
@@ -77,7 +77,7 @@ export default class extends PureComponent {
           } else if (record.restore_sn === 0) {
             status = (
               <Tooltip title="请先还原上一条数据" placement="topLeft" arrowPointAtCenter>
-                <Badge status="warning" text="待操作" />&nbsp;<Icon type="question-circle" />
+                <Badge status="warning" text="锁定" />&nbsp;<Icon type="question-circle" />
               </Tooltip>
             );
           } else if (record.restore_sn === 1) {
@@ -125,7 +125,7 @@ export default class extends PureComponent {
   fetchDataSource = (params) => {
     const { fetchClientLogs, clientId } = this.props;
     const newParams = { ...params };
-    newParams.filters = clientId ? `client_id=${clientId}` : '';
+    newParams.filters = clientId ? `client_id=${clientId}` : newParams.filters;
     fetchClientLogs(newParams);
   }
 
