@@ -7,12 +7,12 @@
     z-index: 1031;
   }
   .ant-input-suffix-customer {
-    display: none;
+    display: none !important;
+    color: @disabled-color;
   }
   .ant-input-affix-wrapper:hover {
     .ant-input-suffix-customer {
-      display: block;
-      color: @disabled-color;
+      display: block !important;
     }
   }
 }
