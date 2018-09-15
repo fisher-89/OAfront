@@ -10,30 +10,36 @@ const menuData = [
     authority: '174',
     children: [
       {
-        name: '客户信息',
+        name: '客户资料',
         path: 'customer',
+        authority: '176',
         children: [
           {
             name: '录入资料',
             path: 'list/add',
+            authority: '188',
           },
           {
             name: '编辑资料',
             path: 'list/edit/:id',
             hideInMenu: true,
+            authority: '187',
           },
           {
             name: '资料详情',
             path: 'list/info/:id',
             hideInMenu: true,
+            authority: '187',
           },
           {
             name: '客户列表',
             path: 'list',
+            authority: '177',
           },
           {
             name: '标签管理',
             path: 'tags',
+            authority: '179',
             children: [
               {
                 name: '标签列表',
@@ -50,14 +56,17 @@ const menuData = [
       {
         name: '记事本',
         path: 'notepad',
+        authority: '181',
         children: [
           {
             name: '事件列表',
             path: 'list',
+            authority: '181',
           },
           {
             name: '录入事件',
             path: 'list/add',
+            authority: '182',
           },
           {
             name: '编辑事件',
@@ -79,12 +88,14 @@ const menuData = [
         path: 'stats-central',
       },
       {
-        name: '权限管理',
+        name: '品牌权限',
         path: 'auth/group',
+        authority: '183',
       },
       {
         name: '操作日志',
         path: 'action-log',
+        authority: '184',
         children: [
           {
             name: '客户资料',

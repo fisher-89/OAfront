@@ -77,41 +77,51 @@ export const getRouterData = (app) => {
     /** 客户端管理 */
     '/client/customer/list': {
       component: dynamicWrapper(app, [], () => import('../routes/Customer/Info')),
+      authority: '177',
     },
     '/client/customer/list/info/:id': {
       component: dynamicWrapper(app, ['customer'], () => import('../routes/Customer/Info/info')),
+      authority: '187',
     },
     '/client/customer/list/edit/:id': {
       component: dynamicWrapper(app, ['customer'], () => import('../routes/Customer/Info/add')),
+      authority: '187',
     },
     '/client/customer/list/add': {
       component: dynamicWrapper(app, ['customer'], () => import('../routes/Customer/Info/add')),
+      authority: '188',
     },
     '/client/customer/tags/list': {
       component: dynamicWrapper(app, ['customer'], () => import('../routes/Customer/Tags')),
+      authority: '179',
     },
     '/client/customer/tags/type': {
       component: dynamicWrapper(app, ['customer'], () => import('../routes/Customer/Tags/Type')),
+      authority: '179',
     },
 
     '/client/notepad/list': {
       component: dynamicWrapper(app, [], () => import('../routes/Customer/Notepad')),
+      authority: '181',
     },
     '/client/notepad/list/add': {
       component: dynamicWrapper(app, ['tableClients'], () => import('../routes/Customer/Notepad/add')),
+      authority: '182',
     },
     '/client/notepad/list/edit/:id': {
       component: dynamicWrapper(app, [], () => import('../routes/Customer/Notepad/add')),
     },
-
     '/client/action-log/customer': {
       component: dynamicWrapper(app, [], () => import('../routes/Customer/ActionLog/customer')),
-    },
-    '/client/auth/group': {
-      component: dynamicWrapper(app, [], () => import('../routes/Customer/Auth/Group')),
+      authority: '184',
     },
     '/client/action-log/notepad': {
       component: dynamicWrapper(app, [], () => import('../routes/Customer/ActionLog/notepad')),
+      authority: '184',
+    },
+    '/client/auth/group': {
+      component: dynamicWrapper(app, [], () => import('../routes/Customer/Auth/Group')),
+      authority: '183',
     },
 
     /** 报销系统 */
