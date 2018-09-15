@@ -394,12 +394,17 @@ class OATable extends PureComponent {
     };
   }
 
-  handleTableChange = (pagination, filters, sorter) => {
+  handleTableChange = (pagination, newFilters, sorter) => {
     const { onChange } = this.props;
+    const { filters } = this.state;
+    const newPagination = { ...pagination };
+    if (JSON.stringify(newFilters) !== JSON.stringify(filters)) {
+      newPagination.current = 1;
+    }
     if (onChange) {
-      onChange(pagination, filters, sorter, this.changeStateAndFetch);
+      onChange(newPagination, newFilters, sorter, this.changeStateAndFetch);
     } else {
-      this.changeStateAndFetch(pagination, filters, sorter);
+      this.changeStateAndFetch(newPagination, newFilters, sorter);
     }
   }
 
