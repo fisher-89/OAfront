@@ -108,7 +108,7 @@ const fieldMinAndMax = [
   ...defaultValueComponent,
 ];
 
-const requiredCheckBox = [...fieldScale, 'array'];
+const requiredCheckBox = [...timePickerCom, ...defaultValueComponent, 'array'];
 
 @connect(({ department, workflow, loading }) => ({
   loading: (
