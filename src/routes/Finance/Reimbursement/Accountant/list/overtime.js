@@ -127,8 +127,8 @@ export default class extends PureComponent {
             <Divider key="devider1" type="vertical" />,
             <a key="showDetail" onClick={() => showDetail(rowData)}>查看详情</a>,
             <Divider key="devider2" type="vertical" />,
-            <Tooltip title="打印">
-              <a key="print" onClick={() => this.handlePrint(rowData)}><Icon type="printer" /></a>
+            <Tooltip key="print" title="打印">
+              <a onClick={() => this.handlePrint(rowData)}><Icon type="printer" /></a>
             </Tooltip>,
           ];
         },
