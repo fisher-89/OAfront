@@ -21,8 +21,10 @@ import EditTransfer from './editTransfer';
 import EditLeave from './editLeave';
 import OATable from '../../../components/OATable';
 import EditStaff from './edit';
+import ImportStaff from './import';
 
 import {
+  customerAuthority,
   getBrandAuthority,
   getDepartmentAuthority,
 } from '../../../utils/utils';
@@ -452,6 +454,7 @@ export default class extends PureComponent {
   };
 
   makeExtraOperator = () => {
+    const extra = [];
     const { visible, moreInfo } = this.state;
 
     let style = {};
@@ -462,8 +465,26 @@ export default class extends PureComponent {
         borderColor: '#40a9ff',
       };
     }
-    return (
+    extra.push(
+      (customerAuthority(62)) && (
+        <Button
+          icon="plus"
+          key="plus"
+          type="primary"
+          onClick={() => {
+            this.setState({ editVisible: true });
+          }}
+        >
+          添加员工
+        </Button>
+      ),
+      (customerAuthority(62)) && (
+        <ImportStaff key="importPop" />
+      )
+    );
+    extra.push((
       <Popover
+        key="searchPop"
         visible={visible}
         trigger="click"
         placement="bottomLeft"
@@ -483,7 +504,9 @@ export default class extends PureComponent {
       >
         <Button icon="search" style={style}>更多搜索</Button>
       </Popover>
-    );
+    ));
+
+    return extra;
   };
 
   tabsChange = (activeKey) => {
