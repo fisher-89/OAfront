@@ -68,7 +68,6 @@ export default class extends PureComponent {
         searcher: true,
       },
       {
-        align: 'center',
         title: '状态',
         dataIndex: 'restore_time',
         render: (_, record) => {
