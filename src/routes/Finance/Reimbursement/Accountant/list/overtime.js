@@ -1,6 +1,13 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Button, Divider, notification } from 'antd';
+import {
+  Button,
+  Divider,
+  Icon,
+  Tooltip,
+  Popconfirm,
+  notification,
+} from 'antd';
 import Ellipsis from '../../../../../components/Ellipsis/index';
 import OATable from '../../../../../components/OATable/index';
 import PrintPage from '../../print';
@@ -114,11 +121,15 @@ export default class extends PureComponent {
         title: '操作',
         render: (rowData) => {
           return [
-            <a key="print" onClick={() => this.handlePrint(rowData)}>打印</a>,
+            <Popconfirm key="approve" title="确认通过？" onConfirm={() => this.handleApprove(rowData)}>
+              <a>通过</a>
+            </Popconfirm>,
             <Divider key="devider1" type="vertical" />,
-            <a key="approve" onClick={() => this.handleApprove(rowData)}>通过</a>,
-            <Divider key="devider2" type="vertical" />,
             <a key="showDetail" onClick={() => showDetail(rowData)}>查看详情</a>,
+            <Divider key="devider2" type="vertical" />,
+            <Tooltip title="打印">
+              <a key="print" onClick={() => this.handlePrint(rowData)}><Icon type="printer" /></a>
+            </Tooltip>,
           ];
         },
       },
