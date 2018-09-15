@@ -8,17 +8,11 @@ import moment from 'moment';
 import store from './store/store';
 import OATable from '../../../components/OATable';
 import { customerStatus } from '../../../assets/customer';
-import { getFiltersData } from '../../../utils/utils';
-
+import { getFiltersData, customerAuthority } from '../../../utils/utils';
 
 @connect(({ customer }) => ({ customer: customer.customer }))
 @store()
 export default class extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.user = window.user ? window.user : {};
-  }
-
   makeColumns = () => {
     const { source, tags, brands, deleted, staffBrandsAuth } = this.props;
     const onClick = (name, id) => {
@@ -107,16 +101,24 @@ export default class extends PureComponent {
                 }}
               >查看
               </a>
-              <Divider type="vertical" />
-              <a
-                style={style}
-                onClick={() => {
-                  if (clickAble) onClick('edit', rowData.id);
-                }}
-              >编辑
-              </a>
-              <Divider type="vertical" />
-              <a style={style} onClick={() => { if (clickAble) deleted(rowData.id); }}>删除</a>
+              {customerAuthority(187) && (
+                <React.Fragment>
+                  <Divider type="vertical" />
+                  <a
+                    style={style}
+                    onClick={() => {
+                      if (clickAble) onClick('edit', rowData.id);
+                    }}
+                  >编辑
+                  </a>
+                </React.Fragment>
+              )}
+              {customerAuthority(178) && (
+                <React.Fragment>
+                  <Divider type="vertical" />
+                  <a style={style} onClick={() => { if (clickAble) deleted(rowData.id); }}>删除</a>
+                </React.Fragment>
+              )}
             </Fragment >
           );
         },
@@ -127,8 +129,9 @@ export default class extends PureComponent {
 
 
   render() {
-    const extraOperator = [
-      (
+    const extraOperator = [];
+    if (customerAuthority(188)) {
+      extraOperator.push((
         <Button
           type="primary"
           icon="plus"
@@ -139,8 +142,8 @@ export default class extends PureComponent {
         >
           新建客户资料
         </Button>
-      ),
-    ];
+      ));
+    }
     const { loading, customer, fetchDataSource } = this.props;
     return (
       <OATable

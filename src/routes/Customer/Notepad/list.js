@@ -6,8 +6,7 @@ import {
 import NoteInfo from './info';
 import store from './store/store';
 import OATable from '../../../components/OATable';
-import { getFiltersData } from '../../../utils/utils';
-
+import { getFiltersData, customerAuthority } from '../../../utils/utils';
 @store()
 export default class extends PureComponent {
   constructor(props) {
@@ -82,8 +81,12 @@ export default class extends PureComponent {
               }}
               >查看
               </a>
-              <Divider type="vertical" />
-              <a style={style} onClick={() => { if (clickAble) deleted(id); }}>删除</a>
+              {customerAuthority(182) && (
+                <React.Fragment>
+                  <Divider type="vertical" />
+                  <a style={style} onClick={() => { if (clickAble) deleted(id); }}>删除</a>
+                </React.Fragment>
+              )}
             </Fragment>
           );
         },
@@ -106,8 +109,9 @@ export default class extends PureComponent {
   render() {
     const { notes, loading } = this.props;
     const { visible, initialValue } = this.state;
-    const extraOperator = [
-      (
+    const extraOperator = [];
+    if (customerAuthority(182)) {
+      extraOperator.push((
         <Button
           type="primary"
           icon="plus"
@@ -118,8 +122,8 @@ export default class extends PureComponent {
         >
           新建录入
         </Button>
-      ),
-    ];
+      ));
+    }
     return (
       <React.Fragment>
         <NoteInfo
