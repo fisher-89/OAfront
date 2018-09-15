@@ -108,6 +108,10 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['tableClients'], () => import('../routes/Customer/Notepad/add')),
       authority: '182',
     },
+    '/client/notepad/type': {
+      component: dynamicWrapper(app, [], () => import('../routes/Customer/Notepad/Type')),
+    },
+
     '/client/notepad/list/edit/:id': {
       component: dynamicWrapper(app, [], () => import('../routes/Customer/Notepad/add')),
     },

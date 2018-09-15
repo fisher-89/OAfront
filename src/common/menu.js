@@ -64,6 +64,10 @@ const menuData = [
             authority: '181',
           },
           {
+            name: '事件类型',
+            path: 'type',
+          },
+          {
             name: '录入事件',
             path: 'list/add',
             authority: '182',
