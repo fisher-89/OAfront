@@ -49,3 +49,14 @@ export async function deleteStaff(id) {
     method: 'DELETE',
   });
 }
+
+/**
+ * 导入员工.
+ * @param json params
+ */
+export async function importStaff(params) {
+  return request('api/staff/import', {
+    method: 'POST',
+    body: params,
+  });
+}

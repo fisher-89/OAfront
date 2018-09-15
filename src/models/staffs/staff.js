@@ -1,4 +1,4 @@
-import { fetchStaff, fetchStaffInfo, editStaff, deleteStaff } from '../../services/user';
+import { fetchStaff, fetchStaffInfo, editStaff, deleteStaff, importStaff } from '../../services/user';
 
 const store = 'staff';
 
@@ -123,22 +123,36 @@ export default {
     try {
       const { id } = payload;
       const response = yield call(deleteStaff, id);
-      if (response.error) {
-        notification.error({
-          message: '删除失败',
-          description: response.error,
-        });
-      } else {
-        yield put({
-          type: 'delete',
-          payload: {
-            store,
-            id,
-          },
-        });
-      }
+      yield put({
+        type: 'delete',
+        payload: {
+          store,
+          id,
+          data: response,
+        },
+      });
     } catch (err) {
       return err;
+    }
+  },
+  * importStaff({ payload, onSuccess, onError }, { call, put }) {
+    try {
+      const params = { ...payload };
+      const response = yield call(importStaff, params);
+      if (response.errors && onError) {
+        onError(response.errors);
+      } else {
+        yield put({
+          type: 'import',
+          payload: {
+            store,
+            data: response,
+          },
+        });
+        onSuccess(response);
+      }
+    } catch (error) {
+      return error;
     }
   },
 };
