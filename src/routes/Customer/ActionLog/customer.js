@@ -6,6 +6,13 @@ import OATable from '../../../components/OATable';
 import { getFiltersData } from '../../../utils/utils';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 
+const statusFilters = [
+  { value: 1, text: '可还原' },
+  { value: 2, text: '已还原' },
+  { value: 0, text: '锁定' },
+  { value: -1, text: '已删除' },
+];
+
 @store(['fetchClientLogs', 'fetchBrand'])
 export default class extends PureComponent {
   state = {
@@ -70,6 +77,7 @@ export default class extends PureComponent {
       {
         title: '状态',
         dataIndex: 'restore_sn',
+        filters: statusFilters,
         render: (_, record) => {
           let status = '';
           if (record.restore_time) {

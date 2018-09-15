@@ -75,18 +75,18 @@ const menuData = [
           },
         ],
       },
-      {
-        name: '客户服务',
-        path: 'service',
-      },
-      {
-        name: '合同管理',
-        path: 'contract-manager',
-      },
-      {
-        name: '统计中心',
-        path: 'stats-central',
-      },
+      // {
+      //   name: '客户服务',
+      //   path: 'service',
+      // },
+      // {
+      //   name: '合同管理',
+      //   path: 'contract-manager',
+      // },
+      // {
+      //   name: '统计中心',
+      //   path: 'stats-central',
+      // },
       {
         name: '品牌权限',
         path: 'auth/group',
