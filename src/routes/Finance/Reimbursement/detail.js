@@ -170,7 +170,7 @@ export default class extends Component {
                     >
                       <img
                         alt="发票"
-                        src={`http://${bill.pic_path}`}
+                        src={`${bill.pic_path}`}
                         style={{
                           position: 'absolute',
                           left: '-20%',
@@ -280,8 +280,8 @@ export default class extends Component {
     const { onClose, status } = this.props;
     const { info, rejectPopVisible, rejectRemark } = this.state;
     if (info) {
-      const auditedCost = info.audited_cost && info.audited_cost.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-      const approvedCost = info.send_cost && (info.approved_cost || info.send_cost).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      const auditedCost = info.audited_cost && `${info.audited_cost}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      const approvedCost = info.send_cost && `${info.approved_cost || info.send_cost}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
       return (
         <div>
           <div>
@@ -317,8 +317,9 @@ export default class extends Component {
               {info.second_rejected_at && (<Col span={24}>驳回理由：{info.second_reject_remarks}</Col>)}
               {info.reject_time && (<Col span={24}>驳回理由：{info.reject_remarks}</Col>)}
             </Row>
+
             <h3>
-              金额：{auditedCost !== null && auditedCost !== approvedCost ?
+              金额：{auditedCost !== null && (`${auditedCost}` !== `${approvedCost}`) ?
               (<span>￥ {auditedCost}（原金额：<span style={{ color: 'red' }}>￥ {approvedCost}</span>）</span>)
               : `￥ ${approvedCost}`}
             </h3>
