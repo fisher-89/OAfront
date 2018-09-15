@@ -10,7 +10,7 @@ const statusFilters = [
   { value: 1, text: '可还原' },
   { value: 2, text: '已还原' },
   { value: 0, text: '锁定' },
-  { value: -1, text: '已删除' },
+  { value: -1, text: '删除' },
 ];
 
 @store(['fetchClientLogs', 'fetchBrand'])
@@ -93,7 +93,7 @@ export default class extends PureComponent {
           } else if (record.restore_sn === -1) {
             status = (
               <Tooltip title="已删除数据不可被还原" placement="topLeft" arrowPointAtCenter>
-                <Badge status="error" text="已删除" />&nbsp;<Icon type="question-circle" />
+                <Badge status="error" text="删除" />&nbsp;<Icon type="question-circle" />
               </Tooltip>
             );
           }
