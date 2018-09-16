@@ -525,6 +525,9 @@ export default class extends React.PureComponent {
           if (parseFloat(min) < 0) {
             cb('最小值不能为负数');
           }
+          if (parseInt(min, 10) !== parseFloat(min)) {
+            cb('最小值必须是一个整数');
+          }
         }
         if (parseFloat(min) > parseFloat(max)) {
           cb('最小值不能大于最大值');
@@ -550,6 +553,9 @@ export default class extends React.PureComponent {
         if (type !== 'init') {
           if (parseFloat(max) < 0) {
             cb('最大值不能为负数');
+          }
+          if (parseInt(max, 10) !== parseFloat(max)) {
+            cb('最大值必须是一个整数');
           }
         }
         if (parseFloat(min) > parseFloat(max)) {
