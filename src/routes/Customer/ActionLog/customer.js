@@ -76,21 +76,21 @@ export default class extends PureComponent {
       },
       {
         title: '状态',
-        dataIndex: 'restore_sn',
+        dataIndex: 'status',
         filters: statusFilters,
-        render: (_, record) => {
+        render: (key) => {
           let status = '';
-          if (record.restore_time) {
+          if (key === 2) {
             status = <Badge status="default" text="已还原" />;
-          } else if (record.restore_sn === 0) {
+          } else if (key === 0) {
             status = (
               <Tooltip title="请先还原上一条数据" placement="topLeft" arrowPointAtCenter>
                 <Badge status="warning" text="锁定" />&nbsp;<Icon type="question-circle" />
               </Tooltip>
             );
-          } else if (record.restore_sn === 1) {
+          } else if (key === 1) {
             status = <Badge status="success" text="可还原" />;
-          } else if (record.restore_sn === -1) {
+          } else if (key === -1) {
             status = (
               <Tooltip title="已删除数据不可被还原" placement="topLeft" arrowPointAtCenter>
                 <Badge status="error" text="删除" />&nbsp;<Icon type="question-circle" />
