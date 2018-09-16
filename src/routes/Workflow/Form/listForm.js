@@ -144,6 +144,7 @@ export default class extends React.PureComponent {
     const { getFieldDecorator, getFieldsValue } = this.props.form;
     const fieldType = this.getFieldTypeText(type);
     const { min, max } = getFieldsValue(['min', 'max']);
+    const validateTime = this.validateFieldsDisabledTime(min, max);
     return getFieldDecorator('default_value', {
       initialValue: initialValue || '',
       rules: [{
@@ -153,16 +154,21 @@ export default class extends React.PureComponent {
       <RadioDate
         type={type}
         fieldType={fieldType}
-        disabledDate={(currentDate) => {
-          const validateTime = this.validateFieldsDisabledTime(min, max);
+        disabledDate={(date) => {
           if (!validateTime) return validateTime;
-          if (validateTime.min && validateTime.max) {
-            return !(validateTime.min < currentDate && validateTime.max > currentDate);
+          if (date) {
+            let currentDate = date.format('YYYY-MM-DD');
+            currentDate = moment(currentDate, 'YYYY-MM-DD 00:00:00');
+            if (validateTime.min && validateTime.max) {
+              return !(validateTime.min.unix() <= currentDate.unix()
+                && validateTime.max.unix() >= currentDate.unix());
+            }
+            return !(
+              (validateTime.min && validateTime.min.unix() <= currentDate.unix()) ||
+              (validateTime.max && validateTime.max.unix() >= currentDate.unix())
+            );
           }
-          return !(
-            (validateTime.min && validateTime.min <= currentDate) ||
-            (validateTime.max && validateTime.max >= currentDate)
-          );
+          return false;
         }}
       />
     );
@@ -491,8 +497,8 @@ export default class extends React.PureComponent {
       minIsValid = momentMin ? momentMin.isValid() : false;
       maxIsValid = momentMax ? momentMax.isValid() : false;
     } else {
-      momentMin = min ? moment(min) : false;
-      momentMax = max ? moment(max) : false;
+      momentMin = min ? moment(min, 'YYYY-MM-DD 00:00:00') : false;
+      momentMax = max ? moment(max, 'YYYY-MM-DD 23:59:59') : false;
       minIsValid = momentMin ? momentMin.isValid() : false;
       maxIsValid = momentMax ? momentMax.isValid() : false;
     }
