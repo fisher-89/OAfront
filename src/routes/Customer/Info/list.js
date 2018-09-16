@@ -96,8 +96,9 @@ export default class extends PureComponent {
           return (
             <Fragment>
               <a
+                style={style}
                 onClick={() => {
-                  onClick('info', rowData.id);
+                  if (clickAble) onClick('info', rowData.id);
                 }}
               >查看
               </a>
