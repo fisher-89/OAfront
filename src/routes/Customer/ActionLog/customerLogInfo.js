@@ -80,7 +80,7 @@ export default class extends React.PureComponent {
           <Button
             type="primary"
             onClick={this.handleClick}
-            disabled={initialValue.restore_sn !== 1}
+            disabled={initialValue.status !== 1}
           >还原
           </Button>
         </div>
