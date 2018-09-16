@@ -160,8 +160,8 @@ export default class extends React.PureComponent {
             return !(validateTime.min < currentDate && validateTime.max > currentDate);
           }
           return !(
-            (validateTime.min && validateTime.min < currentDate) ||
-            (validateTime.max && validateTime.max > currentDate)
+            (validateTime.min && validateTime.min <= currentDate) ||
+            (validateTime.max && validateTime.max >= currentDate)
           );
         }}
       />
