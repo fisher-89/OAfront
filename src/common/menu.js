@@ -64,14 +64,14 @@ const menuData = [
             authority: '181',
           },
           {
-            name: '事件类型',
-            path: 'type',
-            authority: '189',
-          },
-          {
             name: '录入事件',
             path: 'list/add',
             authority: '182',
+          },
+          {
+            name: '事件类型',
+            path: 'type',
+            authority: '189',
           },
           {
             name: '编辑事件',
