@@ -19,6 +19,7 @@ export default class extends PureComponent {
   componentWillMount() {
     const { dispatch } = this.props;
     dispatch({ type: 'reimbursement/fetchFundsAttribution' });
+    dispatch({ type: 'reimbursement/fetchStatus' });
     dispatch({ type: 'reimbursement/fetchExpenseTypes' });
   }
 
