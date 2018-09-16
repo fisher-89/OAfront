@@ -11,7 +11,6 @@ import { getFiltersData, customerAuthority } from '../../../utils/utils';
 export default class extends PureComponent {
   constructor(props) {
     super(props);
-    this.user = window.user ? window.user : {};
     this.state = {
       initialValue: {},
       visible: false,
@@ -66,7 +65,7 @@ export default class extends PureComponent {
         render: (_, record) => {
           const { id } = record;
           let color;
-          const clickAble = this.user.staff_sn === record.recorder_sn;
+          const clickAble = (window.user || {}).staff_sn === record.recorder_sn;
           if (!clickAble) {
             color = '#8e8e8e';
           }
