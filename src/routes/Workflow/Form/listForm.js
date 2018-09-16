@@ -546,7 +546,7 @@ export default class extends React.PureComponent {
   validateFiledsMax = (_, max, cb) => {
     const { getFieldsValue, validateFields } = this.props.form;
     const { min, type } = getFieldsValue(['max', 'min', 'type']);
-    if (min !== undefined && max !== undefined) {
+    if (min !== undefined && max !== undefined && min !== '' && max !== '') {
       if (timePickerCom.indexOf(type) !== -1) {
         const momentMaxAndMin = this.validateFieldsDisabledTime(min, max);
         if (momentMaxAndMin) {
