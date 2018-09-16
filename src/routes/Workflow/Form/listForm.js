@@ -521,7 +521,7 @@ export default class extends React.PureComponent {
         }
       } else {
         validateFields(['default_value'], { force: true });
-        if (type !== 'init') {
+        if (type !== 'int') {
           if (parseFloat(min) < 0) {
             cb('最小值不能为负数');
           }
@@ -550,7 +550,7 @@ export default class extends React.PureComponent {
         }
       } else {
         validateFields(['default_value'], { force: true });
-        if (type !== 'init') {
+        if (type !== 'int') {
           if (parseFloat(max) < 0) {
             cb('最大值不能为负数');
           }
