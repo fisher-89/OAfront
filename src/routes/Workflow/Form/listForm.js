@@ -508,10 +508,10 @@ export default class extends React.PureComponent {
     };
   }
 
-  validateFiledsMinAndMax = (_, __, cb) => {
+  validateFiledsMin = (_, min, cb) => {
     const { getFieldsValue, validateFields } = this.props.form;
-    const { min, max, type } = getFieldsValue(['max', 'min', 'type']);
-    if (min !== undefined && max !== undefined) {
+    const { max, type } = getFieldsValue(['max', 'min', 'type']);
+    if (min !== undefined && max !== undefined && min !== '' && max !== '') {
       if (timePickerCom.indexOf(type) !== -1) {
         const momentMaxAndMin = this.validateFieldsDisabledTime(min, max);
         if (momentMaxAndMin) {
@@ -521,8 +521,39 @@ export default class extends React.PureComponent {
         }
       } else {
         validateFields(['default_value'], { force: true });
-        if (min > max) {
+        if (type !== 'init') {
+          if (parseFloat(min) < 0) {
+            cb('最小值不能为负数');
+          }
+        }
+        if (parseFloat(min) > parseFloat(max)) {
           cb('最小值不能大于最大值');
+        }
+      }
+    }
+    cb();
+  }
+
+  validateFiledsMax = (_, max, cb) => {
+    const { getFieldsValue, validateFields } = this.props.form;
+    const { min, type } = getFieldsValue(['max', 'min', 'type']);
+    if (min !== undefined && max !== undefined) {
+      if (timePickerCom.indexOf(type) !== -1) {
+        const momentMaxAndMin = this.validateFieldsDisabledTime(min, max);
+        if (momentMaxAndMin) {
+          if (min && max && min > max) {
+            cb('最大值时间不能小于最小值事件');
+          }
+        }
+      } else {
+        validateFields(['default_value'], { force: true });
+        if (type !== 'init') {
+          if (parseFloat(max) < 0) {
+            cb('最大值不能为负数');
+          }
+        }
+        if (parseFloat(min) > parseFloat(max)) {
+          cb('最大值不能小于最小值');
         }
       }
     }
@@ -748,7 +779,7 @@ export default class extends React.PureComponent {
               getFieldDecorator('min', {
                 initialValue: initialValue.min || '',
                 rules: [{
-                  validator: this.validateFiledsMinAndMax,
+                  validator: this.validateFiledsMin,
                 }],
               })(
                 (typeValue === 'date' || typeValue === 'datetime') ? (
@@ -770,7 +801,7 @@ export default class extends React.PureComponent {
               getFieldDecorator('max', {
                 initialValue: initialValue.max || '',
                 rules: [{
-                  validator: this.validateFiledsMinAndMax,
+                  validator: this.validateFiledsMax,
                 }],
               })(
                 (typeValue === 'date' || typeValue === 'datetime') ? (

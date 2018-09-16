@@ -16,8 +16,10 @@ export default class extends React.PureComponent {
     const { tagsType, deleted } = this.props;
     const columns = [
       {
+        width: 100,
+        align: 'center',
         title: '序号',
-        searcher: true,
+        sorter: true,
         dataIndex: 'id',
       },
       {
