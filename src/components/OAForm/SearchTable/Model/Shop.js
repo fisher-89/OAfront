@@ -128,6 +128,7 @@ export default class Shop extends PureComponent {
     const tableProps = {
       index: 'shop_sn',
       scroll: { x: 760 },
+      rowKey: record => record.shop_sn,
       total: searcherTotal[searcherParams],
       data: searcherResult[searcherParams],
       loading: (shopLoading || brandLoading || departmentLoading),
