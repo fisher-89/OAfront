@@ -97,12 +97,12 @@ export default class SelectTable extends React.Component {
           data={data}
           total={total}
           {...selection}
-          rowKey={rowKey}
           loading={loading}
           columns={columns}
           onRow={this.handleRow}
           fetchDataSource={fetchDataSource}
           {...{ scroll: scroll || { x: 760 } }}
+          {...(rowKey !== undefined ? { rowKey } : {})}
           {...(serverSide !== undefined ? { serverSide } : { serverSide: true })}
         />
       </div>
