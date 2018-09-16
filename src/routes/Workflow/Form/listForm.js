@@ -609,7 +609,7 @@ export default class extends React.PureComponent {
       const max = parseFloat(minAndMaxAndType.max);
       const minAble = min !== undefined && min !== '';
       const maxAble = max !== undefined && max !== '';
-      if (Array.isArray(value)) {
+      if (Array.isArray(value) && value.length) {
         if (minAble && value.length < min) {
           cb(`默认值的最小个数为${min}`);
         }
