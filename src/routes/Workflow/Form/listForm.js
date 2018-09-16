@@ -566,9 +566,12 @@ export default class extends React.PureComponent {
     cb();
   }
 
-  validateFiledsScale = (_, __, cb) => {
+  validateFiledsScale = (_, value, cb) => {
     const { getFieldValue, validateFields } = this.props.form;
     const defaultValue = getFieldValue('default_value');
+    if (parseInt(value, 10) !== parseFloat(value)) {
+      cb('小数位数必须是一个整数');
+    }
     if (defaultValue !== undefined && defaultValue !== '') {
       validateFields(['default_value'], { force: true });
     }
@@ -622,7 +625,7 @@ export default class extends React.PureComponent {
           cb(`默认值的最大值为${max}`);
         }
         if (scale !== undefined && scale !== '') {
-          const regArr = ['^(-|\\d)?[0-9]+\\.\\d', `{${scale}}`];
+          const regArr = ['^(-|\\d)?[0-9]+\\.\\d', `{${scale}}$`];
           const regStr = regArr.join('');
           const reg = new RegExp(regStr);
           if (!reg.test(value)) {
