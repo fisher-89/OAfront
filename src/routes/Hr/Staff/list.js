@@ -22,6 +22,7 @@ import EditLeave from './editLeave';
 import OATable from '../../../components/OATable';
 import EditStaff from './edit';
 import ImportStaff from './import';
+import ExportStaff from './export';
 
 import {
   customerAuthority,
@@ -34,12 +35,10 @@ const { TabPane } = Tabs;
 @connect(({ staffs, brand, department, position, loading }) => ({
   staff: staffs.staff,
   brand: brand.brand,
-  brandLoading: loading.models.brand,
   department: department.department,
   staffInfo: staffs.staffDetails,
   staffLoading: loading.models.staffs,
   position: position.position,
-  positionLoading: loading.models.position,
 }))
 
 export default class extends PureComponent {
@@ -68,6 +67,7 @@ export default class extends PureComponent {
 
   fetchStaff = (param) => {
     const { dispatch } = this.props;
+    console.log(this.searchFilter);
     this.searchFilter = param;
     if (this.moreSearch) {
       this.searchFilter.filters = {
@@ -78,19 +78,19 @@ export default class extends PureComponent {
     dispatch({ type: 'staffs/fetchStaff', payload: this.searchFilter });
   };
 
+  handleVisibleChange = (visible) => {
+    if (this.modalVisible) {
+      return;
+    }
+    this.setState({ visible });
+  };
+
   fetchStaffInfo = (param) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'staffs/fetchStaffInfo',
       payload: param,
     });
-  };
-
-  handleVisibleChange = (visible) => {
-    if (this.modalVisible) {
-      return;
-    }
-    this.setState({ visible });
   };
 
   showUserInfo = (info) => {
@@ -295,21 +295,10 @@ export default class extends PureComponent {
   };
 
   makeColumns = () => {
-    const { brand, department } = this.props;
+    const { brand, department, position } = this.props;
+    const genderArr = ['未知', '男', '女'];
     const gender = [{ value: 1, text: '男' }, { value: 2, text: '女' }];
     const staffProperty = ['无', '108将', '36天罡', '24金刚', '18罗汉'];
-    const genderText = {};
-    const brandFilters = [];
-    gender.forEach((item) => {
-      genderText[item.value] = item;
-    });
-    if (brand) {
-      brand.forEach((item) => {
-        if (getBrandAuthority(item.id)) {
-          brandFilters.push({ text: item.name, value: item.id });
-        }
-      });
-    }
     const status = [
       { value: 1, text: '试用期' },
       { value: 2, text: '在职' },
@@ -344,17 +333,26 @@ export default class extends PureComponent {
         title: '品牌',
         align: 'center',
         dataIndex: 'brand_id',
-        filters: brand && brandFilters,
+        filters: brand && brand.map((item) => {
+          return { text: item.name, value: item.id };
+        }),
         render: (val) => {
           const data = brand && brand.filter(item => item.id === val)[0];
           return data ? data.name : '';
         },
       }, {
         title: '职位',
-        dataIndex: 'position.name',
+        dataIndex: 'position_id',
+        filters: position && position.map((item) => {
+          return { text: item.name, value: item.id };
+        }),
+        render: (val) => {
+          const data = position && position.filter(item => item.id === val)[0];
+          return data ? data.name : '';
+        },
       }, {
         title: '部门',
-        dataIndex: 'department.full_name',
+        dataIndex: 'department_id',
         width: 200,
         treeFilters: {
           title: 'name',
@@ -366,6 +364,16 @@ export default class extends PureComponent {
               disabled: !getDepartmentAuthority(item.id),
             };
           }),
+        },
+        render: (val) => {
+          const data = department && department.filter(item => item.id === val)[0];
+          const fullName = data ? data.full_name : '';
+          const content = (
+            <Tooltip title={fullName} placement="right">
+              {fullName}
+            </Tooltip>
+          );
+          return content;
         },
       },
       {
@@ -421,7 +429,7 @@ export default class extends PureComponent {
         dataIndex: 'gender_id',
         align: 'center',
         filters: gender,
-        render: val => genderText[val] && genderText[val].text,
+        render: val => genderArr[val],
       },
       {
         title: '员工属性',
@@ -456,7 +464,6 @@ export default class extends PureComponent {
   makeExtraOperator = () => {
     const extra = [];
     const { visible, moreInfo } = this.state;
-
     let style = {};
     if (moreInfo) {
       style = {
@@ -480,7 +487,10 @@ export default class extends PureComponent {
       ),
       (customerAuthority(62)) && (
         <ImportStaff key="importPop" />
-      )
+      ),
+      (customerAuthority(84) && (
+        <ExportStaff key="exportBtn" />
+      ))
     );
     extra.push((
       <Popover

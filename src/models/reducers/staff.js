@@ -94,4 +94,13 @@ export default {
       [store]: state[store].filter(item => item.staff_sn !== staffSn),
     };
   },
+  import(state, action) {
+    const { store } = action.payload;
+    notification.success({
+      message: '导入成功',
+    });
+    return {
+      ...state[store],
+    };
+  },
 };

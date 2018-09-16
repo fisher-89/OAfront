@@ -1,4 +1,10 @@
-import { fetchStaff, fetchStaffInfo, editStaff, deleteStaff, importStaff } from '../../services/user';
+import {
+  fetchStaff,
+  fetchStaffInfo,
+  editStaff,
+  deleteStaff,
+  importStaff,
+  exportStaff } from '../../services/user';
 
 const store = 'staff';
 
@@ -149,6 +155,19 @@ export default {
             data: response,
           },
         });
+        onSuccess(response);
+      }
+    } catch (error) {
+      return error;
+    }
+  },
+  * exportStaff({ payload, onSuccess, onError }, { call }) {
+    try {
+      const params = { ...payload };
+      const response = yield call(exportStaff, params);
+      if (response.errors && onError) {
+        onError(response.errors);
+      } else {
         onSuccess(response);
       }
     } catch (error) {

@@ -51,11 +51,18 @@ export async function deleteStaff(id) {
 }
 
 /**
- * 导入员工.
+ * 批量导入员工.
  * @param json params
  */
 export async function importStaff(params) {
-  return request('api/staff/import', {
+  return request('/api/staff/import', {
+    method: 'POST',
+    body: params,
+  });
+}
+
+export async function exportStaff(params) {
+  return request('/api/staff/export', {
     method: 'POST',
     body: params,
   });
