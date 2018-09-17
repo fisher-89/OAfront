@@ -103,22 +103,14 @@ export default class extends PureComponent {
       {
         title: '操作',
         render: (_, record) => {
-          const disabled = Array.isArray(record.changes);
-          let color;
-          if (disabled) {
-            color = '#666';
-          }
           return (
             <Fragment>
-              <a
-                {...color ? { style: { color } } : {}}
-                onClick={() => {
-                  if (disabled) { return; }
-                  this.setState({
-                    initialValue: record,
-                    visible: true,
-                  });
-                }}
+              <a onClick={() => {
+                this.setState({
+                  initialValue: record,
+                  visible: true,
+                });
+              }}
               >
                 查看
               </a>
