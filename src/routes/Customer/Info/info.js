@@ -35,7 +35,11 @@ export function getAddress(data) {
     Object.keys(data).forEach((addr) => {
       const value = data[addr];
       const temp = district.find(dist => value === dist.id) || {};
-      if (temp.name) address += temp.name;
+      if (temp.name) {
+        address += temp.name;
+      } else {
+        address += value;
+      }
     });
   } catch (e) { address = data; }
   return address;
@@ -43,7 +47,7 @@ export function getAddress(data) {
 
 function CustomerInfo(props) {
   const { data, loading, source, tags, brands, tagsType } = props;
-  const address = getAddress(data.present_address || []);
+  const address = getAddress(data.present_address || {});
   const sourceData = findRenderKey(source, data.source_id);
   const statusData = findRenderKey(customerStatus, data.status);
   const analysisTag = analysisData(tags, data.tags, 'tag_id', false);
