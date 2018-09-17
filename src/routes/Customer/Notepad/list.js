@@ -22,7 +22,8 @@ export default class extends PureComponent {
   }
 
   makeColumns = () => {
-    const { deleted, brand } = this.props;
+    const { deleted, brand, staffBrandsAuth } = this.props;
+    const { editable = [], visible = [] } = staffBrandsAuth;
     const columns = [
       {
         // width: 80,
@@ -63,27 +64,39 @@ export default class extends PureComponent {
       {
         title: '操作',
         render: (_, record) => {
-          const { id } = record;
-          let color;
-          const clickAble = (window.user || {}).staff_sn === record.recorder_sn;
-          if (!clickAble) {
-            color = '#8e8e8e';
-          }
-          const style = color ? { color } : {};
+          let editAble = true;
+          let seeAble = true;
+          record.brands.forEach((item) => {
+            if (editable.indexOf(item) !== -1) {
+              editAble = false;
+            }
+            if (visible.indexOf(item) !== -1) {
+              seeAble = false;
+            }
+          });
+          const editStyle = editAble ? { color: '#8e8e8e' } : {};
+          const seeStyle = seeAble ? { color: '#8e8e8e' } : {};
           return (
             <Fragment>
-              <a onClick={() => {
-                this.setState({
-                  initialValue: record,
-                  visible: true,
-                });
-              }}
+              <a
+                style={seeStyle}
+                onClick={() => {
+                  if (seeAble) return;
+                  this.setState({
+                    initialValue: record,
+                    visible: true,
+                  });
+                }}
               >查看
               </a>
               {customerAuthority(182) && (
                 <React.Fragment>
                   <Divider type="vertical" />
-                  <a style={style} onClick={() => { if (clickAble) deleted(id); }}>删除</a>
+                  <a
+                    style={editStyle}
+                    onClick={() => { if (!editAble) deleted(id); }}
+                  >删除
+                  </a>
                 </React.Fragment>
               )}
             </Fragment>
