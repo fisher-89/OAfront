@@ -14,7 +14,7 @@ const columns = [{
 @store('clientReduction')
 export default class extends React.PureComponent {
   handleClick = () => {
-    const { initialValue: { id }, clientReduction } = this.props;
+    const { initialValue, initialValue: { id }, clientReduction } = this.props;
     if (id && initialValue.status === 1) {
       clientReduction(id, () => {
         this.props.onClose();
