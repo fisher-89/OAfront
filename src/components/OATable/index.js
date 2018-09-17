@@ -279,7 +279,7 @@ class OATable extends PureComponent {
       },
     };
     if (!serverSide && !column.onFilter) {
-      dateFilterOption.onFilter = this.makeDefaultOnRangeFilter(key);
+      dateFilterOption.onFilter = this.makeDefaultDateFilter(key);
     }
 
     return dateFilterOption;
@@ -436,7 +436,14 @@ class OATable extends PureComponent {
   makeDefaultOnRangeFilter = (key) => {
     return ({ min, max }) => {
       const valueInfo = parseFloat(eval(`arguments[1].${key}`));
-      return (!min || parseFloat(min) <= valueInfo) && (!max || parseFloat(max) >= valueInfo);
+      return (!min || (parseFloat(min) <= valueInfo)) && (!max || (parseFloat(max) >= valueInfo));
+    };
+  }
+
+  makeDefaultDateFilter = (key) => {
+    return ({ min, max }) => {
+      const valueInfo = moment(eval(`arguments[1].${key}`));
+      return (!min || (moment(min) <= valueInfo)) && (!max || (moment(max) >= valueInfo));
     };
   }
 
@@ -457,7 +464,7 @@ class OATable extends PureComponent {
         a = moment(a).valueOf();
         b = moment(b).valueOf();
       }
-      return parseFloat(a) - parseFloat(b);
+      return (parseFloat(a) || 0) - (parseFloat(b) || 0);
     };
   }
 

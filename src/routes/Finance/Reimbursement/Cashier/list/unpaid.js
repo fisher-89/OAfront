@@ -254,7 +254,7 @@ export default class extends PureComponent {
       const fundsName = fundsAttribution.find(fund => fund.id === item.reim_department_id).name;
       reimbursements.push([
         item.reim_sn, item.description, item.staff_sn, item.realname, item.department_name,
-        fundsName, item.audited_cost, item.approver_name, item.approve_time,
+        fundsName, parseFloat(item.audited_cost), item.approver_name, item.approve_time,
         item.accountant_name, item.audit_time, item.manager_name, item.manager_approved_at,
         item.remark, item.payee_bank_account,
       ]);
@@ -262,18 +262,18 @@ export default class extends PureComponent {
         expenses.push([
           item.reim_sn, item.realname,
           expenseTypes.find(type => type.id === expense.type_id).name,
-          expense.date, expense.audited_cost, expense.description,
+          expense.date, parseFloat(expense.audited_cost), expense.description,
         ]);
       });
       const existedPayee = payees.find(payee => payee[1] === item.payee_bank_account &&
         payee[3] === fundsName);
       if (existedPayee) {
-        existedPayee[4] = (parseFloat(existedPayee[4]) + parseFloat(item.audited_cost)).toFixed(2);
+        existedPayee[4] += parseFloat(item.audited_cost);
         existedPayee[8] = `${existedPayee[8]}，${item.reim_sn}`;
       } else {
         payees.push([
           item.payee_bank_other, item.payee_bank_account, item.payee_name,
-          fundsName, item.audited_cost, item.payee_phone,
+          fundsName, parseFloat(item.audited_cost), item.payee_phone,
           item.payee_city ? `${item.payee_province}-${item.payee_city}` : item.payee_province,
           item.payee_bank_dot, item.reim_sn,
         ]);

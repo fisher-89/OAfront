@@ -1,6 +1,12 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Button, Modal, Divider } from 'antd';
+import {
+  Button,
+  Modal,
+  Icon,
+  Tooltip,
+  Divider,
+} from 'antd';
 import 'print-js';
 import XLSX from 'xlsx';
 import Ellipsis from '../../../../../components/Ellipsis';
@@ -126,15 +132,18 @@ export default class extends PureComponent {
       {
         title: '操作',
         render: (rowData) => {
-          const actions = [
-            <a key="print" onClick={() => this.handlePrint(rowData)}>打印</a>,
-            <Divider key="devider1" type="vertical" />,
-          ];
+          const actions = [];
           if (rowData.status_id === 4 && !rowData.process_instance_id) {
             actions.push(<a key="withdraw" onClick={() => this.handleWithdraw(rowData)}>撤回</a>);
-            actions.push(<Divider key="devider2" type="vertical" />);
+            actions.push(<Divider key="devider1" type="vertical" />);
           }
           actions.push(<a key="showDetail" onClick={() => showDetail(rowData)}>查看详情</a>);
+          actions.push(<Divider key="devider2" type="vertical" />);
+          actions.push(
+            <Tooltip key="print" title="打印">
+              <a onClick={() => this.handlePrint(rowData)}><Icon type="printer" /></a>
+            </Tooltip>
+          );
           return actions;
         },
       },
@@ -197,15 +206,17 @@ export default class extends PureComponent {
           const fundsName = fundsAttribution.find(fund => fund.id === item.reim_department_id).name;
           reimbursements.push([
             item.reim_sn, item.description, item.staff_sn, item.realname, item.department_name,
-            fundsName, item.approved_cost || item.send_cost, item.audited_cost, item.approver_name,
-            item.approve_time, item.accountant_name, item.audit_time, item.manager_name,
+            fundsName, parseFloat(item.approved_cost || item.send_cost),
+            parseFloat(item.audited_cost), item.approver_name, item.approve_time,
+            item.accountant_name, item.audit_time, item.manager_name,
             item.manager_approved_at, item.remark, item.payee_bank_account, item.payee_name,
           ]);
           item.expenses.forEach((expense) => {
             expenses.push([
               item.reim_sn, item.realname,
               expenseTypes.find(type => type.id === expense.type_id).name,
-              expense.date, expense.send_cost, expense.audited_cost, expense.description,
+              expense.date, parseFloat(expense.send_cost),
+              parseFloat(expense.audited_cost), expense.description,
             ]);
           });
         });

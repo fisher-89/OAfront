@@ -21,6 +21,8 @@ export default class extends PureComponent {
   componentWillMount() {
     const { dispatch } = this.props;
     dispatch({ type: 'reimbursement/fetchFundsAttribution' });
+    dispatch({ type: 'reimbursement/fetchStatus' });
+    dispatch({ type: 'reimbursement/fetchExpenseTypes' });
   }
 
   fetchApprovedList = (params) => {
@@ -80,7 +82,7 @@ export default class extends PureComponent {
       {
         title: '资金归属',
         dataIndex: 'reim_department.name',
-        filters: fundsAttribution.map((item) => ({ text: item.name, value: item.name })),
+        filters: fundsAttribution.map(item => ({ text: item.name, value: item.name })),
       },
       {
         title: '申请时间',
