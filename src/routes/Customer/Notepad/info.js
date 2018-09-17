@@ -29,7 +29,7 @@ export default class extends React.PureComponent {
             <FormItem label="标题" {...formItemLayout}>{initialValue.title}</FormItem>
             <FormItem label="关联客户" {...formItemLayout}>{initialValue.client_name}</FormItem>
             <FormItem label="关联品牌" {...formItemLayout}>{brandData.join('、')}</FormItem>
-            <FormItem label="记录时间" {...formItemLayout}>{(initialValue.created_at || {}).date}</FormItem>
+            <FormItem label="记录时间" {...formItemLayout}>{initialValue.created_at}</FormItem>
             <FormItem label="记录人" {...formItemLayout}>{initialValue.recorder_name}</FormItem>
           </div>
           <div className={styles.viewer}>
