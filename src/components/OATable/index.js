@@ -540,7 +540,15 @@ class OATable extends PureComponent {
       scroll: {},
       pagination,
       ...this.props,
-      onChange: this.handleTableChange,
+      onChange: (paginationChange, filters, sorter) => {
+        const newFilters = {};
+        Object.keys(filters).forEach((key) => {
+          if (filters[key] !== null) {
+            newFilters[key] = filters[key];
+          }
+        });
+        this.handleTableChange(paginationChange, newFilters, sorter);
+      },
       loading: loading || this.state.loading,
       rowSelection: newRowSelection,
       columns: this.mapColumns(),

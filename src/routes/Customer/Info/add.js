@@ -111,7 +111,8 @@ export default class extends React.PureComponent {
       initialValue = details[this.id];
       brandValue = initialValue.brands.map(item => `${item.brand_id}`);
     }
-    const staffBransData = brands.filter(item => staffBrandsAuth.indexOf(item.id) !== -1);
+    const { editable = [] } = staffBrandsAuth;
+    const staffBransData = brands.filter(item => editable.indexOf(item.id) !== -1);
     return (
       <OAForm onSubmit={validateFields(this.handleSubmit)}>
         <Row gutter={rowGutter}>

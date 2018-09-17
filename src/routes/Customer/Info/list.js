@@ -15,6 +15,7 @@ import { getFiltersData, customerAuthority } from '../../../utils/utils';
 export default class extends PureComponent {
   makeColumns = () => {
     const { source, tags, brands, deleted, staffBrandsAuth } = this.props;
+    const { editable = [], visible = [] } = staffBrandsAuth;
     const onClick = (name, id) => {
       this.props.history.push(`/client/customer/list/${name}/${id}`);
     };
@@ -82,23 +83,24 @@ export default class extends PureComponent {
       {
         title: '操作',
         render: (_, rowData) => {
-          let color;
-          let clickAble = false;
+          let editAble = true;
+          let seeAble = true;
           rowData.brands.forEach((item) => {
-            if (staffBrandsAuth.indexOf(item.brand_id) !== -1) {
-              clickAble = true;
+            if (editable.indexOf(item.brand_id) !== -1) {
+              editAble = false;
+            }
+            if (visible.indexOf(item.brand_id) !== -1) {
+              seeAble = false;
             }
           });
-          if (!clickAble) {
-            color = '#8e8e8e';
-          }
-          const style = color ? { color } : {};
+          const editStyle = editAble ? { color: '#8e8e8e' } : {};
+          const seeStyle = seeAble ? { color: '#8e8e8e' } : {};
           return (
             <Fragment>
               <a
-                style={style}
+                style={seeStyle}
                 onClick={() => {
-                  if (clickAble) onClick('info', rowData.id);
+                  if (!seeAble) onClick('info', rowData.id);
                 }}
               >查看
               </a>
@@ -106,9 +108,9 @@ export default class extends PureComponent {
                 <React.Fragment>
                   <Divider type="vertical" />
                   <a
-                    style={style}
+                    style={editStyle}
                     onClick={() => {
-                      if (clickAble) onClick('edit', rowData.id);
+                      if (!editAble) onClick('edit', rowData.id);
                     }}
                   >编辑
                   </a>
@@ -117,7 +119,13 @@ export default class extends PureComponent {
               {customerAuthority(178) && (
                 <React.Fragment>
                   <Divider type="vertical" />
-                  <a style={style} onClick={() => { if (clickAble) deleted(rowData.id); }}>删除</a>
+                  <a
+                    style={editStyle}
+                    onClick={() => {
+                      if (!editAble) deleted(rowData.id);
+                    }}
+                  >删除
+                  </a>
                 </React.Fragment>
               )}
             </Fragment >

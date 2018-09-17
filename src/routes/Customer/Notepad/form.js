@@ -167,7 +167,8 @@ export default class extends React.PureComponent {
     } = this.props;
     const { id } = this;
     const { fileList } = this.state;
-    const brandOption = brand.filter(item => staffBrandsAuth.indexOf(item.id) !== -1);
+    const { editable = [] } = staffBrandsAuth;
+    const brandOption = brand.filter(item => editable.indexOf(item.id) !== -1);
     let initialValue = {};
     if (notesDetails[id]) {
       initialValue = notesDetails[id];
