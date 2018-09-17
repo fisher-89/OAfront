@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import {
   Button,
   Divider,
+  message,
 } from 'antd';
 import moment from 'moment';
 import store from './store/store';
@@ -100,7 +101,11 @@ export default class extends PureComponent {
               <a
                 style={seeStyle}
                 onClick={() => {
-                  if (!seeAble) onClick('info', rowData.id);
+                  if (!seeAble) {
+                    onClick('info', rowData.id);
+                  } else {
+                    message.error('对不起，暂无客户的查看权限');
+                  }
                 }}
               >查看
               </a>
@@ -110,9 +115,14 @@ export default class extends PureComponent {
                   <a
                     style={editStyle}
                     onClick={() => {
-                      if (!editAble) onClick('edit', rowData.id);
+                      if (!editAble) {
+                        onClick('edit', rowData.id);
+                      } else {
+                        message.error('对不起，暂无客户的修改权限');
+                      }
                     }}
-                  >编辑
+                  >
+                    编辑
                   </a>
                 </React.Fragment>
               )}
@@ -122,13 +132,18 @@ export default class extends PureComponent {
                   <a
                     style={editStyle}
                     onClick={() => {
-                      if (!editAble) deleted(rowData.id);
+                      if (!editAble) {
+                        deleted(rowData.id);
+                      } else {
+                        message.error('对不起，暂无客户的修改权限');
+                      }
                     }}
-                  >删除
+                  >
+                    删除
                   </a>
                 </React.Fragment>
               )}
-            </Fragment >
+            </Fragment>
           );
         },
       },

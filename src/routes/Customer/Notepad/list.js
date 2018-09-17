@@ -81,7 +81,10 @@ export default class extends PureComponent {
               <a
                 style={seeStyle}
                 onClick={() => {
-                  if (seeAble) return;
+                  if (seeAble) {
+                    message.error('对不起，暂无客户的查看权限');
+                    return;
+                  }
                   this.setState({
                     initialValue: record,
                     visible: true,
@@ -94,7 +97,13 @@ export default class extends PureComponent {
                   <Divider type="vertical" />
                   <a
                     style={editStyle}
-                    onClick={() => { if (!editAble) deleted(id); }}
+                    onClick={() => {
+                      if (editStyle) {
+                        message.error('对不起，暂无客户的修改权限');
+                        return;
+                      }
+                      deleted(id);
+                    }}
                   >删除
                   </a>
                 </React.Fragment>
