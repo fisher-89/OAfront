@@ -32,21 +32,16 @@ export default class extends React.PureComponent {
     Object.keys(changes).forEach((key, index) => {
       let dirty;
       let original;
-      try {
-        const dirtyStr = JSON.parse(changes[key][0]);
-        const originalStr = JSON.parse(changes[key][1]);
-        if (Object.keys(dirtyStr).length) {
-          dirty = getAddress(dirtyStr);
-        } else {
-          [dirty] = changes[key];
-        }
-        if (Object.keys(originalStr).length) {
-          original = getAddress(originalStr);
-        } else {
-          [, original] = changes[key];
-        }
-      } catch (e) {
-        [dirty, original] = changes[key];
+      const [dirtyStr, originalStr] = changes[key];
+      if (Object.keys(dirtyStr).length) {
+        dirty = getAddress(dirtyStr);
+      } else {
+        [dirty] = changes[key];
+      }
+      if (Object.keys(originalStr).length) {
+        original = getAddress(originalStr);
+      } else {
+        [, original] = changes[key];
       }
       data.push({
         key: index,
