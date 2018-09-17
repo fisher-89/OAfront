@@ -63,6 +63,34 @@ export default class extends React.PureComponent {
           )}
         </FormItem>
 
+
+        <FormItem label="品牌查看权限" {...formItemLayout} required>
+          {getFieldDecorator('visibles', {
+            initialValue: visibles,
+            rules: [validatorRequired],
+          })(
+            <Select
+              mode="multiple"
+              placeholder="请选择"
+              onChange={() => {
+                const editablesValue = this.props.form.getFieldValue('editables');
+                this.props.form.setFields({
+                  editables: {
+                    errors: null,
+                    value: editablesValue,
+                  },
+                });
+              }}
+              getPopupContainer={triggerNode => (triggerNode)}
+            >
+              {brand.map(item => (
+                <Option key={`${item.id}`}>{item.name}</Option>
+              ))}
+            </Select>
+          )}
+        </FormItem>
+
+
         <FormItem label="品牌操作权限" {...formItemLayout} >
           {getFieldDecorator('editables', {
             initialValue: editables,
@@ -79,21 +107,6 @@ export default class extends React.PureComponent {
           )}
         </FormItem>
 
-        <FormItem label="品牌查看权限" {...formItemLayout}>
-          {getFieldDecorator('visibles', {
-            initialValue: visibles,
-          })(
-            <Select
-              mode="multiple"
-              placeholder="请选择"
-              getPopupContainer={triggerNode => (triggerNode)}
-            >
-              {brand.map(item => (
-                <Option key={`${item.id}`}>{item.name}</Option>
-              ))}
-            </Select>
-          )}
-        </FormItem>
 
         <FormItem {...formItemLayout} label="员工权限" required>
           {getFieldDecorator('staffs', {

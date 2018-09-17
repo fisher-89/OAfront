@@ -8,7 +8,7 @@ export default {
     try {
       const { update } = payload || {};
       let response = yield select(model => model.customer.staffBrandsAuth);
-      if (!response.length || update) {
+      if (!response.editable || update) {
         response = yield call(customerStaffBrandsAuth);
         yield put({
           type: 'save',
