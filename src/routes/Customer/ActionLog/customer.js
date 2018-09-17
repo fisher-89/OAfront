@@ -21,9 +21,13 @@ export default class extends PureComponent {
   };
 
   componentWillMount() {
-    const { fetchBrand } = this.props;
+    const { fetchBrand, type } = this.props;
     fetchBrand();
+    if (type) {
+      this.fetchDataSource();
+    }
   }
+
 
   makeColumns = () => {
     const { brands, type } = this.props;
@@ -159,7 +163,7 @@ export default class extends PureComponent {
           loading={loading}
           serverSide={!type}
           columns={this.makeColumns()}
-          fetchDataSource={this.fetchDataSource}
+          fetchDataSource={!type ? this.fetchDataSource : () => { }}
         />
       </React.Fragment>
     );

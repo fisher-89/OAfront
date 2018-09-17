@@ -32,21 +32,20 @@ export default class extends React.PureComponent {
       let dirty;
       let original;
       try {
-        if (typeof changes[key][0] !== 'number' && typeof changes[key][1] !== 'number') {
-          dirty = JSON.parse(changes[key][0] || changes[key].dirty);
-          original = JSON.parse(changes[key][1] || changes[key].original);
-          dirty = getAddress(dirty);
-          original = getAddress(original);
+        const dirtyStr = JSON.parse(changes[key][0]);
+        const originalStr = JSON.parse(changes[key][1]);
+        if (Object.keys(dirtyStr).length) {
+          dirty = getAddress(dirtyStr);
+        } else {
+          [dirty] = changes[key];
         }
-      } catch (_) {
-        dirty = changes[key][0] || changes[key].dirty;
-        original = changes[key][1] || changes[key].original;
-      }
-      if (typeof changes[key][0] === 'number') {
-        [dirty] = changes[key];
-      }
-      if (typeof changes[key][1] === 'number') {
-        [, original] = changes[key];
+        if (Object.keys(originalStr).length) {
+          original = getAddress(originalStr);
+        } else {
+          [, original] = changes[key];
+        }
+      } catch (e) {
+        [dirty, original] = changes[key];
       }
       data.push({
         key: index,

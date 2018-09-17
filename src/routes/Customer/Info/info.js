@@ -6,9 +6,7 @@ import {
   Form,
   Button,
 } from 'antd';
-import { connect } from 'dva';
 import moment from 'moment';
-// import Notepad from '../Notepad/list';
 import store from './store/store';
 import styles from './index.less';
 import ActionLog from '../ActionLog/customer';
@@ -96,7 +94,6 @@ function CustomerInfo(props) {
 
 
 const { TabPane } = Tabs;
-@connect(({ customer }) => ({ customer }))
 @store()
 export default class extends React.PureComponent {
   componentWillMount() {
@@ -107,14 +104,14 @@ export default class extends React.PureComponent {
   }
 
   render() {
-    const { customer: { customerDetails } } = this.props;
-    const customerInfo = customerDetails[this.id] || {};
+    const { details } = this.props;
+    const customerInfo = details[this.id] || {};
     const customerInfoProps = { ...this.props };
     delete customerInfoProps.customer;
     return (
       <React.Fragment>
         <Button icon="left" onClick={() => { this.props.history.goBack(-1); }}>返回客户列表</Button>
-        <Tabs defaultActiveKey="1" style={{ marginTop: 10 }}>
+        <Tabs defaultActiveKey="1" style={{ marginTop: 10 }} >
           <TabPane tab="基本信息" key="1" >
             <CustomerInfo
               data={customerInfo}
@@ -123,7 +120,10 @@ export default class extends React.PureComponent {
           </TabPane>
           {customerAuthority(184) && (
             <TabPane tab="操作日志" key="3" style={{ minHeight: 300 }}>
-              <ActionLog type="user" clientId={this.id} />
+              <ActionLog
+                type="user"
+                clientId={this.id}
+              />
             </TabPane>
           )}
         </Tabs>
