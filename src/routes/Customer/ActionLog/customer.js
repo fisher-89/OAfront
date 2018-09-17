@@ -150,6 +150,7 @@ export default class extends PureComponent {
         <CustomerLogInfo
           visible={visible}
           initialValue={initialValue}
+          onSuccess={this.fetchDataSource}
           onClose={() => {
             this.setState({
               initialValue: {},
@@ -163,7 +164,7 @@ export default class extends PureComponent {
           loading={loading}
           serverSide={!type}
           columns={this.makeColumns()}
-          fetchDataSource={!type ? this.fetchDataSource : () => { }}
+          fetchDataSource={this.fetchDataSource}
         />
       </React.Fragment>
     );
