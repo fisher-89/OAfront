@@ -33,5 +33,8 @@ export default {
   },
   publicPath: "/",
   disableDynamicImport: true,
-  hash: true
+  hash: true,
+  extraBabelIncludes: [
+    'node_modules',
+  ],
 }
