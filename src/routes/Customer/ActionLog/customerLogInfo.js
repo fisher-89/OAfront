@@ -1,6 +1,7 @@
 import React from 'react';
 import { Drawer, Table, Button } from 'antd';
 import store from './store/store';
+import { getAddress } from '../Info/info';
 
 const columns = [{
   title: '变更信息',
@@ -28,12 +29,23 @@ export default class extends React.PureComponent {
     const changes = !Array.isArray(initialValue.changes) ? (initialValue.changes || {}) : {};
     const data = [];
     Object.keys(changes).forEach((key, index) => {
+      let dirty;
+      let original;
+      try {
+        dirty = JSON.parse(changes[key][0] || changes[key].dirty);
+        original = JSON.parse(changes[key][1] || changes[key].original);
+        dirty = getAddress(dirty);
+        original = getAddress(original);
+      } catch (_) {
+        dirty = changes[key][0] || changes[key].dirty;
+        original = changes[key][1] || changes[key].original;
+      }
       data.push({
         key: index,
         name: key,
         create_at: initialValue.created_at,
-        dirty: changes[key][0] || changes[key].dirty,
-        original: changes[key][1] || changes[key].original,
+        dirty,
+        original,
       });
     });
     const expandedRowRender = record => (
