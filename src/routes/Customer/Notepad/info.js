@@ -31,6 +31,19 @@ export default class extends React.PureComponent {
             <FormItem label="关联品牌" {...formItemLayout}>{brandData.join('、')}</FormItem>
             <FormItem label="记录时间" {...formItemLayout}>{initialValue.created_at}</FormItem>
             <FormItem label="记录人" {...formItemLayout}>{initialValue.recorder_name}</FormItem>
+            <FormItem label="附件" {...formItemLayout}>{(initialValue.attachments || []).map((item, index) => {
+              const key = index;
+              return (
+                <a
+                  key={key}
+                  onClick={() => {
+                    window.open(item);
+                  }}
+                >附件{index + 1}
+                </a>
+              );
+            })}
+            </FormItem>
           </div>
           <div className={styles.viewer}>
             <div dangerouslySetInnerHTML={{ __html: initialValue.content }} />
