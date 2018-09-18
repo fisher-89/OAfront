@@ -48,7 +48,7 @@ export default class extends PureComponent {
     return (
       <OAModal
         width={600}
-        title="离职"
+        title="离职表单"
         visible={visible}
         style={{ top: 30 }}
         onCancel={() => this.props.onCancel()}

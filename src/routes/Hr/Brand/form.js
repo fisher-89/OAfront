@@ -48,7 +48,7 @@ export default class extends PureComponent {
 
     return (
       <OAModal
-        title="职位表单"
+        title="品牌表单"
         visible={visible}
         loading={this.props.loading}
         onSubmit={validateFields(this.handleSubmit)}
@@ -61,7 +61,7 @@ export default class extends PureComponent {
           <Input type="hidden" placeholder="请输入" />
         ) : null}
 
-        <FormItem {...formItemLayout} label="职位名称" required>
+        <FormItem {...formItemLayout} label="品牌名称" required>
           {
             getFieldDecorator('name', {
               initialValue: initialValue.name,
@@ -70,7 +70,7 @@ export default class extends PureComponent {
             )
           }
         </FormItem>
-        <FormItem {...formItemLayout} label="是否公共职位" >
+        <FormItem {...formItemLayout} label="是否公共品牌" >
           {getFieldDecorator('is_public', {
             initialValue: initialValue.is_public ? initialValue.is_public.toString() : '0',
           })(

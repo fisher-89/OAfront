@@ -212,7 +212,7 @@ export default class EditStaff extends PureComponent {
     return (
       <OAModal
         width={600}
-        title="考勤表单"
+        title="员工表单"
         visible={visible}
         style={{ top: 30 }}
         loading={staffLoading}
