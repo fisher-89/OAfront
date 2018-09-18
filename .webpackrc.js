@@ -24,8 +24,7 @@ export default {
         OA_CLIENT_ID: "2",
         OA_CLIENT_SECRET: "Z77PmFkOD9SMAIbVDZcKRxOD6f0YA0ck54amYEr1"
       }
-    },
-    extraBabelIncludes: [],
+    }
   },
   ignoreMomentLocale: true,
   theme: "./src/theme.js",
@@ -36,15 +35,6 @@ export default {
   disableDynamicImport: true,
   hash: true,
   extraBabelIncludes: [
-    'node_modules/xlsx',
-    'node_modules/adler-32',
-    'node_modules/cfb',
-    'node_modules/codepage',
-    'node_modules/commander',
-    'node_modules/exit-on-epipe',
-    'node_modules/printj',
-    'node_modules/crc-32',
-    'node_modules/ssf',
-    'node_modules/frac',
-  ],
+    'node_modules/rmb-x',
+  ]
 }
