@@ -45,9 +45,12 @@ export default !noProxy ? {
   /**
    * 张博涵  oa登录和hr
    */
-  'GET /api/(.*)': 'http://192.168.20.238:8003/api/',
-  'POST /api/(.*)': 'http://192.168.20.238:8003/api/',
-  'POST /oauth/(.*)': 'http://192.168.20.238:8003/oauth/',
+  'GET /api/(.*)': `${crm_port}/api/`,
+  'PUT /api/(.*)': `${crm_port}/api/`,
+  'POST /api/(.*)': `${crm_port}/api/`,
+  'PATCH /api/(.*)': `${crm_port}/api/`,
+  'DELETE /api/(.*)': `${crm_port}/api/`,
+  'POST /oauth/(.*)': `${crm_port}/oaut/`,
 } : {
     /**
      * 测试服  ： 报销
@@ -94,8 +97,10 @@ export default !noProxy ? {
      */
     'GET /api/(.*)': `${api_port}/api/`,
     'POST /api/(.*)': `${api_port}/api/`,
+    'PUT /api/(.*)': `${api_port}/api/`,
+    'PATCH /api/(.*)': `${api_port}/api/`,
+    'DELETE /api/(.*)': `${api_port}/api/`,
     'POST /oauth/(.*)': `${api_port}/oauth/`,
-
     /**
      * 唐娇  ： 大爱
      */
