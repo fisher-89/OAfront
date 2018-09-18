@@ -35,6 +35,6 @@ export default {
   disableDynamicImport: true,
   hash: true,
   extraBabelIncludes: [
-    'node_modules',
-  ],
+    'node_modules/rmb-x',
+  ]
 }
