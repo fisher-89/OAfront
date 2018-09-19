@@ -588,6 +588,11 @@ export default class extends React.PureComponent {
     const { getFieldsValue, getFieldValue } = this.props.form;
     const minAndMaxAndType = getFieldsValue(['max', 'min', 'type']);
     const { type } = minAndMaxAndType;
+    const formula = /(\{\{\w+\}\})|(\{\?\w+\?\})|(\{\?\w+\.\*\.\w*\?\})|(\{<\d+>\})/g;
+    const formulaReg = new RegExp(formula);
+    if (formulaReg.test(value)) {
+      cb();
+    }
     if (type === 'time' && value !== undefined && value !== '' && value !== null) {
       const momentMaxAndMin = this.validateFieldsDisabledTime(
         minAndMaxAndType.min, minAndMaxAndType.max
