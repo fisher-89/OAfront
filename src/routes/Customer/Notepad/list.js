@@ -105,7 +105,7 @@ export default class extends PureComponent {
                 <React.Fragment>
                   <Divider type="vertical" />
                   <Popconfirm
-                    title="是否删除客户及相关事件?"
+                    title="是否删除客户的事件?"
                     onConfirm={() => {
                       if (editStyle) {
                         message.error('对不起，暂无客户的修改权限');
