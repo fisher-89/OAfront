@@ -24,6 +24,13 @@ export default class extends PureComponent {
     };
     const columns = [
       {
+        width: 80,
+        title: '序号',
+        align: 'center',
+        dataIndex: 'id',
+        sorter: true,
+      },
+      {
         align: 'center',
         title: '客户姓名',
         dataIndex: 'name',

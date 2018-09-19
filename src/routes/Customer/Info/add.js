@@ -7,6 +7,7 @@ import {
   Button,
   Radio,
 } from 'antd';
+import moment from 'moment';
 import OAForm, {
   Address,
   DatePicker,
@@ -107,8 +108,10 @@ export default class extends React.PureComponent {
     const { details } = this.props;
     let initialValue = {};
     let brandValue;
+    let nameDisabled = false;
     if (details[this.id]) {
       initialValue = details[this.id];
+      nameDisabled = (moment().unix() - moment(initialValue.created_at).unix()) > 7 * 86400;
       brandValue = initialValue.brands.map(item => `${item.brand_id}`);
     }
     const { editable = [] } = staffBrandsAuth;
@@ -122,7 +125,7 @@ export default class extends React.PureComponent {
                 initialValue: initialValue.name || '',
                 rules: [validatorRequired],
               })(
-                <Input placeholder="请输入" />
+                <Input placeholder="请输入" disabled={nameDisabled} />
               )}
             </FormItem>
           </Col>
