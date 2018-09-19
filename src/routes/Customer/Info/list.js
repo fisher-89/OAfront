@@ -4,10 +4,12 @@ import {
   Button,
   Divider,
   message,
+  Popconfirm,
 } from 'antd';
 import moment from 'moment';
 import store from './store/store';
 import OATable from '../../../components/OATable';
+
 import { customerStatus } from '../../../assets/customer';
 import { getFiltersData, customerAuthority } from '../../../utils/utils';
 
@@ -129,9 +131,9 @@ export default class extends PureComponent {
               {customerAuthority(178) && (
                 <React.Fragment>
                   <Divider type="vertical" />
-                  <a
-                    style={editStyle}
-                    onClick={() => {
+                  <Popconfirm
+                    title="是否删除客户及相关事件?"
+                    onConfirm={() => {
                       if (!editAble) {
                         deleted(rowData.id);
                       } else {
@@ -139,8 +141,8 @@ export default class extends PureComponent {
                       }
                     }}
                   >
-                    删除
-                  </a>
+                    <a>删除</a>
+                  </Popconfirm>
                 </React.Fragment>
               )}
             </Fragment>

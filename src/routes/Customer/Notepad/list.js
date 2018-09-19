@@ -2,6 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import {
   Button,
   Divider,
+  Popconfirm,
 } from 'antd';
 import NoteInfo from './info';
 import store from './store/store';
@@ -103,17 +104,18 @@ export default class extends PureComponent {
               {customerAuthority(182) && (
                 <React.Fragment>
                   <Divider type="vertical" />
-                  <a
-                    style={editStyle}
-                    onClick={() => {
+                  <Popconfirm
+                    title="是否删除客户及相关事件?"
+                    onConfirm={() => {
                       if (editStyle) {
                         message.error('对不起，暂无客户的修改权限');
                         return;
                       }
                       deleted(id);
                     }}
-                  >删除
-                  </a>
+                  >
+                    <a>删除</a>
+                  </Popconfirm>
                 </React.Fragment>
               )}
             </Fragment>

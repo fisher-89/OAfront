@@ -1,16 +1,25 @@
 import React from 'react';
-import { Drawer, Table, Button } from 'antd';
+import { Drawer, Button } from 'antd';
 import store from './store/store';
 import { getAddress } from '../Info/info';
+import OATable from '../../../components/OATable';
 
 const columns = [{
   title: '变更信息',
   dataIndex: 'name',
-  width: '200',
+  width: 100,
 }, {
-  title: '操作时间',
-  width: '100',
-  dataIndex: 'create_at',
+  width: 100,
+  title: '变更前',
+  dataIndex: 'dirty',
+  render: (key) => {
+    return OATable.renderEllipsis((<span style={{ color: '#8c8c8c' }}>{key}</span>));
+  },
+}, {
+  width: 100,
+  title: '变更后',
+  dataIndex: 'original',
+  tooltip: true,
 }];
 
 @store('clientReduction')
@@ -53,12 +62,7 @@ export default class extends React.PureComponent {
         original,
       });
     });
-    const expandedRowRender = record => (
-      <React.Fragment>
-        <p>变更前：<span style={{ color: '#c3c3c3' }}>{record.dirty || ''}</span></p>
-        <p>变更后：<span style={{ color: '' }}>{record.original || ''}</span></p>
-      </React.Fragment>
-    );
+
     return (
       <Drawer
         {...restProps}
@@ -66,13 +70,10 @@ export default class extends React.PureComponent {
         title="操作信息"
       >
         <div style={{ marginBottom: 40 }}>
-          <Table
-            size="middle"
-            indentSize={20}
+          <OATable
             columns={columns}
             dataSource={data}
             pagination={false}
-            expandedRowRender={expandedRowRender}
           />
         </div>
         <div
