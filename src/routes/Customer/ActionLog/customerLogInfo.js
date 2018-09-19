@@ -6,8 +6,10 @@ import { getAddress } from '../Info/info';
 const columns = [{
   title: '变更信息',
   dataIndex: 'name',
+  width: '200',
 }, {
   title: '操作时间',
+  width: '100',
   dataIndex: 'create_at',
 }];
 
@@ -33,12 +35,12 @@ export default class extends React.PureComponent {
       let dirty;
       let original;
       const [dirtyStr, originalStr] = changes[key];
-      if (Object.keys(dirtyStr).length) {
+      if (dirtyStr && Object.keys(dirtyStr).length) {
         dirty = getAddress(dirtyStr);
       } else {
         [dirty] = changes[key];
       }
-      if (Object.keys(originalStr).length) {
+      if (originalStr && Object.keys(originalStr).length) {
         original = getAddress(originalStr);
       } else {
         [, original] = changes[key];
@@ -63,14 +65,16 @@ export default class extends React.PureComponent {
         width={540}
         title="操作信息"
       >
-        <Table
-          size="middle"
-          indentSize={20}
-          columns={columns}
-          dataSource={data}
-          pagination={false}
-          expandedRowRender={expandedRowRender}
-        />
+        <div style={{ marginBottom: 40 }}>
+          <Table
+            size="middle"
+            indentSize={20}
+            columns={columns}
+            dataSource={data}
+            pagination={false}
+            expandedRowRender={expandedRowRender}
+          />
+        </div>
         <div
           style={{
             position: 'absolute',

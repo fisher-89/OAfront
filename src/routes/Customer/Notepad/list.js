@@ -17,6 +17,14 @@ export default class extends PureComponent {
     };
   }
 
+  componentWillMount() {
+    const { type } = this.props;
+    if (type) {
+      this.fetchDataSource();
+    }
+  }
+
+
   handleLink = (name, id) => {
     this.props.history.push(`/client/notepad/list/${name}/${id}`);
   }
@@ -117,9 +125,9 @@ export default class extends PureComponent {
   }
 
   fetchDataSource = (params) => {
-    const { fetchDataSource, customerId } = this.props;
+    const { fetchDataSource, clientId } = this.props;
     let { filters } = { ...params };
-    filters = customerId ? `${filters};client_id=${customerId}` : filters;
+    filters = clientId ? `client_id=${clientId}` : filters;
     const newParams = {
       ...params,
       filters,
@@ -128,10 +136,18 @@ export default class extends PureComponent {
   }
 
   render() {
-    const { notes, loading } = this.props;
+    const { notes, loading, type } = this.props;
     const { visible, initialValue } = this.state;
+    let data = [];
+    let total = 0;
+    if (type) {
+      data = Array.isArray(notes) ? notes : [];
+      total = Array.isArray(notes) ? notes.length : 0;
+    } else {
+      ({ data, total } = notes);
+    }
     const extraOperator = [];
-    if (customerAuthority(182)) {
+    if (customerAuthority(182) && !type) {
       extraOperator.push((
         <Button
           type="primary"
@@ -159,13 +175,13 @@ export default class extends PureComponent {
           }}
         />
         <OATable
-          serverSide
-          data={notes.data}
+          data={data}
+          total={total}
           loading={loading}
-          total={notes.total}
           columns={this.makeColumns()}
-          fetchDataSource={this.fetchDataSource}
           extraOperator={extraOperator}
+          serverSide={type === undefined}
+          fetchDataSource={this.fetchDataSource}
         />
       </React.Fragment>
     );

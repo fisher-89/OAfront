@@ -10,6 +10,7 @@ import moment from 'moment';
 import store from './store/store';
 import styles from './index.less';
 import ActionLog from '../ActionLog/customer';
+import Notepad from '../Notepad/list';
 import district from '../../../assets/district';
 import { customerStatus } from '../../../assets/customer';
 import { findRenderKey, analysisData, customerAuthority } from '../../../utils/utils';
@@ -118,6 +119,14 @@ export default class extends React.PureComponent {
               {...customerInfoProps}
             />
           </TabPane>
+          {customerAuthority(181) && (
+            <TabPane tab="客户事件" key="2" style={{ minHeight: 300 }}>
+              <Notepad
+                type="user"
+                clientId={this.id}
+              />
+            </TabPane>
+          )}
           {customerAuthority(184) && (
             <TabPane tab="操作日志" key="3" style={{ minHeight: 300 }}>
               <ActionLog

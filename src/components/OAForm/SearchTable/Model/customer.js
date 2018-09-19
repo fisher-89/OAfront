@@ -4,7 +4,7 @@ import store from './store';
 import SearchTable from '../index';
 import OATable from '../../../OATable';
 import { customerStatus } from '../../../../assets/customer';
-import { getFiltersData } from '../../../../utils/utils';
+import { getFiltersData, makerFilters } from '../../../../utils/utils';
 
 @store
 export default class Customer extends PureComponent {
@@ -13,8 +13,9 @@ export default class Customer extends PureComponent {
   };
 
   makeColumns = () => {
-    const { source, tags, brands } = this.props;
-
+    const { source, tags, brands, staffBrandsAuth } = this.props;
+    const { editable = [] } = staffBrandsAuth;
+    const brandData = brands.filter(item => editable.indexOf(item.id) !== -1);
     const columns = [
       {
         align: 'center',
@@ -54,9 +55,9 @@ export default class Customer extends PureComponent {
         width: 160,
         align: 'center',
         title: '合作品牌',
-        filters: getFiltersData(brands),
+        filters: getFiltersData(brandData),
         dataIndex: 'brands.brand_id',
-        render: (_, record) => OATable.analysisColumn(brands, record.brands, 'brand_id'),
+        render: (_, record) => OATable.analysisColumn(brandData, record.brands, 'brand_id'),
       },
       {
         width: 120,
@@ -104,13 +105,20 @@ export default class Customer extends PureComponent {
   };
 
   makeSearchTableProps = () => {
+    const { staffBrandsAuth } = this.props;
+    const { editable = [] } = staffBrandsAuth;
     const response = {
       ...this.props,
       tableProps: {
         ...this.makeStaffProps(),
-        fetchDataSource: (params) => {
-          this.setState({ searcherParams: JSON.stringify(params) }, () => {
-            this.props.fetch(params);
+        fetchDataSource: (_, params) => {
+          let newParams = { ...params };
+          if (!newParams.filters['brands.brand_id']) {
+            newParams.filters['brands.brand_id'] = `[${editable.join(',')}]`;
+          }
+          newParams = makerFilters(newParams);
+          this.setState({ searcherParams: JSON.stringify(newParams) }, () => {
+            this.props.fetch(newParams);
           });
         },
       },

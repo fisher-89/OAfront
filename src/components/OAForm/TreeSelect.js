@@ -93,8 +93,7 @@ export default class OATreeSelect extends TreeSelect {
   }
 
   render() {
-    const response = <TreeSelect {...this.makeProps()} />;
-    return response;
+    return <TreeSelect {...this.makeProps()} />;
   }
 }
 OATreeSelect.defaultProps = defaultProps;

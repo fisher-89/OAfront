@@ -75,17 +75,16 @@ export default class extends PureComponent {
             })(
               <TreeSelect
                 multiple
-                allowClear
-                showSearch
+                parentValue={0}
+                dataSource={department}
+                valueIndex="department_id"
                 name={{
                   department_id: 'id',
                   department_full_name: 'full_name',
                 }}
-                placeholder="请选择"
-                dataSource={department}
-                dropdownMatchSelectWidth
-                treeNodeFilterProp="title"
-                dropdownStyle={{ height: '300px' }}
+                getPopupContainer={triggerNode => (triggerNode)}
+                dropdownStyle={{ maxHeight: '300px', overflow: 'auto' }}
+                onChange={() => this.handleDefaultValueChange()}
               />
             )
           }

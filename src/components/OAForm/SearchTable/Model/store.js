@@ -34,7 +34,7 @@ export default (Compoent) => {
       dispatch({ type: 'customer/fetchSource' });
       dispatch({ type: 'customer/fetchTags' });
       dispatch({ type: 'brand/fetchBrand' });
-      // this.fetchStaffBrandsAuth();
+      this.fetchStaffBrandsAuth();
     }
 
     fetchStaffBrandsAuth = () => {

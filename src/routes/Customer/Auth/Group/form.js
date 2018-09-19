@@ -64,7 +64,7 @@ export default class extends React.PureComponent {
         </FormItem>
 
 
-        <FormItem label="品牌查看权限" {...formItemLayout} required>
+        <FormItem label="可查看品牌" {...formItemLayout} required>
           {getFieldDecorator('visibles', {
             initialValue: visibles,
             rules: [validatorRequired],
@@ -91,7 +91,7 @@ export default class extends React.PureComponent {
         </FormItem>
 
 
-        <FormItem label="品牌操作权限" {...formItemLayout} >
+        <FormItem label="可操作品牌" {...formItemLayout} >
           {getFieldDecorator('editables', {
             initialValue: editables,
           })(
