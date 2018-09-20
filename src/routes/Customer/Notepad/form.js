@@ -14,7 +14,6 @@ import OAForm, {
 } from '../../../components/OAForm';
 import Upload from '../../../components/OATable/upload';
 import store from './store/store';
-import upload from '../../../utils/upload';
 import Editor from './editor';
 
 
@@ -68,7 +67,6 @@ const colSpan = { push: 1, sm: rowGutter.sm / 2, lg: rowGutter.lg / 2 };
 @OAForm.create()
 export default class extends React.PureComponent {
   state = {
-    fileList: [],
     attachments: [],
   }
 
@@ -93,7 +91,7 @@ export default class extends React.PureComponent {
           url: item,
         };
       });
-      this.setState({ attachments: [...attachments], fileList: [...attachments] });
+      this.setState({ attachments: [...attachments] });
     }
   }
 
@@ -136,27 +134,10 @@ export default class extends React.PureComponent {
 
   fileChange = (data) => {
     const { file } = data;
-    console.log(data);
-    // this.setState({ fileList });
     if (!file.error && file.status === 'done' && file.response) {
       this.uploadSuccess(file);
     }
     if (!file.error && file.status === 'removed') this.removeFile(file.uid);
-  }
-
-  customRequest = (options) => {
-    const formData = new FormData();
-    formData.append('file', options.file);
-    upload(`${OA_CRM_UPLOAD}notes/files`, {
-      body: formData,
-    }).then((res) => {
-      if (res.status === 200) {
-        const response = res.text();
-        options.onSuccess(response);
-      } else {
-        options.onError('上传失败');
-      }
-    });
   }
 
   handleSubmit = (values, onError) => {
