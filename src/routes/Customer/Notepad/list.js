@@ -96,7 +96,7 @@ export default class extends PureComponent {
                 style={seeStyle}
                 onClick={() => {
                   if (seeAble) {
-                    message.error('对不起，暂无客户的查看权限');
+                    message.error('对不起，暂无查看权限');
                     return;
                   }
                   this.setState({
@@ -113,7 +113,7 @@ export default class extends PureComponent {
                     title="是否删除客户的事件?"
                     onConfirm={() => {
                       if (editStyle) {
-                        message.error('对不起，暂无客户的修改权限');
+                        message.error('对不起，暂无修改权限');
                         return;
                       }
                       deleted(id);
