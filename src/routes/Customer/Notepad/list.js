@@ -2,6 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import {
   Button,
   Divider,
+  message,
   Popconfirm,
 } from 'antd';
 import NoteInfo from './info';
