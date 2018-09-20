@@ -88,6 +88,10 @@ export default class extends PureComponent {
               seeAble = false;
             }
           });
+          const userInfo = window.user || {};
+          if (userInfo.staff_sn !== record.staff_sn) {
+            editAble = true;
+          }
           const editStyle = editAble ? { color: '#8e8e8e' } : {};
           const seeStyle = seeAble ? { color: '#8e8e8e' } : {};
           return (
