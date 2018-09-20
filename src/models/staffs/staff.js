@@ -4,7 +4,8 @@ import {
   editStaff,
   deleteStaff,
   importStaff,
-  exportStaff } from '../../services/user';
+  exportStaff,
+} from '../../services/user';
 
 const store = 'staff';
 
@@ -44,7 +45,7 @@ export default {
       };
       delete params.staff_sn;
       const oldResponse = yield select(state => state.staffs.tableResult[JSON.stringify(params)]);
-      if (staffSn !== undefined || oldResponse === undefined) {
+      if (staffSn !== undefined || oldResponse === undefined || params.update) {
         let response = [];
         response = yield call(fetchStaff, params);
         if (staffSn) {

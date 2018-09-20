@@ -112,6 +112,7 @@ export default class Customer extends PureComponent {
       tableProps: {
         ...this.makeStaffProps(),
         fetchDataSource: (_, params) => {
+          console.log(params);
           let newParams = { ...params };
           if (!newParams.filters['brands.brand_id']) {
             newParams.filters['brands.brand_id'] = `[${editable.join(',')}]`;

@@ -146,7 +146,7 @@ class OATable extends PureComponent {
       urlPath = makerFilters(params);
     }
     if (!fetch) {
-      if (!serverSide && update) {
+      if (update) {
         params.update = update;
         urlPath.update = update;
       }

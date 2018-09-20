@@ -7,6 +7,7 @@ import {
   Button,
   Select,
 } from 'antd';
+import moment from 'moment';
 import OAForm, {
   DatePicker,
   SearchTable,
@@ -15,6 +16,7 @@ import Upload from '../../../components/OATable/upload';
 import store from './store/store';
 import upload from '../../../utils/upload';
 import Editor from './editor';
+
 
 const FormItem = OAForm.Item;
 const { Option } = Select;
@@ -173,6 +175,7 @@ export default class extends React.PureComponent {
     if (notesDetails[id]) {
       initialValue = notesDetails[id];
     }
+    const accessToken = localStorage.getItem(`${TOKEN_PREFIX}access_token`);
     return (
       <OAForm onSubmit={validateFields(this.handleSubmit)}>
         <FormItem label="标题" {...formItemLayout} required>
@@ -202,7 +205,13 @@ export default class extends React.PureComponent {
                 initialValue: initialValue.took_place_at,
                 rules: [validatorRequired],
               })(
-                <DatePicker placeholder="请输入" style={{ width: '100%' }} />
+                <DatePicker
+                  placeholder="请输入"
+                  style={{ width: '100%' }}
+                  disabledDate={(currentDate) => {
+                    return currentDate > moment();
+                  }}
+                />
               )}
             </FormItem>
           </Col>
@@ -218,10 +227,14 @@ export default class extends React.PureComponent {
         <FormItem {...formItemLayout} label="附件">
           <div className="dropbox">
             <Upload.Dragger
-              name="files"
+              name="file"
               fileList={fileList}
               onChange={this.fileChange}
-              customRequest={this.customRequest}
+              // customRequest={this.customRequest}
+              headers={
+                { Authorization: `Bearer ${accessToken}` }
+              }
+              action="/api/crm/notes/files"
             >
               <p className="ant-upload-drag-icon">
                 <Icon type="inbox" />
@@ -258,7 +271,7 @@ export default class extends React.PureComponent {
         <FormItem {...tailFormItemLayout}>
           <Button type="primary" htmlType="submit" style={{ width: 150 }}>保存</Button>
         </FormItem>
-      </OAForm>
+      </OAForm >
     );
   }
 }

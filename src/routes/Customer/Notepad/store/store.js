@@ -63,7 +63,10 @@ export default type => (Compoent) => {
       dispatch({
         type: !id ? 'customer/addNotes' : 'customer/editNotes',
         payload: params,
-        onError: errors => onError(errors, { client_id: 'client', client_name: 'client_name' }),
+        onError: errors => onError(errors, {
+          client_id: 'client',
+          client_name: 'client',
+        }),
         onSuccess: ({ message }) => {
           if (message) return;
           this.props.history.push('/client/notepad/list');

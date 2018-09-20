@@ -150,3 +150,6 @@ export async function deleteAuth(id) {
   return request(`/api/crm/auth/${id}`, { method: 'DELETE' });
 }
 
+export async function upLoadFile() {
+  return request('/api/crm/notes/files');
+}
