@@ -67,7 +67,6 @@ export default class extends PureComponent {
 
   fetchStaff = (param) => {
     const { dispatch } = this.props;
-    console.log(this.searchFilter);
     this.searchFilter = param;
     if (this.moreSearch) {
       this.searchFilter.filters = {
@@ -316,7 +315,6 @@ export default class extends PureComponent {
         width: 70,
         dataIndex: 'staff_sn',
         sorter: true,
-        searcher: true,
       }, {
         title: '姓名',
         fixed: 'left',
@@ -489,7 +487,7 @@ export default class extends PureComponent {
         <ImportStaff key="importPop" />
       ),
       (customerAuthority(84) && (
-        <ExportStaff key="exportBtn" />
+        <ExportStaff key="exportBtn" filters={this.searchFilter} />
       ))
     );
     extra.push((

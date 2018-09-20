@@ -11,6 +11,7 @@ import district from '../../../../public/district.json';
 
 import OAForm, { SearchTable } from '../../../components/OAForm';
 import OATableSearch from '../../../components/OATable/search';
+import { makerFilters } from '../../../utils/utils';
 
 const FormItem = OAForm.Item;
 @OAForm.create()
@@ -55,8 +56,8 @@ class Search extends PureComponent {
     formValue.living.forEach((item, key) => {
       info[nowKey[key]] = item;
     });
-
-    this.props.search({ info });
+    const filter = makerFilters({ filters: { ...info } });
+    this.props.search(filter);
   };
 
   resetMoreFilters = () => {
@@ -87,7 +88,6 @@ class Search extends PureComponent {
     };
     const { live, info, cardNumber, shop } = this.state;
     const { form: { getFieldDecorator, resetFields } } = this.props;
-    // console.log(shop);
     return (
       <OAForm
         style={{ minWidth: 500 }}
