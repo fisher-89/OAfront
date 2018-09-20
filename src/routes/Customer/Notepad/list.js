@@ -117,7 +117,7 @@ export default class extends PureComponent {
                         message.error('对不起，暂无修改权限');
                         return;
                       }
-                      deleted(id);
+                      deleted(record.id);
                     }}
                   >
                     <a style={editStyle}>删除</a>
