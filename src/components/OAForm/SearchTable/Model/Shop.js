@@ -27,7 +27,9 @@ export default class Shop extends PureComponent {
 
   fetchShop = (params) => {
     const { dispatch } = this.props;
-    this.setState({ searcherParams: JSON.stringify(params) }, () => {
+    const jsonStrParams = { ...params };
+    delete jsonStrParams.update;
+    this.setState({ searcherParams: JSON.stringify(jsonStrParams) }, () => {
       dispatch({ type: 'tableShop/fetchShop', payload: params });
     });
   };

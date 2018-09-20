@@ -117,7 +117,9 @@ export default class Customer extends PureComponent {
             newParams.filters['brands.brand_id'] = `[${editable.join(',')}]`;
           }
           newParams = makerFilters(newParams);
-          this.setState({ searcherParams: JSON.stringify(newParams) }, () => {
+          const jsonStrParams = { ...newParams };
+          delete jsonStrParams.update;
+          this.setState({ searcherParams: JSON.stringify(jsonStrParams) }, () => {
             this.props.fetch(newParams);
           });
         },

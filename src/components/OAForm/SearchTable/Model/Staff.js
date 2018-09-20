@@ -62,10 +62,11 @@ export default class Staff extends PureComponent {
     } else {
       filterPosition = position;
     }
-
+    const jsonStrParams = { ...newParams };
+    delete jsonStrParams.update;
     this.setState({
       filterPosition: [...filterPosition],
-      staffSearcherParams: JSON.stringify(newParams),
+      staffSearcherParams: JSON.stringify(jsonStrParams),
     });
   };
 
