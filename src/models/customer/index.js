@@ -38,5 +38,14 @@ export default {
   },
   reducers: {
     ...defaultReducers,
+    saveLog(state, action) {
+      const { data, id, store } = action.payload;
+      const newData = state[store];
+      newData[id] = data;
+      return {
+        ...state,
+        [store]: newData,
+      };
+    },
   },
 };

@@ -9,15 +9,27 @@ export default {
       const params = { ...payload };
       const { id } = params;
       delete params.id;
+      delete params.clientId;
       const response = yield call(fetchNotes, params, id || '');
-      yield put({
-        type: 'save',
-        payload: {
-          id,
-          store,
-          data: response,
-        },
-      });
+      if (payload.clientId) {
+        yield put({
+          type: 'saveLog',
+          payload: {
+            store,
+            data: response,
+            id: payload.clientId,
+          },
+        });
+      } else {
+        yield put({
+          type: 'save',
+          payload: {
+            id,
+            store,
+            data: response,
+          },
+        });
+      }
     } catch (err) { return err; }
   },
   * addNotes({ payload, onError, onSuccess }, { call, put }) {

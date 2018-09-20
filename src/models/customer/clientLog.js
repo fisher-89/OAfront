@@ -7,14 +7,26 @@ export default {
   * fetchClientLogs({ payload }, { call, put }) {
     try {
       const params = { ...payload };
+      delete params.clientId;
       const response = yield call(fetchClientLogs, params);
-      yield put({
-        type: 'save',
-        payload: {
-          store,
-          data: response,
-        },
-      });
+      if (payload.clientId) {
+        yield put({
+          type: 'saveLog',
+          payload: {
+            store,
+            data: response,
+            id: payload.clientId,
+          },
+        });
+      } else {
+        yield put({
+          type: 'save',
+          payload: {
+            store,
+            data: response,
+          },
+        });
+      }
     } catch (err) { return err; }
   },
   * clientReduction({ payload, onSuccess, onError }, { call, put }) {

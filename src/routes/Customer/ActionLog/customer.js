@@ -134,18 +134,21 @@ export default class extends PureComponent {
     const { fetchClientLogs, clientId } = this.props;
     const newParams = { ...params };
     newParams.filters = clientId ? `client_id=${clientId}` : newParams.filters;
+    if (clientId) {
+      newParams.clientId = clientId;
+    }
     fetchClientLogs(newParams);
   }
 
 
   render() {
-    const { clientLogs, loading, type } = this.props;
+    const { clientLogs, loading, type, clientId } = this.props;
     const { visible, initialValue } = this.state;
     let data = [];
     let total = 0;
     if (type) {
-      data = Array.isArray(clientLogs) ? clientLogs : [];
-      total = Array.isArray(clientLogs) ? clientLogs.length : 0;
+      data = clientLogs[clientId] ? clientLogs[clientId] : [];
+      total = clientLogs[clientId] ? clientLogs[clientId].length : 0;
     } else {
       ({ data, total } = clientLogs);
     }

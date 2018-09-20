@@ -138,17 +138,20 @@ export default class extends PureComponent {
       ...params,
       filters,
     };
+    if (clientId) {
+      newParams.clientId = clientId;
+    }
     fetchDataSource(newParams);
   }
 
   render() {
-    const { notes, loading, type } = this.props;
+    const { notes, loading, type, clientId } = this.props;
     const { visible, initialValue } = this.state;
     let data = [];
     let total = 0;
     if (type) {
-      data = Array.isArray(notes) ? notes : [];
-      total = Array.isArray(notes) ? notes.length : 0;
+      data = notes[clientId] ? notes[clientId] : [];
+      total = notes[clientId] ? notes[clientId].length : 0;
     } else {
       ({ data, total } = notes);
     }
