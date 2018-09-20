@@ -64,7 +64,12 @@ export default class extends React.PureComponent {
         original,
       });
     });
-
+    let disabled = true;
+    if (initialValue.status === 1 || (
+      customerAuthority(191) && initialValue.status === -1
+    )) {
+      disabled = false;
+    }
     return (
       <Drawer
         {...restProps}
@@ -102,7 +107,7 @@ export default class extends React.PureComponent {
           <Button
             type="primary"
             onClick={this.handleClick}
-            disabled={initialValue.status !== 1 || customerAuthority(191)}
+            disabled={disabled}
           >还原
           </Button>
         </div>
