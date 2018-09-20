@@ -13,7 +13,7 @@ const columns = [{
   title: '变更前',
   dataIndex: 'dirty',
   render: (key) => {
-    return OATable.renderEllipsis((<span style={{ color: '#8c8c8c' }}>{key}</span>));
+    return OATable.renderEllipsis((<span style={{ color: '#8c8c8c' }}>{key}</span>), true);
   },
 }, {
   width: 100,
