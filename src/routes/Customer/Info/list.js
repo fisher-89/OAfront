@@ -148,7 +148,7 @@ export default class extends PureComponent {
                       }
                     }}
                   >
-                    <a>删除</a>
+                    <a style={editStyle}>删除</a>
                   </Popconfirm>
                 </React.Fragment>
               )}

@@ -111,15 +111,16 @@ export default class extends PureComponent {
                   <Divider type="vertical" />
                   <Popconfirm
                     title="是否删除客户的事件?"
+
                     onConfirm={() => {
-                      if (editStyle) {
+                      if (editAble) {
                         message.error('对不起，暂无修改权限');
                         return;
                       }
                       deleted(id);
                     }}
                   >
-                    <a>删除</a>
+                    <a style={editStyle}>删除</a>
                   </Popconfirm>
                 </React.Fragment>
               )}
