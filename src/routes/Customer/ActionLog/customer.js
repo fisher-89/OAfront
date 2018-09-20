@@ -40,12 +40,16 @@ export default class extends PureComponent {
         sorter: true,
         defaultSortOrder: 'descend',
       },
+    ];
+    const columns1 = [
       {
         title: '客户姓名',
         align: 'center',
         searcher: true,
         dataIndex: 'clients.name',
       },
+    ];
+    const columns2 = [
       {
         title: '合作品牌',
         align: 'center',
@@ -123,7 +127,7 @@ export default class extends PureComponent {
         },
       },
     ];
-    return columns;
+    return type ? columns.concat(columns2) : columns.concat(columns1, columns2);
   }
 
   fetchDataSource = (params) => {

@@ -5,6 +5,8 @@ import {
   Tabs,
   Form,
   Button,
+  Row,
+  Col,
 } from 'antd';
 import moment from 'moment';
 import store from './store/store';
@@ -19,7 +21,7 @@ const FormItem = Form.Item;
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
-    sm: { span: 3 },
+    sm: { span: 8 },
   },
   wrapperCol: {
     xs: { span: 24 },
@@ -112,30 +114,34 @@ export default class extends React.PureComponent {
     return (
       <React.Fragment>
         <Button icon="left" onClick={() => { this.props.history.goBack(-1); }}>返回客户列表</Button>
-        <Tabs defaultActiveKey="1" style={{ marginTop: 10 }} >
-          <TabPane tab="基本信息" key="1" >
+        <Row gutter={16}>
+          <Col span={8} style={{ marginTop: 20, paddingTop: 10 }}>
             <CustomerInfo
               data={customerInfo}
               {...customerInfoProps}
             />
-          </TabPane>
-          {customerAuthority(181) && (
-            <TabPane tab="客户事件" key="2" style={{ minHeight: 300 }}>
-              <Notepad
-                type="user"
-                clientId={this.id}
-              />
-            </TabPane>
-          )}
-          {customerAuthority(184) && (
-            <TabPane tab="操作日志" key="3" style={{ minHeight: 300 }}>
-              <ActionLog
-                type="user"
-                clientId={this.id}
-              />
-            </TabPane>
-          )}
-        </Tabs>
+          </Col>
+          <Col span={16}>
+            <Tabs defaultActiveKey="2" style={{ marginTop: 10 }} >
+              {customerAuthority(181) && (
+                <TabPane tab="客户事件" key="2" style={{ minHeight: 300 }}>
+                  <Notepad
+                    type="user"
+                    clientId={this.id}
+                  />
+                </TabPane>
+              )}
+              {customerAuthority(184) && (
+                <TabPane tab="操作日志" key="3" style={{ minHeight: 300 }}>
+                  <ActionLog
+                    type="user"
+                    clientId={this.id}
+                  />
+                </TabPane>
+              )}
+            </Tabs>
+          </Col>
+        </Row>
       </React.Fragment>
     );
   }

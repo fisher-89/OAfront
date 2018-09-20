@@ -31,7 +31,7 @@ export default class extends PureComponent {
   }
 
   makeColumns = () => {
-    const { deleted, brand, staffBrandsAuth } = this.props;
+    const { deleted, brand, staffBrandsAuth, type } = this.props;
     const { editable = [], visible = [] } = staffBrandsAuth;
     const columns = [
       {
@@ -41,6 +41,8 @@ export default class extends PureComponent {
         dataIndex: 'id',
         sorter: true,
       },
+    ];
+    const columns1 = [
       {
         // width: 160,
         align: 'center',
@@ -48,6 +50,8 @@ export default class extends PureComponent {
         searcher: true,
         dataIndex: 'client_name',
       },
+    ];
+    const columns2 = [
       {
         width: 300,
         align: 'center',
@@ -123,7 +127,7 @@ export default class extends PureComponent {
         },
       },
     ];
-    return columns;
+    return type ? columns.concat(columns2) : columns.concat(columns1, columns2);
   }
 
   fetchDataSource = (params) => {
