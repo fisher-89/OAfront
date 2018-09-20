@@ -25,10 +25,11 @@ const columns = [{
 @store('clientReduction')
 export default class extends React.PureComponent {
   handleClick = () => {
-    const { onSuccess, initialValue, initialValue: { id }, clientReduction } = this.props;
+    const { onSuccess, initialValue, initialValue: { id }, clientReduction, type } = this.props;
     if (id && initialValue.status === 1) {
       clientReduction(id, () => {
-        onSuccess();
+        const params = !type ? { page: 1, pageSize: 10, filters: '' } : undefined;
+        onSuccess(params);
         this.props.onClose();
       });
     }

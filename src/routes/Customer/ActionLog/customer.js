@@ -155,6 +155,7 @@ export default class extends PureComponent {
     const renderContent = (
       <React.Fragment>
         <CustomerLogInfo
+          type={type}
           visible={visible}
           initialValue={initialValue}
           onSuccess={this.fetchDataSource}

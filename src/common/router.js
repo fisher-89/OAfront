@@ -95,6 +95,10 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['customer'], () => import('../routes/Customer/Tags')),
       authority: '179',
     },
+    '/client/customer/source': {
+      component: dynamicWrapper(app, ['customer'], () => import('../routes/Customer/Source')),
+
+    },
     '/client/customer/tags/type': {
       component: dynamicWrapper(app, ['customer'], () => import('../routes/Customer/Tags/Type')),
       authority: '179',

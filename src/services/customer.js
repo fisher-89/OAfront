@@ -5,6 +5,22 @@ export async function fetchSource() {
   return request('/api/crm/source', { method: 'GET' });
 }
 
+/** 添加客户来源 */
+export async function addSource(params) {
+  return request('/api/crm/source', { method: 'POST', body: params });
+}
+
+/** 编辑客户来源 */
+export async function editSource(params, id) {
+  return request(`/api/crm/source/${id}`, { method: 'PUT', body: params });
+}
+
+/** 删除客户来源 */
+export async function deleteSource(id) {
+  return request(`/api/crm/source/${id}`, { method: 'DELETE' });
+}
+
+
 /** 客户列表 */
 export async function fetchCustomer(params, id) {
   return request(`/api/crm/clients/${id}`, { method: 'GET', body: params });
