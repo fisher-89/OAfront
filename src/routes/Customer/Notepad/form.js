@@ -105,18 +105,27 @@ export default class extends React.PureComponent {
   }
 
   uploadSuccess = (file) => {
-    file.response.then((body) => {
-      const filePath = body;
-      const fileTemp = {
-        uid: file.uid,
-        name: file.name,
-        status: file.status,
-        url: filePath,
-      };
-      let attachments = [...this.state.attachments];
-      attachments = attachments.concat(fileTemp);
-      this.setState({ attachments });
-    });
+    const fileTemp = {
+      uid: file.uid,
+      name: file.name,
+      status: file.status,
+      url: file.response,
+    };
+    let attachments = [...this.state.attachments];
+    attachments = attachments.concat(fileTemp);
+    this.setState({ attachments });
+    // file.response.then((body) => {
+    //   const filePath = body;
+    //   const fileTemp = {
+    //     uid: file.uid,
+    //     name: file.name,
+    //     status: file.status,
+    //     url: filePath,
+    //   };
+    //   let attachments = [...this.state.attachments];
+    //   attachments = attachments.concat(fileTemp);
+    //   this.setState({ attachments });
+    // });
   }
 
   removeFile = (uid) => {
@@ -125,8 +134,10 @@ export default class extends React.PureComponent {
     this.setState({ attachments: [...newAttachments] });
   }
 
-  fileChange = ({ file, fileList }) => {
-    this.setState({ fileList });
+  fileChange = (data) => {
+    const { file } = data;
+    console.log(data);
+    // this.setState({ fileList });
     if (!file.error && file.status === 'done' && file.response) {
       this.uploadSuccess(file);
     }
@@ -168,7 +179,7 @@ export default class extends React.PureComponent {
       form: { getFieldDecorator },
     } = this.props;
     const { id } = this;
-    const { fileList } = this.state;
+    // const { fileList } = this.state;
     const { editable = [] } = staffBrandsAuth;
     const brandOption = brand.filter(item => editable.indexOf(item.id) !== -1);
     let initialValue = {};
@@ -228,7 +239,7 @@ export default class extends React.PureComponent {
           <div className="dropbox">
             <Upload.Dragger
               name="file"
-              fileList={fileList}
+              // fileList={fileList}
               onChange={this.fileChange}
               // customRequest={this.customRequest}
               headers={

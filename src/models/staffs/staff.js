@@ -44,8 +44,9 @@ export default {
         ...payload,
       };
       delete params.staff_sn;
+      delete params.update;
       const oldResponse = yield select(state => state.staffs.tableResult[JSON.stringify(params)]);
-      if (staffSn !== undefined || oldResponse === undefined || params.update) {
+      if (staffSn !== undefined || oldResponse === undefined || payload.update) {
         let response = [];
         response = yield call(fetchStaff, params);
         if (staffSn) {

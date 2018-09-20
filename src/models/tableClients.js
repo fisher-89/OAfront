@@ -13,9 +13,10 @@ export default {
     * fetchCustomer({ payload }, { call, put, select }) {
       try {
         const params = { ...payload };
+        delete params.update;
         const oldResponse =
           yield select(model => model.tableClients.tableResult[JSON.stringify(params)]);
-        if (oldResponse === undefined || params.update) {
+        if (oldResponse === undefined || payload.update) {
           let response = [];
           response = yield call(fetchCustomer, params, '');
           yield put({
