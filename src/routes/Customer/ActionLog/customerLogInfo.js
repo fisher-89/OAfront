@@ -2,6 +2,7 @@ import React from 'react';
 import { Drawer, Button } from 'antd';
 import store from './store/store';
 import { getAddress } from '../Info/info';
+import { customerAuthority } from '../../../utils/utils';
 import OATable from '../../../components/OATable';
 
 const columns = [{
@@ -101,7 +102,7 @@ export default class extends React.PureComponent {
           <Button
             type="primary"
             onClick={this.handleClick}
-            disabled={initialValue.status !== 1}
+            disabled={initialValue.status !== 1 || customerAuthority(191)}
           >还原
           </Button>
         </div>
