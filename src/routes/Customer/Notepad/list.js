@@ -89,7 +89,7 @@ export default class extends PureComponent {
             }
           });
           const userInfo = window.user || {};
-          if (userInfo.staff_sn !== record.staff_sn) {
+          if (userInfo.staff_sn !== record.recorder_sn) {
             editAble = true;
           }
           const editStyle = editAble ? { color: '#8e8e8e' } : {};
@@ -115,10 +115,9 @@ export default class extends PureComponent {
                   <Divider type="vertical" />
                   <Popconfirm
                     title="是否删除客户的事件?"
-
                     onConfirm={() => {
                       if (editAble) {
-                        message.error('对不起，暂无修改权限');
+                        message.error('对不起，暂无删除权限');
                         return;
                       }
                       deleted(record.id);
