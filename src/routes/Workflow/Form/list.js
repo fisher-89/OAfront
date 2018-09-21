@@ -91,6 +91,11 @@ export default class List extends PureComponent {
           分类管理
         </Button>
       </Link>,
+      <Link to="/workflow/form/urlSource" key="addUrl">
+        <Button type="primary" icon="link">
+          接口控件配置
+        </Button>
+      </Link>,
       <Tooltip title="新建表单" key="add">
         <Link to="/workflow/form/add">
           <Button type="primary" icon="plus" />
@@ -105,7 +110,7 @@ export default class List extends PureComponent {
         loading={loading}
         extraOperator={extraOperator}
         fetchDataSource={this.fetchForm}
-        // serverSide={true}
+      // serverSide={true}
       />
     );
   }

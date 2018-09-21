@@ -56,11 +56,6 @@ export default class List extends PureComponent {
     ],
   }
 
-  componentDidMount() {
-    const { form, bindForm } = this.props;
-    bindForm(form);
-  }
-
   fetchFormType = (params) => {
     const { dispatch } = this.props;
     dispatch({

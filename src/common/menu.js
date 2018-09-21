@@ -331,6 +331,11 @@ const menuData = [
         hideInMenu: true,
       },
       {
+        name: '接口配置',
+        path: 'form/urlSource',
+        hideInMenu: true,
+      },
+      {
         name: '验证规则',
         path: 'validator',
       },
