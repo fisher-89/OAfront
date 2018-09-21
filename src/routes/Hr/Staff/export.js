@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Button, message } from 'antd';
+import { Button, notification, List } from 'antd';
 import { connect } from 'dva';
 import XLSX from 'xlsx';
 
@@ -35,13 +35,22 @@ export default class extends PureComponent {
   }
 
   handleError = (error) => {
-    console.log(error);
-    message.warning('数据错误，导出终止～');
+    const { errors } = error;
+    const desc = Object.keys(errors).map((val) => {
+      return errors[val][0];
+    });
+    notification.open({
+      message: error.message,
+      description: <List size="small" dataSource={desc} renderItem={item => (<List.Item>{item}</List.Item>)} />,
+      duration: 0,
+    });
   }
 
   handleSuccess = (result) => {
     if (result.length <= 1) {
-      message.warning('没有员工数据，导出终止～');
+      notification.warning({
+        message: '没有员工数据，导出终止～',
+      });
       return false;
     }
     const ws = XLSX.utils.aoa_to_sheet(result);

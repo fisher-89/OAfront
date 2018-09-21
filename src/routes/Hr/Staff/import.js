@@ -5,6 +5,8 @@ import {
   Button,
   Radio,
   Spin,
+  List,
+  notification,
 } from 'antd';
 import { connect } from 'dva';
 import XLSX from 'xlsx';
@@ -107,11 +109,21 @@ export default class extends PureComponent {
   }
 
   handleError = (error) => {
-    console.log(error);
+    const { errors } = error;
+    const desc = Object.keys(errors).map((val) => {
+      return errors[val][0];
+    });
+    notification.open({
+      message: error.message,
+      description: <List size="small" dataSource={desc} renderItem={item => (<List.Item>{item}</List.Item>)} />,
+      duration: 0,
+    });
   }
 
   handleSuccess = (result) => {
-    console.log(result);
+    notification.success({
+      message: result.message,
+    });
   }
 
   render() {

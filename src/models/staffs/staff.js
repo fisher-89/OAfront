@@ -148,7 +148,7 @@ export default {
       const params = { ...payload };
       const response = yield call(importStaff, params);
       if (response.errors && onError) {
-        onError(response.errors);
+        onError(response);
       } else {
         onSuccess(response);
       }
@@ -161,7 +161,7 @@ export default {
       const params = { ...payload };
       const response = yield call(exportStaff, params);
       if (response.errors && onError) {
-        onError(response.errors);
+        onError(response);
       } else {
         onSuccess(response);
       }
