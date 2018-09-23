@@ -1,6 +1,6 @@
 import React from 'react';
 import { Upload, Button } from 'antd';
-import upload from '../../utils/upload';
+// import upload from '../../utils/upload';
 
 
 export default class extends Upload {
@@ -33,24 +33,24 @@ export default class extends Upload {
     const { handleBeforeUpload, uri, children } = this.props;
     const accessToken = localStorage.getItem(`${TOKEN_PREFIX}access_token`);
     const props = {
-      action: '',
+      action: uri,
       onChange: this.handleChange,
       beforeUpload: handleBeforeUpload,
-      customRequest: (options) => {
-        const formData = new FormData();
-        formData.append(options.filename, options.file);
-        upload(uri, {
-          method: 'POST',
-          mode: 'cors',
-          body: formData,
-        }).then((res) => {
-          if (res.status === 'success') {
-            options.onSuccess();
-          } else {
-            options.onError();
-          }
-        });
-      },
+      // customRequest: (options) => {
+      //   const formData = new FormData();
+      //   formData.append(options.filename, options.file);
+      //   upload(uri, {
+      //     method: 'POST',
+      //     mode: 'cors',
+      //     body: formData,
+      //   }).then((res) => {
+      //     if (res.status === 'success') {
+      //       options.onSuccess();
+      //     } else {
+      //       options.onError();
+      //     }
+      //   });
+      // },
       withCredentials: true,
       headers: {
         Authorization: `Bearer ${accessToken}`,

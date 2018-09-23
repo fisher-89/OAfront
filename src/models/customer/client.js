@@ -1,5 +1,5 @@
 
-import { fetchCustomer, addCustomer, editCustomer, deleteCustomer, customerStaffBrandsAuth } from '../../services/customer';
+import { fetchCustomer, addCustomer, editCustomer, deleteCustomer, customerStaffBrandsAuth, downloadExcelTemp } from '../../services/customer';
 
 const store = 'customer';
 
@@ -83,6 +83,14 @@ export default {
         type: 'delete',
         payload: { id, store, data: response },
       });
+      onSuccess(response);
+    } catch (err) { return err; }
+  },
+  * downloadExcelTemp({ onError, onSuccess }, { call }) {
+    try {
+      const response = yield call(downloadExcelTemp);
+      if (response.errors) { onError(response.errors); return; }
+      if (response.message) { return; }
       onSuccess(response);
     } catch (err) { return err; }
   },

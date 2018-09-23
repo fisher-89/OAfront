@@ -42,6 +42,12 @@ export async function deleteCustomer(id) {
   return request(`/api/crm/clients/${id}`, { method: 'DELETE' });
 }
 
+
+// Execel模板导出
+export async function downloadExcelTemp() {
+  return request('/api/crm/clients/example', { method: 'DELETE' });
+}
+
 /** 当前员工品牌 */
 export async function customerStaffBrandsAuth() {
   return request('/api/crm/clients/brands', { method: 'GET' });

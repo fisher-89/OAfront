@@ -173,10 +173,24 @@ export default class extends PureComponent {
             this.props.history.push('/client/customer/list/add');
           }}
         >
-          新建客户资料
+          客户
         </Button>
       ));
     }
+    if (customerAuthority(192)) {
+      extraOperator.push((
+        <Button
+          key="download"
+          icon="cloud-download"
+          onClick={() => {
+            this.props.downloadExcelTemp();
+          }}
+        >
+          下载模板
+        </Button>
+      ));
+    }
+
     const { loading, customer, fetchDataSource } = this.props;
     return (
       <OATable
@@ -187,6 +201,7 @@ export default class extends PureComponent {
         columns={this.makeColumns()}
         extraOperator={extraOperator}
         fetchDataSource={fetchDataSource}
+        excelInto={customerAuthority(192) ? '/api/crm/clients/import' : false}
       />
     );
   }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'dva';
+import { message } from 'antd';
 import { makeProps } from '../../../../utils/utils';
 
 function makeLoading(loading) {
@@ -12,7 +13,10 @@ function makeLoading(loading) {
     loading.effects['customer/customerStaffBrandsAuth']
   );
   return {
-    fetchDataSource: (commoLoading),
+    fetchDataSource: (
+      commoLoading ||
+      loading.effects['customer/downloadExcelTemp']
+    ),
     submit: (
       commoLoading ||
       loading.effects['customer/addCustomer'] ||
@@ -96,6 +100,18 @@ export default type => (Compoent) => {
       dispatch({ type: 'brand/fetchBrand' });
     }
 
+    downloadExcelTemp = () => {
+      const { dispatch } = this.props;
+      dispatch({
+        type: 'customer/downloadExcelTemp',
+        onError: () => {
+          message.error('下载失败');
+        },
+        onSuccess: () => {
+          message.error('下载成功');
+        },
+      });
+    }
 
     render() {
       return (
