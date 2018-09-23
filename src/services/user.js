@@ -16,6 +16,11 @@ export async function queryCurrent() {
   return response;
 }
 
+
+/**
+ * 批量获取员工.
+ * @param  object params
+ */
 export async function fetchStaff(params) {
   return request('/api/staff', {
     method: 'GET',
@@ -23,6 +28,11 @@ export async function fetchStaff(params) {
   });
 }
 
+
+/**
+ * 获取单个员工信息.
+ * @param  int staffSn
+ */
 export async function fetchStaffInfo(staffSn) {
   return request(`/api/staff/${staffSn}`, {
     method: 'GET',
@@ -30,11 +40,11 @@ export async function fetchStaffInfo(staffSn) {
 }
 
 /**
- * 添加员工信息.
+ * 添加员工.
  * @param object params
  */
 export async function addStaff(params) {
-  return request('/api/hr/staff_update', {
+  return request('/api/staff', {
     method: 'POST',
     body: params,
   });
@@ -44,9 +54,9 @@ export async function addStaff(params) {
  * 编辑员工信息.
  * @param object params
  */
-export async function editStaff(params) {
-  return request('/api/hr/staff_update', {
-    method: 'POST',
+export async function editStaff(params, staffSn) {
+  return request(`/api/staff/${staffSn}`, {
+    method: 'PATCH',
     body: params,
   });
 }
@@ -55,15 +65,15 @@ export async function editStaff(params) {
  * 删除员工.
  * @param int params
  */
-export async function deleteStaff(id) {
-  return request(`/api/hr/staff_delete/${id}`, {
+export async function deleteStaff(staffSn) {
+  return request(`/api/hr/staff_delete/${staffSn}`, {
     method: 'DELETE',
   });
 }
 
 /**
  * 批量导入员工.
- * @param json params
+ * @param object params
  */
 export async function importStaff(params) {
   return request('/api/staff/import', {
@@ -72,6 +82,10 @@ export async function importStaff(params) {
   });
 }
 
+/**
+ * 批量导出员工.
+ * @param  object params
+ */
 export async function exportStaff(params) {
   return request('/api/staff/export', {
     method: 'POST',

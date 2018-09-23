@@ -45,7 +45,7 @@ export default class extends PureComponent {
                   relative_sn: 'staff_sn',
                   relative_name: 'realname',
                 }}
-                showName="realname"
+                showName="relative_name"
                 placeholder="请选择关系人"
                 value={value.realname ? {
                   staff_sn: value.staff_sn,
@@ -77,8 +77,8 @@ export default class extends PureComponent {
               }
               }
             >
-              {getFieldDecorator(`${name}[relative_type]`, value.relative_type ? {
-                initialValue: value.relative_type.name.toString() || '',
+              {getFieldDecorator(`${name}[relative_type]`, value.pivot ? {
+                initialValue: value.pivot.relative_type.toString() || '',
               } : {})(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
                   <Option value="">-- 无 --</Option>
