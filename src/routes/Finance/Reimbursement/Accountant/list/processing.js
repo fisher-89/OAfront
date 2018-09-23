@@ -6,12 +6,15 @@ import {
   Checkbox,
   Icon,
   Tooltip,
-  Popconfirm,
+  Input,
+  Modal,
   notification,
 } from 'antd';
 import Ellipsis from '../../../../../components/Ellipsis/index';
 import OATable from '../../../../../components/OATable/index';
 import PrintPage from '../../print';
+
+const { TextArea } = Input;
 
 @connect(({ reimbursement, loading }) => ({
   processingList: reimbursement.processingList,
@@ -125,9 +128,7 @@ export default class extends PureComponent {
         title: '操作',
         render: (rowData) => {
           return [
-            <Popconfirm key="approve" title="确认通过？" onConfirm={() => this.handleApprove(rowData)}>
-              <a>通过</a>
-            </Popconfirm>,
+            <a key="approve" onClick={this.confirmApprove}> 通过 </a>,
             <Divider key="devider1" type="vertical" />,
             <a key="showDetail" onClick={() => showDetail(rowData)}>查看详情</a>,
             <Divider key="devider2" type="vertical" />,
@@ -142,10 +143,33 @@ export default class extends PureComponent {
     return columnsLeftFixed.concat(visible ? [] : columnsMiddle).concat(columnsRight);
   }
 
+  confirmApprove = () => {
+    this.approveRemark = '';
+    Modal.confirm({
+      title: '确认通过？',
+      content: (
+        <TextArea
+          placeholder="备注"
+          autosize={{ minRows: 4, maxRows: 4 }}
+          onChange={(e) => {
+            const { value } = e.target;
+            this.approveRemark = value;
+          }}
+        />
+      ),
+      maskClosable: true,
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => {
+        this.handleApprove(rowData);
+      },
+    });
+  }
+
   handleApprove = (rowData) => {
     const { dispatch } = this.props;
     const payload = {
-      ...rowData,
+      id: rowData.id,
       expenses: rowData.expenses.map((item) => {
         const response = { ...item };
         if (!item.audited_cost) {
@@ -153,6 +177,7 @@ export default class extends PureComponent {
         }
         return response;
       }),
+      accountant_remark: this.approveRemark,
     };
     dispatch({
       type: 'reimbursement/approveByAccountant',

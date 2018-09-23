@@ -36,5 +36,6 @@ export default {
   hash: true,
   extraBabelIncludes: [
     'node_modules/rmb-x',
+    'node_modules/react-countup',
   ]
 }

@@ -4,7 +4,7 @@ import {
   Select,
 } from 'antd';
 
-import districtData from '../../../../public/district';
+import districtData from '../../../assets/district';
 
 const { district } = districtData;
 const { Option } = Select;
@@ -166,7 +166,8 @@ export default class Address extends PureComponent {
 }
 
 Address.defaultProps = {
-  onChange: () => { },
+  onChange: () => {
+  },
   name: {
     province_id: 'province_id',
     city_id: 'city_id',
