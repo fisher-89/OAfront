@@ -33,7 +33,7 @@ export default class extends React.PureComponent {
       )
     )) {
       clientReduction(id, () => {
-        const params = !type ? { page: 1, pageSize: 10, filters: '', sorter: 'id-desc' } : undefined;
+        const params = !type ? { page: 1, pageSize: 10, filters: '', sort: 'id-desc' } : undefined;
         onSuccess(params);
         this.props.onClose();
       });
