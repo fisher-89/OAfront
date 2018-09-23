@@ -4,9 +4,8 @@ import {
   Select,
 } from 'antd';
 
-import districtData from '../../../assets/district';
+import district from '../../../assets/district';
 
-const { district } = districtData;
 const { Option } = Select;
 const InputGroup = Input.Group;
 const disableds = {
