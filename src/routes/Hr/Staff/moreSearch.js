@@ -7,11 +7,13 @@ import {
   Cascader,
   Input,
 } from 'antd';
-import district from '../../../../public/district.json';
+import { treeDistrict } from '../../../assets/district';
 
 import OAForm, { SearchTable } from '../../../components/OAForm';
 import OATableSearch from '../../../components/OATable/search';
 import { makerFilters } from '../../../utils/utils';
+
+const district = treeDistrict;
 
 const FormItem = OAForm.Item;
 @OAForm.create()
