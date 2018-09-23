@@ -33,7 +33,7 @@ export default {
   },
   combine(state, action) {
     const { store, data } = action.payload;
-    const originalStore = state[store];
+    const originalStore = state[store].data;
     const newStore = originalStore;
     const originalKey = originalStore.map(item => item.staff_sn);
     data.forEach((item) => {

@@ -82,6 +82,11 @@ export default class EditStaff extends PureComponent {
     });
   }
 
+  handleChange = (params, index) => {
+    console.log(params);
+    console.log(index);
+  }
+
   render() {
     const formItemLayout = {
       labelCol: {
@@ -548,7 +553,7 @@ export default class EditStaff extends PureComponent {
                 <Col {...fieldsBoxLayout}>
                   <FormItem {...formItemLayout2} label="婚姻状况" >
                     {getFieldDecorator('marital_status', {
-                      initialValue: editStaff.marital_status,
+                      initialValue: editStaff.marital_status || '未知',
                     })(
                       <Select
                         showSearch
@@ -634,6 +639,7 @@ export default class EditStaff extends PureComponent {
                 <RelativeList
                   form={form}
                   name="relatives"
+                  onChange={this.handleChange}
                   initialValue={editStaff.relatives || []}
                 />
               </FormItem>
