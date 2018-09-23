@@ -29,20 +29,20 @@ export default {
       }
     } catch (err) { return err; }
   },
-  * clientReduction({ payload, onSuccess, onError }, { call, put }) {
+  * clientReduction({ payload, onSuccess, onError }, { call }) {
     try {
       const { id } = { ...payload };
       if (id) {
         const response = yield call(clientReduction, id);
         if (response.error) { onError(response.error); return; }
-        yield put({
-          type: 'update',
-          payload: {
-            id,
-            store,
-            data: response,
-          },
-        });
+        // yield put({
+        //   type: 'update',
+        //   payload: {
+        //     id,
+        //     store,
+        //     data: response,
+        //   },
+        // });
         onSuccess(response);
       }
     } catch (err) { return err; }
