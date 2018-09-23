@@ -84,7 +84,7 @@ export default class extends PureComponent {
                 }}
                 getPopupContainer={triggerNode => (triggerNode)}
                 dropdownStyle={{ maxHeight: '300px', overflow: 'auto' }}
-                onChange={() => this.handleDefaultValueChange()}
+              // onChange={() => this.handleDefaultValueChange()}
               />
             )
           }
