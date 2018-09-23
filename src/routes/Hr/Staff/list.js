@@ -47,7 +47,6 @@ export default class extends PureComponent {
     visible: false,
     panes: [],
     activeKey: 'staff_list',
-    staffSn: '',
     editVisible: false,
     transferVisible: false,
     leaveVisible: false,
@@ -176,7 +175,7 @@ export default class extends PureComponent {
   showEditStaff = (staffInfo) => {
     this.setState({
       editVisible: true,
-      staffSn: staffInfo.staff_sn,
+      editStaff: staffInfo,
     });
   };
 
@@ -401,17 +400,17 @@ export default class extends PureComponent {
         searcher: true,
       },
       {
-        title: '入职',
+        title: '入职日期',
         dataIndex: 'hired_at',
         align: 'center',
         dateFilters: true,
       }, {
-        title: '转正',
+        title: '转正日期',
         dataIndex: 'employed_at',
         align: 'center',
         dateFilters: true,
       }, {
-        title: '离职',
+        title: '离职日期',
         dataIndex: 'left_at',
         align: 'center',
         dateFilters: true,
@@ -575,7 +574,7 @@ export default class extends PureComponent {
         </Tabs>
         <EditStaff
           visible={this.state.editVisible}
-          staffSn={this.state.staffSn}
+          editStaff={this.state.editStaff}
           onCancel={() => {
             this.setState({
               editVisible: false,
