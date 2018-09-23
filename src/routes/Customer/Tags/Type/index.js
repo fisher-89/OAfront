@@ -16,8 +16,7 @@ export default class extends React.PureComponent {
     fetchTagsType();
   }
 
-  handleClose = (e) => {
-    e.preventDefault();
+  handleClose = (record) => {
     const { deleted } = this.props;
     deleted(record.id);
   }
@@ -65,7 +64,7 @@ export default class extends React.PureComponent {
                     <Icon
                       type="close"
                       className={styles.edit}
-                      onClick={this.handleClose}
+                      onClick={() => this.handleClose(item)}
                     />
                   </div>
                 </div>
