@@ -11,7 +11,7 @@ export default {
     OA_CLIENT_ID: env.OA_CLIENT_ID,
     OA_CLIENT_SECRET: env.OA_CLIENT_SECRET,
     AUTH_NAME: env.AUTH_NAME,
-    TOKEN_PREFIX: env.TOKEN_PREFIX,
+    TOKEN_PREFIX: env.TOKEN_PREFIX
   },
   env: {
     development: {
@@ -26,6 +26,9 @@ export default {
       }
     }
   },
+  externals: {
+    "xlsx": "window.XLSX"
+  },
   ignoreMomentLocale: true,
   theme: "./src/theme.js",
   html: {
@@ -35,7 +38,7 @@ export default {
   disableDynamicImport: true,
   hash: true,
   extraBabelIncludes: [
-    'node_modules/rmb-x',
-    'node_modules/react-countup',
+    "node_modules/rmb-x",
+    "node_modules/react-countup"
   ]
 }
