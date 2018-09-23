@@ -3,6 +3,7 @@ import { Card, Button, Divider } from 'antd';
 import store from './store/store';
 import TagForm from './form';
 import OATable from '../../../components/OATable';
+import TagType from './Type';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 
 @store(['fetchTagsType', 'fetchTags', 'deleted'])
@@ -79,17 +80,25 @@ export default class extends React.PureComponent {
         添加标签
       </Button>
     );
+
     return (
       <PageHeaderLayout>
         <Card bordered={false}>
-          <OATable
-            data={tags}
-            loading={loading}
-            total={tags.length}
-            fetchDataSource={fetchTags}
-            columns={this.makeColumns()}
-            extraOperator={extraOperator}
-          />
+          <div style={{ display: 'flex' }}>
+            <div style={{ width: 200, marginRight: 40 }}>
+              <TagType />
+            </div>
+            <div style={{ flexGrow: 1 }}>
+              <OATable
+                data={tags}
+                loading={loading}
+                total={tags.length}
+                fetchDataSource={fetchTags}
+                columns={this.makeColumns()}
+                extraOperator={extraOperator}
+              />
+            </div>
+          </div>
           <TagForm
             visible={visible}
             initialValue={initialValue}

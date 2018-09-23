@@ -44,16 +44,6 @@ const menuData = [
             name: '标签管理',
             path: 'tags',
             authority: '179',
-            children: [
-              {
-                name: '标签列表',
-                path: 'list',
-              },
-              {
-                name: '标签类型',
-                path: 'type',
-              },
-            ],
           },
         ],
       },
