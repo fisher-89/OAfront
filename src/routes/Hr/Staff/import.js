@@ -5,6 +5,8 @@ import {
   Button,
   Radio,
   Spin,
+  List,
+  notification,
 } from 'antd';
 import { connect } from 'dva';
 import XLSX from 'xlsx';
@@ -16,14 +18,14 @@ export default class extends PureComponent {
     cols: [],
     exportCreate: [
       ['姓名', '手机号码', '身份证号', '性别', '品牌', '费用品牌', '部门全称', '店铺代码', '职位', '员工状态', '银行卡号', '开户人', '开户行', '执行时间', '生日', '民族', 'QQ号', '微信号', '电子邮箱', '学历', '政治面貌', '婚姻状况', '身高', '体重', '户口所在地（省）', '户口所在地（市）', '户口所在地（区/县）', '户口所在地（详细地址）', '现居住地（省）', '现居住地（市）', '现居住地（区/县）', '现居住地（详细地址）', '籍贯', '紧急联系人', '联系人电话', '联系人关系类型', '备注', '操作备注', '钉钉用户编码'],
-      ['张三', '12345678900', '888888200001018888', '男', '集团公司', '成都/濮院', 'IT部-开发组', '', '初级专员', '在职', '', '', '', '2000-1-1', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '导入样例，请删除整行', ' 请勿随便填写'],
-    ],
-    exportChange: [
-      ['员工编号', '姓名', '品牌', '费用品牌', '部门全称', '店铺代码', '职位', '员工状态', '执行时间', '操作备注'],
-      ['100000', '张三', '集团公司', '成都/濮院', 'IT部-开发组', '', '初级专员', '在职', '2000-1-1', '导入样例，请删除整行'],
+      ['张三', '15817308876', '3123123123', '男', '集团公司', '成都/濮院', 'IT部-开发组', '', '初级专员', '在职', '', '', '', '2000-1-1', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '导入样例，请删除整行', ' 请勿随便填写'],
     ],
     createFields: ['realname', 'mobile', 'id_card_number', 'gender', 'brand', 'cost_brand', 'department', 'shop_sn', 'position', 'status', 'account_number', 'account_name', 'account_bank', 'change_at', 'birthday', 'national', 'qq_number', 'wechat_number', 'email', 'education', 'politics', 'marital_status', 'height', 'weight', 'household_province', 'household_city', 'household_county', 'household_address', 'living_province', 'living_city', 'living_county', 'living_address', 'native_place', 'concat_name', 'concat_tel', 'concat_type', 'remark', 'handle_remark', 'dingding'],
-    changeFields: ['staff_sn', 'realname', 'brand', 'cost_brand', 'department', 'shop_sn', 'position', 'status', 'change_at', 'remark'],
+    exportChange: [
+      ['员工编号', '手机号码', '银行卡号', '开户人', '开户行', '民族', '学历', '婚姻状况', '身高', '体重', '户口所在地（省）', '户口所在地（市）', '户口所在地（区/县）', '户口所在地（详细地址）', '现居住地（省）', '现居住地（市）', '现居住地（区/县）', '现居住地（详细地址）', '籍贯', '紧急联系人', '联系人电话', '联系人关系类型'],
+      ['100000', '15817308876', '2312312312', '张三', '成都支行', '汉族', '专科', '未婚', '170', '55', '四川省', '成都市', '金牛区', 'xxx街道', '东北省', '黑龙江市', 'xxx区', 'xxx街道', '四川', '李四', '13923453212', '同学'],
+    ],
+    changeFields: ['staff_sn', 'mobile', 'account_number', 'account_name', 'account_bank', 'national', 'education', 'marital_status', 'height', 'weight', 'household_province_id', 'household_city_id', 'household_county_id', 'household_address', 'living_province_id', 'living_city_id', 'living_county_id', 'living_address', 'native_place', 'concat_name', 'concat_tel', 'concat_type'],
     visible: false,
     spinning: false,
   }
@@ -107,11 +109,21 @@ export default class extends PureComponent {
   }
 
   handleError = (error) => {
-    console.log(error);
+    const { errors } = error;
+    const desc = Object.keys(errors).map((val) => {
+      return errors[val][0];
+    });
+    notification.open({
+      message: error.message,
+      description: <List size="small" dataSource={desc} renderItem={item => (<List.Item>{item}</List.Item>)} />,
+      duration: 10,
+    });
   }
 
   handleSuccess = (result) => {
-    console.log(result);
+    notification.success({
+      message: result.message,
+    });
   }
 
   render() {

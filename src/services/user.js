@@ -30,13 +30,24 @@ export async function fetchStaffInfo(staffSn) {
 }
 
 /**
+ * 添加员工信息.
+ * @param object params
+ */
+export async function addStaff(params) {
+  return request('/api/hr/staff_update', {
+    method: 'POST',
+    body: params,
+  });
+}
+
+/**
  * 编辑员工信息.
  * @param object params
  */
 export async function editStaff(params) {
   return request('/api/hr/staff_update', {
     method: 'POST',
-    body: { ...params },
+    body: params,
   });
 }
 

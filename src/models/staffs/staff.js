@@ -1,6 +1,7 @@
 import {
   fetchStaff,
   fetchStaffInfo,
+  addStaff,
   editStaff,
   deleteStaff,
   importStaff,
@@ -105,23 +106,43 @@ export default {
       return err;
     }
   },
-  * editStaff({ payload }, { call, put }) {
+  * addStaff({ payload, onSuccess, onError }, { call, put }) {
+    try {
+      const params = { ...payload };
+      const response = yield call(addStaff, params);
+      if (response.errors && onError) {
+        onError(response.errors);
+      } else {
+        yield put({
+          type: 'add',
+          payload: {
+            store,
+            data: response,
+          },
+        });
+        onSuccess(response);
+      }
+    } catch (err) {
+      return err;
+    }
+  },
+  * editStaff({ payload, onSuccess, onError }, { call, put }) {
     try {
       const staffSn = payload.staff_sn;
-      const params = {
-        ...payload,
-      };
-      if (staffSn !== undefined) {
-        let response = [];
-        response = yield call(editStaff, params);
+      const params = { ...payload };
+      const response = yield call(editStaff, params, staffSn);
+      if (response.errors && onError) {
+        onError(response.errors);
+      } else {
         yield put({
           type: 'update',
           payload: {
             store,
-            staffSn,
+            staff_sn: staffSn,
             data: response,
           },
         });
+        onSuccess(response);
       }
     } catch (err) {
       return err;
@@ -148,7 +169,7 @@ export default {
       const params = { ...payload };
       const response = yield call(importStaff, params);
       if (response.errors && onError) {
-        onError(response.errors);
+        onError(response);
       } else {
         onSuccess(response);
       }
@@ -161,7 +182,7 @@ export default {
       const params = { ...payload };
       const response = yield call(exportStaff, params);
       if (response.errors && onError) {
-        onError(response.errors);
+        onError(response);
       } else {
         onSuccess(response);
       }

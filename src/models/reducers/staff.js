@@ -51,20 +51,39 @@ export default {
   },
   add(state, action) {
     const { store, data } = action.payload;
+    if (data.message) {
+      notification.error({
+        message: data.message,
+      });
+      return state;
+    }
     notification.success({
       message: '添加成功',
     });
-    state[store].push(data);
+
+    let dataState = state[store];
+    if (Array.isArray(state[store])) {
+      dataState = [...state[store]];
+      dataState.push(data);
+    } else if (state[store].data) {
+      dataState = { ...state[store] };
+      dataState.data = [...state[store].data];
+      dataState.data.push(data);
+      dataState.total = state[store].total + 1;
+    }
     return {
       ...state,
+      [store]: dataState,
     };
   },
   update(state, action) {
     const { store, data } = action.payload;
     const staffSn = action.payload.staff_sn;
 
+    const dataSource = Array.isArray(state[store]) ? state[store] : (state[store].data || []);
+
     let updated = false;
-    const newStore = state[store].map((item) => {
+    const newStore = dataSource.map((item) => {
       if (parseInt(item.staff_sn, 0) === parseInt(staffSn, 0)) {
         updated = true;
         return data;
@@ -80,7 +99,7 @@ export default {
     });
     return {
       ...state,
-      [store]: newStore,
+      [store]: state[store].length ? newStore : [],
     };
   },
   delete(state, action) {
