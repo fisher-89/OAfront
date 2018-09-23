@@ -8,9 +8,11 @@ import {
   Button,
   Popconfirm,
   Input,
+  Modal,
 } from 'antd';
 import { connect } from 'dva';
 import RcViewer from 'rc-viewer';
+import CountUp from 'react-countup';
 import Ellipsis from '../../../components/Ellipsis';
 import OATable from '../../../components/OATable';
 import { customerAuthority } from '../../../utils/utils';
@@ -62,6 +64,8 @@ export default class extends Component {
 
   componentWillReceiveProps(newProps) {
     if (JSON.stringify(newProps.info) !== JSON.stringify(this.props.info)) {
+      const auditedCost = newProps.info.audited_cost && `${newProps.info.audited_cost}`;
+      const approvedCost = newProps.info.send_cost && `${newProps.info.approved_cost || newProps.info.send_cost}`;
       if (newProps.info.expenses) {
         newProps.info.expenses.forEach(item => { // eslint-disable-line arrow-parens
           if (item.audited_cost === null) {
@@ -69,6 +73,7 @@ export default class extends Component {
           }
         });
       }
+      this.originalTotal = parseFloat(auditedCost !== null ? auditedCost : approvedCost);
       this.setState({
         info: newProps.info,
         rejectPopVisible: false,
@@ -129,21 +134,24 @@ export default class extends Component {
       render: (cellData, rowData, index) => {
         const { dispatch } = this.props;
         const { info } = this.state;
-        let afterChangeInterval;
+        let afterChange;
         return info.status_id === 3 ? (
           <InputNumber
             defaultValue={cellData || rowData.send_cost}
             onChange={(value) => {
-              if (afterChangeInterval) clearInterval(afterChangeInterval);
-              afterChangeInterval = setInterval(() => {
-                clearInterval(afterChangeInterval);
-                info.expenses[index].audited_cost = parseFloat(value).toFixed(2);
-                info.audited_cost = this.sumAuditedCost(info);
-                this.setState({ info });
-                dispatch({
-                  type: 'reimbursement/updateDetail',
-                  payload: info,
-                });
+              clearTimeout(afterChange);
+              afterChange = setTimeout(() => {
+                if (info.expenses[index].audited_cost !== value.toFixed(2)) {
+                  info.expenses[index].audited_cost = value.toFixed(2);
+                  info.audited_cost = this.sumAuditedCost(info);
+                  this.setState({ info }, () => {
+                    this.originalTotal = parseFloat(info.audited_cost);
+                  });
+                  dispatch({
+                    type: 'reimbursement/updateDetail',
+                    payload: info,
+                  });
+                }
               }, 500);
             }}
           />
@@ -200,13 +208,46 @@ export default class extends Component {
     return sum.toFixed(2);
   }
 
+  confirmApprove = () => {
+    this.approveRemark = '';
+    Modal.confirm({
+      title: '确认通过？',
+      content: (
+        <TextArea
+          placeholder="备注"
+          autosize={{ minRows: 4, maxRows: 4 }}
+          onChange={(e) => {
+            const { value } = e.target;
+            this.approveRemark = value;
+          }}
+        />
+      ),
+      maskClosable: true,
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => {
+        this.handleApprove();
+      },
+    });
+  }
+
   handleApprove = () => {
     const { dispatch } = this.props;
     const { info } = this.state;
 
     dispatch({
       type: 'reimbursement/approveByAccountant',
-      payload: info,
+      payload: {
+        id: info.id,
+        expenses: info.expenses.map((item) => {
+          const response = { ...item };
+          if (!item.audited_cost) {
+            response.audited_cost = item.send_cost;
+          }
+          return response;
+        }),
+        accountant_remark: this.approveRemark,
+      },
     });
   }
 
@@ -280,8 +321,8 @@ export default class extends Component {
     const { onClose, status } = this.props;
     const { info, rejectPopVisible, rejectRemark } = this.state;
     if (info) {
-      const auditedCost = info.audited_cost && `${info.audited_cost}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-      const approvedCost = info.send_cost && `${info.approved_cost || info.send_cost}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      const auditedCost = info.audited_cost && `${info.audited_cost}`;
+      const approvedCost = info.send_cost && `${info.approved_cost || info.send_cost}`;
       return (
         <div>
           <div>
@@ -299,9 +340,16 @@ export default class extends Component {
               {info.approve_time && (<Col span={4}>审批人：{info.approver_name}</Col>)}
               {info.approve_time && (<Col span={8}>通过时间：{info.approve_time}</Col>)}
             </Row>
-            <Row style={{ color: '#8c8c8c' }}>
+            <Row style={{ color: '#8c8c8c', marginTop: 5 }}>
               {info.audit_time && (<Col span={4}>财务审核人：{info.accountant_name}</Col>)}
               {info.audit_time && (<Col span={8}>通过时间：{info.audit_time}</Col>)}
+            </Row>
+            {info.accountant_remark && (
+              <Row style={{ color: '#8c8c8c' }}>
+                {info.audit_time && (<Col span={22}>{info.accountant_remark}</Col>)}
+              </Row>
+            )}
+            <Row style={{ color: '#8c8c8c', marginTop: 5 }}>
               {info.manager_approved_at && (<Col span={4}>品牌副总：{info.manager_name}</Col>)}
               {info.manager_approved_at && (<Col span={8}>通过时间：{info.manager_approved_at}</Col>)}
               {info.paid_at && (<Col span={4}>出纳：{info.payer_name}</Col>)}
@@ -317,12 +365,31 @@ export default class extends Component {
               {info.second_rejected_at && (<Col span={24}>驳回理由：{info.second_reject_remarks}</Col>)}
               {info.reject_time && (<Col span={24}>驳回理由：{info.reject_remarks}</Col>)}
             </Row>
-
-            <h3>
-              金额：{auditedCost !== null && (`${auditedCost}` !== `${approvedCost}`) ?
-              (<span>￥ {auditedCost}（原金额：<span style={{ color: 'red' }}>￥ {approvedCost}</span>）</span>)
-              : `￥ ${approvedCost}`}
-            </h3>
+            <Row>
+              <Col span={4} style={{ textAlign: 'right' }}>
+                <h3>
+                  <Row>
+                    <Col span={8}>金额：</Col>
+                    <Col span={16} style={{ textAlign: 'right' }}>
+                      <CountUp
+                        start={this.originalTotal || 0}
+                        end={parseFloat(auditedCost !== null ? auditedCost : approvedCost)}
+                        delay={0}
+                        duration={0.5}
+                        decimals={2}
+                        prefix="￥ "
+                        separator=","
+                      />
+                    </Col>
+                  </Row>
+                </h3>
+                {auditedCost !== null && (parseFloat(`${auditedCost}`) !== parseFloat(`${approvedCost}`)) && (
+                  <div style={{ textDecoration: 'line-through', color: '#999', marginTop: -10 }}>
+                    ￥ {approvedCost.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                  </div>
+                )}
+              </Col>
+            </Row>
             <Row>
               {customerAuthority(34) && info.status_id === 3 && (
                 <React.Fragment>
@@ -356,7 +423,7 @@ export default class extends Component {
                     </Popconfirm>
                   </Col>
                   <Col span={2}>
-                    <Button type="primary" onClick={this.handleApprove}>通过</Button>
+                    <Button type="primary" onClick={this.confirmApprove}>通过</Button>
                   </Col>
                 </React.Fragment>
               )}
