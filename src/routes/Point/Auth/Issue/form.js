@@ -141,6 +141,7 @@ export default class extends PureComponent {
                   admin_sn: 'staff_sn',
                   admin_name: 'realname',
                 }}
+                valueName="admin_sn"
                 showName="admin_name"
                 placeholder="请选择员工"
               />

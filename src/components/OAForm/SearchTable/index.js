@@ -55,14 +55,14 @@ export default class SearchTable extends PureComponent {
   };
 
   makeSearchView = () => {
-    const { multiple, placeholder, disabled, showName, tableProps, onChange } = this.props;
+    const { multiple, placeholder, disabled, showName, valueName, onChange } = this.props;
     const { visible, value } = this.state;
     const commonProps = {
       value,
       disabled,
       placeholder,
       showName,
-      valueName: tableProps.index,
+      valueName,
       handleModelVisble: this.handleModelVisble,
     };
     return multiple ?

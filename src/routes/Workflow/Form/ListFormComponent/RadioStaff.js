@@ -10,6 +10,7 @@ export default class extends React.PureComponent {
         <SearchTable.Staff
           {...this.props}
           showName="text"
+          valueName="value"
           name={{ text: 'realname', value: 'staff_sn' }}
         />
       </div>

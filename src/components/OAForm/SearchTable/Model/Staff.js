@@ -229,6 +229,7 @@ export default class Staff extends PureComponent {
 
   makeSearchTableProps = () => {
     const response = {
+      valueName: 'staff_sn',
       ...this.props,
       tableProps: {
         ...this.makeStaffProps(),

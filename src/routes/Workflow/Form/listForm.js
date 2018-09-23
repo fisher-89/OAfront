@@ -703,6 +703,7 @@ export default class extends React.PureComponent {
           <SearchTable.Staff
             multiple
             showName="text"
+            valueName="value"
             placeholder="请选择"
             name={{ value: 'staff_sn', text: 'realname' }}
             onChange={() => this.handleDefaultValueChange()}
@@ -728,6 +729,7 @@ export default class extends React.PureComponent {
               value: 'shop_sn',
               text: 'name',
             }}
+            valueName="value"
             onChange={() => this.handleDefaultValueChange()}
           />
         )}

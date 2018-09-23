@@ -108,6 +108,7 @@ export default class Customer extends PureComponent {
     const { staffBrandsAuth } = this.props;
     const { editable = [] } = staffBrandsAuth;
     const response = {
+      valueName: 'id',
       ...this.props,
       tableProps: {
         ...this.makeStaffProps(),

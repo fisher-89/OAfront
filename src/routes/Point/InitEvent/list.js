@@ -494,6 +494,7 @@ export default class extends PureComponent {
                           first_approver_sn: 'staff_sn',
                           first_approver_name: 'realname',
                         }}
+                        valueName="first_approver_sn"
                         showName="first_approver_name"
                         placeholder="请选择员工"
                       />

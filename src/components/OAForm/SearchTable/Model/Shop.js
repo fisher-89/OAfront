@@ -142,6 +142,7 @@ export default class Shop extends PureComponent {
 
   makeSearchTableProps = () => {
     const response = {
+      valueName: 'shop_sn',
       ...this.props,
       tableProps: {
         ...this.makeShopProps(),
