@@ -30,7 +30,7 @@ export default {
       try {
         const params = {
           grant_type: 'refresh_token',
-          refresh_token: localStorage.getItem('OA_refresh_token'),
+          refresh_token: localStorage.getItem(`${TOKEN_PREFIX}refresh_token`),
           client_id: OA_CLIENT_ID,
           client_secret: OA_CLIENT_SECRET,
           scope: '',
@@ -56,9 +56,9 @@ export default {
       };
     },
     saveAccessToken(state, { payload }) {
-      localStorage.setItem('OA_access_token', payload.access_token);
-      localStorage.setItem('OA_access_token_expires_in', new Date().getTime() + ((payload.expires_in - 10) * 1000));
-      localStorage.setItem('OA_refresh_token', payload.refresh_token);
+      localStorage.setItem(`${TOKEN_PREFIX}access_token`, payload.access_token);
+      localStorage.setItem(`${TOKEN_PREFIX}access_token_expires_in`, new Date().getTime() + ((payload.expires_in - 10) * 1000));
+      localStorage.setItem(`${TOKEN_PREFIX}refresh_token`, payload.refresh_token);
       return {
         ...state,
         accessToken: payload.access_token,

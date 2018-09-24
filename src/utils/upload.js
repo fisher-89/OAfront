@@ -57,12 +57,12 @@ export default function upload(url, options) {
     },
   };
 
-  const accessToken = localStorage.getItem('OA_access_token');
-  const expiresIn = localStorage.getItem('OA_access_token_expires_in');
+  const accessToken = localStorage.getItem(`${TOKEN_PREFIX}access_token`);
+  const expiresIn = localStorage.getItem(`${TOKEN_PREFIX}access_token_expires_in`);
 
   if (accessToken && expiresIn > new Date().getTime()) {
     newOptions.headers = {
-      Authorization: `Bearer ${localStorage.getItem('OA_access_token')}`,
+      Authorization: `Bearer ${localStorage.getItem(`${TOKEN_PREFIX}access_token`)}`,
       ...newOptions.headers,
     };
   } else {

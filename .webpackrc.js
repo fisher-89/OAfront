@@ -10,8 +10,8 @@ export default {
     OA_CRM_UPLOAD: env.OA_CRM_UPLOAD,
     OA_CLIENT_ID: env.OA_CLIENT_ID,
     OA_CLIENT_SECRET: env.OA_CLIENT_SECRET,
-    AUTH_NAME: env.AUTH_NAME,
-    TOKEN_PREFIX: env.TOKEN_PREFIX,
+    AUTH_NAME: env.AUTH_NAME || '',
+    TOKEN_PREFIX: env.TOKEN_PREFIX || '',
   },
   env: {
     development: {
