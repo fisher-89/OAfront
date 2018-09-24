@@ -5,11 +5,11 @@ export function getAuthority() {
   if (JSON.parse(auth)) {
     authority = JSON.parse(auth);
   }
-  if (localStorage.getItem('OA_access_token')
-    && localStorage.getItem('OA_access_token_expires_in') > new Date().getTime()) {
+  if (localStorage.getItem(`${TOKEN_PREFIX}access_token`)
+    && localStorage.getItem(`${TOKEN_PREFIX}access_token_expires_in`) > new Date().getTime()) {
     authority.push('token');
   }
-  if (localStorage.getItem('OA_refresh_token')) {
+  if (localStorage.getItem(`${TOKEN_PREFIX}refresh_token`)) {
     authority.push('refresh-token');
   }
   return authority;
