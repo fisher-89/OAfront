@@ -41,7 +41,7 @@ export default class SearchInput extends React.PureComponent {
         }}
         disabled={disabled}
         suffix={buttonBefore}
-        value={value[showName]}
+        value={(typeof value === 'object') ? value[showName] : value}
         onBlur={this.handleBlur}
         onFocus={this.handleFocus}
         placeholder={placeholder || '请选择'}
