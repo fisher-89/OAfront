@@ -1,5 +1,11 @@
 import request from '../utils/request';
 
+/**
+ * 获取报销待审列表
+ *
+ * @param params
+ * @returns {Promise.<Object>}
+ */
 export async function fetchProcessingReimbursements(params) {
   return request('/api/finance/reimburse/audit', {
     method: 'GET',
@@ -10,6 +16,12 @@ export async function fetchProcessingReimbursements(params) {
   });
 }
 
+/**
+ * 获取报销下期待审列表
+ *
+ * @param params
+ * @returns {Promise.<Object>}
+ */
 export async function fetchOvertimeReimbursements(params) {
   return request('/api/finance/reimburse/audit', {
     method: 'GET',
@@ -20,6 +32,12 @@ export async function fetchOvertimeReimbursements(params) {
   });
 }
 
+/**
+ * 获取报销已通过列表
+ *
+ * @param params
+ * @returns {Promise.<Object>}
+ */
 export async function fetchApprovedReimbursements(params) {
   return request('/api/finance/reimburse/audit', {
     method: 'GET',
@@ -30,6 +48,12 @@ export async function fetchApprovedReimbursements(params) {
   });
 }
 
+/**
+ * 获取已通过报销单导出数据
+ *
+ * @param params
+ * @returns {Promise.<Object>}
+ */
 export async function fetchExportApprovedReimbursements(params) {
   return request('/api/finance/reimburse/export-audit', {
     method: 'GET',
@@ -40,6 +64,12 @@ export async function fetchExportApprovedReimbursements(params) {
   });
 }
 
+/**
+ * 获取报销已驳回列表
+ *
+ * @param params
+ * @returns {Promise.<Object>}
+ */
 export async function fetchRejectedReimbursements(params) {
   return request('/api/finance/reimburse/audit', {
     method: 'GET',
@@ -50,6 +80,12 @@ export async function fetchRejectedReimbursements(params) {
   });
 }
 
+/**
+ * 获取报销批量送审列表
+ *
+ * @param params
+ * @returns {Promise.<Object>}
+ */
 export async function fetchPackageReimbursements(params) {
   return request('/api/finance/reimburse/deliver', {
     method: 'GET',
@@ -81,6 +117,36 @@ export async function fetchPaidReimbursements(params) {
 
 export async function fetchExportPaidReimbursements(params) {
   return request('/api/finance/reimburse/export-pay', {
+    method: 'GET',
+    body: {
+      ...params,
+      type: 'paid',
+    },
+  });
+}
+
+export async function fetchUnpaidPublicReimbursements(params) {
+  return request('/api/finance/reimburse/public', {
+    method: 'GET',
+    body: {
+      ...params,
+      type: 'not_paid',
+    },
+  });
+}
+
+export async function fetchPaidPublicReimbursements(params) {
+  return request('/api/finance/reimburse/public', {
+    method: 'GET',
+    body: {
+      ...params,
+      type: 'paid',
+    },
+  });
+}
+
+export async function fetchExportPaidPublicReimbursements(params) {
+  return request('/api/finance/reimburse/public/export', {
     method: 'GET',
     body: {
       ...params,
@@ -143,6 +209,11 @@ export async function rejectReimbursementByCashier(params) {
   });
 }
 
+/**
+ * 获取全部资金归属
+ *
+ * @returns {Promise.<Object>}
+ */
 export async function fetchAllFundsAttribution() {
   return request('/api/finance/reimburse/reim-department', {
     method: 'GET',

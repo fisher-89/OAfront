@@ -334,7 +334,11 @@ export default class extends Component {
             </h2>
             <p style={{ color: '#8c8c8c' }}>{info.remark}</p>
             <Row style={{ color: '#8c8c8c' }}>
-              <Col span={24}>状态：{status.filter(item => item.id === info.status_id)[0].name}</Col>
+              <Col span={4}>状态：{status.filter(item => item.id === info.status_id)[0].name}</Col>
+              <Col span={20}>
+                收款账户：{info.payee_bank_other} {info.payee_bank_account} {info.payee_name}
+                {info.payee_is_public ? (<span style={{ color: 'red' }}> (对公转账)</span>) : ''}
+              </Col>
               <Col span={4}>申请人：{info.realname}</Col>
               <Col span={8}>申请时间：{info.send_time}</Col>
               {info.approve_time && (<Col span={4}>审批人：{info.approver_name}</Col>)}

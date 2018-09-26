@@ -128,6 +128,11 @@ const menuData = [
           authority: '135',
         },
         {
+          name: '对公转账',
+          path: 'public-cashier',
+          authority: '193',
+        },
+        {
           name: '查看报销',
           path: 'auditor',
           authority: '35',
