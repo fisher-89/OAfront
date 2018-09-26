@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import classNames from 'classnames';
 import moment from 'moment';
+import XLSX from 'xlsx';
 import { Table, Input, Icon, message, Button, Tooltip } from 'antd';
 import Ellipsis from '../Ellipsis';
 import TreeFilter from './treeFilter';
@@ -632,6 +633,23 @@ class OATable extends PureComponent {
     this.setState({ loading });
   }
 
+  xlsExportExcelError = ({ headers, errors }) => {
+    const workbook = XLSX.utils.book_new();
+    const errorExcel = [];
+    const newHeaders = [...headers, '错误信息'];
+    errors.forEach((error) => {
+      const { rowData } = error;
+      const errorMessage = error.message;
+      const errMsg = Object.keys(errorMessage).map(msg => `${msg}:${errorMessage[msg].join(',')}`).join(';');
+      rowData.push(errMsg);
+      errorExcel.push(error.rowData);
+    });
+    errorExcel.unshift(newHeaders);
+    const errorSheet = XLSX.utils.aoa_to_sheet(errorExcel);
+    XLSX.utils.book_append_sheet(workbook, errorSheet, '导入失败信息');
+    XLSX.writeFile(workbook, '导入错误信息.xlsx');
+  }
+
   handleExportExcel = () => {
     const { excelExport: { uri } } = this.props;
     const params = this.fetchTableDataSource(true);
@@ -641,7 +659,13 @@ class OATable extends PureComponent {
       method: 'GET',
       body,
     }).then((response) => {
+      if (response.errors.length) {
+        throw response;
+      }
       this.makeExcelFieldsData(response);
+      this.xlsExportExcel(response);
+    }).then((errors) => {
+      this.xlsExportExcelError(errors);
     });
   }
 
@@ -658,7 +682,6 @@ class OATable extends PureComponent {
     const { excelTemplate } = this.props;
     location.href = excelTemplate;
   }
-
 
   makeExtraOperator = () => {
     const { extraOperator, excelInto, excelExport, excelTemplate } = this.props;
