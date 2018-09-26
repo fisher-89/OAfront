@@ -9,7 +9,8 @@ import { connect } from 'dva';
 import OATable from '../../../components/OATable';
 import PositionForm from './form';
 import { customerAuthority } from '../../../utils/utils';
-@connect(({ position, loading }) => ({
+@connect(({ position, brand, loading }) => ({
+  brand: brand.brand,
   position: position.position,
   fLoading: loading.effects['position/fetchPosition'],
   dLoaing: loading.effects['position/deletePosition'],
@@ -22,6 +23,7 @@ export default class extends PureComponent {
 
   componentDidMount() {
     const { dispatch } = this.props;
+    dispatch({ type: 'brand/fetchBrand' });
     dispatch({ type: 'position/fetchPosition' });
   }
 
@@ -136,7 +138,7 @@ export default class extends PureComponent {
   }
 
   render() {
-    const { position, fLoading, dLoading } = this.props;
+    const { position, brand, fLoading, dLoading } = this.props;
     const { visible, editInfo } = this.state;
     return (
       <React.Fragment>
@@ -144,7 +146,7 @@ export default class extends PureComponent {
           (customerAuthority(63) || customerAuthority(64)) &&
           (
             <PositionForm
-              dataSource={position}
+              dataSource={brand}
               initialValue={editInfo}
               visible={visible}
               onCancel={() => { this.setState({ editInfo: {} }); }}

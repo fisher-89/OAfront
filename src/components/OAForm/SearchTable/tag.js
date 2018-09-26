@@ -15,11 +15,19 @@ export default class extends React.PureComponent {
     let tagsData = [];
     if (value && value.length > 0) {
       tagsData = value.map((item, index) => {
-        return {
-          value: item[valueName],
-          label: item[showName] || '',
-          key: index,
-        };
+        if (typeof item === 'object') {
+          return {
+            value: item[valueName],
+            label: item[showName] || '',
+            key: index,
+          };
+        } else {
+          return {
+            value: showName,
+            label: item || '',
+            key: index,
+          };
+        }
       });
     }
     const click = this.props.disabled ? null : {

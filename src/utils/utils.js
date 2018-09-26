@@ -398,15 +398,23 @@ export function dontInitialValue(name, value, multiple = false) {
     newValue = [];
     value.forEach((item, i) => {
       newValue[i] = {};
+      if (typeof name === 'object') {
+        Object.keys(name).forEach((key) => {
+          newValue[i][key] = item[name[key]];
+        });
+      } else {
+        newValue[i] = item[name];
+      }
+    });
+  } else if (!multiple) {
+    if (typeof name === 'object') {
+      newValue = {};
       Object.keys(name).forEach((key) => {
-        newValue[i][key] = item[name[key]];
+        newValue[key] = value[name[key]];
       });
-    });
-  } else {
-    newValue = {};
-    Object.keys(name).forEach((key) => {
-      newValue[key] = value[name[key]];
-    });
+    } else {
+      newValue = value[name];
+    }
   }
   return newValue;
 }

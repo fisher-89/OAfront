@@ -45,7 +45,9 @@ export async function deleteCustomer(id) {
 
 // Execel模板导出
 export async function downloadExcelTemp() {
-  return request('/api/crm/clients/example', { method: 'GET' });
+  return request('/api/crm/clients/example', {
+    method: 'GET',
+  });
 }
 
 /** 当前员工品牌 */

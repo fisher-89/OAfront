@@ -59,7 +59,7 @@ export default class extends Upload {
 
     return (
       <Upload {...props} fileList={this.state.fileList}>
-        <Button icon="upload" >{children}</Button>
+        <Button icon="cloud-upload" >{children}</Button>
       </Upload>
     );
   }

@@ -9,7 +9,6 @@ import {
 import moment from 'moment';
 import store from './store/store';
 import OATable from '../../../components/OATable';
-
 import { customerStatus } from '../../../assets/customer';
 import { getFiltersData, customerAuthority } from '../../../utils/utils';
 
@@ -182,11 +181,8 @@ export default class extends PureComponent {
         <Button
           key="download"
           icon="cloud-download"
-          onClick={() => {
-            this.props.downloadExcelTemp();
-          }}
         >
-          下载模板
+          <a href="/api/crm/clients/example" style={{ color: 'rgba(0, 0, 0, 0.65)', marginLeft: 5 }}>下载模板</a>
         </Button>
       ));
     }
