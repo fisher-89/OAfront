@@ -123,6 +123,10 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['reimbursement'], () => import('../routes/Finance/Reimbursement/Cashier')),
       authority: '135',
     },
+    '/finance/reimbursement/public-cashier': {
+      component: dynamicWrapper(app, ['reimbursement'], () => import('../routes/Finance/Reimbursement/PublicCashier')),
+      authority: '193',
+    },
     '/finance/reimbursement/auditor': {
       component: dynamicWrapper(app, ['reimbursement'], () => import('../routes/Finance/Reimbursement/Auditor')),
       authority: '35',
