@@ -4,6 +4,8 @@ import {
   fetchOvertimeReimbursements,
   fetchExportApprovedReimbursements,
   fetchApprovedReimbursements,
+  fetchAllApprovedReimbursements,
+  exportAllApprovedReimbursements,
   fetchRejectedReimbursements,
   fetchPackageReimbursements,
   fetchUnpaidReimbursements,
@@ -30,6 +32,7 @@ export default {
     processingList: [],
     overtimeList: [],
     approvedList: [],
+    allApprovedList: [],
     rejectedList: [],
     packageList: [],
     unPaidList: [],
@@ -91,9 +94,35 @@ export default {
         return err;
       }
     },
+    * fetchAllApprovedList({ payload }, { call, put }) {
+      try {
+        const response = yield call(fetchAllApprovedReimbursements, payload);
+        if (response) {
+          yield put({
+            type: 'save',
+            payload: {
+              store: 'allApprovedList',
+              data: response,
+            },
+          });
+        }
+      } catch (err) {
+        return err;
+      }
+    },
     * exportApprovedList({ payload, onSuccess }, { call }) {
       try {
         const response = yield call(fetchExportApprovedReimbursements, payload);
+        if (response) {
+          onSuccess(response);
+        }
+      } catch (err) {
+        return err;
+      }
+    },
+    * exportAllApprovedList({ payload, onSuccess }, { call }) {
+      try {
+        const response = yield call(exportAllApprovedReimbursements, payload);
         if (response) {
           onSuccess(response);
         }
