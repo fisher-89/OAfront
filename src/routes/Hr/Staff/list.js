@@ -179,7 +179,7 @@ export default class extends PureComponent {
     });
   };
 
-  deleteStaff = (id) => {
+  deleteStaff = (staffsn) => {
     Modal.confirm({
       title: '确认删除?',
       cancelText: '取消',
@@ -188,7 +188,7 @@ export default class extends PureComponent {
         const { dispatch } = this.props;
         dispatch({
           type: 'staffs/deleteStaff',
-          payload: { id },
+          payload: { staff_sn: staffsn },
         });
       },
       onCancel: () => {},

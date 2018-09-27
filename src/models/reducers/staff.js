@@ -94,14 +94,30 @@ export default {
     };
   },
   delete(state, action) {
-    const { store } = action.payload;
+    const { store, data } = action.payload;
     const staffSn = action.payload.staff_sn;
+    if (data.message) {
+      notification.error({
+        message: data.message,
+      });
+      return;
+    }
     notification.success({
       message: '删除成功',
     });
+    const dataState = Array.isArray(state[store]) ? (
+      state[store] ? state[store].filter(item => item.staff_sn !== staffSn) : []
+    ) :
+      (
+        state[store].data ? {
+          ...state[store],
+          total: state[store].total - 1,
+          data: state[store].data.filter(item => item.staff_sn !== staffSn),
+        } : {}
+      );
     return {
       ...state,
-      [store]: state[store].filter(item => item.staff_sn !== staffSn),
+      [store]: dataState,
     };
   },
   import(state, action) {

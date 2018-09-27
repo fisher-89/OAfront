@@ -150,13 +150,13 @@ export default {
   },
   * deleteStaff({ payload }, { call, put }) {
     try {
-      const { id } = payload;
-      const response = yield call(deleteStaff, id);
+      const staffSn = payload.staff_sn;
+      const response = yield call(deleteStaff, staffSn);
       yield put({
         type: 'delete',
         payload: {
           store,
-          staff_sn: id,
+          staff_sn: staffSn,
           data: response,
         },
       });
