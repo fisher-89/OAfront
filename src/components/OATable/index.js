@@ -17,6 +17,11 @@ import {
 } from '../../utils/utils';
 
 const defaultProps = {
+  fileExportChange: {
+    onSuccess: () => { },
+    onError: () => { },
+    afterChange: () => { },
+  },
   multiOperator: null,
   extraOperator: null,
   extraOperatorRight: null,
@@ -684,12 +689,15 @@ class OATable extends PureComponent {
   }
 
   makeExtraOperator = () => {
-    const { extraOperator, excelInto, excelExport, excelTemplate } = this.props;
+    const { extraOperator, excelInto, excelExport, excelTemplate, fileExportChange } = this.props;
     const operator = extraOperator || [];
     if (excelInto) {
       operator.push(
         <Tooltip key="upload" title="导入数据">
-          <TableUpload uri={excelInto}>
+          <TableUpload
+            uri={excelInto}
+            {...fileExportChange}
+          >
             EXCEL导入
           </TableUpload>
         </Tooltip>
