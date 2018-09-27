@@ -66,7 +66,7 @@ export async function editStaff(params, staffSn) {
  * @param int params
  */
 export async function deleteStaff(staffSn) {
-  return request(`/api/hr/staff_delete/${staffSn}`, {
+  return request(`/api/staff/${staffSn}`, {
     method: 'DELETE',
   });
 }

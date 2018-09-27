@@ -156,7 +156,7 @@ export default {
         type: 'delete',
         payload: {
           store,
-          id,
+          staff_sn: id,
           data: response,
         },
       });
