@@ -1,8 +1,10 @@
 import React from 'react';
 import XLSX from 'xlsx';
+import moment from 'moment';
 import { Modal, Button, Icon } from 'antd';
 import OATable from '../OATable';
 import styles from './index.less';
+import TableUpload from '../OATable/upload';
 
 export default class Result extends React.PureComponent {
   constructor(props) {
@@ -12,7 +14,7 @@ export default class Result extends React.PureComponent {
   }
 
   state = {
-    data: {
+    response: {
       data: [],
       headers: ['编号', '电话号码', '品牌'],
       errors: [
@@ -37,6 +39,13 @@ export default class Result extends React.PureComponent {
       ],
     },
     second: 3,
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if ('response' in nextProps) {
+      const { response } = nextProps;
+      this.setState({ response });
+    }
   }
 
   componentWillUnmount() {
@@ -90,7 +99,7 @@ export default class Result extends React.PureComponent {
     errors.forEach((error) => {
       const { rowData } = error;
       const errorMessage = error.message;
-      const errMsg = Object.keys(errorMessage).map(msg => `${msg}:${errorMessage[msg].join(',')}`).join(';');
+      const errMsg = Object.keys(errorMessage).map(msg => `${msg}:${errorMessage[msg].join(',')}`).join(';\n');
       rowData.push(errMsg);
       errorExcel.push(error.rowData);
     });
@@ -100,16 +109,17 @@ export default class Result extends React.PureComponent {
     XLSX.writeFile(workbook, '错误信息.xlsx');
   }
 
-  renderSuccess = () => {
+  renderSuccess = ({ data = [] }) => {
+    const successLength = data.length;
     return (
       <div className={styles.content}>
         <div className={styles.resultSuccess}>
           <Icon type="check-circle" className={styles.icon} />
           <div className={styles.message}>
             成功上传
-            <span className={styles.successColor}>8</span>
+            <span className={styles.successColor}>{successLength}</span>
             条
-            <p className={styles.timer}>2018-09-26 09:44:23</p>
+            <p className={styles.timer}>{moment().format('YYYY-MM-DD HH:mm:ss')}</p>
           </div>
         </div>
         <Button
@@ -128,7 +138,7 @@ export default class Result extends React.PureComponent {
   }
 
   renderError = (response) => {
-    const { errors = [] } = response;
+    const { errors = [], data = [] } = response;
     let errorData = [];
     errors.forEach((item) => {
       const messageLength = Object.keys(item.message).length;
@@ -143,17 +153,26 @@ export default class Result extends React.PureComponent {
       });
       errorData = [...errorData, ...temp];
     });
+    const errorLength = errors.length;
+    const successLength = data.length;
     return (
       <React.Fragment>
         <div className={styles.header}>
           <div className={styles.message}>
             成功上传
-            <span className={styles.successColor}>8</span>
-            条，失败<span className={styles.errorColor}>1</span>条。
-            <p className={styles.timer}>2018-09-26 09:44:23</p>
+            <span className={styles.successColor}>{successLength}</span>
+            条，失败<span className={styles.errorColor}>{errorLength}</span>条。
+            <p className={styles.timer}>{moment().format('YYYY-MM-DD HH:ii:ss')}</p>
           </div>
           <div>
-            <Button icon="upload">继续导入</Button>
+            <TableUpload
+              uri={this.props.uri}
+              afterChange={() => {
+                this.props.onCancel();
+              }}
+            >
+              继续导入
+            </TableUpload>
           </div>
         </div>
         <div className={styles.tableResult}>
@@ -178,18 +197,20 @@ export default class Result extends React.PureComponent {
 
   render() {
     const { error } = this.props;
-    const { data } = this.state;
+    const { response } = this.state;
     return (
       <Modal {...this.props}>
-        {error ? this.renderError(data) : this.renderSuccess(data)}
+        {error ? this.renderError(response) : this.renderSuccess(response)}
       </Modal>
     );
   }
 }
+
 Result.defaultProps = {
   width: 800,
   error: false,
-  visible: true,
+  visible: false,
   footer: false,
   title: '导入结果',
+  response: {},
 };

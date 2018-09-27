@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import classNames from 'classnames';
 import moment from 'moment';
 import XLSX from 'xlsx';
-import { Table, Input, Icon, message, Button, Tooltip } from 'antd';
+import { Table, Input, Icon, Button, Tooltip } from 'antd';
 import Ellipsis from '../Ellipsis';
 import TreeFilter from './treeFilter';
 import DateFilter from './dateFilter';
@@ -80,6 +80,7 @@ class OATable extends PureComponent {
       filters: {},
       sorter: {},
       loading: false,
+
     };
   }
 
@@ -659,23 +660,8 @@ class OATable extends PureComponent {
       method: 'GET',
       body,
     }).then((response) => {
-      if (response.errors.length) {
-        throw response;
-      }
-      this.makeExcelFieldsData(response);
-      this.xlsExportExcel(response);
-    }).then((errors) => {
-      this.xlsExportExcelError(errors);
+      this.xlsExportExcelError(response);
     });
-  }
-
-
-  handleBeforeUpload = (file) => {
-    const isExcel = (file.type === 'application/vnd.ms-excel') || (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    if (!isExcel) {
-      message.error('你只能上传excel格式的文件!');
-    }
-    return isExcel;
   }
 
   handleExcelTemplate = () => {
@@ -689,10 +675,7 @@ class OATable extends PureComponent {
     if (excelInto) {
       operator.push(
         <Tooltip key="upload" title="导入数据">
-          <TableUpload
-            uri={excelInto}
-            handleBeforeUpload={this.handleBeforeUpload}
-          >
+          <TableUpload uri={excelInto}>
             EXCEL导入
           </TableUpload>
         </Tooltip>
@@ -736,6 +719,7 @@ class OATable extends PureComponent {
       }
       return temp;
     });
+
     return (
       <div
         className={styles.filterTable}

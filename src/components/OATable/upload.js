@@ -1,17 +1,46 @@
 import React from 'react';
-import { Upload, Button } from 'antd';
-// import upload from '../../utils/upload';
+import { Upload, Button, message } from 'antd';
+import ImportResult from '../importResult';
 
 
-export default class extends Upload {
+export default class UploadExcel extends Upload {
   state = {
     fileList: [],
+    importResult: {
+      visible: false,
+      error: false,
+      response: {},
+    },
+  }
+
+  uploadFileResult = ({ response }) => {
+    let result = {};
+    const { onError, onSuccess } = this.props;
+    if (Object.keys(response.errors).length) {
+      onError(response);
+      result = {
+        visible: true,
+        error: true,
+        response,
+      };
+    } else {
+      onSuccess(response);
+      result = {
+        visible: true,
+        error: false,
+        response,
+      };
+    }
+    this.setState({ importResult: { ...result } });
   }
 
   handleChange = (info) => {
     let { fileList } = info;
+    if (info.file.status === 'done') {
+      this.props.afterChange(info.file.response);
+      this.uploadFileResult(info.file);
+    }
     fileList = fileList.slice(-1);
-
     fileList = fileList.map((file) => {
       const newFile = file;
       if (file.response) {
@@ -29,38 +58,51 @@ export default class extends Upload {
     this.setState({ fileList });
   }
 
+  handleBeforeUpload = (file) => {
+    const isExcel = (file.type === 'application/vnd.ms-excel') || (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    if (!isExcel) {
+      message.error('你只能上传excel格式的文件!');
+    }
+    return isExcel;
+  }
+
   render() {
-    const { handleBeforeUpload, uri, children } = this.props;
+    const { beforeUpload, uri, children } = this.props;
     const accessToken = localStorage.getItem(`${TOKEN_PREFIX}access_token`);
     const props = {
       action: uri,
       onChange: this.handleChange,
-      beforeUpload: handleBeforeUpload,
-      // customRequest: (options) => {
-      //   const formData = new FormData();
-      //   formData.append(options.filename, options.file);
-      //   upload(uri, {
-      //     method: 'POST',
-      //     mode: 'cors',
-      //     body: formData,
-      //   }).then((res) => {
-      //     if (res.status === 'success') {
-      //       options.onSuccess();
-      //     } else {
-      //       options.onError();
-      //     }
-      //   });
-      // },
+      beforeUpload: beforeUpload || this.handleBeforeUpload,
       withCredentials: true,
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     };
-
+    const { importResult } = this.state;
     return (
-      <Upload {...props} fileList={this.state.fileList}>
-        <Button icon="cloud-upload" >{children}</Button>
-      </Upload>
+      <React.Fragment>
+        <ImportResult
+          uri={uri}
+          {...importResult}
+          onCancel={() => {
+            this.setState({
+              importResult: {
+                visible: false,
+                error: importResult.error,
+                response: {},
+              },
+            });
+          }}
+        />
+        <Upload {...props} fileList={this.state.fileList}>
+          <Button icon="cloud-upload" >{children}</Button>
+        </Upload>
+      </React.Fragment>
     );
   }
 }
+UploadExcel.defaultProps = {
+  onSuccess: () => { },
+  onError: () => { },
+  afterChange: () => { },
+};
