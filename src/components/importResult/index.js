@@ -7,14 +7,6 @@ import styles from './index.less';
 import TableUpload from '../OATable/upload';
 
 export default class Result extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    if (!props.error) {
-      clearInterval(this.timer);
-      this.timer = setInterval(this.timerCountDown, 1000);
-    }
-  }
-
   state = {
     response: {
       data: [],
@@ -28,6 +20,10 @@ export default class Result extends React.PureComponent {
     if ('response' in nextProps) {
       const { response } = nextProps;
       this.setState({ response });
+    }
+    if (nextProps.visible && !nextProps.error) {
+      clearInterval(this.timer);
+      this.timer = setInterval(this.timerCountDown, 1000);
     }
   }
 
