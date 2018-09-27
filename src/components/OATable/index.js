@@ -697,6 +697,10 @@ class OATable extends PureComponent {
           <TableUpload
             uri={excelInto}
             {...fileExportChange}
+            onSuccess={(response) => {
+              this.fetchTableDataSource();
+              fileExportChange.onSuccess(response);
+            }}
           >
             EXCEL导入
           </TableUpload>
