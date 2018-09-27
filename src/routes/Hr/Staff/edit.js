@@ -459,10 +459,10 @@ export default class EditStaff extends PureComponent {
                 {
                   getFieldDecorator('household', {
                     initialValue: {
-                      city_id: editStaff.household_city_id || 0,
-                      province_id: editStaff.household_province_id || 0,
-                      county_id: editStaff.household_county_id || 0,
-                      address: editStaff.household_address || '',
+                      household_city_id: editStaff.household_city_id || 0,
+                      household_province_id: editStaff.household_province_id || 0,
+                      household_county_id: editStaff.household_county_id || 0,
+                      household_address: editStaff.household_address || '',
                     },
                   })(
                     <Address
