@@ -81,7 +81,6 @@ export default {
     const staffSn = action.payload.staff_sn;
 
     const dataSource = Array.isArray(state[store]) ? state[store] : (state[store].data || []);
-
     let updated = false;
     const newStore = dataSource.map((item) => {
       if (parseInt(item.staff_sn, 0) === parseInt(staffSn, 0)) {
@@ -99,7 +98,7 @@ export default {
     });
     return {
       ...state,
-      [store]: state[store].length ? newStore : [],
+      [store]: Array.isArray(state[store]) ? newStore : { ...state[store], data: newStore },
     };
   },
   delete(state, action) {

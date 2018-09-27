@@ -15,12 +15,15 @@ export default class extends PureComponent {
       xs: 24,
       lg: 12,
     };
-    const { form: { getFieldDecorator, setFieldsValue }, value, name } = this.props;
+    const { form: { getFieldDecorator, setFieldsValue, getFieldValue }, value, name } = this.props;
     getFieldDecorator(`${name}[relative_sn]`, {
       initialValue: value.staff_sn || '',
     });
     getFieldDecorator(`${name}[relative_name]`, {
       initialValue: value.realname || '',
+    });
+    getFieldDecorator(`${name}[relative_type]`, {
+      initialValue: value.relative_type ? value.relative_type.id.toString() : '',
     });
     return (
       <FormItem>
@@ -45,24 +48,22 @@ export default class extends PureComponent {
                   relative_sn: 'staff_sn',
                   relative_name: 'realname',
                 }}
+                value={{
+                  relative_sn: getFieldValue(`${name}[relative_sn]`),
+                  relative_name: getFieldValue(`${name}[relative_name]`),
+                }}
                 showName="relative_name"
                 placeholder="请选择关系人"
-                value={value.realname ? {
-                  staff_sn: value.staff_sn,
-                  realname: value.realname,
-                } : {}}
                 onChange={(relative) => {
                   Object.keys(relative).forEach((key) => {
                     setFieldsValue({ [`${name}[${key}]`]: relative[key] });
                   });
                 }}
               />
-
             </FormItem>
           </Col>
           <Col {...fieldsBoxLayout}>
             <FormItem
-              name="relative_type"
               label="关系类型"
               {
               ...{
@@ -75,39 +76,42 @@ export default class extends PureComponent {
                   sm: { span: 14 },
                 },
               }
-              }
+            }
             >
-              {getFieldDecorator(`${name}[relative_type]`, value.pivot ? {
-                initialValue: value.pivot.relative_type.toString() || '',
-              } : {})(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="">-- 无 --</Option>
-                  <Option value="1">父亲</Option>
-                  <Option value="2">母亲</Option>
-                  <Option value="3">儿子</Option>
-                  <Option value="4">女儿</Option>
-                  <Option value="5">哥哥</Option>
-                  <Option value="6">姐姐</Option>
-                  <Option value="7">弟弟</Option>
-                  <Option value="8">妹妹</Option>
-                  <Option value="9">丈夫</Option>
-                  <Option value="10">妻子</Option>
-                  <Option value="11">朋友</Option>
-                  <Option value="16">同学</Option>
-                  <Option value="12">师傅</Option>
-                  <Option value="13">徒弟</Option>
-                  <Option value="14">男友</Option>
-                  <Option value="15">女友</Option>
-                  <Option value="19">女婿</Option>
-                  <Option value="22">儿媳</Option>
-                  <Option value="17">岳父</Option>
-                  <Option value="18">岳母</Option>
-                  <Option value="20">公公</Option>
-                  <Option value="21">婆婆</Option>
-                  <Option value="23">其他长辈</Option>
-                  <Option value="24">其他晚辈</Option>
-                </Select>
-              )}
+              <Select
+                placeholder="请选择"
+                style={{ width: '100%' }}
+                value={getFieldValue(`${name}[relative_type]`)}
+                onChange={(relativeType) => {
+                  setFieldsValue({ [`${name}[relative_type]`]: relativeType });
+                }}
+              >
+                <Option value="0">-- 无 --</Option>
+                <Option value="1">父亲</Option>
+                <Option value="2">母亲</Option>
+                <Option value="3">儿子</Option>
+                <Option value="4">女儿</Option>
+                <Option value="5">哥哥</Option>
+                <Option value="6">姐姐</Option>
+                <Option value="7">弟弟</Option>
+                <Option value="8">妹妹</Option>
+                <Option value="9">丈夫</Option>
+                <Option value="10">妻子</Option>
+                <Option value="11">朋友</Option>
+                <Option value="16">同学</Option>
+                <Option value="12">师傅</Option>
+                <Option value="13">徒弟</Option>
+                <Option value="14">男友</Option>
+                <Option value="15">女友</Option>
+                <Option value="19">女婿</Option>
+                <Option value="22">儿媳</Option>
+                <Option value="17">岳父</Option>
+                <Option value="18">岳母</Option>
+                <Option value="20">公公</Option>
+                <Option value="21">婆婆</Option>
+                <Option value="23">其他长辈</Option>
+                <Option value="24">其他晚辈</Option>
+              </Select>
             </FormItem>
           </Col>
         </Row>
