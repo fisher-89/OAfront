@@ -9,34 +9,17 @@ import TableUpload from '../OATable/upload';
 export default class Result extends React.PureComponent {
   constructor(props) {
     super(props);
-    clearInterval(this.timer);
-    this.timer = setInterval(this.timerCountDown, 1000);
+    if (!props.error) {
+      clearInterval(this.timer);
+      this.timer = setInterval(this.timerCountDown, 1000);
+    }
   }
 
   state = {
     response: {
       data: [],
-      headers: ['编号', '电话号码', '品牌'],
-      errors: [
-        {
-          row: 1,
-          rowData: ['110105', '18408228080', '杰尼维尼'],
-          message: {
-            员工编号: ['员工编号重复！'],
-            电话号码: ['电话号重复！'],
-            品牌: ['品牌输入错误！'],
-          },
-        },
-        {
-          row: 2,
-          rowData: ['110105', '18408228080', '杰尼维尼专卖'],
-          message: {
-            员工编号: ['员工编号重复！'],
-            电话号码: ['电话号重复！'],
-            品牌: ['品牌输入错误！'],
-          },
-        },
-      ],
+      headers: [],
+      errors: [],
     },
     second: 3,
   }
@@ -57,6 +40,7 @@ export default class Result extends React.PureComponent {
     this.setState({ second: second - 1 }, () => {
       if (this.state.second === 0) {
         clearInterval(this.timer);
+        this.props.onCancel();
       }
     });
   }
@@ -130,6 +114,7 @@ export default class Result extends React.PureComponent {
             marginLeft: '-50px',
             position: 'relative',
           }}
+          onClick={this.props.onCancel}
         >
           确定（{this.state.second}）
         </Button>
@@ -162,7 +147,7 @@ export default class Result extends React.PureComponent {
             成功上传
             <span className={styles.successColor}>{successLength}</span>
             条，失败<span className={styles.errorColor}>{errorLength}</span>条。
-            <p className={styles.timer}>{moment().format('YYYY-MM-DD HH:ii:ss')}</p>
+            <p className={styles.timer}>{moment().format('YYYY-MM-DD HH:mm:ss')}</p>
           </div>
           <div>
             <TableUpload

@@ -634,7 +634,7 @@ class OATable extends PureComponent {
     this.setState({ loading });
   }
 
-  xlsExportExcelError = ({ headers, errors }) => {
+  xlsExportExcel = ({ headers, errors }) => {
     const workbook = XLSX.utils.book_new();
     const errorExcel = [];
     const newHeaders = [...headers, '错误信息'];
@@ -647,8 +647,18 @@ class OATable extends PureComponent {
     });
     errorExcel.unshift(newHeaders);
     const errorSheet = XLSX.utils.aoa_to_sheet(errorExcel);
-    XLSX.utils.book_append_sheet(workbook, errorSheet, '导入失败信息');
-    XLSX.writeFile(workbook, '导入错误信息.xlsx');
+    XLSX.utils.book_append_sheet(workbook, errorSheet, '导出失败信息');
+    XLSX.writeFile(workbook, '导出错误信息.xlsx');
+  }
+
+  xlsExportExcel = ({ headers, data }) => {
+    const { excelExport: { fileName } } = this.props;
+    const workbook = XLSX.utils.book_new();
+    const dataExcel = [...data];
+    dataExcel.unshift(headers);
+    const errorSheet = XLSX.utils.aoa_to_sheet(dataExcel);
+    XLSX.utils.book_append_sheet(workbook, errorSheet);
+    XLSX.writeFile(workbook, fileName || '导出数据信息.xlsx');
   }
 
   handleExportExcel = () => {
@@ -660,7 +670,11 @@ class OATable extends PureComponent {
       method: 'GET',
       body,
     }).then((response) => {
-      this.xlsExportExcelError(response);
+      if (Object.keys(response.errors).length) {
+        this.xlsExportExcelError(response);
+      } else {
+        this.xlsExportExcel(response);
+      }
     });
   }
 
