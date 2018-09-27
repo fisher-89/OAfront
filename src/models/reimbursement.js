@@ -9,6 +9,9 @@ import {
   fetchUnpaidReimbursements,
   fetchPaidReimbursements,
   fetchExportPaidReimbursements,
+  fetchUnpaidPublicReimbursements,
+  fetchPaidPublicReimbursements,
+  fetchExportPaidPublicReimbursements,
   approveByAccountant,
   rejectByAccountant,
   sendReimbursementPackages,
@@ -31,6 +34,8 @@ export default {
     packageList: [],
     unPaidList: [],
     paidList: [],
+    unPaidPublicList: [],
+    paidPublicList: [],
     detailInfo: {},
     fundsAttribution: [],
     status: [],
@@ -163,6 +168,48 @@ export default {
     * exportPaidList({ payload, onSuccess }, { call }) {
       try {
         const response = yield call(fetchExportPaidReimbursements, payload);
+        if (response) {
+          onSuccess(response);
+        }
+      } catch (err) {
+        return err;
+      }
+    },
+    * fetchUnPaidPublicList({ payload }, { call, put }) {
+      try {
+        const response = yield call(fetchUnpaidPublicReimbursements, payload);
+        if (response) {
+          yield put({
+            type: 'save',
+            payload: {
+              store: 'unPaidPublicList',
+              data: response,
+            },
+          });
+        }
+      } catch (err) {
+        return err;
+      }
+    },
+    * fetchPaidPublicList({ payload }, { call, put }) {
+      try {
+        const response = yield call(fetchPaidPublicReimbursements, payload);
+        if (response) {
+          yield put({
+            type: 'save',
+            payload: {
+              store: 'paidPublicList',
+              data: response,
+            },
+          });
+        }
+      } catch (err) {
+        return err;
+      }
+    },
+    * exportPaidPublicList({ payload, onSuccess }, { call }) {
+      try {
+        const response = yield call(fetchExportPaidPublicReimbursements, payload);
         if (response) {
           onSuccess(response);
         }
