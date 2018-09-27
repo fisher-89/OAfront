@@ -22,8 +22,10 @@ export default class Result extends React.PureComponent {
       this.setState({ response });
     }
     if (nextProps.visible && !nextProps.error) {
-      clearInterval(this.timer);
-      this.timer = setInterval(this.timerCountDown, 1000);
+      this.setState({ second: 3 }, () => {
+        clearInterval(this.timer);
+        this.timer = setInterval(this.timerCountDown, 1000);
+      });
     }
   }
 
