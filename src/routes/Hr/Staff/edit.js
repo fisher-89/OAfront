@@ -40,16 +40,16 @@ export default class EditStaff extends PureComponent {
     };
   }
 
-  onChange = (value, key) => {
-    this.setState({ [key]: value });
-  };
-
   handleSubmit = (params) => {
     const { dispatch } = this.props;
-    console.log(params);
     dispatch({
       type: params.staff_sn ? 'staffs/editStaff' : 'staffs/addStaff',
-      payload: params,
+      payload: {
+        ...params,
+        ...params.recruiter,
+        ...params.household,
+        ...params.living,
+      },
       onError: this.handleError,
       onSuccess: this.handleSuccess,
     });
@@ -67,11 +67,6 @@ export default class EditStaff extends PureComponent {
   handleSelectFilter = (input, option) => {
     return (option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0);
   };
-
-  handleChange = (params, index) => {
-    console.log(params);
-    console.log(index);
-  }
 
   render() {
     const formItemLayout = {
@@ -732,7 +727,6 @@ export default class EditStaff extends PureComponent {
                 <RelativeList
                   form={form}
                   name="relatives"
-                  onChange={this.handleChange}
                   initialValue={editStaff.relatives || []}
                 />
               </FormItem>
