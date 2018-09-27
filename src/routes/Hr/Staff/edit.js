@@ -68,25 +68,6 @@ export default class EditStaff extends PureComponent {
     return (option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0);
   };
 
-  makeDecoratorValue = () => {
-    const { form: { getFieldDecorator }, editStaff } = this.props;
-    const registerForm = [
-      'living_city_id',
-      'living_province_id',
-      'living_county_id',
-      'living_address',
-      'recruiter_sn',
-      'recruiter_name',
-      'household_province_id',
-      'household_city_id',
-      'household_county_id',
-      'household_address',
-    ];
-    registerForm.forEach((item) => {
-      getFieldDecorator(item, { initialValue: editStaff[item] || '' });
-    });
-  }
-
   handleChange = (params, index) => {
     console.log(params);
     console.log(index);
@@ -144,7 +125,6 @@ export default class EditStaff extends PureComponent {
       editStaff,
       form: { getFieldDecorator } } = this.props;
     const newTreeData = markTreeData(department, { value: 'id', lable: 'name', parentId: 'parent_id' }, 0);
-    this.makeDecoratorValue();
     return (
       <OAModal
         width={600}
@@ -271,9 +251,6 @@ export default class EditStaff extends PureComponent {
                       <SearchTable.Shop
                         name="shop_sn"
                         showName="shop_sn"
-                        onChange={(value) => {
-                          form.setFieldsValue({ shop_sn: value });
-                        }}
                       />
                     )}
                   </FormItem>
@@ -459,59 +436,66 @@ export default class EditStaff extends PureComponent {
                 </Col>
               </Row>
               <FormItem {...formItemLayout} label="招聘人员">
-                <SearchTable.Staff
-                  name={{
-                    recruiter_sn: 'staff_sn',
-                    recruiter_name: 'realname',
-                  }}
-                  showName="recruiter_name"
-                  value={editStaff.recruiter_sn ? {
-                    staff_sn: editStaff.recruiter_sn,
-                    realname: editStaff.recruiter_name,
-                  } : {}}
-
-                  onChange={(value) => {
-                    form.setFieldsValue(value);
-                  }}
-                />
+                {
+                  getFieldDecorator('recruiter', {
+                    initialValue: {
+                      recruiter_sn: editStaff.recruiter_sn || '',
+                      recruiter_name: editStaff.recruiter_name || '',
+                    },
+                  })(
+                    <SearchTable.Staff
+                      name={{
+                        recruiter_sn: 'staff_sn',
+                        recruiter_name: 'realname',
+                      }}
+                      showName="recruiter_name"
+                    />
+                  )
+                }
               </FormItem>
+            </TabPane>
+            <TabPane forceRender tab="个人信息" key="3">
               <FormItem {...formItemLayout} label="户口所在地">
-                <Address
-                  name={{
-                    household_city_id: 'city_id',
-                    household_province_id: 'province_id',
-                    household_county_id: 'county_id',
-                    household_address: 'address',
-                  }}
-                  value={{
-                    city_id: editStaff.household_city_id || null,
-                    province_id: editStaff.household_province_id || null,
-                    county_id: editStaff.household_county_id || null,
-                    address: editStaff.household_address || null,
-                  }}
-                  onChange={(value) => {
-                    form.setFieldsValue(value);
-                  }}
-                />
+                {
+                  getFieldDecorator('household', {
+                    initialValue: {
+                      household_city_id: editStaff.household_city_id || 0,
+                      household_province_id: editStaff.household_province_id || 0,
+                      household_county_id: editStaff.household_county_id || 0,
+                      household_address: editStaff.household_address || '',
+                    },
+                  })(
+                    <Address
+                      name={{
+                        household_city_id: 'city_id',
+                        household_province_id: 'province_id',
+                        household_county_id: 'county_id',
+                        household_address: 'address',
+                      }}
+                    />
+                  )
+                }
               </FormItem>
               <FormItem {...formItemLayout} label="现居住地">
-                <Address
-                  name={{
-                    living_city_id: 'city_id',
-                    living_province_id: 'province_id',
-                    living_county_id: 'county_id',
-                    living_address: 'address',
-                  }}
-                  value={{
-                    city_id: editStaff.living_city_id || null,
-                    province_id: editStaff.living_province_id || null,
-                    county_id: editStaff.living_county_id || null,
-                    address: editStaff.living_address || null,
-                  }}
-                  onChange={(value) => {
-                    form.setFieldsValue(value);
-                  }}
-                />
+                {
+                  getFieldDecorator('living', {
+                    initialValue: {
+                      living_city_id: editStaff.living_city_id || 0,
+                      living_province_id: editStaff.living_province_id || 0,
+                      living_county_id: editStaff.living_county_id || 0,
+                      living_address: editStaff.living_address || '',
+                    },
+                  })(
+                    <Address
+                      name={{
+                        living_city_id: 'city_id',
+                        living_province_id: 'province_id',
+                        living_county_id: 'county_id',
+                        living_address: 'address',
+                      }}
+                    />
+                  )
+                }
               </FormItem>
               <Row>
                 <Col {...fieldsBoxLayout}>
@@ -683,7 +667,7 @@ export default class EditStaff extends PureComponent {
                 <Col {...fieldsBoxLayout}>
                   <FormItem {...formItemLayout3} label="员工属性" >
                     {getFieldDecorator('property', {
-                      initialValue: editStaff.property || '0',
+                      initialValue: editStaff.property ? editStaff.property.toString() : '0',
                     })(
                       <Select
                         showSearch
@@ -735,7 +719,7 @@ export default class EditStaff extends PureComponent {
                 <Col {...fieldsBoxLayout}>
                   <FormItem {...formItemLayout3} label="钉钉编号" name="dingding">
                     {getFieldDecorator('dingding', {
-                      initialValue: editStaff.dingding || '',
+                      initialValue: editStaff.dingtalk_number || '',
                     })(
                       <Input placeholder="请输入钉钉编号" />
                     )}
@@ -743,7 +727,7 @@ export default class EditStaff extends PureComponent {
                 </Col>
               </Row>
             </TabPane>
-            <TabPane forceRender tab="关系人" key="3">
+            <TabPane forceRender tab="关系人" key="4">
               <FormItem label="关系人" {...formItemLayout4}>
                 <RelativeList
                   form={form}

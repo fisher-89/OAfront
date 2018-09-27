@@ -35,10 +35,10 @@ const { TabPane } = Tabs;
 @connect(({ staffs, brand, department, position, loading }) => ({
   staff: staffs.staff,
   brand: brand.brand,
+  position: position.position,
   department: department.department,
   staffInfo: staffs.staffDetails,
   staffLoading: loading.models.staffs,
-  position: position.position,
 }))
 
 export default class extends PureComponent {
@@ -578,6 +578,7 @@ export default class extends PureComponent {
           onCancel={() => {
             this.setState({
               editVisible: false,
+              editStaff: {},
             });
           }}
         />
@@ -587,6 +588,7 @@ export default class extends PureComponent {
           onCancel={() => {
             this.setState({
               transferVisible: false,
+              editStaff: {},
             });
           }}
         />
@@ -596,6 +598,7 @@ export default class extends PureComponent {
           onCancel={() => {
             this.setState({
               leaveVisible: false,
+              editStaff: {},
             });
           }}
         />

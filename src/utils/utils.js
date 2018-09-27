@@ -143,12 +143,12 @@ export function customerAuthority(authId) {
     const { authorities: { oa } } = window.user;
     if (Array.isArray(authId)) {
       authId.forEach((id) => {
-        if (oa.indexOf(id) !== -1) {
+        if (oa.indexOf(parseInt(id, 10)) !== -1) {
           authAble = true;
         }
       });
     } else {
-      authAble = oa.indexOf(authId) !== -1;
+      authAble = oa.indexOf(parseInt(authId, 10)) !== -1;
     }
   }
   return authAble;
@@ -161,7 +161,7 @@ export function customerAuthority(authId) {
 export function getBrandAuthority(brandId) {
   if (window.user && Object.keys(window.user).length) {
     const availableBrands = window.user.authorities.available_brands;
-    if (availableBrands.indexOf(brandId) !== -1) {
+    if (availableBrands.indexOf(parseInt(brandId, 10)) !== -1) {
       return true;
     }
   }
@@ -174,7 +174,7 @@ export function getBrandAuthority(brandId) {
 export function getDepartmentAuthority(departmentId) {
   if (window.user && Object.keys(window.user).length) {
     const availableDepartments = window.user.authorities.available_departments;
-    if (availableDepartments.indexOf(departmentId) !== -1) {
+    if (availableDepartments.indexOf(parseInt(departmentId, 10)) !== -1) {
       return true;
     }
   }
