@@ -55,22 +55,14 @@ export default {
       notification.error({
         message: data.message,
       });
-      return state;
+      return;
     }
     notification.success({
       message: '添加成功',
     });
-
-    let dataState = state[store];
-    if (Array.isArray(state[store])) {
-      dataState = [...state[store]];
-      dataState.push(data);
-    } else if (state[store].data) {
-      dataState = { ...state[store] };
-      dataState.data = [...state[store].data];
-      dataState.data.push(data);
-      dataState.total = state[store].total + 1;
-    }
+    let dataState = [];
+    dataState = [...state[store]];
+    dataState.push(data);
     return {
       ...state,
       [store]: dataState,
