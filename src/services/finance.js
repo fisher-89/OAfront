@@ -48,6 +48,15 @@ export async function fetchApprovedReimbursements(params) {
   });
 }
 
+export async function fetchAllApprovedReimbursements(params) {
+  return request('/api/finance/reimburse/audited', {
+    method: 'GET',
+    body: {
+      ...params,
+    },
+  });
+}
+
 /**
  * 获取已通过报销单导出数据
  *
@@ -60,6 +69,21 @@ export async function fetchExportApprovedReimbursements(params) {
     body: {
       ...params,
       type: 'audited',
+    },
+  });
+}
+
+/**
+ * 获取已通过报销单导出数据
+ *
+ * @param params
+ * @returns {Promise.<Object>}
+ */
+export async function exportAllApprovedReimbursements(params) {
+  return request('/api/finance/reimburse/audited/export', {
+    method: 'GET',
+    body: {
+      ...params,
     },
   });
 }
