@@ -106,6 +106,7 @@ export default class Address extends PureComponent {
             placeholder="省"
             disabled={able.province}
           >
+            <Option value="" key="province">请选择</Option>;
             {province.map((item) => {
               return (<Option key={item.id} value={item.id}>{item.name}</Option>);
             })}
@@ -118,6 +119,7 @@ export default class Address extends PureComponent {
             placeholder="市"
             disabled={able.city}
           >
+            <Option value="" key="city">请选择</Option>;
             {city.map((item) => {
               return (<Option key={item.id} value={item.id}>{item.name}</Option>);
             })}
@@ -138,6 +140,7 @@ export default class Address extends PureComponent {
             placeholder="区"
             disabled={able.county}
           >
+            <Option value="" key="county_id">请选择</Option>;
             {county.map((item) => {
               return (<Option key={item.id} value={item.id}>{item.name}</Option>);
             })}
