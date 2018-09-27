@@ -9,8 +9,10 @@ import {
 import moment from 'moment';
 import store from './store/store';
 import OATable from '../../../components/OATable';
+import ImportResult from '../../../components/importResult';
 import { customerStatus } from '../../../assets/customer';
 import { getFiltersData, customerAuthority } from '../../../utils/utils';
+
 
 @connect(({ customer }) => ({ customer: customer.customer }))
 @store()
@@ -189,16 +191,20 @@ export default class extends PureComponent {
 
     const { loading, customer, fetchDataSource } = this.props;
     return (
-      <OATable
-        serverSide
-        loading={loading}
-        data={customer.data}
-        total={customer.total}
-        columns={this.makeColumns()}
-        extraOperator={extraOperator}
-        fetchDataSource={fetchDataSource}
-        excelInto={customerAuthority(192) ? '/api/crm/clients/import' : false}
-      />
+      <React.Fragment>
+        <ImportResult error />
+        <OATable
+          serverSide
+          loading={loading}
+          data={customer.data}
+          total={customer.total}
+          columns={this.makeColumns()}
+          extraOperator={extraOperator}
+          fetchDataSource={fetchDataSource}
+          excelInto={customerAuthority(192) ? '/api/crm/clients/import' : false}
+        />
+      </React.Fragment>
+
     );
   }
 }

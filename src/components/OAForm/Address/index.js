@@ -17,7 +17,7 @@ const disableds = {
 export default class Address extends PureComponent {
   constructor(props) {
     super(props);
-    const value = this.props.value || {};
+    const value = makeInitialValue(this.props.name, this.props.value || {});
     this.state = {
       province: [],
       city: [],
@@ -36,23 +36,16 @@ export default class Address extends PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (
-      JSON.stringify(nextProps.value)
-      !==
-      JSON.stringify(this.props.value)
-    ) {
-      this.setState({ value: nextProps.value || {} }, this.makeSelectOption);
+    if (JSON.stringify(nextProps.value) !== JSON.stringify(this.props.value)) {
+      const value = makeInitialValue(nextProps.name, nextProps.value || {});
+      this.setState({ value });
     }
   }
 
   setPropsValue = () => {
     const { onChange, name } = this.props;
     const { value } = this.state;
-    const newValue = {};
-    Object.keys(name).forEach((key) => {
-      newValue[key] = value[name[key]];
-    });
-    onChange(newValue);
+    onChange(dontInitialValue(name, value));
   }
 
   makeSelectOption = () => {

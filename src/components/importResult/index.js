@@ -1,4 +1,5 @@
 import React from 'react';
+import XLSX from 'xlsx';
 import { Modal, Button, Icon } from 'antd';
 import OATable from '../OATable';
 import styles from './index.less';
@@ -11,7 +12,30 @@ export default class Result extends React.PureComponent {
   }
 
   state = {
-    data: {},
+    data: {
+      data: [],
+      headers: ['编号', '电话号码', '品牌'],
+      errors: [
+        {
+          row: 1,
+          rowData: ['110105', '18408228080', '杰尼维尼'],
+          message: {
+            员工编号: ['员工编号重复！'],
+            电话号码: ['电话号重复！'],
+            品牌: ['品牌输入错误！'],
+          },
+        },
+        {
+          row: 2,
+          rowData: ['110105', '18408228080', '杰尼维尼专卖'],
+          message: {
+            员工编号: ['员工编号重复！'],
+            电话号码: ['电话号重复！'],
+            品牌: ['品牌输入错误！'],
+          },
+        },
+      ],
+    },
     second: 3,
   }
 
@@ -104,24 +128,7 @@ export default class Result extends React.PureComponent {
   }
 
   renderError = (response) => {
-    const { errors = [
-      {
-        row: 1,
-        message: {
-          员工编号: '员工编号重复！',
-          电话号码: '电话号重复！',
-          品牌: '品牌输入错误！',
-        },
-      },
-      {
-        row: 2,
-        message: {
-          员工编号: '员工编号重复！',
-          电话号码: '电话号重复！',
-          品牌: '品牌输入错误！',
-        },
-      },
-    ] } = response;
+    const { errors = [] } = response;
     let errorData = [];
     errors.forEach((item) => {
       const messageLength = Object.keys(item.message).length;
@@ -131,7 +138,7 @@ export default class Result extends React.PureComponent {
           row: item.row,
           rowKey: index === 0,
           length: messageLength,
-          reason: JSON.stringify(item.message[msg]),
+          reason: item.message[msg].join(';'),
         };
       });
       errorData = [...errorData, ...temp];
@@ -160,6 +167,7 @@ export default class Result extends React.PureComponent {
             bordered
             sync={false}
             data={errorData}
+            pagination={false}
             scroll={{ y: 300 }}
             columns={this.makeColumns()}
           />
