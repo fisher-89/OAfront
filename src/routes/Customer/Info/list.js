@@ -9,7 +9,6 @@ import {
 import moment from 'moment';
 import store from './store/store';
 import OATable from '../../../components/OATable';
-import ImportResult from '../../../components/importResult';
 import { customerStatus } from '../../../assets/customer';
 import { getFiltersData, customerAuthority } from '../../../utils/utils';
 
@@ -192,7 +191,6 @@ export default class extends PureComponent {
     const { loading, customer, fetchDataSource } = this.props;
     return (
       <React.Fragment>
-        <ImportResult error />
         <OATable
           serverSide
           loading={loading}
