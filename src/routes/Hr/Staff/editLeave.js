@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { connect } from 'dva';
 import {
   Input,
   Select,
@@ -11,30 +12,43 @@ const FormItem = OAForm.Item;
 const { Option } = Select;
 
 @OAForm.create()
-export default class extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-    };
-  }
+@connect(({ staffs }) => ({ staffs }))
 
+export default class extends PureComponent {
   handleSubmit = (params) => {
     const { dispatch } = this.props;
-    const response = { ...params };
     dispatch({
       type: 'staffs/editStaff',
-      payload: response,
+      payload: params,
       onError: this.handleError,
       onSuccess: this.handleSuccess,
     });
-  };
+  }
+
+  handleError = (err) => {
+    const { onError } = this.props;
+    onError(err);
+  }
+
+  handleSuccess = () => {
+    this.props.onCancel();
+  }
+
+  handleChange = (check) => {
+    if (check === true) {
+      this.props.form.setFieldsValue({
+        operation_type: 'leaving',
+      });
+    }
+  }
 
   render() {
     const {
-      form,
+      loading,
       visible,
       editStaff,
       validateFields,
+      form: { getFieldDecorator },
     } = this.props;
 
     const formItemLayout = {
@@ -45,30 +59,39 @@ export default class extends PureComponent {
         span: 16,
       },
     };
+
     return (
       <OAModal
         width={600}
         title="离职表单"
+        loading={loading}
         visible={visible}
         style={{ top: 30 }}
         onCancel={() => this.props.onCancel()}
         onSubmit={validateFields(this.handleSubmit)}
       >
         <FormItem label="姓名" {...formItemLayout}>
-          {form.getFieldDecorator('realname', {
+          {getFieldDecorator('staff_sn', {
+              initialValue: editStaff.staff_sn || '',
+            })(
+              <Input type="hidden" />
+          )}
+          {getFieldDecorator('operation_type', {
+              initialValue: 'leave',
+            })(
+              <Input type="hidden" />
+          )}
+          {getFieldDecorator('realname', {
             initialValue: editStaff.realname,
           })(
             <Input placeholder="请输入" name="realname" disabled />
           )}
         </FormItem>
         <FormItem label="状态" required {...formItemLayout}>
-          {form.getFieldDecorator('status_id', {
-            initialValue: editStaff.status_id,
+          {getFieldDecorator('status_id', {
+            initialValue: -1,
           })(
             <Select name="status_id" placeholer="请选择">
-              <Option value={1}>试用期</Option>
-              <Option value={2}>在职</Option>
-              <Option value={3}>停薪留职</Option>
               <Option value={-1}>离职</Option>
               <Option value={-2}>自动离职</Option>
               <Option value={-3}>开除</Option>
@@ -76,23 +99,23 @@ export default class extends PureComponent {
             </Select>
           )}
         </FormItem>
-        <FormItem {...formItemLayout} label="工作交接" name="skip_leaving">
-          {form.getFieldDecorator('skip_leaving', {
-            initialValue: editStaff.skip_leaving,
+        <FormItem {...formItemLayout} label="工作交接">
+          {getFieldDecorator('skip_leaving', {
+            initialValue: editStaff.skip_leaving || false,
           })(
-            <Switch />
+            <Switch onChange={this.handleChange} />
           )}
         </FormItem>
         <FormItem label="执行时间" name="operate_at" required {...formItemLayout}>
-          {form.getFieldDecorator('operate_at', {
-            initialValue: editStaff.operate_at,
+          {getFieldDecorator('operate_at', {
+            initialValue: editStaff.operate_at || '',
           })(
             <DatePicker />
           )}
         </FormItem>
         <FormItem label="操作说明" {...formItemLayout} name="operation_remark">
-          {form.getFieldDecorator('operation_remark', {
-            initialValue: editStaff.operation_remark,
+          {getFieldDecorator('operation_remark', {
+            initialValue: editStaff.operation_remark || '',
           })(
             <Input.TextArea
               placeholder="最大长度100个字符"

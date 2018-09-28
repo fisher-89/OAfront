@@ -3,8 +3,6 @@ import { connect } from 'dva';
 import { Input, Select, Row, Col, Button, Modal } from 'antd';
 import moment from 'moment';
 
-import { makePositionData } from '../../../utils/utils';
-
 import OAForm, { SearchTable, DatePicker, OAModal } from '../../../components/OAForm';
 
 const FormItem = OAForm.Item;
@@ -18,23 +16,6 @@ const { Option } = Select;
 }))
 
 export default class extends PureComponent {
-  handleChange = (value, type) => {
-    const { brand, position } = this.props;
-    let newPosition = makePositionData(value.toString(), brand);
-    if (position.length === 0) {
-      newPosition = position;
-    }
-    const newState = {
-      position: [...newPosition],
-    };
-    if (!type) {
-      newState.positionId = '';
-    }
-    this.setState({
-      ...newState,
-    });
-  };
-
   handleSubmit = (params) => {
     const { dispatch } = this.props;
     dispatch({
@@ -169,7 +150,7 @@ export default class extends PureComponent {
               {getFieldDecorator('brand_id', {
                 initialValue: editStaff.brand_id,
               })(
-                <Select name="brand_id" placeholer="请选择" onChange={this.handleChange}>
+                <Select name="brand_id" placeholer="请选择">
                   {brand && brand.map((item) => {
                     return (
                       <Option key={item.id} value={item.id}>{item.name}</Option>
