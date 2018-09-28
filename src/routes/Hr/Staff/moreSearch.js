@@ -43,7 +43,7 @@ class Search extends PureComponent {
     const oldKey = ['household_province_id', 'household_city_id', 'household_county_id'];
     let info = {};
     if (formValue.id_card_number.length > 0) {
-      info = { id_card_number: { like: formValue.id_card_number } };
+      info = { 'info.id_card_number': { like: formValue.id_card_number } };
     }
 
     if (formValue.shop.length > 0) {
@@ -51,12 +51,12 @@ class Search extends PureComponent {
     }
 
     formValue.household.forEach((item, key) => {
-      info[oldKey[key]] = item;
+      info[`info.${oldKey[key]}`] = item;
     });
 
     const nowKey = ['living_province_id', 'living_city_id', 'living_county_id'];
     formValue.living.forEach((item, key) => {
-      info[nowKey[key]] = item;
+      info[`info.${nowKey[key]}`] = item;
     });
     const filter = makerFilters({ filters: { ...info } });
     this.props.search(filter);

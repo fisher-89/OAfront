@@ -15,11 +15,10 @@ export default (SearchComponent) => {
 
     moreSearch = (formFilter) => {
       const newFilter = this.props.defaultFilter;
-      newFilter.filters = {
-        ...this.props.defaultFilter.filters,
-        ...formFilter,
-      };
-      this.setState({ formFilter }, () => this.props.fetchDataSource(newFilter));
+      this.setState({ formFilter }, () => {
+        this.props.fetchDataSource(newFilter);
+        this.props.handleVisibleChange(false);
+      });
     };
 
     render() {

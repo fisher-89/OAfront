@@ -65,11 +65,11 @@ export default class extends PureComponent {
   };
 
   fetchStaff = (param) => {
-    const { dispatch } = this.props;
     this.searchFilter = param;
+    const { dispatch } = this.props;
     if (this.moreSearch) {
-      this.searchFilter.filters = {
-        ...param.filters,
+      this.searchFilter = {
+        ...param,
         ...this.moreSearch.state.formFilter,
       };
     }
