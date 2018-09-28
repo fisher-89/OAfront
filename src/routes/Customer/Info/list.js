@@ -173,7 +173,7 @@ export default class extends PureComponent {
             this.props.history.push('/client/customer/list/add');
           }}
         >
-          客户
+          添加客户
         </Button>
       ));
     }

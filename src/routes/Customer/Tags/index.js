@@ -1,9 +1,10 @@
 import React from 'react';
 import { Card, Button, Divider } from 'antd';
-import store from './store/store';
 import TagForm from './form';
-import OATable from '../../../components/OATable';
 import TagType from './Type';
+import store from './store/store';
+import OATable from '../../../components/OATable';
+import { customerAuthority } from '../../../utils/utils';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 
 @store(['fetchTagsType', 'fetchTags', 'deleted'])
@@ -85,9 +86,11 @@ export default class extends React.PureComponent {
       <PageHeaderLayout>
         <Card bordered={false}>
           <div style={{ display: 'flex' }}>
-            <div style={{ width: 200, marginRight: 40 }}>
-              <TagType />
-            </div>
+            {customerAuthority(180) && (
+              <div style={{ width: 200, marginRight: 40 }}>
+                <TagType />
+              </div>
+            )}
             <div style={{ flexGrow: 1 }}>
               <OATable
                 data={tags}
