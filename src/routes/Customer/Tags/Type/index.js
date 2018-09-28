@@ -1,8 +1,9 @@
 import React from 'react';
-import { Button, Icon, Tooltip, List } from 'antd';
+import { Button, Icon, List } from 'antd';
 import store from '../store/type';
 import TagTypeForm from './form';
 import styles from './index.less';
+import { customerAuthority } from '../../../../utils/utils';
 
 @store(['fetchTagsType', 'deleted'])
 export default class extends React.PureComponent {
@@ -32,11 +33,13 @@ export default class extends React.PureComponent {
       <React.Fragment>
         <Button
           onClick={() => {
+            if (!customerAuthority(180)) return;
             this.setState({ visible: true });
           }}
           icon="plus"
           size="small"
           type="dashed"
+          disabled={!customerAuthority(180)}
           style={{ color: '#888', width: 200, marginBottom: 10 }}
         >
           标签类型
@@ -51,8 +54,8 @@ export default class extends React.PureComponent {
                 <div className={styles.tags}>
                   <span className={styles.icon} style={{ backgroundColor: item.color }} />
                   <span>{item.name}</span>
-                  <div style={{ float: 'right' }}>
-                    <Tooltip title="编辑">
+                  {customerAuthority(180) && (
+                    <div style={{ float: 'right' }}>
                       <Icon
                         type="edit"
                         className={styles.edit}
@@ -60,13 +63,13 @@ export default class extends React.PureComponent {
                           this.setState({ visible: true, initialValue: item });
                         }}
                       />
-                    </Tooltip>
-                    <Icon
-                      type="close"
-                      className={styles.edit}
-                      onClick={() => this.handleClose(item)}
-                    />
-                  </div>
+                      <Icon
+                        type="close"
+                        className={styles.edit}
+                        onClick={() => this.handleClose(item)}
+                      />
+                    </div>
+                  )}
                 </div>
               </List.Item>
             );

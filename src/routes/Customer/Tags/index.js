@@ -4,7 +4,6 @@ import TagForm from './form';
 import TagType from './Type';
 import store from './store/store';
 import OATable from '../../../components/OATable';
-import { customerAuthority } from '../../../utils/utils';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 
 @store(['fetchTagsType', 'fetchTags', 'deleted'])
@@ -86,11 +85,9 @@ export default class extends React.PureComponent {
       <PageHeaderLayout>
         <Card bordered={false}>
           <div style={{ display: 'flex' }}>
-            {customerAuthority(180) && (
-              <div style={{ width: 200, marginRight: 40 }}>
-                <TagType />
-              </div>
-            )}
+            <div style={{ width: 200, marginRight: 40 }}>
+              <TagType />
+            </div>
             <div style={{ flexGrow: 1 }}>
               <OATable
                 data={tags}
