@@ -35,20 +35,14 @@ export default class extends PureComponent {
   };
 
   handleTempletChange = (e) => {
-    let data; let name;
     const type = e.target.value;
+    const name = { create: '批量导入', change: '批量变动' };
     const { exportCreate, exportChange } = this.state;
-    if (type === 'create') {
-      name = '批量导入';
-      data = exportCreate;
-    } else {
-      name = '批量变动';
-      data = exportChange;
-    }
-    const ws = XLSX.utils.aoa_to_sheet(data);
+    const data = (type === 'create') ? exportCreate : exportChange;
     const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(data);
     XLSX.utils.book_append_sheet(wb, ws, 'SheetJS');
-    XLSX.writeFile(wb, `${name}.xlsx`);
+    XLSX.writeFile(wb, `${name[type]}.xlsx`);
   }
 
   makeCols = (refstr) => {
