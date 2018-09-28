@@ -1,11 +1,10 @@
 import React from 'react';
 import {
+  Tag,
   Input,
   InputNumber,
 } from 'antd';
-import {
-  SketchPicker,
-} from 'react-color';
+import { CirclePicker } from 'react-color';
 import store from '../store/type';
 import OAForm, { OAModal } from '../../../../components/OAForm';
 
@@ -37,6 +36,12 @@ export default class extends React.PureComponent {
       visible, validatorRequired, validateFields, onCancel,
       form: { getFieldValue, getFieldDecorator, setFieldsValue },
     } = this.props;
+    const color = [
+      '#874E01', '#622A1D', '#003264', '#0032C8', '#320096',
+      '#D68806', '#9D2933', '#006464', '#0064C8', '#640096',
+      '#FAAD15', '#C21F30', '#329632', '#0096C8', '#960096',
+      '#FFC53D', '#F5222D', '#64C800', '#00C8C8', '#C80096',
+    ];
     return (
       <OAModal
         loading={loading}
@@ -55,18 +60,23 @@ export default class extends React.PureComponent {
         </FormItem>
         <FormItem label="颜色" {...formItemLayout} required>
           {getFieldDecorator('color', {
-            initialValue: initialValue.color || '',
+            initialValue: initialValue.color || '#666',
             rules: [validatorRequired],
           })(
             <Input type="hidden" />
           )}
-          <SketchPicker
-            width={250}
-            color={getFieldValue('color') || '#fff'}
+          <CirclePicker
+            width={360}
+            colors={color}
+            circleSpacing={35}
+            color={getFieldValue('color')}
             onChange={({ hex }) => {
               setFieldsValue({ color: hex });
             }}
           />
+          <div style={{ marginTop: 5 }}>
+            预览 : <Tag color={getFieldValue('color') || '#666'}>{getFieldValue('name') || '颜色'}</Tag>
+          </div>
         </FormItem>
         <FormItem label="排序" {...formItemLayout}>
           {getFieldDecorator('sort', {
