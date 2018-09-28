@@ -116,7 +116,7 @@ export default class StaffInfo extends PureComponent {
               {`${data.native_place || ''}`}
             </Description>
             <Description term="钉钉编码">
-              {`${data.dingding || ''}`}
+              {`${data.dingtalk_number || ''}`}
             </Description>
             <Description term="招聘人员">
               {`${data.recruiter_name || ''}`}

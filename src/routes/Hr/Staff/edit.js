@@ -299,8 +299,8 @@ export default class EditStaff extends PureComponent {
                 )}
               </FormItem>
               <FormItem {...formItemLayout} label="执行时间" required>
-                {getFieldDecorator('hired_at', {
-                  initialValue: editStaff.hired_at || '',
+                {getFieldDecorator('operate_at', {
+                  initialValue: editStaff.operate_at || '',
                 })(
                   <DatePicker
                     style={{
@@ -728,6 +728,9 @@ export default class EditStaff extends PureComponent {
                   form={form}
                   name="relatives"
                   initialValue={editStaff.relatives || []}
+                  onChange={(params, index) => {
+                    console.log(params, index);
+                  }}
                 />
               </FormItem>
             </TabPane>

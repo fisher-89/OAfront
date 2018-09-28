@@ -573,6 +573,7 @@ export default class extends PureComponent {
           })}
         </Tabs>
         <EditStaff
+          loading={staffLoading}
           visible={this.state.editVisible}
           editStaff={this.state.editStaff}
           onCancel={() => {
@@ -583,6 +584,7 @@ export default class extends PureComponent {
           }}
         />
         <EditTransfer
+          loading={staffLoading}
           visible={this.state.transferVisible}
           editStaff={this.state.editStaff}
           onCancel={() => {
@@ -593,6 +595,7 @@ export default class extends PureComponent {
           }}
         />
         <EditLeave
+          loading={staffLoading}
           visible={this.state.leaveVisible}
           editStaff={this.state.editStaff}
           onCancel={() => {

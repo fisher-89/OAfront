@@ -8,17 +8,13 @@ import { makePositionData } from '../../../utils/utils';
 import OAForm, { SearchTable, DatePicker, OAModal } from '../../../components/OAForm';
 
 const FormItem = OAForm.Item;
-// const { SearchTable, DatePicker } = OAForm;
 const { Option } = Select;
 
 @OAForm.create()
-@connect(({ brand, department, position, loading }) => ({
+@connect(({ brand, department, position }) => ({
   brand: brand.brand,
-  brandLoading: loading.models.brand,
-  department: department.department,
-  departmentLoading: loading.models.department,
   position: position.position,
-  positionLoading: loading.models.position,
+  department: department.department,
 }))
 
 export default class extends PureComponent {
@@ -41,13 +37,21 @@ export default class extends PureComponent {
 
   handleSubmit = (params) => {
     const { dispatch } = this.props;
-    const response = { ...params };
     dispatch({
       type: 'staffs/editStaff',
-      payload: response,
+      payload: params,
       onError: this.handleError,
       onSuccess: this.handleSuccess,
     });
+  };
+
+  handleError = (err) => {
+    const { onError } = this.props;
+    onError(err);
+  };
+
+  handleSuccess = () => {
+    this.props.onCancel();
   };
 
   transferOut = () => {
@@ -63,7 +67,7 @@ export default class extends PureComponent {
           position_id: 1,
           department_id: 1,
           operation_remark: '人员调离',
-          operate_at: moment().format('YY-MM-DD'),
+          operate_at: moment().format('YYYY-MM-DD'),
         });
       },
       onCancel: () => {},
@@ -72,11 +76,11 @@ export default class extends PureComponent {
   render() {
     const {
       brand,
+      loading,
       visible,
       position,
       editStaff,
       department,
-      brandLoading,
       validateFields,
       form: { getFieldDecorator, setFieldsValue },
     } = this.props;
@@ -99,12 +103,22 @@ export default class extends PureComponent {
         title="人事变动"
         visible={visible}
         style={{ top: 30 }}
-        loading={brandLoading}
+        loading={loading}
         onCancel={() => this.props.onCancel()}
         onSubmit={validateFields(this.handleSubmit)}
       >
         <Row>
           <Col {...fieldsBoxLayout}>
+            {getFieldDecorator('staff_sn', {
+                initialValue: editStaff.staff_sn || '',
+              })(
+                <Input type="hidden" />
+            )}
+            {getFieldDecorator('operation_type', {
+                initialValue: 'transfer',
+              })(
+                <Input type="hidden" />
+            )}
             <FormItem label="姓名" {...formItemLayout}>
               {getFieldDecorator('realname', {
                 initialValue: editStaff.realname,
@@ -202,16 +216,31 @@ export default class extends PureComponent {
             </FormItem>
           </Col>
           <Col {...fieldsBoxLayout}>
-            <FormItem label="执行时间" name="operate_at" required {...formItemLayout}>
+            <FormItem {...formItemLayout} label="执行时间" required>
               {getFieldDecorator('operate_at', {
                 initialValue: editStaff.operate_at || '',
               })(
-                <DatePicker />
+                <DatePicker
+                  style={{
+                    width: '100%',
+                  }}
+                />
               )}
             </FormItem>
           </Col>
         </Row>
-        <FormItem label="操作说明" {...formItemLayout} name="operation_remark">
+        <FormItem
+          {...{
+            labelCol: {
+              span: 4,
+            },
+            wrapperCol: {
+              span: 18,
+            },
+          }
+          }
+          label="操作说明"
+        >
           {getFieldDecorator('operation_remark', {
             initialValue: editStaff.operation_remark || '',
           })(
