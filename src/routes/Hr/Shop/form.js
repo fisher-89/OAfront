@@ -84,7 +84,7 @@ export default class extends PureComponent {
     };
     return (
       <OAModal
-        title="店铺表单"
+        title={info.id ? '编辑店铺' : '添加店铺'}
         visible={visible}
         loading={this.props.loading}
         onSubmit={validateFields(this.handleSubmit)}

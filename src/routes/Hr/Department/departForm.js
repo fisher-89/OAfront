@@ -63,7 +63,7 @@ export default class extends PureComponent {
     return (
       <OAModal
         form={form}
-        title="部门表单"
+        title={initialValue.id ? '编辑部门' : '添加部门'}
         visible={visible}
         onSubmit={validateFields(this.handleSubmit)}
         onCancel={() => onCancel(false)}

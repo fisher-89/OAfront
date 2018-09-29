@@ -123,7 +123,7 @@ export default class EditStaff extends PureComponent {
     return (
       <OAModal
         width={600}
-        title="员工表单"
+        title={editStaff.staff_sn ? '编辑员工' : '添加员工'}
         visible={visible}
         style={{ top: 30 }}
         loading={staffLoading}

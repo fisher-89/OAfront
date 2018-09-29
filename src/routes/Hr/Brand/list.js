@@ -63,7 +63,7 @@ export default class extends PureComponent {
         searcher: true,
       },
       {
-        title: '职位名称',
+        title: '名称',
         dataIndex: 'name',
         searcher: true,
       },

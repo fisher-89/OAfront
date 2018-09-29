@@ -51,7 +51,7 @@ export default class extends PureComponent {
 
     return (
       <OAModal
-        title="职位表单"
+        title={initialValue.id ? '编辑职位' : '添加职位'}
         visible={visible}
         loading={this.props.loading}
         onSubmit={validateFields(this.handleSubmit)}

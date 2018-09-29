@@ -62,7 +62,7 @@ export default class extends PureComponent {
 
     return (
       <OAModal
-        title="权限表单"
+        title={initialValue.id ? '编辑权限' : '添加权限'}
         visible={visible}
         loading={this.props.loading}
         onSubmit={validateFields(this.handleSubmit)}

@@ -48,7 +48,7 @@ export default class extends PureComponent {
 
     return (
       <OAModal
-        title="品牌表单"
+        title={initialValue.id ? '编辑品牌' : '添加品牌'}
         visible={visible}
         loading={this.props.loading}
         onSubmit={validateFields(this.handleSubmit)}
