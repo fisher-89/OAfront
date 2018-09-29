@@ -4,14 +4,11 @@ import request from '../utils/request';
 export async function fetchFlow(params, id) {
   return request(`/api/workflow/flow/${id}`, {
     method: 'GET',
-    body: {
-      ...params,
-    },
   });
 }
 
 export async function addFlow(params) {
-  return request('/api/workflow/flow', {
+  return request('/api/workflow/flow/', {
     method: 'POST',
     body: {
       ...params,
