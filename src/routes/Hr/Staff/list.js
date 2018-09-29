@@ -241,11 +241,15 @@ export default class extends PureComponent {
         </Link>
       ),
       58: (
-        <Link to="/" key="58">
-          <Tooltip title="再入职" mouseLeaveDelay={0}>
+        <Tooltip title="再入职" key="again-entry" mouseLeaveDelay={0}>
+          <a
+            onClick={() => {
+              this.showEditStaff(rowData);
+            }}
+          >
             <Icon type="user-add" style={{ fontSize: '18px' }} />
-          </Tooltip>
-        </Link>
+          </a>
+        </Tooltip>
       ),
       82: (
         <Tooltip title="编辑" mouseLeaveDelay={0} key="edit">
