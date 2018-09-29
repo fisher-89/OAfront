@@ -409,18 +409,18 @@ export default class Flow extends React.PureComponent {
       return false;
     }
     const { formData, flowId } = this.state;
-    const { dispatch } = this.props;
+    const { dispatch, onError } = this.props;
     dispatch({
       type: 'workflow/editFlow',
       payload: { ...formData, id: flowId },
       onSuccess: () => {
         this.props.dispatch(routerRedux.push('/workflow/flow'));
       },
-      onError: this.handleValidateErrors,
+      onError: error => onError(error, this.handleValidateErrors),
     });
   };
 
-  handleValidateErrors = (err) => {
+  handleValidateErrors = (_, err) => {
     const { panes, flowCharts } = this.state;
     const errorData = [];
     Object.keys(err).forEach((i) => {
