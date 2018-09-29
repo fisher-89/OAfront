@@ -136,7 +136,14 @@ export default class extends PureComponent {
         title: '操作',
         render: (rowData) => {
           return [
-            <a key="approve" onClick={this.confirmApprove}> 通过 </a>,
+            <a
+              key="approve"
+              onClick={() => {
+                this.confirmApprove(rowData);
+              }}
+            >
+              通过
+            </a>,
             <Divider key="devider1" type="vertical" />,
             <a key="showDetail" onClick={() => showDetail(rowData)}>查看详情</a>,
             <Divider key="devider2" type="vertical" />,
@@ -151,7 +158,7 @@ export default class extends PureComponent {
     return columnsLeftFixed.concat(visible ? [] : columnsMiddle).concat(columnsRight);
   }
 
-  confirmApprove = () => {
+  confirmApprove = (rowData) => {
     this.approveRemark = '';
     Modal.confirm({
       title: '确认通过？',
