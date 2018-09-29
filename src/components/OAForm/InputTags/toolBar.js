@@ -48,33 +48,13 @@ export default class ToolBar extends PureComponent {
       type: 'workflow/fetchVariate',
       payload: {},
     });
+    this.initStateConent(this.props);
   }
 
   componentWillReceiveProps(newProps) {
-    const { rules, rules: { system, symbol, formFields } } = this.state;
+    const { rules, rules: { formFields } } = this.state;
     if (newProps.content !== this.props.content) {
-      const { content: { variate, calculation } } = newProps;
-      const sysContent = {};
-      variate.forEach((item) => {
-        sysContent[`{{${item.key}}}`] = item.name;
-      });
-      const symContent = {};
-      calculation.forEach((item) => {
-        symContent[`{<${item.id}>}`] = item.code;
-      });
-      this.setState({
-        rules: {
-          ...rules,
-          system: {
-            ...system,
-            content: sysContent,
-          },
-          symbol: {
-            ...symbol,
-            content: symContent,
-          },
-        },
-      }, this.setPropsContent);
+      this.initStateConent(newProps);
     }
     if (newProps.fields !== this.props.fields) {
       const { fields } = newProps;
@@ -94,6 +74,7 @@ export default class ToolBar extends PureComponent {
     }
   }
 
+
   setPropsContent = () => {
     const { rules } = this.state;
     let contents = {};
@@ -105,6 +86,35 @@ export default class ToolBar extends PureComponent {
     });
     this.props.makeContents(contents);
   };
+
+  initStateConent = (newProps) => {
+    const { content: { variate, calculation } } = newProps;
+    if (!variate || !calculation) {
+      return;
+    }
+    const { rules, rules: { system, symbol } } = this.state;
+    const sysContent = {};
+    variate.forEach((item) => {
+      sysContent[`{{${item.key}}}`] = item.name;
+    });
+    const symContent = {};
+    calculation.forEach((item) => {
+      symContent[`{<${item.id}>}`] = item.code;
+    });
+    this.setState({
+      rules: {
+        ...rules,
+        system: {
+          ...system,
+          content: sysContent,
+        },
+        symbol: {
+          ...symbol,
+          content: symContent,
+        },
+      },
+    }, this.setPropsContent);
+  }
 
   render() {
     const { rules } = this.state;

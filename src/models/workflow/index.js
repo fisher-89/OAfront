@@ -18,7 +18,7 @@ export default {
     formTypeDetails: [],
     validator: [],
     validatorDetails: {},
-    variate: [],
+    variate: {},
   },
   effects: {
     ...formEffects,

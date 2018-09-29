@@ -3,14 +3,18 @@ import { fetchVariate } from '../../services/workflow';
 const store = 'variate';
 
 export default {
-  * fetchVariate(_, { call, put }) {
-    const response = yield call(fetchVariate);
-    yield put({
-      type: 'save',
-      payload: {
-        store,
-        data: response,
-      },
-    });
+  * fetchVariate({ payload }, { call, put, select }) {
+    let response = yield select(model => model.workflow[store]);
+    const { update } = payload || {};
+    if (!Object.keys(response).length || update) {
+      response = yield call(fetchVariate);
+      yield put({
+        type: 'save',
+        payload: {
+          store,
+          data: response,
+        },
+      });
+    }
   },
 };
