@@ -28,7 +28,7 @@ export default class extends React.PureComponent {
       {
         title: '排序',
         sorter: true,
-        dataIndex: 'is_task',
+        dataIndex: 'sort',
       },
       {
         title: '操作',

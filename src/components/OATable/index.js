@@ -97,7 +97,7 @@ class OATable extends PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { rowSelection, multiOperator } = nextProps;
+    const { rowSelection, multiOperator, filters } = nextProps;
     if (
       multiOperator && multiOperator.length > 0
       &&
@@ -106,6 +106,15 @@ class OATable extends PureComponent {
     ) {
       const { selectedRowKeys, selectedRows } = rowSelection;
       this.setState({ selectedRowKeys, selectedRows });
+    }
+    if (filters !== this.props.filters) {
+      const thisFiltersKey = { ...this.state.filters };
+      Object.keys(filters).forEach((filter) => {
+        thisFiltersKey[filters] = filters[filter];
+      });
+      if (JSON.stringify(thisFiltersKey) !== JSON.stringify(this.state.filters)) {
+        this.fetchTableDataSource();
+      }
     }
   }
 
