@@ -203,3 +203,11 @@ export async function deleteApiConfig(id) {
     method: 'DELETE',
   });
 }
+
+
+export async function testApiConfig(params) {
+  return request('/api/workflow/check-oa-api', {
+    method: 'POST',
+    body: params,
+  });
+}

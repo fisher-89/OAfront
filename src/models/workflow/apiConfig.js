@@ -1,8 +1,21 @@
-import { fetchApiConfig, addApiConfig, editApiConfig, deleteApiConfig } from '../../services/workflow';
+import {
+  fetchApiConfig,
+  addApiConfig,
+  editApiConfig,
+  deleteApiConfig,
+  testApiConfig,
+} from '../../services/workflow';
 
 const store = 'apiConfig';
 
 export default {
+  *testApiConfig({ payload, onSuccess }, { call }) {
+    try {
+      const params = { ...payload };
+      const response = yield call(testApiConfig, params);
+      onSuccess(response);
+    } catch (e) { return e; }
+  },
   * fetchApiConfig({ payload }, { call, put }) {
     try {
       const params = {

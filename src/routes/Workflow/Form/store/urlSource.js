@@ -11,6 +11,7 @@ export default type => (Compoent) => {
       fetchUrlSoucre: loading.effects['workflow/fetchApiConfig'],
       submit: (
         loading.effects['workflow/addApiConfig'] ||
+        loading.effects['workflow/testApiConfig'] ||
         loading.effects['workflow/editApiConfig']
       ),
     },
@@ -19,6 +20,16 @@ export default type => (Compoent) => {
     fetchUrlSoucre = (params) => {
       const { dispatch } = this.props;
       dispatch({ type: 'workflow/fetchApiConfig', payload: params });
+    }
+
+    testUri = (url, onError, onSuccess) => {
+      const { dispatch } = this.props;
+      dispatch({
+        type: 'workflow/testApiConfig',
+        payload: { url },
+        onSuccess,
+        onError,
+      });
     }
 
     deleted = (id) => {
