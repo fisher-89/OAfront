@@ -3,6 +3,7 @@ import {
   addDepartment,
   editDepartment,
   deleteDepartment,
+  sortDepartment,
 } from '../../services/department';
 
 const store = 'department';
@@ -68,6 +69,25 @@ export default {
           },
         });
         onSuccess(response);
+      }
+    } catch (error) {
+      return error;
+    }
+  },
+  * sortDepartment({ payload, onError }, { call, put }) {
+    try {
+      const params = { ...payload };
+      const response = yield call(sortDepartment, params);
+      if (response.errors && onError) {
+        onError(response.errors);
+      } else {
+        yield put({
+          type: 'save',
+          payload: {
+            store,
+            data: response,
+          },
+        });
       }
     } catch (error) {
       return error;

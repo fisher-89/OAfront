@@ -82,7 +82,7 @@ export default class extends PureComponent {
     this.undotTreeData(newTree, newDataSource);
     const { dataSource, dispatch } = this.props;
     dispatch({
-      type: 'point/sorterType',
+      type: 'department/sortDepartment',
       payload: {
         old_data: dataSource,
         new_data: newDataSource,
