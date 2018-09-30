@@ -33,3 +33,10 @@ export async function fetchTreeDepart(params) {
     body: params,
   });
 }
+
+export async function sortDepartment(params) {
+  return request('/api/department/sort', {
+    method: 'PATCH',
+    body: params,
+  });
+}
