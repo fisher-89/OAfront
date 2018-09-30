@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Input,
-  Switch,
   InputNumber,
 } from 'antd';
 import store from '../store/type';
@@ -41,6 +40,7 @@ export default class extends React.PureComponent {
         visible={visible}
         title="事件类型"
         onCancel={() => onCancel(false)}
+        actionType={initialValue.id !== undefined}
         onSubmit={validateFields(this.handleSubmit)}
       >
         <FormItem label="名称" {...formItemLayout} required>
@@ -49,14 +49,6 @@ export default class extends React.PureComponent {
             rules: [validatorRequired],
           })(
             <Input placeholder="请输入" />
-          )}
-        </FormItem>
-        <FormItem label="定时任务" {...formItemLayout} >
-          {getFieldDecorator('is_task', {
-            initialValue: initialValue.is_task === 1 || false,
-            valuePropName: 'checked',
-          })(
-            <Switch />
           )}
         </FormItem>
         <FormItem label="排序" {...formItemLayout}>
