@@ -36,11 +36,26 @@ export default class extends PureComponent {
     const { editable = [], visible = [] } = staffBrandsAuth;
     const columns = [
       {
-        // width: 80,
+        width: 120,
         title: '序号',
         align: 'center',
         dataIndex: 'id',
         sorter: true,
+        defaultSortOrder: 'desced',
+      },
+      {
+        width: 240,
+        searcher: true,
+        title: '标题',
+        dataIndex: 'title',
+      },
+      {
+        width: 300,
+        align: 'center',
+        title: '合作品牌',
+        dataIndex: 'brands.brand_id',
+        filters: getFiltersData(brand),
+        render: (_, record) => OATable.analysisColumn(brand, record.brands, false),
       },
     ];
     const columns1 = [
@@ -53,21 +68,6 @@ export default class extends PureComponent {
       },
     ];
     const columns2 = [
-      {
-        width: 300,
-        align: 'center',
-        title: '合作品牌',
-        dataIndex: 'brands.brand_id',
-        filters: getFiltersData(brand),
-        render: (_, record) => OATable.analysisColumn(brand, record.brands, false),
-      },
-      {
-        // width: 240,
-        searcher: true,
-        title: '标题',
-        align: 'center',
-        dataIndex: 'title',
-      },
       {
         // width: 160,
         align: 'center',
@@ -113,18 +113,17 @@ export default class extends PureComponent {
               {customerAuthority(182) && (
                 <React.Fragment>
                   <Divider type="vertical" />
-                  <Popconfirm
-                    title="是否删除客户的事件?"
-                    onConfirm={() => {
-                      if (editAble) {
-                        message.error('对不起，暂无删除权限');
-                        return;
-                      }
-                      deleted(record.id);
-                    }}
-                  >
-                    <a style={editStyle}>删除</a>
-                  </Popconfirm>
+                  {editAble ? (
+                    <a style={editStyle} onClick={() => message.error('对不起，暂无删除权限')}>删除</a>
+                  ) :
+                    (
+                      <Popconfirm
+                        title="是否删除客户的事件?"
+                        onConfirm={() => deleted(record.id)}
+                      >
+                        <a style={editStyle}>删除</a>
+                      </Popconfirm>
+                    )}
                 </React.Fragment>
               )}
             </Fragment>

@@ -3,14 +3,14 @@ import { Card, Badge, Tooltip, Icon } from 'antd';
 import store from './store/store';
 import CustomerLogInfo from './customerLogInfo';
 import OATable from '../../../components/OATable';
-import { getFiltersData } from '../../../utils/utils';
+import { getFiltersData, customerAuthority } from '../../../utils/utils';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 
 const statusFilters = [
   { value: 1, text: '可还原' },
   { value: 2, text: '已还原' },
   { value: 0, text: '锁定' },
-  { value: -1, text: '不可还原' },
+  { value: -1, text: '删除' },
 ];
 
 @store(['fetchClientLogs', 'fetchBrand'])
@@ -99,9 +99,10 @@ export default class extends PureComponent {
           } else if (key === 1) {
             status = <Badge status="success" text="可还原" />;
           } else if (key === -1) {
+            const title = !customerAuthority(191) ? '可还原' : '删除数据不可还原，请联系管理员！';
             status = (
-              <Tooltip title="已删除数据不可被还原" placement="topLeft" arrowPointAtCenter>
-                <Badge status="error" text="不可还原" />&nbsp;<Icon type="question-circle" />
+              <Tooltip title={title} placement="topLeft" arrowPointAtCenter>
+                <Badge status="error" text="删除" />&nbsp;<Icon type="question-circle" />
               </Tooltip>
             );
           }

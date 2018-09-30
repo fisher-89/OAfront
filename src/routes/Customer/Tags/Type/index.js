@@ -3,6 +3,7 @@ import { Button, Icon, List } from 'antd';
 import store from '../store/type';
 import TagTypeForm from './form';
 import styles from './index.less';
+import Ellipsis from '../../../../components/Ellipsis';
 import { customerAuthority } from '../../../../utils/utils';
 
 @store(['fetchTagsType', 'deleted'])
@@ -53,7 +54,7 @@ export default class extends React.PureComponent {
               <List.Item>
                 <div className={styles.tags}>
                   <span className={styles.icon} style={{ backgroundColor: item.color }} />
-                  <span>{item.name}</span>
+                  <Ellipsis tooltip length={6} style={{ display: 'inline' }}>{item.name}</Ellipsis>
                   {customerAuthority(180) && (
                     <div style={{ float: 'right' }}>
                       <Icon

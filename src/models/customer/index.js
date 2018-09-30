@@ -47,5 +47,17 @@ export default {
         [store]: newData,
       };
     },
+    deletedLog(state, action) {
+      const { store, id, clientId } = action.payload;
+      const newData = state[store][clientId];
+      const result = newData.filter(item => item.id !== id);
+      return {
+        ...state,
+        [store]: {
+          ...state[store],
+          [clientId]: result,
+        },
+      };
+    },
   },
 };

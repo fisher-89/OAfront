@@ -60,7 +60,7 @@ export default class extends React.PureComponent {
         </FormItem>
         <FormItem label="颜色" {...formItemLayout} required>
           {getFieldDecorator('color', {
-            initialValue: initialValue.color || '#666',
+            initialValue: initialValue.color || '#874E01',
             rules: [validatorRequired],
           })(
             <Input type="hidden" />
@@ -75,7 +75,7 @@ export default class extends React.PureComponent {
             }}
           />
           <div style={{ marginTop: 5 }}>
-            预览 : <Tag color={getFieldValue('color') || '#666'}>{getFieldValue('name') || '颜色'}</Tag>
+            预览 : <Tag color={getFieldValue('color') || '#874E01'}>{getFieldValue('name') || '颜色'}</Tag>
           </div>
         </FormItem>
         <FormItem label="排序" {...formItemLayout}>

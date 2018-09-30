@@ -68,10 +68,15 @@ export default {
   * deleteNotes({ payload, onError, onSuccess }, { call, put }) {
     try {
       const params = { ...payload };
-      const { id } = params;
-      delete params.id;
+      const { id, clientId } = params;
       const response = yield call(deleteNotes, id);
       if (response.errors) { onError(response.errors); return; }
+      if (clientId) {
+        yield put({
+          type: 'deletedLog',
+          payload: { id, store, clientId },
+        });
+      }
       yield put({
         type: 'delete',
         payload: { id, store, data: response },

@@ -6,6 +6,7 @@ import {
   Input,
   Button,
   Select,
+  message,
 } from 'antd';
 import moment from 'moment';
 import OAForm, {
@@ -138,6 +139,9 @@ export default class extends React.PureComponent {
       this.uploadSuccess(file);
     }
     if (!file.error && file.status === 'removed') this.removeFile(file.uid);
+    if (file.status === 'error' && file.response) {
+      message.error(file.response.errors.file.join('\n'));
+    }
   }
 
   handleSubmit = (values, onError) => {
@@ -194,7 +198,7 @@ export default class extends React.PureComponent {
           <Col {...colSpan}>
             <FormItem label="发生时间" {...colFormItemLayout1} required>
               {getFieldDecorator('took_place_at', {
-                initialValue: initialValue.took_place_at,
+                initialValue: initialValue.took_place_at || moment().format('YYYY-MM-DD'),
                 rules: [validatorRequired],
               })(
                 <DatePicker

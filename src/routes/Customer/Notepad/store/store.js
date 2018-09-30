@@ -49,10 +49,10 @@ export default type => (Compoent) => {
     }
 
     deleted = (id) => {
-      const { dispatch } = this.props;
+      const { dispatch, clientId } = this.props;
       dispatch({
         type: 'customer/deleteNotes',
-        payload: { id },
+        payload: { id, clientId },
       });
     }
 

@@ -121,35 +121,28 @@ export default class extends PureComponent {
               {customerAuthority(187) && (
                 <React.Fragment>
                   <Divider type="vertical" />
-                  <a
-                    style={editStyle}
-                    onClick={() => {
-                      if (!editAble) {
-                        onClick('edit', rowData.id);
-                      } else {
-                        message.error('对不起，暂无客户的修改权限');
-                      }
-                    }}
-                  >
-                    编辑
-                  </a>
+                  {editAble ? (
+                    <a style={editStyle} onClick={() => message.error('对不起，暂无客户的修改权限')}>编辑</a>
+                  ) :
+                    (
+                      <a style={editStyle} onClick={() => onClick('edit', rowData.id)}>编辑</a>
+                    )}
                 </React.Fragment>
               )}
               {customerAuthority(178) && (
                 <React.Fragment>
                   <Divider type="vertical" />
-                  <Popconfirm
-                    title="是否删除客户及相关事件?"
-                    onConfirm={() => {
-                      if (!editAble) {
-                        deleted(rowData.id);
-                      } else {
-                        message.error('对不起，暂无客户的修改权限');
-                      }
-                    }}
-                  >
-                    <a style={editStyle}>删除</a>
-                  </Popconfirm>
+                  {editAble ? (
+                    <a style={editStyle} onClick={() => message.error('对不起，暂无删除权限')}>删除</a>
+                  ) :
+                    (
+                      <Popconfirm
+                        title="是否删除客户及相关事件?"
+                        onConfirm={() => deleted(rowData.id)}
+                      >
+                        <a style={editStyle}>删除</a>
+                      </Popconfirm>
+                    )}
                 </React.Fragment>
               )}
             </Fragment>

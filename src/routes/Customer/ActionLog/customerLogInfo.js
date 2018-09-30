@@ -64,8 +64,8 @@ export default class extends React.PureComponent {
         key: index,
         name: key,
         create_at: initialValue.created_at,
-        dirty,
-        original,
+        dirty: dirty || '(空)',
+        original: original || '(空)',
       });
     });
     let disabled = true;
@@ -82,6 +82,7 @@ export default class extends React.PureComponent {
       >
         <div style={{ marginBottom: 40 }}>
           <OATable
+            sync={false}
             columns={columns}
             dataSource={data}
             pagination={false}
