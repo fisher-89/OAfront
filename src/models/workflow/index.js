@@ -4,6 +4,7 @@ import formEffects from './form';
 import formTypeEffects from './formType';
 import flowEffects from './flow';
 import flowTypeEffects from './flowType';
+import apiConfigEffects from './apiConfig';
 import defaultReducers from '../reducers/default';
 
 export default {
@@ -19,6 +20,7 @@ export default {
     validator: [],
     validatorDetails: {},
     variate: {},
+    apiConfig: [],
   },
   effects: {
     ...formEffects,
@@ -27,8 +29,10 @@ export default {
     ...flowEffects,
     ...variateEffects,
     ...flowTypeEffects,
+    ...apiConfigEffects,
   },
   reducers: {
     ...defaultReducers,
   },
 };
+

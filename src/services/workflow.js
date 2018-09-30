@@ -177,3 +177,29 @@ export async function deleteValidator(id) {
   });
 }
 
+export async function fetchApiConfig(id) {
+  return request(`/api/workflow/field-api-configuration/${id}`, {
+    method: 'GET',
+  });
+}
+
+export async function addApiConfig(params) {
+  return request('/api/workflow/field-api-configuration', {
+    method: 'POST',
+    body: params,
+  });
+}
+
+
+export async function editApiConfig(params, id) {
+  return request(`/api/workflow/field-api-configuration/${id}`, {
+    method: 'PUT',
+    body: params,
+  });
+}
+
+export async function deleteApiConfig(id) {
+  return request(`/api/workflow/field-api-configuration/${id}`, {
+    method: 'DELETE',
+  });
+}

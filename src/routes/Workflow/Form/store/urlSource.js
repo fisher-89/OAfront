@@ -4,27 +4,36 @@ import { makeProps } from '../../../../utils/utils';
 
 
 export default type => (Compoent) => {
-  @connect(({ loading }) => ({
+  @connect(({ workflow, loading }) => ({
+    list: workflow.apiConfig,
     loading: {
-      deleted: loading.effects['form/delete'],
-      fetchUrlSoucre: loading.effects['form/fetch'],
+      deleted: loading.effects['workflow/deleteApiConfig'],
+      fetchUrlSoucre: loading.effects['workflow/fetchApiConfig'],
       submit: (
-        loading.effects['form/add'] ||
-        loading.effects['form/edit']
+        loading.effects['workflow/addApiConfig'] ||
+        loading.effects['workflow/editApiConfig']
       ),
     },
   }))
   class NewCompoent extends React.PureComponent {
     fetchUrlSoucre = (params) => {
-      console.log(params);
+      const { dispatch } = this.props;
+      dispatch({ type: 'workflow/fetchApiConfig', payload: params });
     }
 
-    deleted = (id, onError, onSuccess) => {
-      console.log(id, onError, onSuccess);
+    deleted = (id) => {
+      const { dispatch } = this.props;
+      dispatch({ type: 'workflow/deleteApiConfig', payload: { id } });
     }
 
     submit = (values, onError, onSuccess) => {
-      console.log(values, onError, onSuccess);
+      const { dispatch } = this.props;
+      dispatch({
+        type: values.id ? 'workflow/editApiConfig' : 'workflow/addApiConfig',
+        payload: values,
+        onError,
+        onSuccess,
+      });
     }
 
     render() {

@@ -13,9 +13,18 @@ const fieldsItemLayout = {
 @store('submit')
 @OAForm.create()
 export default class extends PureComponent {
+  handleSubmit = (values, onError) => {
+    const { submit, onCancel, initialValue } = this.props;
+    submit({
+      ...initialValue,
+      ...values,
+    }, onError, () => {
+      onCancel();
+    });
+  }
+
   render() {
     const {
-      submit,
       loading,
       visible,
       onCancel,
@@ -30,8 +39,9 @@ export default class extends PureComponent {
         title="接口配置"
         visible={visible}
         loading={loading}
-        onSubmit={validateFields(submit)}
         onCancel={onCancel}
+        onSubmit={validateFields(this.handleSubmit)}
+        actionType={initialValue.id !== undefined}
       >
         <FormItem label="名称" {...fieldsItemLayout} required>
           {getFieldDecorator('name', {

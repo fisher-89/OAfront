@@ -6,7 +6,7 @@ import {
 import store from '../store/urlSource';
 import SourceForm from './form';
 import OATable from '../../../../components/OATable';
-@store()
+@store(['fetchUrlSoucre', 'deleted'])
 export default class List extends PureComponent {
   state = {
     initialValue: {},
@@ -35,12 +35,13 @@ export default class List extends PureComponent {
 
   render() {
     const { columns } = this;
-    const { loading } = this.props;
+    const { loading, fetchUrlSoucre, list } = this.props;
     const { visible, initialValue } = this.state;
     const extraOperator = [
       <Button
-        type="primary"
+        key="plus"
         icon="plus"
+        type="primary"
         onClick={() => {
           this.setState({ visible: true });
         }}
@@ -51,12 +52,11 @@ export default class List extends PureComponent {
     return (
       <React.Fragment>
         <OATable
-          data={[]}
-          total={0}
+          data={list}
           columns={columns}
           loading={loading}
           extraOperator={extraOperator}
-          fetchDataSource={this.fetchFormType}
+          fetchDataSource={fetchUrlSoucre}
         />
         <SourceForm
           visible={visible}
