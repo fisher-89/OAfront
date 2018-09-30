@@ -41,10 +41,11 @@ export default class extends React.PureComponent {
     const visibles = (initialValue.visibles || []).map(item => `${item}`);
     return (
       <OAModal
+        title="客户权限"
         visible={visible}
         loading={loading}
         onCancel={onCancel}
-        title="客户权限表单"
+        actionType={initialValue.id !== undefined}
         onSubmit={validateFields(this.handleSubmit)}
       >
         <FormItem label="分组名称" {...formItemLayout} required>

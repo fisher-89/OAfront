@@ -34,11 +34,12 @@ export default class extends React.PureComponent {
       form: { getFieldDecorator },
       visible, validatorRequired, validateFields, onCancel,
     } = this.props;
+    const title = initialValue.id ? '编辑' : '添加';
     return (
       <OAModal
-        title="客户来源表单"
         loading={loading}
         visible={visible}
+        title={`${title}客户来源`}
         onCancel={() => onCancel(false)}
         onSubmit={validateFields(this.handleSubmit)}
       >

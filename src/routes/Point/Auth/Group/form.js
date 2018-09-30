@@ -47,9 +47,10 @@ export default class extends PureComponent {
     };
     return (
       <OAModal
-        title="权限分组表单"
+        title="权限分组"
         visible={visible}
         loading={this.props.loading}
+        actionType={info.id !== undefined}
         onSubmit={validateFields(this.handleSubmit)}
         onCancel={() => handleVisible(false)}
         afterClose={onCancel}

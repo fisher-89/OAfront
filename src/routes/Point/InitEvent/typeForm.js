@@ -55,8 +55,9 @@ export default class extends PureComponent {
     return (
       <OAModal
         form={form}
-        title="事件类型表单"
+        title="事件类型"
         visible={visible}
+        actionType={initialValue.id !== undefined}
         onSubmit={validateFields(this.handleSubmit)}
         onCancel={() => onCancel(false)}
         afterClose={onClose}

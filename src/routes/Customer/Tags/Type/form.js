@@ -44,10 +44,11 @@ export default class extends React.PureComponent {
     ];
     return (
       <OAModal
+        title="标签类型"
         loading={loading}
         visible={visible}
-        title="标签类型表单"
         onCancel={() => onCancel(false)}
+        actionType={initialValue.id !== undefined}
         onSubmit={validateFields(this.handleSubmit)}
       >
         <FormItem label="名称" {...formItemLayout} required>

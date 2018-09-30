@@ -42,9 +42,10 @@ export default class Form extends PureComponent {
     };
     return (
       <OAModal
-        title="任务表单"
+        title="任务"
         visible={visible}
         loading={this.props.loading}
+        actionType={initialValue.id !== undefined}
         onSubmit={validateFields(this.handleSubmit)}
         onCancel={() => this.props.handleVisible(false)}
       >

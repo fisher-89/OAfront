@@ -58,7 +58,7 @@ export default class extends PureComponent {
 
     return (
       <OAModal
-        title="员工证书表单"
+        title="添加员工证书"
         visible={visible}
         loading={this.props.loading}
         onSubmit={validateFields(this.handleSubmit)}

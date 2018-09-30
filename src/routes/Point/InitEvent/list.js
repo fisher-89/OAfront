@@ -378,10 +378,11 @@ export default class extends PureComponent {
           && (
             <OAModal
               width={600}
-              title="事件表单"
+              title="事件"
               visible={visible}
               style={{ top: 30 }}
               loading={this.props.loading}
+              actionType={editInfo.id !== undefined}
               onCancel={() => this.handleModalVisible()}
               onSubmit={validateFields(this.handleSubmit)}
               afterClose={() => this.setState({ editInfo: {} })}

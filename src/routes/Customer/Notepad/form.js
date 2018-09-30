@@ -136,6 +136,7 @@ export default class extends React.PureComponent {
   fileChange = (data) => {
     const { file } = data;
     if (!file.error && file.status === 'done' && file.response) {
+      message.success('上传成功!!');
       this.uploadSuccess(file);
     }
     if (!file.error && file.status === 'removed') this.removeFile(file.uid);

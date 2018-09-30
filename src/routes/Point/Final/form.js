@@ -58,9 +58,10 @@ export default class extends PureComponent {
     };
     return (
       <OAModal
-        title="终审人表单"
+        title="终审人"
         visible={visible}
         loading={this.props.loading}
+        actionType={initialValue.id !== undefined}
         onSubmit={validateFields(this.handleSubmit)}
         onCancel={() => handleVisible(false)}
         afterClose={onCancel}
