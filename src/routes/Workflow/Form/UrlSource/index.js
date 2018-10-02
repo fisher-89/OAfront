@@ -55,6 +55,7 @@ export default class List extends PureComponent {
           data={list}
           columns={columns}
           loading={loading}
+          serverSide={false}
           extraOperator={extraOperator}
           fetchDataSource={fetchUrlSoucre}
         />

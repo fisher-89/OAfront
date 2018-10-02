@@ -21,6 +21,7 @@ export default {
     validatorDetails: {},
     variate: {},
     apiConfig: [],
+    apiConfigDetails: {},
   },
   effects: {
     ...formEffects,

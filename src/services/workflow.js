@@ -177,8 +177,8 @@ export async function deleteValidator(id) {
   });
 }
 
-export async function fetchApiConfig(id) {
-  return request(`/api/workflow/field-api-configuration/${id}`, {
+export async function fetchApiConfig() {
+  return request('/api/workflow/field-api-configuration', {
     method: 'GET',
   });
 }
@@ -209,5 +209,12 @@ export async function testApiConfig(params) {
   return request('/api/workflow/check-oa-api', {
     method: 'POST',
     body: params,
+  });
+}
+
+
+export async function getApiConfig(id) {
+  return request(`/api/workflow/get-oa-api/${id}`, {
+    method: 'GET',
   });
 }

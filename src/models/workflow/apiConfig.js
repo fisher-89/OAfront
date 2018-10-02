@@ -1,4 +1,5 @@
 import {
+  getApiConfig,
   fetchApiConfig,
   addApiConfig,
   editApiConfig,
@@ -16,19 +17,38 @@ export default {
       onSuccess(response);
     } catch (e) { return e; }
   },
-  * fetchApiConfig({ payload }, { call, put }) {
+  * fetchApiConfig({ payload }, { call, put, select }) {
     try {
-      const params = {
-        ...payload,
-      };
-      const response = yield call(fetchApiConfig, params);
-      yield put({
-        type: 'save',
-        payload: {
-          store,
-          data: response,
-        },
-      });
+      let response = yield select(model => model.workflow[store]);
+      const { update } = payload || {};
+      if (!response.length || update) {
+        response = yield call(fetchApiConfig);
+        yield put({
+          type: 'save',
+          payload: {
+            store,
+            data: response,
+          },
+        });
+      }
+    } catch (e) { return e; }
+  },
+  *getApiConfig({ payload }, { call, put, select }) {
+    try {
+      const { id } = payload;
+      let response = yield select(model => model.workflow.apiConfigDetails[id]);
+      const { update } = payload || {};
+      if (!response || update) {
+        response = yield call(getApiConfig, id);
+        yield put({
+          type: 'save',
+          payload: {
+            id,
+            store,
+            data: response,
+          },
+        });
+      }
     } catch (e) { return e; }
   },
   * addApiConfig({ payload, onSuccess, onError }, { call, put }) {

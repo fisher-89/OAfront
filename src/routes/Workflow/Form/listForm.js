@@ -53,10 +53,11 @@ export const fieldsTypes = [
   { value: 'time', text: '时间（时:分:秒）' },
   { value: 'date', text: '日期（年-月-日）' },
   { value: 'datetime', text: '日期时间（年-月-日 时:分）' },
-  { value: 'select', text: '选择控件' },
-  { value: 'array', text: '多输入控件' },
   { value: 'file', text: '文件' },
   { value: 'region', text: '地区' },
+  { value: 'select', text: '选择控件' },
+  { value: 'array', text: '多输入控件' },
+  { value: 'api', text: '接口控件' },
   { value: 'department', text: '部门控件' },
   { value: 'staff', text: '员工控件' },
   { value: 'shop', text: '店铺控件' },
@@ -77,6 +78,7 @@ export const labelText = {
   validator_id: '验证规则',
   default_value: '默认值',
   description: '输入提示',
+  field_api_configuration_id: '接口',
 };
 
 const resetFields = {
@@ -99,9 +101,10 @@ const timePickerCom = ['time', 'date', 'datetime'];
 
 const defaultValueComponent = [...fieldScale, 'text'];
 
-const fieldIsCheckbox = ['department', 'staff', 'shop', ...fieldOptions];
+const fieldIsCheckbox = ['api', 'department', 'staff', 'shop', ...fieldOptions];
 
 const fieldMinAndMax = [
+  'api',
   'array',
   ...timePickerCom,
   ...fieldIsCheckbox,
@@ -110,23 +113,35 @@ const fieldMinAndMax = [
 
 const requiredCheckBox = [...timePickerCom, ...defaultValueComponent, 'array'];
 
+
+@OAForm.create()
 @connect(({ department, workflow, loading }) => ({
   loading: (
-    loading.effects['workflow/fetchValidator']
+    loading.effects['workflow/fetchValidator'] ||
+    loading.effects['workflow/fetchApiConfig'] ||
+    loading.effects['workflow/getApiConfig']
   ),
+  apiData: workflow.apiConfig,
   department: department.department,
   validator: workflow.validator,
+  apiDataSource: workflow.apiConfigDetails,
 }))
-@OAForm.create()
 export default class extends React.PureComponent {
   componentWillMount() {
+    this.fetchApi();
     this.fetchDepartment();
   }
 
   componentWillReceiveProps(nextProps) {
-    const { error, onError } = nextProps;
+    const { error, onError, initialValue, apiDataSource } = nextProps;
     if (Object.keys(error).length && error !== this.props.error) {
       onError(error, false);
+    }
+    if (initialValue !== this.props.initialValue) {
+      const apiId = initialValue.field_api_configuration_id;
+      if (apiId && !apiDataSource[apiId]) {
+        this.fetchApiSource(apiId);
+      }
     }
   }
 
@@ -294,13 +309,13 @@ export default class extends React.PureComponent {
     } = this.props.form;
     const multiple = this.getMultiple();
     const value = initialValue.default_value || undefined;
+    const mode = multiple ? { mode: 'multiple' } : {};
     if (['date', 'datetime'].indexOf(type) !== -1) {
       return this.getDateComponent(value, type);
     } else if (type === 'time') {
       return this.getTimeComponent(value, type);
     } else if (type === 'select') {
       const { options } = getFieldsValue(['options']);
-      const mode = multiple ? { mode: 'multiple' } : {};
       return getFieldDecorator('default_value', {
         initialValue: value || (multiple ? [] : ''),
         rules: [{
@@ -353,6 +368,26 @@ export default class extends React.PureComponent {
         }],
       })(
         <Address disabled={disabled} />
+      );
+    } else if (type === 'api') {
+      const apiId = getFieldValue('field_api_configuration_id');
+      const dataSource = this.props.apiDataSource[apiId] || [];
+      return getFieldDecorator('default_value', {
+        initialValue: value,
+        rules: [{
+          validator: this.validateFiledsDefaultValue,
+        }],
+      })(
+        <Select
+          {...mode}
+          placeholder="请选择"
+          style={{ width: '100%' }}
+          getPopupContainer={triggerNode => (triggerNode)}
+        >
+          {dataSource.map(item => (
+            <Option key={`${item.value}`}>{item.text}</Option>
+          ))}
+        </Select>
       );
     }
     return null;
@@ -441,6 +476,22 @@ export default class extends React.PureComponent {
     dispatch({ type: 'department/fetchDepartment' });
   };
 
+  fetchApiSource = (id) => {
+    this.handleDefaultValueChange({
+      default_value: undefined,
+    });
+    this.props.dispatch({
+      type: 'workflow/getApiConfig',
+      payload: { id },
+    });
+  }
+
+  fetchApi = () => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'workflow/fetchApiConfig' });
+  };
+
+
   makeFieldBlockCls = (fieldType) => {
     const { getFieldValue } = this.props.form;
     const multiple = getFieldValue('is_checkbox');
@@ -460,21 +511,30 @@ export default class extends React.PureComponent {
     const isCheckboxCls = classNames({
       [styles.disblock]: fieldIsCheckbox.indexOf(fieldType) === -1,
     });
+
+    const fieldApi = classNames({
+      [styles.disblock]: fieldType !== 'api',
+    });
+
     const notDefaultValue = ['file'];
     const defaultCls = classNames({
       [styles.disblock]: !fieldType || notDefaultValue.indexOf(fieldType) !== -1,
     });
     const cardAble = (
+      fieldApi.length &&
       scaleCls.length &&
       optionsCls.length &&
       maxAndMinCls.length &&
-      isCheckboxCls.length && defaultCls.length
+      isCheckboxCls.length &&
+      defaultCls.length
     );
     const cardCls = classNames(styles.cardTitle, {
       [styles.disblock]: cardAble,
     });
+
     return {
       cardCls,
+      fieldApi,
       scaleCls,
       defaultCls,
       optionsCls,
@@ -845,7 +905,13 @@ export default class extends React.PureComponent {
 
   render() {
     const {
-      initialValue, validator, dataSource, form, validateFields, validatorRequired,
+      form,
+      loading,
+      validator,
+      dataSource,
+      initialValue,
+      validateFields,
+      validatorRequired,
     } = this.props;
     const { getFieldDecorator, getFieldValue } = form;
     const fields = dataSource.map((item) => {
@@ -864,6 +930,7 @@ export default class extends React.PureComponent {
 
     const {
       cardCls,
+      fieldApi,
       scaleCls,
       defaultCls,
       optionsCls,
@@ -874,6 +941,7 @@ export default class extends React.PureComponent {
       <OAModal
         width={800}
         {...modalProps}
+        loading={loading}
         onSubmit={validateFields(this.handleOk)}
       >
         <Card className={styles.cardTitle} title="控件信息" bordered={false}>
@@ -986,6 +1054,34 @@ export default class extends React.PureComponent {
                       default_value: undefined,
                     })}
                     />
+                  )
+                }
+              </FormItem>
+            </Col>
+            <Col span={24} className={fieldApi}>
+              <FormItem label={labelValue.field_api_configuration_id} {...fieldsRowItemLayout} required={fieldType === 'api'}>
+                {
+                  getFieldDecorator('field_api_configuration_id', {
+                    initialValue: initialValue.field_api_configuration_id ? `${initialValue.field_api_configuration_id}` : null,
+                    rules: [{
+                      validator: (_, value, callback) => {
+                        if (fieldType === 'api' && !value) {
+                          callback('必填选项!');
+                        }
+                        callback();
+                      },
+                    }],
+                  })(
+                    <Select
+                      placeholder="请选择"
+                      style={{ width: '100%' }}
+                      getPopupContainer={triggerNode => (triggerNode)}
+                      onChange={this.fetchApiSource}
+                    >
+                      {this.props.apiData.map(item => (
+                        <Option key={`${item.id}`}>{item.name}</Option>
+                      ))}
+                    </Select>
                   )
                 }
               </FormItem>

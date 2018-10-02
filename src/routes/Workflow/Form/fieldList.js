@@ -1,10 +1,24 @@
 import React from 'react';
+import { connect } from 'dva';
 import { List } from '../../../components/OAForm';
 import ListForm, { labelText, fieldsTypes } from './listForm';
 import district from '../../../assets/district';
 import { getAvailableText } from './ListFormComponent/RadioSelect';
 
+@connect(({ workflow }) => ({
+  apiDataSource: workflow.apiConfigDetails,
+  apiData: workflow.apiConfig,
+}))
 export default class FieldList extends React.Component {
+  componentDidMount = () => {
+    this.fetchApi();
+  }
+
+  fetchApi = () => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'workflow/fetchApiConfig' });
+  };
+
   makeContent = (value) => {
     const { validator } = this.props;
     const valueTemp = { ...value };
@@ -26,20 +40,13 @@ export default class FieldList extends React.Component {
       valueTemp.available_options = value.available_options.map(item => item.text).join('、');
     }
 
-    if (value.default_value) {
-      valueTemp.default_value = getAvailableText(value.default_value);
-      if (valueTemp.default_value === value.type) {
-        valueTemp.default_value = `当前${valueTemp.type.replace(/(（.*）)|控件/, '')}`;
-      }
+    if (value.field_api_configuration_id && value.type === 'api') {
+      valueTemp.field_api_configuration_id = this.props.apiData.filter(item => (
+        `${value.field_api_configuration_id}` === `${item.id}`
+      )).map(item => item.name).join('、');
     }
 
-    if (value.type === 'region' && value.default_value) {
-      const addressValue = Object.keys(value.default_value).map((key) => {
-        const addr = district.find(item => `${item.id}` === `${value.default_value[key]}`);
-        return addr ? addr.name : value.default_value[key];
-      });
-      valueTemp.default_value = addressValue.join('');
-    }
+    valueTemp.default_value = this.makeDefaultValue(value);
 
     Object.keys(labelText).forEach((key) => {
       if (Array.isArray(valueTemp[key]) && valueTemp[key].length) {
@@ -49,6 +56,32 @@ export default class FieldList extends React.Component {
       }
     });
     return staticObject;
+  }
+
+  makeDefaultValue = (value) => {
+    let defaultValue = value.default_value;
+    if (value.default_value && value.type !== 'region') {
+      if (value.field_api_configuration_id && value.type === 'api') {
+        const apiId = value.field_api_configuration_id;
+        const data = this.props.apiDataSource[apiId] || [];
+
+        defaultValue = Array.isArray(defaultValue) ? defaultValue : [defaultValue];
+        defaultValue = data.filter(item => defaultValue.indexOf(`${item.value}`) !== -1);
+      }
+      defaultValue = getAvailableText(defaultValue);
+      if (value.default_value === value.type) {
+        defaultValue = `当前${value.type.replace(/(（.*）)|控件/, '')}`;
+      }
+    }
+    if (value.type === 'region' && value.default_value) {
+      const addressValue = Object.keys(value.default_value).map((key) => {
+        const addr = district.find(item => `${item.id}` === `${value.default_value[key]}`);
+        return addr ? addr.name : value.default_value[key];
+      });
+      defaultValue = addressValue.join('');
+    }
+
+    return defaultValue;
   }
 
   render() {

@@ -171,13 +171,13 @@ export default class List extends React.Component {
       const content = <ItemView data={data || {}} />;
       const result = sorter ? (
         <CustomerCard
-          key={value.onlyId}
           index={i}
           id={value.onlyId}
           content={content}
+          key={value.onlyId}
           errorAble={errorAble}
-          actionBtn={() => this.makeButtom(value.onlyId)}
           moveCard={this.moveCard}
+          actionBtn={() => this.makeButtom(value.onlyId)}
         />
       ) : content;
       return result;
