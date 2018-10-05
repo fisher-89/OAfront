@@ -72,18 +72,18 @@ export default class EditStaff extends PureComponent {
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 6 },
+        sm: { span: 5 },
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 16 },
+        sm: { span: 18 },
       },
     };
 
     const formItemLayout2 = {
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 12 },
+        sm: { span: 10 },
       },
       wrapperCol: {
         xs: { span: 24 },
@@ -208,21 +208,6 @@ export default class EditStaff extends PureComponent {
                 </Col>
               </Row>
               <Row>
-                <Col>
-                  <FormItem label="所属部门" {...formItemLayout} required>
-                    {getFieldDecorator('department_id', editStaff.department_id ? {
-                      initialValue: editStaff.department_id.toString(),
-                    } : { initialValue: '1' })(
-                      <TreeSelect
-                        treeDefaultExpandAll
-                        treeData={newTreeData}
-                        dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                      />
-                    )}
-                  </FormItem>
-                </Col>
-              </Row>
-              <Row>
                 <Col {...fieldsBoxLayout}>
                   <FormItem label="所属品牌" {...formItemLayout2} required>
                     {getFieldDecorator('brand_id', {
@@ -281,6 +266,21 @@ export default class EditStaff extends PureComponent {
                         <Option value={-3}>开除</Option>
                         <Option value={-4}>劝退</Option>
                       </Select>
+                    )}
+                  </FormItem>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <FormItem label="所属部门" {...formItemLayout} required>
+                    {getFieldDecorator('department_id', editStaff.department_id ? {
+                      initialValue: editStaff.department_id.toString(),
+                    } : { initialValue: '1' })(
+                      <TreeSelect
+                        treeDefaultExpandAll
+                        treeData={newTreeData}
+                        dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                      />
                     )}
                   </FormItem>
                 </Col>
