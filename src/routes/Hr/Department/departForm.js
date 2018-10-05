@@ -123,16 +123,16 @@ export default class extends PureComponent {
           {
             getFieldDecorator('manager', {
               initialValue: {
-                staff_sn: initialValue.manager_sn,
-                staff_name: initialValue.manager_name,
+                manager_sn: initialValue.manager_sn,
+                manager_name: initialValue.manager_name,
               } || {},
             })(
               <SearchTable.Staff
                 name={{
-                  staff_sn: 'staff_sn',
-                  staff_name: 'realname',
+                  manager_sn: 'staff_sn',
+                  manager_name: 'realname',
                 }}
-                showName="staff_name"
+                showName="manager_name"
               />
             )
           }
