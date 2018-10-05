@@ -37,7 +37,7 @@ export default class extends PureComponent {
   state = {
     visible: false,
     editInfo: {},
-    typeId: undefined,
+    filters: {},
   }
 
   componentDidMount() {
@@ -46,25 +46,14 @@ export default class extends PureComponent {
   }
 
   setTypeId = (typeId) => {
-    this.setState({ typeId }, () => {
-      this.oatable.state.pagination.current = 1;
-      this.oatable.fetchTableDataSource();
-    });
+    this.setState({ filters: { type_id: [`${typeId}`] } });
   }
 
   fetchEvent = (params) => {
     const { dispatch } = this.props;
-    const { typeId } = this.state;
-    let { filters } = params;
-    if (typeId) {
-      filters += `type_id=${typeId}`;
-    }
     dispatch({
       type: 'point/fetchEvent',
-      payload: {
-        ...params,
-        filters,
-      },
+      payload: { ...params },
     });
   }
 
@@ -161,6 +150,12 @@ export default class extends PureComponent {
           str = typeList.find(item => item.id.toString() === typeId.toString());
           return str ? str.name : '';
         },
+      },
+      {
+        title: '事件类型',
+        dataIndex: 'type_id',
+        hidden: true,
+        filters: typeList.map(item => ({ value: item.id, text: item.name })),
       },
       {
         title: '事件名称',
@@ -327,7 +322,7 @@ export default class extends PureComponent {
       validateFields,
       form: { getFieldDecorator },
     } = this.props;
-    const { visible, editInfo } = this.state;
+    const { visible, editInfo, filters } = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14 },
@@ -357,21 +352,16 @@ export default class extends PureComponent {
         </Col>
         <Col span={20}>
           <OATable
-            ref={(e) => {
-              this.oatable = e;
-            }}
             serverSide
-            loading={tableLoading}
-            extraOperator={this.makeExtraOperator()}
-            columns={this.makeColumns()}
-            dataSource={result && result.data}
-            total={result.total || 0}
-            filtered={result.filtered || 0}
-            fetchDataSource={this.fetchEvent}
+            {...excelAction}
+            filters={filters}
             scroll={{ x: 300 }}
-            {
-            ...excelAction
-            }
+            loading={tableLoading}
+            total={result.total}
+            dataSource={result.data}
+            columns={this.makeColumns()}
+            fetchDataSource={this.fetchEvent}
+            extraOperator={this.makeExtraOperator()}
           />
         </Col>
         {(customerAuthority(139) || customerAuthority(143))

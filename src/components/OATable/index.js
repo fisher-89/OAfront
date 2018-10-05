@@ -110,10 +110,14 @@ class OATable extends PureComponent {
     if (filters !== this.props.filters) {
       const thisFiltersKey = { ...this.state.filters };
       Object.keys(filters).forEach((filter) => {
-        thisFiltersKey[filters] = filters[filter];
+        thisFiltersKey[filter] = filters[filter];
       });
       if (JSON.stringify(thisFiltersKey) !== JSON.stringify(this.state.filters)) {
-        this.fetchTableDataSource();
+        this.setState({ filters: { ...thisFiltersKey } }, () => {
+          if (this.props.serverSide) {
+            this.fetchTableDataSource();
+          }
+        });
       }
     }
   }
@@ -134,7 +138,6 @@ class OATable extends PureComponent {
     let urlPath = {};
     if (serverSide) {
       const filterParam = {};
-      const searcherParam = {};
       columns.forEach((column, index) => {
         const key = column.dataIndex || index;
         const filter = filters[key];
@@ -149,12 +152,9 @@ class OATable extends PureComponent {
         }
       });
       params = {
+        filters: filterParam,
         page: pagination.current,
         pagesize: pagination.pageSize,
-        filters: {
-          ...filterParam,
-          ...searcherParam,
-        },
       };
       if (sorter.field) {
         params.sort = `${sorter.field}-${sorter.order === 'ascend' ? 'asc' : 'desc'}`;
@@ -176,45 +176,52 @@ class OATable extends PureComponent {
   mapColumns = () => {
     const columns = [];
     this.props.columns.forEach((column, index) => {
-      if (!column.hidden) {
-        const { filters, sorter } = this.state;
-        const { serverSide } = this.props;
-        const key = column.dataIndex || index;
-        const response = { ...column };
-        if (!serverSide) {
-          response.sorter = column.sorter === true ? this.makeDefaultSorter(key) : column.sorter;
-        }
-        response.filteredValue = filters[key] || null;
-        if (!sorter.field && column.defaultSortOrder) {
-          sorter.field = key;
-          sorter.order = column.sortOrder || column.defaultSortOrder;
-        }
-        response.sortOrder = sorter.field === key && sorter.order;
-        if (column.searcher) {
-          Object.assign(response, this.makeSearchFilterOption(key, column));
-          response.render = response.render || this.makeDefaultSearchRender(key);
-        } else if (column.treeFilters) {
-          Object.assign(response, this.makeTreeFilterOption(key, column));
-        } else if (column.filters) {
-          response.onFilter = column.onFilter || this.makeDefaultOnFilter(key);
-        } else if (column.dateFilters) {
-          Object.assign(response, this.makeDateFilterOption(key, column));
-        } else if (column.rangeFilters) {
-          Object.assign(response, this.makeRangeFilterOption(key, column));
-        }
-        if (column.dataIndex !== undefined && !column.render) {
-          const { tooltip } = column;
-          const render = (text) => {
-            let viewText = text;
-            if (column.searcher) {
-              viewText = this.makeDefaultSearchRender(key)(text);
-            }
-            return renderEllipsis(viewText, tooltip);
-          };
-          response.render = render;
-        }
-        columns.push(response);
+      const { filters, sorter } = this.state;
+      const { serverSide } = this.props;
+      const key = column.dataIndex || index;
+      const response = { ...column };
+      if (!serverSide) {
+        response.sorter = column.sorter === true ? this.makeDefaultSorter(key) : column.sorter;
       }
+      response.filteredValue = filters[key] || null;
+      if (!sorter.field && column.defaultSortOrder) {
+        sorter.field = key;
+        sorter.order = column.sortOrder || column.defaultSortOrder;
+      }
+      response.sortOrder = sorter.field === key && sorter.order;
+      if (column.searcher) {
+        Object.assign(response, this.makeSearchFilterOption(key, column));
+        response.render = response.render || this.makeDefaultSearchRender(key);
+      } else if (column.treeFilters) {
+        Object.assign(response, this.makeTreeFilterOption(key, column));
+      } else if (column.filters) {
+        response.onFilter = column.onFilter || this.makeDefaultOnFilter(key);
+      } else if (column.dateFilters) {
+        Object.assign(response, this.makeDateFilterOption(key, column));
+      } else if (column.rangeFilters) {
+        Object.assign(response, this.makeRangeFilterOption(key, column));
+      }
+      if (column.hidden) {
+        response.colSpan = 0;
+        // response.className = 'colHidden';
+        response.onCell = () => {
+          return {
+            style: { display: 'none' },
+          };
+        };
+      }
+      if (column.dataIndex !== undefined && !column.render) {
+        const { tooltip } = column;
+        const render = (text) => {
+          let viewText = text;
+          if (column.searcher) {
+            viewText = this.makeDefaultSearchRender(key)(text);
+          }
+          return renderEllipsis(viewText, tooltip);
+        };
+        response.render = render;
+      }
+      columns.push(response);
     });
     return columns;
   }
@@ -758,16 +765,15 @@ class OATable extends PureComponent {
       }
       return temp;
     });
-
     return (
       <div
         className={styles.filterTable}
       >
         {operatorVisble && (
           <Operator
-            {...this.state}
             sync={sync}
             key="Operator"
+            {...this.state}
             filterColumns={filterColumns || []}
             multiOperator={multiOperator}
             extraOperator={this.makeExtraOperator()}
