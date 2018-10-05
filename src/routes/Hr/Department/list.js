@@ -20,12 +20,20 @@ export default class extends PureComponent {
   state = {
     visible: false,
     editInfo: {},
+    filters: {},
   };
 
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({ type: 'brand/fetchBrand' });
     dispatch({ type: 'department/fetchDepartment' });
+  }
+
+  setDepartmentId = (id) => {
+    const ids = this.props.department.filter((item) => {
+      return `${item.id}` === `${id}` || `${item.parent_id}` === `${id}`;
+    }).map(item => `${item.id}`);
+    this.setState({ filters: { id: ids } });
   }
 
   fetchDepartment = (params) => {
@@ -72,8 +80,11 @@ export default class extends PureComponent {
       {
         title: '编号',
         dataIndex: 'id',
-        searcher: true,
         sorter: true,
+        onFilter: (value, record) => {
+          const { filters: { id } } = this.state;
+          return id.indexOf(`${record.id}`) !== -1;
+        },
       },
       {
         title: '部门名称',
@@ -126,15 +137,15 @@ export default class extends PureComponent {
   render() {
     const columns = this.makeColumns();
     const { fLoading, department } = this.props;
-    const { visible, editInfo } = this.state;
+    const { visible, editInfo, filters } = this.state;
     return (
       <Row gutter={16}>
         <Col span={4} style={{ borderRight: '1px solid #e8e8e8' }}>
-          <DepartTree dataSource={department} />
+          <DepartTree fetchDataSource={this.setDepartmentId} />
         </Col>
         <Col span={20}>
           <OATable
-            serverSide={false}
+            filters={filters}
             columns={columns}
             loading={fLoading}
             dataSource={department}

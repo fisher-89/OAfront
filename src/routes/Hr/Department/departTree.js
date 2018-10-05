@@ -14,7 +14,9 @@ import './department.less';
 
 const { TreeNode } = Tree;
 
-@connect(({ department }) => ({ department }))
+@connect(({ department }) => ({
+  department: department.department,
+}))
 export default class extends PureComponent {
   state = {
     visible: false,
@@ -93,10 +95,11 @@ export default class extends PureComponent {
 
 
   renderTreeNodes = (data) => {
+    const { fetchDataSource } = this.props;
     return data.map((item) => {
       const content = (
         <React.Fragment>
-          <a className="title-content">{item.name}</a>
+          <a className="title-content" onClick={() => fetchDataSource(item.id)}>{item.name}</a>
           <div className="selected-Icon">
             {customerAuthority(40) &&
               (
@@ -136,7 +139,7 @@ export default class extends PureComponent {
 
   render() {
     const { visible, editInfo } = this.state;
-    const { dataSource, loading } = this.props;
+    const { department, loading } = this.props;
     return (
       <QueueAnim type="left">
         {
@@ -164,7 +167,7 @@ export default class extends PureComponent {
           showLine
           loading={loading}
           renderTreeNodes={this.renderTreeNodes}
-          dataSource={dataSource}
+          dataSource={department}
           onChange={this.handleOnchange}
         />
         {(customerAuthority(39) || customerAuthority(40)) &&
@@ -173,7 +176,7 @@ export default class extends PureComponent {
               visible={visible}
               initialValue={editInfo}
               onCancel={this.handleModalVisible}
-              treeData={dataSource}
+              treeData={department}
               onClose={() => this.setState({ editInfo: {} })}
             />
           )
