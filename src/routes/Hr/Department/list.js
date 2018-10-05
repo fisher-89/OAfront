@@ -26,7 +26,6 @@ export default class extends PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({ type: 'brand/fetchBrand' });
-    dispatch({ type: 'department/fetchDepartment' });
   }
 
   setDepartmentId = (id) => {
