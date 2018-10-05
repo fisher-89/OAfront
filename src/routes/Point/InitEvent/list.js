@@ -145,17 +145,12 @@ export default class extends PureComponent {
       {
         title: '事件类型',
         dataIndex: 'type_id',
+        filters: typeList.map(item => ({ value: item.id, text: item.name })),
         render: (typeId) => {
           let str = {};
           str = typeList.find(item => item.id.toString() === typeId.toString());
           return str ? str.name : '';
         },
-      },
-      {
-        title: '事件类型',
-        dataIndex: 'type_id',
-        hidden: true,
-        filters: typeList.map(item => ({ value: item.id, text: item.name })),
       },
       {
         title: '事件名称',
