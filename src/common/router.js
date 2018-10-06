@@ -228,6 +228,9 @@ export const getRouterData = (app) => {
     '/system/authority': {
       component: dynamicWrapper(app, ['authority'], () => import('../routes/System/Authority')),
     },
+    '/system/roles': {
+      component: dynamicWrapper(app, ['brand', 'staffs', 'department', 'roles'], () => import('../routes/System/Roles')),
+    },
 
 
     /** 工作流 */

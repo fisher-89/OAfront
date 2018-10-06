@@ -275,8 +275,14 @@ const menuData = [
     authority: '7',
     children: [
       {
+        name: '角色管理',
+        path: 'roles',
+        authority: '31',
+      },
+      {
         name: '权限管理',
         path: 'authority',
+        authority: '32',
       },
     ],
   },
