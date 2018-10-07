@@ -297,6 +297,10 @@ const menuData = [
         hideInMenu: true,
       },
       {
+        name: '审批人模板',
+        path: 'approver',
+      },
+      {
         name: '添加流程',
         path: 'flow/add',
         hideInMenu: true,

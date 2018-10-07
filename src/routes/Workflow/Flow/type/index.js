@@ -179,7 +179,7 @@ export default class List extends PureComponent {
             )}
           </FormItem>
         </OAModal>
-      </React.Fragment >
+      </React.Fragment>
     );
   }
 }
