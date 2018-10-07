@@ -218,3 +218,59 @@ export async function getApiConfig(id) {
     method: 'GET',
   });
 }
+
+
+export async function fetchApprover(id) {
+  return request(`/api/workflow/step-approver/${id}`, {
+    method: 'GET',
+  });
+}
+
+export async function addApprover(params) {
+  return request('/api/workflow/step-approver', {
+    method: 'POST',
+    body: params,
+  });
+}
+
+export async function editApprover(params, id) {
+  return request(`/api/workflow/step-approver/${id}`, {
+    method: 'PUT',
+    body: params,
+  });
+}
+
+export async function deleteApprover(id) {
+  return request(`/api/workflow/step-approver/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+
+export async function fetchStepDepartment(params, id) {
+  return request(`/api/workflow/step-department-approver/${id}`, {
+    method: 'GET',
+    body: params,
+  });
+}
+
+export async function addStepDepartment(params) {
+  return request('/api/workflow/step-department-approver', {
+    method: 'POST',
+    body: params,
+  });
+}
+
+export async function editStepDepartment(params, id) {
+  return request(`/api/workflow/step-department-approver/${id}`, {
+    method: 'PUT',
+    body: params,
+  });
+}
+
+export async function deleteStepDepartment(id) {
+  return request(`/api/workflow/step-department-approver/${id}`, {
+    method: 'DELETE',
+  });
+}
+

@@ -1,3 +1,4 @@
+import { notification } from 'antd';
 import validatorEffects from './validator';
 import variateEffects from './variate';
 import formEffects from './form';
@@ -5,7 +6,10 @@ import formTypeEffects from './formType';
 import flowEffects from './flow';
 import flowTypeEffects from './flowType';
 import apiConfigEffects from './apiConfig';
+import approverModeEffects from './approverMode';
+import approverEffects from './approver';
 import defaultReducers from '../reducers/default';
+
 
 export default {
   namespace: 'workflow',
@@ -22,6 +26,8 @@ export default {
     variate: {},
     apiConfig: [],
     apiConfigDetails: {},
+    approver: [],
+    stepDepartment: {},
   },
   effects: {
     ...formEffects,
@@ -31,9 +37,71 @@ export default {
     ...variateEffects,
     ...flowTypeEffects,
     ...apiConfigEffects,
+    ...approverModeEffects,
+    ...approverEffects,
   },
   reducers: {
     ...defaultReducers,
+    saveStepDepartmentData(state, action) {
+      const { id, store, data } = action.payload;
+      return {
+        ...state,
+        [store]: {
+          ...state[store],
+          [id]: data,
+        },
+      };
+    },
+    addStepDepartmentData(state, action) {
+      const { id, store, data } = action.payload;
+      notification.success('添加成功');
+      const newData = state[store][id] || [];
+      newData.push(data);
+      return {
+        ...state,
+        [store]: {
+          ...state[store],
+          [id]: newData,
+        },
+      };
+    },
+    updateStepDepartmentData(state, action) {
+      const { id, store, data } = action.payload;
+      notification.success('编辑成功');
+      let newData = state[store][id] || [];
+      let updated = false;
+      newData = newData.map((item) => {
+        if (parseInt(item.id, 0) === parseInt(id, 0)) {
+          updated = true;
+          return data;
+        } else {
+          return item;
+        }
+      });
+      if (!updated) {
+        newData.push(data);
+      }
+      return {
+        ...state,
+        [store]: {
+          ...state[store],
+          [id]: newData,
+        },
+      };
+    },
+    deleteStepDepartmentData(state, action) {
+      const { id, store } = action.payload;
+      notification.success('删除成功');
+      let newData = state[store][id] || [];
+      newData = newData.filter(item => item.id === id);
+      return {
+        ...state,
+        [store]: {
+          ...state[store],
+          [id]: newData,
+        },
+      };
+    },
   },
 };
 

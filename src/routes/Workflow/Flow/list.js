@@ -102,12 +102,6 @@ export default class Flow extends PureComponent {
             分类管理
           </Button>
         </Link>
-      ), (
-        <Link to="/workflow/flow/approver" key="addApprover">
-          <Button type="primary" icon="setting">
-            审批人配置
-          </Button>
-        </Link>
       ),
       (
         <Tooltip title="添加新流程" key="add">
