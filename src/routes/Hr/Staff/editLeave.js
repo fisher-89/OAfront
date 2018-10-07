@@ -99,7 +99,7 @@ export default class extends PureComponent {
             </Select>
           )}
         </FormItem>
-        <FormItem {...formItemLayout} label="工作交接">
+        <FormItem {...formItemLayout} label="跳过工作交接">
           {getFieldDecorator('skip_leaving', {
             initialValue: editStaff.skip_leaving || false,
           })(

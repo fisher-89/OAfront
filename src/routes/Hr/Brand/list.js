@@ -60,7 +60,7 @@ export default class extends PureComponent {
       {
         title: '编号',
         dataIndex: 'id',
-        searcher: true,
+        sorter: true,
       },
       {
         title: '名称',

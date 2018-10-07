@@ -3,10 +3,12 @@ import {
   Modal,
   Button,
   Divider,
+
 } from 'antd';
 import { connect } from 'dva';
 
 import OATable from '../../../components/OATable';
+import Ellipsis from '../../../components/Ellipsis/index';
 import ShopForm from './form';
 import Amap from './amap';
 import { customerAuthority } from '../../../utils/utils';
@@ -113,12 +115,9 @@ export default class extends PureComponent {
         title: '店员',
         dataIndex: 'staff',
         width: 300,
-        render: (val) => {
-          let staffStr = '';
-          val.forEach((item) => {
-            staffStr += `${item.realname},`;
-          });
-          return staffStr.slice(0, -1);
+        render: (staff) => {
+          const staffStr = staff.map(item => item.realname).join(',');
+          return (<Ellipsis tooltip lines={1} style={{ width: 155 }}>{staffStr}</Ellipsis>);
         },
       },
     ];

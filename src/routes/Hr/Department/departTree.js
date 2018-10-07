@@ -4,6 +4,7 @@ import {
   Tree,
   Icon,
   Modal,
+  notification,
 } from 'antd';
 import { connect } from 'dva';
 import QueueAnim from 'rc-queue-anim';
@@ -14,8 +15,9 @@ import './department.less';
 
 const { TreeNode } = Tree;
 
-@connect(({ department }) => ({
+@connect(({ department, loading }) => ({
   department: department.department,
+  sortLoading: loading.effects['department/sortDepartment'],
 }))
 export default class extends PureComponent {
   state = {
@@ -53,13 +55,17 @@ export default class extends PureComponent {
     });
   }
 
-  handleSorterError = (error) => {
-    Modal.error({
-      title: '错误信息',
-      content: error,
+  handleSuccess = (response) => {
+    notification.success({
+      message: response.message,
     });
   }
 
+  handleSorterError = (error) => {
+    notification.success({
+      message: error,
+    });
+  }
 
   undotTreeData = (data, newData, pid) => {
     let sort = 0;
@@ -82,13 +88,14 @@ export default class extends PureComponent {
   handleOnchange = (newTree) => {
     const newDataSource = [];
     this.undotTreeData(newTree, newDataSource);
-    const { dataSource, dispatch } = this.props;
+    const { department, dispatch } = this.props;
     dispatch({
       type: 'department/sortDepartment',
       payload: {
-        old_data: dataSource,
+        old_data: department,
         new_data: newDataSource,
       },
+      onSuccess: this.handleSuccess,
       onError: this.handleSorterError,
     });
   }
@@ -139,7 +146,7 @@ export default class extends PureComponent {
 
   render() {
     const { visible, editInfo } = this.state;
-    const { department, loading } = this.props;
+    const { department, loading, sortLoading } = this.props;
     return (
       <QueueAnim type="left">
         {
@@ -165,7 +172,7 @@ export default class extends PureComponent {
           sorter={customerAuthority(65)}
           key="treeSort"
           showLine
-          loading={loading}
+          loading={loading || sortLoading}
           renderTreeNodes={this.renderTreeNodes}
           dataSource={department}
           onChange={this.handleOnchange}
