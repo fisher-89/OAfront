@@ -73,7 +73,7 @@ export default class extends PureComponent {
         width: 160,
         render: (staff) => {
           const staffStr = staff.map(item => item.realname).join(',');
-          return (<Ellipsis tooltip lines={1} style={{ width: 155 }}>{staffStr}</Ellipsis>);
+          return (<Ellipsis tooltip lines={2} style={{ width: 155 }}>{staffStr}</Ellipsis>);
         },
         onFilter: (value, record) => {
           const staffStr = record.staff.map(item => item.realname);
@@ -86,7 +86,7 @@ export default class extends PureComponent {
         searcher: true,
         render: (brand) => {
           const brandStr = brand.map(item => item.name).join(',');
-          return (<Ellipsis tooltip lines={1} style={{ width: 155 }}>{brandStr}</Ellipsis>);
+          return (<Ellipsis tooltip lines={2} style={{ width: 155 }}>{brandStr}</Ellipsis>);
         },
         onFilter: (value, record) => {
           const brandStr = record.brand.map(item => item.name);
@@ -99,7 +99,7 @@ export default class extends PureComponent {
         searcher: true,
         render: (department) => {
           const departmentStr = department.map(item => item.name).join(',');
-          return (<Ellipsis tooltip lines={1} style={{ width: 155 }}>{departmentStr}</Ellipsis>);
+          return (<Ellipsis tooltip lines={2} style={{ width: 155 }}>{departmentStr}</Ellipsis>);
         },
         onFilter: (value, record) => {
           const departmentStr = record.department.map(item => item.name);
@@ -117,12 +117,16 @@ export default class extends PureComponent {
           render: (rowData) => {
             return (
               <Fragment>
-                <a onClick={() => this.handleEdit(rowData)}>编辑</a>
-                <Divider type="vertical" />
-                <a onClick={() => this.handleDelete(rowData.id)}>权限管理</a>
-                <a onClick={() => this.handleDelete(rowData.id)}>关联员工</a>
-                <Divider type="vertical" />
-                <a onClick={() => this.handleDelete(rowData.id)}>删除</a>
+                <div>
+                  <a onClick={() => this.handleEdit(rowData)}>编辑</a>
+                  <Divider type="vertical" />
+                  <a onClick={() => this.handleDelete(rowData.id)}>权限管理</a>
+                </div>
+                <div>
+                  <a onClick={() => this.handleDelete(rowData.id)}>关联员工</a>
+                  <Divider type="vertical" />
+                  <a onClick={() => this.handleDelete(rowData.id)}>删除</a>
+                </div>
               </Fragment>
             );
           },
