@@ -3,31 +3,27 @@ import { connect } from 'dva';
 import {
   Tree,
   Input,
-  Select,
 } from 'antd';
 import OAForm, { OAModal } from '../../../components/OAForm';
 import { markTreeData } from '../../../utils/utils';
 
 const FormItem = OAForm.Item;
 const { TreeNode } = Tree;
-const { Option } = Select;
 
 @OAForm.create()
-@connect(({ brand, department }) => ({
-  brand: brand.brand,
-  department: department.department,
+@connect(({ authority }) => ({
+  authority: authority.authority,
 }))
 export default class extends PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
-    dispatch({ type: 'brand/fetchBrand' });
-    dispatch({ type: 'department/fetchDepartment' });
+    dispatch({ type: 'authority/fetchAuth' });
   }
 
   handleSubmit = (params) => {
     const { dispatch } = this.props;
     dispatch({
-      type: params.id ? 'roles/editRole' : 'roles/addRole',
+      type: 'roles/editRole',
       payload: params,
       onError: this.handleError,
       onSuccess: () => this.props.handleVisible(false),
@@ -56,10 +52,9 @@ export default class extends PureComponent {
 
   render() {
     const {
-      brand,
       visible,
       onCancel,
-      department,
+      authority,
       initialValue,
       handleVisible,
       validateFields,
@@ -75,12 +70,12 @@ export default class extends PureComponent {
       },
     };
 
-    const brandVal = (initialValue.brand || []).map(item => item.id.toString());
-    const departmentVal = (initialValue.department || []).map(item => item.id.toString());
-    const newTreeData = markTreeData(department, { value: 'id', lable: 'name', parentId: 'parent_id' }, 0);
+    const authorityVal = (initialValue.authority || []).map(item => item.id.toString());
+    const newTreeData = markTreeData(authority, { value: 'id', lable: 'auth_name', parentId: 'parent_id' }, 0);
+
     return (
       <OAModal
-        title={initialValue.id ? '编辑角色' : '创建角色'}
+        title={`编辑 "${initialValue.role_name}" 权限`}
         visible={visible}
         loading={this.props.loading}
         onSubmit={validateFields(this.handleSubmit)}
@@ -93,38 +88,25 @@ export default class extends PureComponent {
           <Input type="hidden" placeholder="请输入" />
         ) : null}
 
-        <FormItem {...formItemLayout} label="角色名称" required>
-          {
-            getFieldDecorator('role_name', {
-              initialValue: initialValue.role_name || null,
-            })(
-              <Input placeholder="请输入" style={{ width: '100%' }} />
-            )
-          }
-        </FormItem>
-        <FormItem {...formItemLayout} label="配属品牌" >
-          {getFieldDecorator('brand', {
-            initialValue: brandVal,
-          })(
-            <Select mode="multiple" placeholder="请选择">
-              {brand.map(item => (
-                <Option key={`${item.id}`}>{item.name}</Option>
-              ))}
-            </Select>
-          )}
-        </FormItem>
-        <FormItem {...formItemLayout} label="配属部门" >
+        {initialValue.role_name ? (getFieldDecorator('role_name', {
+          initialValue: initialValue.role_name,
+        }))(
+          <Input type="hidden" placeholder="请输入" />
+        ) : null}
+
+        <FormItem {...formItemLayout} label="分配权限" >
           <div style={{ maxHeight: 400, overflow: 'auto', border: '1px dashed #eaeaea' }}>
-            {getFieldDecorator('department', {
-              initialValue: departmentVal,
+            {getFieldDecorator('authority', {
+              initialValue: authorityVal,
             })(
               <Tree
                 checkable
+                checkStrictly
                 autoExpandParent={false}
-                defaultExpandedKeys={departmentVal}
-                defaultCheckedKeys={departmentVal}
+                defaultExpandedKeys={authorityVal}
+                defaultCheckedKeys={authorityVal}
                 onCheck={(checkedKeys) => {
-                  setFieldsValue({ department: checkedKeys });
+                  setFieldsValue({ authority: checkedKeys.checked });
                 }}
               >
                 {this.renderTreeNodes(newTreeData)}

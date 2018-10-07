@@ -9,6 +9,8 @@ import { connect } from 'dva';
 import OATable from '../../../components/OATable';
 import Ellipsis from '../../../components/Ellipsis/index';
 import BrandForm from './form';
+import AuthForm from './authForm';
+import StaffForm from './staffForm';
 import { customerAuthority } from '../../../utils/utils';
 @connect(({ roles, loading }) => ({
   roles: roles.roles,
@@ -17,6 +19,8 @@ import { customerAuthority } from '../../../utils/utils';
 export default class extends PureComponent {
   state = {
     visible: false,
+    authVisible: false,
+    staffVisible: false,
     editRole: {},
   }
 
@@ -34,8 +38,24 @@ export default class extends PureComponent {
     this.setState({ visible: !!flag });
   }
 
+  handleAuthVisible = (flag) => {
+    this.setState({ authVisible: !!flag });
+  }
+
+  handleStaffVisible = (flag) => {
+    this.setState({ staffVisible: !!flag });
+  }
+
   handleEdit = (data) => {
     this.setState({ editRole: data }, () => this.handleModalVisible(true));
+  }
+
+  handleAuth = (data) => {
+    this.setState({ editRole: data }, () => this.handleAuthVisible(true));
+  }
+
+  handleStaff = (data) => {
+    this.setState({ editRole: data }, () => this.handleStaffVisible(true));
   }
 
   handleDelete = (id) => {
@@ -120,10 +140,10 @@ export default class extends PureComponent {
                 <div>
                   <a onClick={() => this.handleEdit(rowData)}>编辑</a>
                   <Divider type="vertical" />
-                  <a onClick={() => this.handleDelete(rowData.id)}>权限管理</a>
+                  <a onClick={() => this.handleAuth(rowData)}>权限管理</a>
                 </div>
                 <div>
-                  <a onClick={() => this.handleDelete(rowData.id)}>关联员工</a>
+                  <a onClick={() => this.handleStaff(rowData)}>关联员工</a>
                   <Divider type="vertical" />
                   <a onClick={() => this.handleDelete(rowData.id)}>删除</a>
                 </div>
@@ -157,18 +177,32 @@ export default class extends PureComponent {
 
   render() {
     const { roles, fLoading } = this.props;
-    const { visible, editRole } = this.state;
+    const { visible, authVisible, staffVisible, editRole } = this.state;
     return (
-      <React.Fragment>
+      <Fragment>
         {
-          (customerAuthority(63) || customerAuthority(64)) &&
+          (customerAuthority(31)) &&
           (
-            <BrandForm
-              initialValue={editRole}
-              visible={visible}
-              onCancel={() => { this.setState({ editRole: {} }); }}
-              handleVisible={this.handleModalVisible}
-            />
+            <Fragment>
+              <BrandForm
+                initialValue={editRole}
+                visible={visible}
+                onCancel={() => { this.setState({ editRole: {} }); }}
+                handleVisible={this.handleModalVisible}
+              />
+              <AuthForm
+                initialValue={editRole}
+                visible={authVisible}
+                onCancel={() => { this.setState({ editRole: {} }); }}
+                handleVisible={this.handleAuthVisible}
+              />
+              <StaffForm
+                initialValue={editRole}
+                visible={staffVisible}
+                onCancel={() => { this.setState({ editRole: {} }); }}
+                handleVisible={this.handleStaffVisible}
+              />
+            </Fragment>
           )
         }
         <OATable
@@ -179,7 +213,7 @@ export default class extends PureComponent {
           dataSource={roles}
           fetchDataSource={this.fetchRoles}
         />
-      </React.Fragment>
+      </Fragment>
     );
   }
 }
