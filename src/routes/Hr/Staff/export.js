@@ -1,16 +1,35 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Button, notification, List } from 'antd';
+import { Button, notification, List, Modal } from 'antd';
 import { connect } from 'dva';
 import XLSX from 'xlsx';
 
-@connect(({ staffs }) => ({ staffs }))
+@connect(({ loading }) => ({
+  loading: loading.effects['staffs/exportStaff'],
+}))
 export default class extends PureComponent {
   state={
     maxCols: ['员工编号', '姓名', '手机号码', '身份证号', '性别', '品牌', '费用品牌', '部门全称', '店铺代码', '职位', '员工状态', '银行卡号', '开户人', '开户行', '入职时间', '生日', '民族', 'QQ号', '微信号', '电子邮箱', '学历', '政治面貌', '婚姻状况', '身高', '体重', '户口所在地址', '现居住地址', '籍贯', '紧急联系人', '联系人电话', '联系人关系类型', '备注'],
     minCols: ['员工编号', '姓名', '性别', '品牌', '费用品牌', '店铺代码', '部门全称', '职位', '员工状态', '生日'],
   }
 
-  fetchStaff = () => {
+  confirmExport = () => {
+    const { total } = this.props;
+    if (total > 2000) {
+      Modal.confirm({
+        title: '导出超过2000条。',
+        content: '这会需要较长的时间，如果不需要全部内容，请筛选后再次尝试。',
+        okText: '好',
+        cancelText: '继续导出',
+        onCancel: () => {
+          this.handleExport();
+        },
+      });
+    } else {
+      this.handleExport();
+    }
+  }
+
+  handleExport = () => {
     const { maxCols, minCols } = this.state;
     const { dispatch, filters } = this.props;
     dispatch({
@@ -51,13 +70,13 @@ export default class extends PureComponent {
   }
 
   render() {
+    const { loading } = this.props;
     return (
       <Fragment>
         <Button
+          loading={loading}
           icon="cloud-download"
-          onClick={() => {
-            this.fetchStaff();
-          }}
+          onClick={this.confirmExport}
         >
           批量导出
         </Button>

@@ -479,6 +479,7 @@ export default class extends PureComponent {
 
   makeExtraOperator = () => {
     const extra = [];
+    const { staff: { total } } = this.props;
     const { visible, moreInfo } = this.state;
     let style = {};
     if (moreInfo) {
@@ -505,7 +506,7 @@ export default class extends PureComponent {
         <ImportStaff key="importPop" />
       ),
       (customerAuthority(84) && (
-        <ExportStaff key="exportBtn" filters={this.searchFilter} />
+        <ExportStaff key="exportBtn" filters={this.searchFilter} total={total} />
       ))
     );
     extra.push((

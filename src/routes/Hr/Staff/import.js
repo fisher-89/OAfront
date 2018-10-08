@@ -50,7 +50,7 @@ export default class extends PureComponent {
     const C = XLSX.utils.decode_range(refstr).e.c + 1;
     for (let i = 0; i < C; i += 1) {
       // o[i] = { name: XLSX.utils.encode_col(i), key: i };
-      if (C < 10) {
+      if (C < 25) {
         o[i] = this.state.changeFields[i];
       } else {
         o[i] = this.state.createFields[i];
