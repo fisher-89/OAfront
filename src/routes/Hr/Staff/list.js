@@ -51,7 +51,7 @@ export default class extends PureComponent {
     transferVisible: false,
     leaveVisible: false,
     editStaff: {},
-  };
+  }
 
   componentWillMount() {
     const { dispatch } = this.props;
@@ -62,7 +62,7 @@ export default class extends PureComponent {
 
   onEdit = (targetKey, action) => {
     this[action](targetKey);
-  };
+  }
 
   fetchStaff = (param) => {
     this.searchFilter = param;
@@ -74,22 +74,19 @@ export default class extends PureComponent {
       };
     }
     dispatch({ type: 'staffs/fetchStaff', payload: this.searchFilter });
-  };
+  }
 
   handleVisibleChange = (visible) => {
     if (this.modalVisible) {
       return;
     }
     this.setState({ visible });
-  };
+  }
 
   fetchStaffInfo = (param) => {
     const { dispatch } = this.props;
-    dispatch({
-      type: 'staffs/fetchStaffInfo',
-      payload: param,
-    });
-  };
+    dispatch({ type: 'staffs/fetchStaffInfo', payload: param });
+  }
 
   showUserInfo = (info) => {
     const { panes } = this.state;
@@ -107,7 +104,7 @@ export default class extends PureComponent {
       this.fetchStaffInfo({ staff_sn: info.staff_sn });
     }
     this.setState({ panes: [...panes], activeKey: info.staff_sn.toString() });
-  };
+  }
 
   remove = (targetKey) => {
     const { panes } = this.state;
@@ -126,58 +123,19 @@ export default class extends PureComponent {
       activeKey = 'staff_list';
     }
     this.setState({ panes: [...newPanes], activeKey });
-  };
+  }
 
-  makeStaffActionKey = (statusId) => {
-    const buttonKey = [];
-    const { user, user: { authorities: { oa } } } = window;
-    if (user.is_active !== 0) {
-      if (statusId === 1 && oa.indexOf(55)) {
-        buttonKey.push(55);
-      } else if (statusId === 0 && oa.indexOf(107)) {
-        buttonKey.push(107);
-      } else if (statusId < 0 && oa.indexOf(58)) {
-        buttonKey.push(58);
-      } else if (statusId > 0) {
-        if (oa.indexOf(56)) {
-          buttonKey.push(56);
-        }
-        if (oa.indexOf(57)) {
-          buttonKey.push(57);
-        }
-      }
-    } else if (user.is_active === 0 && oa.indexOf(66)) {
-      buttonKey.push(66);
-    }
-    if (oa.indexOf(82)) {
-      buttonKey.push(82);
-    }
-    if (oa.indexOf(59)) {
-      buttonKey.push(59);
-    }
-    return buttonKey;
-  };
+  showStaffTransfer = (editStaff) => {
+    this.setState({ editStaff }, () => this.setState({ transferVisible: true }));
+  }
 
-  showStaffTransfer = (staffInfo) => {
-    this.setState({
-      transferVisible: true,
-      editStaff: staffInfo,
-    });
-  };
+  showStaffLeave = (editStaff) => {
+    this.setState({ editStaff }, () => this.setState({ leaveVisible: true }));
+  }
 
-  showStaffLeave = (staffInfo) => {
-    this.setState({
-      leaveVisible: true,
-      editStaff: staffInfo,
-    });
-  };
-
-  showEditStaff = (staffInfo) => {
-    this.setState({
-      editVisible: true,
-      editStaff: staffInfo,
-    });
-  };
+  showEditStaff = (editStaff) => {
+    this.setState({ editStaff }, () => this.setState({ editVisible: true }));
+  }
 
   deleteStaff = (staffsn) => {
     Modal.confirm({
@@ -193,10 +151,36 @@ export default class extends PureComponent {
       },
       onCancel: () => {},
     });
-  };
+  }
+
+  resetPassword = (staffsn) => {
+    console.log(staffsn);
+    Modal.confirm({
+      title: '确认删除？',
+      cancelText: '取消',
+      okText: '确认',
+      onOk: () => {
+        const { dispatch } = this.props;
+        dispatch({
+          type: 'staffs/resetPassword',
+          payload: { staff_sn: staffsn },
+        });
+      },
+      onCancel: () => {},
+    });
+  }
 
   makeAction = (rowData) => {
     const handleButton = {
+      175: (
+        <Link to="/" key="unlock">
+          <Tooltip title="重置密码" mouseLeaveDelay={0}>
+            <a onClick={() => this.resetPassword(rowData.staff_sn)}>
+              <Icon type="retweet" style={{ fontSize: '18px' }} />
+            </a>
+          </Tooltip>
+        </Link>
+      ),
       66: (
         <Link to="/" key="unlock">
           <Tooltip title="激活" mouseLeaveDelay={0}>
@@ -294,7 +278,37 @@ export default class extends PureComponent {
       action.push(handleButton[key]);
     });
     return action;
-  };
+  }
+
+  makeStaffActionKey = (statusId) => {
+    const buttonKey = [];
+    const { user, user: { authorities: { oa } } } = window;
+    if (user.is_active !== 0) {
+      if (statusId === 1 && oa.indexOf(55)) {
+        buttonKey.push(55);
+      } else if (statusId === 0 && oa.indexOf(107)) {
+        buttonKey.push(107);
+      } else if (statusId < 0 && oa.indexOf(58)) {
+        buttonKey.push(58);
+      } else if (statusId > 0) {
+        if (oa.indexOf(56)) {
+          buttonKey.push(56);
+        }
+        if (oa.indexOf(57)) {
+          buttonKey.push(57);
+        }
+      }
+    } else if (user.is_active === 0 && oa.indexOf(66)) {
+      buttonKey.push(66);
+    }
+    if (oa.indexOf(82)) {
+      buttonKey.push(82);
+    }
+    if (oa.indexOf(59)) {
+      buttonKey.push(59);
+    }
+    return buttonKey;
+  }
 
   makeColumns = () => {
     const { brand, department, position } = this.props;
@@ -359,12 +373,7 @@ export default class extends PureComponent {
           title: 'name',
           value: 'id',
           parentId: 'parent_id',
-          data: department && department.map((item) => {
-            return {
-              ...item,
-              disabled: !getDepartmentAuthority(item.id),
-            };
-          }),
+          data: department.map(item => item),
         },
         render: (val) => {
           const data = department && department.filter(item => item.id === val)[0];
@@ -460,7 +469,7 @@ export default class extends PureComponent {
         },
       },
     ];
-  };
+  }
 
   makeExtraOperator = () => {
     const extra = [];
@@ -518,15 +527,15 @@ export default class extends PureComponent {
     ));
 
     return extra;
-  };
+  }
 
   tabsChange = (activeKey) => {
     this.setState({ activeKey });
-  };
+  }
 
   searChModal = (visible) => {
     this.modalVisible = visible;
-  };
+  }
 
   render() {
     const { panes, activeKey } = this.state;

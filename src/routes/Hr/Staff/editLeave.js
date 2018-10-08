@@ -101,21 +101,21 @@ export default class extends PureComponent {
         </FormItem>
         <FormItem {...formItemLayout} label="跳过工作交接">
           {getFieldDecorator('skip_leaving', {
-            initialValue: editStaff.skip_leaving || false,
+            initialValue: false,
           })(
             <Switch onChange={this.handleChange} />
           )}
         </FormItem>
         <FormItem label="执行时间" name="operate_at" required {...formItemLayout}>
           {getFieldDecorator('operate_at', {
-            initialValue: editStaff.operate_at || '',
+            initialValue: '',
           })(
             <DatePicker />
           )}
         </FormItem>
         <FormItem label="操作说明" {...formItemLayout} name="operation_remark">
           {getFieldDecorator('operation_remark', {
-            initialValue: editStaff.operation_remark || '',
+            initialValue: '',
           })(
             <Input.TextArea
               placeholder="最大长度100个字符"
