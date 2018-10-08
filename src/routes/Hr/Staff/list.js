@@ -11,6 +11,7 @@ import {
   Tooltip,
   Tabs,
   Modal,
+  notification,
 } from 'antd';
 
 import { connect } from 'dva';
@@ -154,9 +155,8 @@ export default class extends PureComponent {
   }
 
   resetPassword = (staffsn) => {
-    console.log(staffsn);
     Modal.confirm({
-      title: '确认删除？',
+      title: '确认重置？',
       cancelText: '取消',
       okText: '确认',
       onOk: () => {
@@ -164,6 +164,11 @@ export default class extends PureComponent {
         dispatch({
           type: 'staffs/resetPassword',
           payload: { staff_sn: staffsn },
+          onSuccess: (response) => {
+            notification.success({
+              message: response.message,
+            });
+          },
         });
       },
       onCancel: () => {},
@@ -172,15 +177,6 @@ export default class extends PureComponent {
 
   makeAction = (rowData) => {
     const handleButton = {
-      175: (
-        <Link to="/" key="unlock">
-          <Tooltip title="重置密码" mouseLeaveDelay={0}>
-            <a onClick={() => this.resetPassword(rowData.staff_sn)}>
-              <Icon type="retweet" style={{ fontSize: '18px' }} />
-            </a>
-          </Tooltip>
-        </Link>
-      ),
       66: (
         <Link to="/" key="unlock">
           <Tooltip title="激活" mouseLeaveDelay={0}>
@@ -258,6 +254,13 @@ export default class extends PureComponent {
           </a>
         </Tooltip>
       ),
+      175: (
+        <Tooltip title="重置密码" key="reset" mouseLeaveDelay={0}>
+          <a onClick={() => this.resetPassword(rowData.staff_sn)}>
+            <Icon type="sync" theme="outlined" style={{ fontSize: '18px' }} />
+          </a>
+        </Tooltip>
+      ),
     };
     const action = [
       <Tooltip title="个人信息" key="solution" mouseLeaveDelay={0}>
@@ -306,6 +309,9 @@ export default class extends PureComponent {
     }
     if (oa.indexOf(59)) {
       buttonKey.push(59);
+    }
+    if (oa.indexOf(175)) {
+      buttonKey.push(175);
     }
     return buttonKey;
   }

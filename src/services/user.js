@@ -92,3 +92,9 @@ export async function exportStaff(params) {
     body: params,
   });
 }
+
+export async function resetPassword(staffSn) {
+  return request(`/api/staff/reset/${staffSn}`, {
+    method: 'POST',
+  });
+}

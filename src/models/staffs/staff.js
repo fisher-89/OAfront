@@ -6,6 +6,7 @@ import {
   deleteStaff,
   importStaff,
   exportStaff,
+  resetPassword,
 } from '../../services/user';
 
 const store = 'staff';
@@ -183,6 +184,19 @@ export default {
       const response = yield call(exportStaff, params);
       if (response.errors && onError) {
         onError(response);
+      } else {
+        onSuccess(response);
+      }
+    } catch (error) {
+      return error;
+    }
+  },
+  * resetPassword({ payload, onSuccess, onError }, { call }) {
+    try {
+      const staffSn = payload.staff_sn;
+      const response = yield call(resetPassword, staffSn);
+      if (response.error && onError) {
+        onError(response.error);
       } else {
         onSuccess(response);
       }
