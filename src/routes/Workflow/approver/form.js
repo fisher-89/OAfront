@@ -25,15 +25,12 @@ export default class List extends PureComponent {
   }
 
   handleSubmit = (value, onError) => {
-    const { submit, initialValue, roles, modeId } = this.props;
-    const approverRoles = roles.filter(item => value.approver_roles.indexOf(`${item.id}`) !== -1)
-      .map(item => ({ value: item.id, text: item.role_name }));
+    const { submit, initialValue, modeId } = this.props;
     const params = {
       ...initialValue,
       ...value,
       ...value.department,
     };
-    params.approver_roles = approverRoles;
     params.step_approver_id = modeId;
     submit(params, onError);
   }
@@ -103,11 +100,7 @@ export default class List extends PureComponent {
             })(
               <TreeSelect
                 multiple
-                name={{
-                  value: 'id',
-                  text: 'name',
-                }}
-                valueIndex="value"
+                name={false}
                 dataSource={department}
                 getPopupContainer={triggerNode => (triggerNode)}
                 dropdownStyle={{ maxHeight: '300px', overflow: 'auto' }}
@@ -116,7 +109,7 @@ export default class List extends PureComponent {
           </FormItem>
           <FormItem label="角色" required {...formItemLayout}>
             {getFieldDecorator('approver_roles', {
-              initialValue: approverRoles.map(item => `${item.value}`) || [],
+              initialValue: approverRoles,
             })(
               <Select placeholder="请输入" mode="multiple">
                 {roles.map(item => <Option key={item.id}>{item.role_name}</Option>)}

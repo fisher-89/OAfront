@@ -26,7 +26,9 @@ const stepDefaultValue = {
   hidden_fields: [],
   editable_fields: [],
   required_fields: [],
-  approvers: { staff: [], roles: [], departments: [] },
+  approver_type: 0,
+  step_approver_id: null,
+  approvers: { staff: [], roles: [], departments: [], manager: '' },
   reject_type: 0,
   concurrent_type: 0,
   merge_type: 0,
@@ -41,10 +43,11 @@ const stepDefaultValue = {
   prev_step_key: [],
 };
 
-@connect(({ staffs, department, roles, loading }) => ({
+@connect(({ staffs, workflow, department, roles, loading }) => ({
   staffInfo: staffs.staffDetails,
   staffSearcherResult: staffs.tableResult,
   staffSearcherTotal: staffs.total,
+  approver: workflow.approver,
   staffsLoading: loading.effects['staffs/fetchStaffForSearchTable'],
   department: department.department,
   departmentLoading: loading.effects['department/fetchDepartment'],
@@ -86,38 +89,14 @@ export default class StepForm extends React.PureComponent {
       },
       editData: editData || [],
       dataCommit: data || { ...stepDefaultValue },
-      staff: [],
     };
   }
 
   componentDidMount() {
-    const { dataCommit } = this.state;
     this.fetchDepartment({});
     this.fetchRoles({});
-    if (dataCommit.approvers.staff.length > 0) {
-      this.fetchUser(dataCommit.approvers.staff);
-    }
+    this.fetchMode();
   }
-
-  componentWillReceiveProps(nextProps) {
-    const { staffInfo } = nextProps;
-    if (staffInfo !== this.props.staffInfo) {
-      const key = this.state.dataCommit.approvers.staff;
-      const staff = [];
-      nextProps.staffInfo[`${key}`].forEach((item) => {
-        staff.push({ realname: item.realname, staff_sn: item.staff_sn });
-      });
-      this.setState({ staff });
-    }
-  }
-
-  fetchUser = (data) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'staffs/fetchStaffForSearchTable',
-      payload: { staff_sn: data, filters: `staff_sn=[${data}];status_id>0` },
-    });
-  };
 
   fetchDepartment = (params) => {
     const { dispatch } = this.props;
@@ -126,6 +105,11 @@ export default class StepForm extends React.PureComponent {
       payload: params,
     });
   };
+
+  fetchMode = () => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'workflow/fetchApprover' });
+  }
 
   fetchRoles = (params) => {
     const { dispatch } = this.props;
@@ -244,38 +228,10 @@ export default class StepForm extends React.PureComponent {
         targetKeys: [],
         data: [],
       },
-      staff: [],
       editData: this.props.hiddenData,
       dataCommit: stepDefaultValue,
     });
     scrollTo(0, 0);
-  };
-
-  searchStaff = () => {
-    const { staff, dataCommit } = this.state;
-
-    return (
-      <SearchTable.Staff
-        multiple
-        value={staff}
-        name={{
-          staff_sn: 'staff_sn',
-          realname: 'realname',
-        }}
-        showName="realname"
-        filters={{ content: 'status_id>=0;', status: [1, 2, 3] }}
-        disabled={this.state.formAble}
-        onChange={(value) => {
-          this.setState({
-            staff: value,
-            dataCommit: {
-              ...dataCommit,
-              approvers: { ...dataCommit.approvers, staff: value.map(item => item.staff_sn) },
-            },
-          });
-        }}
-      />
-    );
   };
 
   markDepartmentTree = (data, tree, pid = 0, key = 0) => {
@@ -316,9 +272,10 @@ export default class StepForm extends React.PureComponent {
     } = this.state;
     const disVisible = editFields.data.length === 0 ? 'none' : 'block';
     const editVisible = editData.length === 0 ? 'none' : 'block';
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, getFieldValue } = this.props.form;
     const departmentTree = [];
     this.markDepartmentTree(department, departmentTree);
+    const approverType = getFieldValue('approver_type');
     return (
       <Form
         id="addTypeForm"
@@ -361,93 +318,122 @@ export default class StepForm extends React.PureComponent {
         <FormItem
           labelCol={{ span: 5 }}
           wrapperCol={{ span: 15 }}
-          label="审批人"
+          label="审批类型"
         >
-          {getFieldDecorator('approvers[staff]', {
-            initialValue: dataCommit.approvers.staff,
+          {getFieldDecorator('approver_type', {
+            initialValue: dataCommit.approver_type,
           })(
-            <Input hidden placeholder="请输入" />
+            <Select
+              placeholder="请选择"
+              onChange={() => {
+                this.props.form.setFieldsValue({
+                  'approvers.roles': [],
+                  'approvers.staff': [],
+                  'approvers.manager': '',
+                  'approvers.departments': [],
+                  step_approver_id: null,
+                });
+              }}
+            >
+              <Option value={0}>全部</Option>
+              <Option value={1}>审批</Option>
+              <Option value={2}>审批模板</Option>
+              <Option value={3}>当前管理员</Option>
+            </Select>
           )}
-          {this.searchStaff()}
         </FormItem>
 
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="部门"
-        >
-          {getFieldDecorator('approvers[departments]', {
-            initialValue: dataCommit.approvers.departments,
-          })(
-            <Input hidden placeholder="请输入" />
-          )}
-          <TreeSelect
-            multiple
-            allowClear
-            dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-            placeholder="请选择部门!"
-            treeData={departmentTree}
-            value={dataCommit.approvers.departments.map(item => item.toString())}
-            filterTreeNode={(inputValue, treeNode) => {
-              if (treeNode.props.title.indexOf(inputValue) !== -1) {
-                return true;
-              }
-            }}
-            onChange={(value) => {
-              const departments = value.map(item => parseInt(item, 10));
-              this.setState({
-                dataCommit: {
-                  ...dataCommit,
-                  approvers: { ...dataCommit.approvers, departments },
-                },
-              });
-            }}
-          />
-        </FormItem>
-
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="角色"
-        >
-          {getFieldDecorator('approvers[roles]', {
-            initialValue: dataCommit.approvers.roles,
-          })(
-            <Input hidden placeholder="请输入" />
-          )}
-          <Select
-            mode="multiple"
-            placeholder="请选择角色!"
-            tokenSeparators={[',']}
-            value={dataCommit.approvers.roles}
-            filterOption={(inputValue, option) => {
-              if (option.props.title.indexOf(inputValue) !== -1) {
-                return true;
-              }
-            }}
-            onChange={(value) => {
-              this.setState({
-                dataCommit: {
-                  ...dataCommit,
-                  approvers: { ...dataCommit.approvers, roles: [...value] },
-                },
-              });
-            }}
+        <div style={{ display: approverType === 2 ? 'block' : 'none' }}>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="审批类型"
           >
-            {roles ? roles.map((item, i) => {
-              return (
-                <Option
-                  key={`${i.toString()}-g`}
-                  value={item.id}
-                  title={item.role_name}
-                >
-                  {item.role_name}
-                </Option>
-              );
-            }) : null}
-          </Select>
-        </FormItem>
-
+            {getFieldDecorator('step_approver_id', {
+              initialValue: dataCommit.step_approver_id,
+            })(
+              <Select placeholder="请选择">
+                {this.props.approver.map(item => (<Option key={item.id}>{item.name}</Option>))}
+              </Select>
+            )}
+          </FormItem>
+        </div>
+        <div style={{ display: approverType === 3 ? 'block' : 'none' }}>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrappercol={{ span: 15 }}
+            label="合并类型"
+            name="merge_type"
+          >
+            {getFieldDecorator('approvers.manager', {
+              initialValue: dataCommit.approvers.manager,
+            })(
+              <RadioGroup>
+                <Radio value="shop_manager">当前店长</Radio>
+                <Radio value="department_manager">当前部门</Radio>
+              </RadioGroup>
+            )}
+          </FormItem>
+        </div>
+        <div style={{ display: approverType === 1 ? 'block' : 'none' }}>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="审批人"
+          >
+            {getFieldDecorator('approvers.staff', {
+              initialValue: dataCommit.approvers.staff,
+            })(
+              <SearchTable.Staff
+                multiple
+                showName="text"
+                name={{
+                  value: 'staff_sn',
+                  text: 'realname',
+                }}
+                disabled={this.state.formAble}
+                filters={{ content: 'status_id>=0;', status: [1, 2, 3] }}
+              />
+            )}
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="部门"
+          >
+            {getFieldDecorator('approvers.departments', {
+              initialValue: dataCommit.approvers.departments,
+            })(
+              <TreeSelect
+                multiple
+                allowClear
+                placeholder="请选择部门!"
+                treeData={departmentTree}
+                dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+              />
+            )}
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="角色"
+          >
+            {getFieldDecorator('approvers.roles', {
+              initialValue: dataCommit.approvers.roles,
+            })(
+              <Select
+                mode="multiple"
+                placeholder="请选择角色!"
+              >
+                {roles.map((item) => {
+                  return (
+                    <Option key={item.id}>{item.role_name}</Option>
+                  );
+                })}
+              </Select>
+            )}
+          </FormItem>
+        </div>
         <FormItem
           labelCol={{ span: 5 }}
           wrapperCol={{ span: 15 }}
