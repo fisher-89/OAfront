@@ -42,6 +42,7 @@ export default {
           payload: {
             store,
             data: response,
+            id: response.step_approver_id,
           },
         });
         onSuccess(response);
@@ -67,6 +68,7 @@ export default {
             id,
             store,
             data: response,
+            modeId: response.step_approver_id,
           },
         });
         onSuccess(response);
@@ -77,7 +79,7 @@ export default {
   },
   * deleteStepDepartment({ payload }, { call, put }) {
     try {
-      const { id } = payload;
+      const { id, modeId } = payload;
       const response = yield call(deleteStepDepartment, id);
       if (response.error) {
         notification.error({
@@ -90,6 +92,7 @@ export default {
           payload: {
             store,
             id,
+            modeId,
           },
         });
       }
@@ -98,3 +101,4 @@ export default {
     }
   },
 };
+

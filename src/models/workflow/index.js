@@ -54,7 +54,7 @@ export default {
     },
     addStepDepartmentData(state, action) {
       const { id, store, data } = action.payload;
-      notification.success('添加成功');
+      notification.success({ message: '添加成功' });
       const newData = state[store][id] || [];
       newData.push(data);
       return {
@@ -66,9 +66,9 @@ export default {
       };
     },
     updateStepDepartmentData(state, action) {
-      const { id, store, data } = action.payload;
-      notification.success('编辑成功');
-      let newData = state[store][id] || [];
+      const { id, store, modeId, data } = action.payload;
+      notification.success({ message: '编辑成功' });
+      let newData = state[store][modeId] || [];
       let updated = false;
       newData = newData.map((item) => {
         if (parseInt(item.id, 0) === parseInt(id, 0)) {
@@ -85,20 +85,19 @@ export default {
         ...state,
         [store]: {
           ...state[store],
-          [id]: newData,
+          [modeId]: newData,
         },
       };
     },
     deleteStepDepartmentData(state, action) {
-      const { id, store } = action.payload;
-      notification.success('删除成功');
-      let newData = state[store][id] || [];
-      newData = newData.filter(item => item.id === id);
+      const { id, modeId, store } = action.payload;
+      notification.success({ message: '删除成功' });
+      const newData = state[store][modeId] || [];
       return {
         ...state,
         [store]: {
           ...state[store],
-          [id]: newData,
+          [modeId]: newData.filter(item => item.id !== id),
         },
       };
     },

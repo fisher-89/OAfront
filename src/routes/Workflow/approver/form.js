@@ -25,11 +25,17 @@ export default class List extends PureComponent {
   }
 
   handleSubmit = (value, onError) => {
-    const { submit, initialValue } = this.props;
-    submit({
+    const { submit, initialValue, roles, modeId } = this.props;
+    const approverRoles = roles.filter(item => value.approver_roles.indexOf(`${item.id}`) !== -1)
+      .map(item => ({ value: item.id, text: item.role_name }));
+    const params = {
       ...initialValue,
       ...value,
-    }, onError);
+      ...value.department,
+    };
+    params.approver_roles = approverRoles;
+    params.step_approver_id = modeId;
+    submit(params, onError);
   }
 
   render() {
@@ -43,6 +49,9 @@ export default class List extends PureComponent {
       validateFields,
       form: { getFieldDecorator },
     } = this.props;
+
+    const approverRoles = initialValue.approver_roles || [];
+
     return (
       <OAModal
         title="规则"
@@ -55,19 +64,20 @@ export default class List extends PureComponent {
         <Card bordered={false}>
           <FormItem label="所属部门" required {...formItemLayout}>
             {getFieldDecorator('department', {
-              initialValue: initialValue.department || [],
+              initialValue: initialValue.department_id ? {
+                department_id: initialValue.department_id,
+                department_name: initialValue.department_name,
+              } : {},
             })(
               <TreeSelect
-                multiple
-                dataSource={department}
-                valueIndex="department_id"
                 name={{
                   department_id: 'id',
-                  department_full_name: 'full_name',
+                  department_name: 'name',
                 }}
+                valueIndex="department_id"
+                dataSource={department}
                 getPopupContainer={triggerNode => (triggerNode)}
                 dropdownStyle={{ maxHeight: '300px', overflow: 'auto' }}
-              // onChange={() => this.handleDefaultValueChange()}
               />
             )}
           </FormItem>
@@ -75,10 +85,15 @@ export default class List extends PureComponent {
         <Card bordered={false} title="审批">
           <FormItem label="员工" required {...formItemLayout}>
             {getFieldDecorator('approver_staff', {
-              initialValue: initialValue.approver_staff || '',
+              initialValue: initialValue.approver_staff || [],
             })(
               <SearchTable.Staff
                 multiple
+                showName="text"
+                name={{
+                  value: 'staff_sn',
+                  text: 'realname',
+                }}
               />
             )}
           </FormItem>
@@ -88,21 +103,20 @@ export default class List extends PureComponent {
             })(
               <TreeSelect
                 multiple
-                dataSource={department}
-                valueIndex="department_id"
                 name={{
-                  department_id: 'id',
-                  department_full_name: 'full_name',
+                  value: 'id',
+                  text: 'name',
                 }}
+                valueIndex="value"
+                dataSource={department}
                 getPopupContainer={triggerNode => (triggerNode)}
                 dropdownStyle={{ maxHeight: '300px', overflow: 'auto' }}
-              // onChange={() => this.handleDefaultValueChange()}
               />
             )}
           </FormItem>
           <FormItem label="角色" required {...formItemLayout}>
             {getFieldDecorator('approver_roles', {
-              initialValue: initialValue.approver_roles || [],
+              initialValue: approverRoles.map(item => `${item.value}`) || [],
             })(
               <Select placeholder="请输入" mode="multiple">
                 {roles.map(item => <Option key={item.id}>{item.role_name}</Option>)}

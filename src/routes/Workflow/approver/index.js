@@ -38,6 +38,7 @@ export default class extends PureComponent {
     });
   }
 
+
   columns = [
     {
       title: '编号',
@@ -51,35 +52,44 @@ export default class extends PureComponent {
       dataIndex: 'department_name',
     },
     {
+      width: 200,
       title: '员工',
       dataIndex: 'approver_staff',
-      render: key => key.text,
+      render: key => this.renderTooltip(key),
     },
     {
+      width: 200,
       title: '角色',
       dataIndex: 'approver_roles',
-      render: key => key.text,
+      render: key => this.renderTooltip(key),
     },
     {
+      width: 200,
       title: '部门',
       dataIndex: 'approver_departments',
-      render: key => key.text,
+      render: key => this.renderTooltip(key),
     },
     {
       title: '操作',
       render: rowData => (
         <Fragment>
           <a onClick={() => {
-            this.setState({ initialValue: rowData, visible: true });
+            this.setState({ initialValue: rowData, visible: true, type: true });
           }}
           >编辑
           </a>
           <Divider type="vertical" />
-          <a onClick={() => this.props.deleted(rowData.id)}>删除</a>
+          <a onClick={() => this.props.deleted(rowData.id, this.state.modeId)}>删除</a>
         </Fragment>
       ),
     },
   ]
+
+  renderTooltip = (key) => {
+    const text = key.map(item => item.text).join('、');
+    return OATable.renderEllipsis(text, true);
+  }
+
 
   render() {
     const { loading, list, rulesData = {}, modeDeleted } = this.props;
