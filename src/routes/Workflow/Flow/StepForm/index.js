@@ -362,8 +362,7 @@ export default class StepForm extends React.PureComponent {
           <FormItem
             labelCol={{ span: 5 }}
             wrappercol={{ span: 15 }}
-            label="合并类型"
-            name="merge_type"
+            label="管理者"
           >
             {getFieldDecorator('approvers.manager', {
               initialValue: dataCommit.approvers.manager,
