@@ -11,7 +11,7 @@ export default class TreeFilter extends PureComponent {
         checked: [],
         halfChecked: [],
       },
-      selectChild: false,
+      selectChild: true,
     };
   }
 
