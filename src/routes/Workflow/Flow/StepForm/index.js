@@ -275,7 +275,7 @@ export default class StepForm extends React.PureComponent {
     const { getFieldDecorator, getFieldValue } = this.props.form;
     const departmentTree = [];
     this.markDepartmentTree(department, departmentTree);
-    const approverType = getFieldValue('approver_type');
+    const approverType = getFieldValue('approver_type') === undefined ? dataCommit.approver_type : getFieldValue('approver_type');
     return (
       <Form
         id="addTypeForm"
@@ -342,7 +342,6 @@ export default class StepForm extends React.PureComponent {
             </Select>
           )}
         </FormItem>
-
         <div style={{ display: approverType === 2 ? 'block' : 'none' }}>
           <FormItem
             labelCol={{ span: 5 }}
@@ -350,7 +349,7 @@ export default class StepForm extends React.PureComponent {
             label="审批类型"
           >
             {getFieldDecorator('step_approver_id', {
-              initialValue: dataCommit.step_approver_id,
+              initialValue: dataCommit.step_approver_id ? `${dataCommit.step_approver_id}` : null,
             })(
               <Select placeholder="请选择">
                 {this.props.approver.map(item => (<Option key={item.id}>{item.name}</Option>))}
