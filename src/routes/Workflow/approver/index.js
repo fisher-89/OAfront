@@ -9,16 +9,22 @@ import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 
 @store()
 export default class extends PureComponent {
-  state = {
-    modeId: undefined,
-    initialValue: {},
-    visible: false,
-    type: false,
+  constructor(props) {
+    super(props);
+    let modeId;
+    if (props.list.length) (modeId = props.list[0].id);
+    this.state = {
+      modeId,
+      initialValue: {},
+      visible: false,
+      type: false,
+    };
   }
 
   componentWillMount() {
-    const { fetchMode, fetchDepartment } = this.props;
+    const { fetchMode, fetchDepartment, fetchRoles } = this.props;
     fetchMode();
+    fetchRoles();
     fetchDepartment();
   }
 
@@ -37,7 +43,6 @@ export default class extends PureComponent {
       fetchDataSource({ id: modeId });
     });
   }
-
 
   columns = [
     {
@@ -61,13 +66,19 @@ export default class extends PureComponent {
       width: 200,
       title: '角色',
       dataIndex: 'approver_roles',
-      render: key => this.renderTooltip(key),
+      render: (key) => {
+        const value = this.props.roles.filter(item => key.indexOf(`${item.id}`) !== -1).map(item => item.name);
+        return OATable.renderEllipsis(value.join('、'), true);
+      },
     },
     {
       width: 200,
       title: '部门',
       dataIndex: 'approver_departments',
-      render: key => this.renderTooltip(key),
+      render: (key) => {
+        const value = this.props.department.filter(item => key.indexOf(`${item.id}`) !== -1).map(item => item.name);
+        return OATable.renderEllipsis(value.join('、'), true);
+      },
     },
     {
       title: '操作',
