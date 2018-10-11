@@ -24,6 +24,7 @@ import OATable from '../../../components/OATable';
 import EditStaff from './edit';
 import ImportStaff from './import';
 import ExportStaff from './export';
+import EditProcess from './editProcess';
 
 import {
   customerAuthority,
@@ -51,6 +52,7 @@ export default class extends PureComponent {
     editVisible: false,
     transferVisible: false,
     leaveVisible: false,
+    processVisible: false,
     editStaff: {},
   }
 
@@ -138,6 +140,10 @@ export default class extends PureComponent {
     this.setState({ editStaff }, () => this.setState({ editVisible: true }));
   }
 
+  showStaffProcess = (editStaff) => {
+    this.setState({ editStaff }, () => this.setState({ processVisible: true }));
+  }
+
   deleteStaff = (staffsn) => {
     Modal.confirm({
       title: '确认删除?',
@@ -185,11 +191,15 @@ export default class extends PureComponent {
         </Link>
       ),
       55: (
-        <Link to="/" key="user-add">
-          <Tooltip title="转正" mouseLeaveDelay={0}>
+        <Tooltip title="转正" key="user-add" mouseLeaveDelay={0}>
+          <a
+            onClick={() => {
+              this.showStaffProcess(rowData);
+            }}
+          >
             <Icon type="user-add" style={{ fontSize: '18px' }} />
-          </Tooltip>
-        </Link>
+          </a>
+        </Tooltip>
       ),
       56: (
         <Tooltip title="人事变动" key="transfer" mouseLeaveDelay={0}>
@@ -286,32 +296,35 @@ export default class extends PureComponent {
   makeStaffActionKey = (statusId) => {
     const buttonKey = [];
     const { user, user: { authorities: { oa } } } = window;
-    if (user.is_active !== 0) {
+    if (user.is_active === 0) {
+      if (oa.indexOf(66)) {
+        buttonKey.push(66);
+      }
+    } else if (user.is_active === 1) {
       if (statusId === 1 && oa.indexOf(55)) {
         buttonKey.push(55);
-      } else if (statusId === 0 && oa.indexOf(107)) {
-        buttonKey.push(107);
-      } else if (statusId < 0 && oa.indexOf(58)) {
-        buttonKey.push(58);
-      } else if (statusId > 0) {
-        if (oa.indexOf(56)) {
-          buttonKey.push(56);
-        }
-        if (oa.indexOf(57)) {
-          buttonKey.push(57);
-        }
       }
-    } else if (user.is_active === 0 && oa.indexOf(66)) {
-      buttonKey.push(66);
+      if (statusId > 0 && oa.indexOf(175)) {
+        buttonKey.push(175);
+      }
+      if (statusId > 0 && oa.indexOf(56)) {
+        buttonKey.push(56);
+      }
+      if (statusId > 0 && oa.indexOf(57)) {
+        buttonKey.push(57);
+      }
+      if (statusId === 0 && oa.indexOf(107)) {
+        buttonKey.push(107);
+      }
+    }
+    if (statusId < 0 && oa.indexOf(58)) {
+      // buttonKey.push(58);
     }
     if (oa.indexOf(82)) {
       buttonKey.push(82);
     }
     if (oa.indexOf(59)) {
       buttonKey.push(59);
-    }
-    if (oa.indexOf(175)) {
-      buttonKey.push(175);
     }
     return buttonKey;
   }
@@ -623,6 +636,17 @@ export default class extends PureComponent {
               leaveVisible: false,
               editStaff: {},
             });
+          }}
+        />
+        <EditProcess
+          loading={staffLoading}
+          visible={this.state.processVisible}
+          editStaff={this.state.editStaff}
+          onCancel={() => {
+              this.setState({
+                processVisible: false,
+                editStaff: {},
+              });
           }}
         />
       </Fragment>

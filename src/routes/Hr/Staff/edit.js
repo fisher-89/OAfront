@@ -53,20 +53,20 @@ export default class EditStaff extends PureComponent {
       onError: this.handleError,
       onSuccess: this.handleSuccess,
     });
-  };
+  }
 
   handleError = (err) => {
     const { onError } = this.props;
     onError(err);
-  };
+  }
 
   handleSuccess = () => {
     this.props.onCancel();
-  };
+  }
 
   handleSelectFilter = (input, option) => {
     return (option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0);
-  };
+  }
 
   render() {
     const formItemLayout = {
