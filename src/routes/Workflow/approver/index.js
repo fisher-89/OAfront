@@ -66,19 +66,13 @@ export default class extends PureComponent {
       width: 200,
       title: '角色',
       dataIndex: 'approver_roles',
-      render: (key) => {
-        const value = this.props.roles.filter(item => key.indexOf(`${item.id}`) !== -1).map(item => item.name);
-        return OATable.renderEllipsis(value.join('、'), true);
-      },
+      render: key => this.renderDataName(key, this.props.roles),
     },
     {
       width: 200,
       title: '部门',
       dataIndex: 'approver_departments',
-      render: (key) => {
-        const value = this.props.department.filter(item => key.indexOf(`${item.id}`) !== -1).map(item => item.name);
-        return OATable.renderEllipsis(value.join('、'), true);
-      },
+      render: key => this.renderDataName(key, this.props.department),
     },
     {
       title: '操作',
@@ -101,6 +95,10 @@ export default class extends PureComponent {
     return OATable.renderEllipsis(text, true);
   }
 
+  renderDataName = (key, data) => {
+    const value = data.filter(item => key.indexOf(`${item.id}`) !== -1).map(item => item.name);
+    return OATable.renderEllipsis(value.join('、'), true);
+  }
 
   render() {
     const { loading, list, rulesData = {}, modeDeleted } = this.props;
