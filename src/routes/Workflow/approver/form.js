@@ -35,6 +35,16 @@ export default class List extends PureComponent {
     submit(params, onError);
   }
 
+  handleChange = () => {
+    const { setFields, getFieldsValue } = this.props.form;
+    const value = getFieldsValue(['approver_staff', 'approver_staff', 'approver_roles']);
+    setFields({
+      approver_staff: { value: value.approver_staff, errors: undefined },
+      approver_departments: { value: value.approver_departments, errors: undefined },
+      approver_roles: { value: value.approver_roles, errors: undefined },
+    });
+  }
+
   render() {
     const {
       roles,
@@ -91,6 +101,7 @@ export default class List extends PureComponent {
                   value: 'staff_sn',
                   text: 'realname',
                 }}
+                onChange={this.handleChange}
               />
             )}
           </FormItem>
@@ -102,6 +113,7 @@ export default class List extends PureComponent {
                 multiple
                 name={false}
                 dataSource={department}
+                onChange={this.handleChange}
                 getPopupContainer={triggerNode => (triggerNode)}
                 dropdownStyle={{ maxHeight: '300px', overflow: 'auto' }}
               />
@@ -111,7 +123,7 @@ export default class List extends PureComponent {
             {getFieldDecorator('approver_roles', {
               initialValue: approverRoles,
             })(
-              <Select placeholder="请输入" mode="multiple">
+              <Select placeholder="请输入" mode="multiple" onChange={this.handleChange}>
                 {roles.map(item => <Option key={item.id}>{item.role_name}</Option>)}
               </Select>
             )}
