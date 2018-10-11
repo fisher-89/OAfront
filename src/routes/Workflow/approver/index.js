@@ -31,7 +31,7 @@ export default class extends PureComponent {
   componentWillReceiveProps(nextProps) {
     const { list } = nextProps;
     const { modeId } = this.state;
-    if (nextProps.list !== this.props.list && !modeId) {
+    if (nextProps.list !== this.props.list && !modeId && nextProps.list.length) {
       const [firstData] = list;
       this.fetchDetails(firstData.id);
     }
