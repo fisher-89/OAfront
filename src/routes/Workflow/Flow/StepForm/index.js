@@ -397,7 +397,7 @@ export default class StepForm extends React.PureComponent {
           <FormItem
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 15 }}
-            label="部门"
+            label="审批部门"
           >
             {getFieldDecorator('approvers.departments', {
               initialValue: dataCommit.approvers.departments,
@@ -414,7 +414,7 @@ export default class StepForm extends React.PureComponent {
           <FormItem
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 15 }}
-            label="角色"
+            label="审批角色"
           >
             {getFieldDecorator('approvers.roles', {
               initialValue: dataCommit.approvers.roles,
