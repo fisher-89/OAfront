@@ -413,10 +413,10 @@ export default class Flow extends React.PureComponent {
         result = false;
         return result;
       }
+      const location = !steps.length ? { x: 120, y: 120 } : { x: 0, y: 0 };
       const flowData = {
         ...data,
-        x: 0,
-        y: 0,
+        ...location,
       };
       steps.push(flowData);
     }
