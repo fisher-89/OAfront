@@ -94,14 +94,6 @@ export default class FlowChart extends React.PureComponent {
 
   componentDidMount() {
     this.initCanvas();
-    if (this.props.steps.length > 0) {
-      const { steps } = this.props;
-      const newFlowCharts = [];
-      this.getFlowChart(steps, newFlowCharts);
-      const lines = this.getLines(newFlowCharts);
-      this.state.flowCharts = newFlowCharts;
-      this.state.lines = lines;
-    }
     document.addEventListener('mouseup', this.clearCurrent);
   }
 
@@ -110,8 +102,13 @@ export default class FlowChart extends React.PureComponent {
     if (steps !== this.props.steps) {
       const { flowCharts } = this.state;
       if (flowCharts.length === 0) {
-        const newFlowCharts = [];
-        this.getFlowChart(steps, newFlowCharts);
+        const newFlowCharts = steps.map((item) => {
+          return {
+            data: item,
+            x: item.x ? parseInt(item.x, 10) : 0,
+            y: item.y ? parseInt(item.y, 10) : 0,
+          };
+        });
         const lines = this.getLines(newFlowCharts);
         this.setState({ flowCharts: newFlowCharts, lines });
       } else {
@@ -135,45 +132,6 @@ export default class FlowChart extends React.PureComponent {
     document.removeEventListener('mouseup', this.clearCurrent);
     this.vessel.removeEventListener('mousemove', this.traverseComponent);
   }
-
-  getFlowChart = (steps, flowCharts) => {
-    let firstStep = {};
-    const newSteps = steps.filter((step) => {
-      if (step.prev_step_key.length === 0) {
-        firstStep = {
-          x: 120,
-          y: 100,
-          data: step,
-        };
-      }
-      return step.prev_step_key.length !== 0;
-    });
-    flowCharts.push(firstStep);
-    this.getNextStep(newSteps, firstStep, flowCharts);
-  };
-
-  getNextStep = (steps, preStep, flowCharts) => {
-    if (preStep.data) {
-      steps.forEach((item) => {
-        const n = preStep.data.next_step_key.indexOf(item.step_key);
-        if (n !== -1) {
-          const stepKey = flowCharts.map(f => f.data.step_key);
-          const s = stepKey.indexOf(item.step_key);
-          const temp = {
-            x: preStep.x + rectWidth + 60,
-            y: preStep.y + (n * 2 * rectHeight),
-            data: item,
-          };
-          flowCharts.push(temp);
-          if (s !== -1) {
-            flowCharts.splice(s, 1);
-          } else {
-            this.getNextStep(steps, temp, flowCharts);
-          }
-        }
-      });
-    }
-  };
 
   getLines = (flowCharts) => {
     const stepsKey = flowCharts.map(({ data }) => {
@@ -208,13 +166,7 @@ export default class FlowChart extends React.PureComponent {
     }
     const { startPoint, from } = this.makerDrawingLine('startPoint', 'from', start, startDirect);
     const { endPoint, to } = this.makerDrawingLine('endPoint', 'to', end, endDirect);
-
-    return {
-      startPoint,
-      from,
-      endPoint,
-      to,
-    };
+    return { startPoint, from, endPoint, to };
   };
 
   setMouseStyle = (m) => {
@@ -374,7 +326,16 @@ export default class FlowChart extends React.PureComponent {
       const newLines = this.updateLinesLocation(newStep);
       newState.lines = newLines;
     }
-    this.setState({ ...newState });
+    this.setState({ ...newState }, () => {
+      const loaction = {};
+      newFlowChart.forEach((item) => {
+        loaction[item.data.step_key] = {
+          x: item.x,
+          y: item.y,
+        };
+      });
+      this.props.loactionUpdate(loaction);
+    });
   };
 
   deleteStep = (deleteStep) => {
