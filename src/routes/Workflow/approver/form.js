@@ -37,7 +37,7 @@ export default class List extends PureComponent {
 
   handleChange = () => {
     const { setFields, getFieldsValue } = this.props.form;
-    const value = getFieldsValue(['approver_staff', 'approver_staff', 'approver_roles']);
+    const value = getFieldsValue(['approver_staff', 'approver_departments', 'approver_roles']);
     setFields({
       approver_staff: { value: value.approver_staff, errors: undefined },
       approver_departments: { value: value.approver_departments, errors: undefined },
