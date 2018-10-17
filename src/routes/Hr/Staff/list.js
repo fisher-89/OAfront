@@ -317,8 +317,8 @@ export default class extends PureComponent {
         // buttonKey.push(107);
       }
     }
-    if (statusId < 0 && oa.indexOf(58)) {
-      // buttonKey.push(58);
+    if (statusId <= 0 && oa.indexOf(58)) {
+      buttonKey.push(58);
     }
     if (oa.indexOf(82)) {
       buttonKey.push(82);

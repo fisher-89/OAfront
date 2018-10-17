@@ -270,7 +270,7 @@ export default class EditStaff extends PureComponent {
                 <Col {...fieldsBoxLayout}>
                   <FormItem {...formItemLayout3} label="员工状态" required>
                     {getFieldDecorator('status_id', {
-                      initialValue: editStaff.status_id || 1,
+                      initialValue: (editStaff.status_id !== undefined) ? editStaff.status_id : 1,
                     })(
                       <Select placeholer="请选择">
                         <Option value={0}>离职中</Option>
