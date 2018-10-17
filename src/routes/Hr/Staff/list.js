@@ -314,7 +314,7 @@ export default class extends PureComponent {
         buttonKey.push(57);
       }
       if (statusId === 0 && oa.indexOf(107)) {
-        buttonKey.push(107);
+        // buttonKey.push(107);
       }
     }
     if (statusId < 0 && oa.indexOf(58)) {
@@ -335,6 +335,7 @@ export default class extends PureComponent {
     const gender = [{ value: 1, text: '男' }, { value: 2, text: '女' }];
     const staffProperty = ['无', '108将', '36天罡', '24金刚', '18罗汉'];
     const status = [
+      { value: 0, text: '离职中' },
       { value: 1, text: '试用期' },
       { value: 2, text: '在职' },
       { value: 3, text: '停薪留职' },

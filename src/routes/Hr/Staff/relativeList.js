@@ -16,13 +16,14 @@ export default class extends PureComponent {
       lg: 12,
     };
     const { form: { getFieldDecorator, setFieldsValue, getFieldValue }, value, name } = this.props;
-    getFieldDecorator(`${name}[relative_sn]`, {
+    const forName = `${name}[pivot]`;
+    getFieldDecorator(`${forName}[relative_sn]`, {
       initialValue: value.staff_sn || '',
     });
-    getFieldDecorator(`${name}[relative_name]`, {
+    getFieldDecorator(`${forName}[relative_name]`, {
       initialValue: value.realname || '',
     });
-    getFieldDecorator(`${name}[relative_type]`, {
+    getFieldDecorator(`${forName}[relative_type]`, {
       initialValue: value.relative_type ? value.relative_type.id.toString() : '',
     });
     return (
@@ -49,14 +50,14 @@ export default class extends PureComponent {
                   relative_name: 'realname',
                 }}
                 value={{
-                  relative_sn: getFieldValue(`${name}[relative_sn]`),
-                  relative_name: getFieldValue(`${name}[relative_name]`),
+                  relative_sn: getFieldValue(`${forName}[relative_sn]`),
+                  relative_name: getFieldValue(`${forName}[relative_name]`),
                 }}
                 showName="relative_name"
                 placeholder="请选择关系人"
                 onChange={(relative) => {
                   Object.keys(relative).forEach((key) => {
-                    setFieldsValue({ [`${name}[${key}]`]: relative[key] });
+                    setFieldsValue({ [`${forName}[${key}]`]: relative[key] });
                   });
                 }}
               />
@@ -81,9 +82,9 @@ export default class extends PureComponent {
               <Select
                 placeholder="请选择"
                 style={{ width: '100%' }}
-                value={getFieldValue(`${name}[relative_type]`)}
+                value={getFieldValue(`${forName}[relative_type]`)}
                 onChange={(relativeType) => {
-                  setFieldsValue({ [`${name}[relative_type]`]: relativeType });
+                  setFieldsValue({ [`${forName}[relative_type]`]: relativeType });
                 }}
               >
                 <Option value="0">-- 无 --</Option>
