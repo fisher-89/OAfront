@@ -60,7 +60,7 @@ export default class extends PureComponent {
     const { dispatch } = this.props;
     dispatch({ type: 'brand/fetchBrand' });
     dispatch({ type: 'position/fetchPosition' });
-    dispatch({ type: 'department/fetchDepartment' });
+    dispatch({ type: 'department/fetchDepartment', payload: { withTrashed: true } });
   }
 
   onEdit = (targetKey, action) => {
