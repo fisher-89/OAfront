@@ -108,17 +108,24 @@ class OATable extends PureComponent {
       this.setState({ selectedRowKeys, selectedRows });
     }
     if (filters !== this.props.filters) {
-      const thisFiltersKey = { ...this.state.filters };
-      Object.keys(filters).forEach((filter) => {
-        thisFiltersKey[filter] = filters[filter];
-      });
-      if (JSON.stringify(thisFiltersKey) !== JSON.stringify(this.state.filters)) {
-        this.setState({ filters: { ...thisFiltersKey } }, () => {
-          if (this.props.serverSide) {
-            this.fetchTableDataSource();
-          }
-        });
+      this.onPropsFiltersChange(filters, 'filters');
+    }
+  }
+
+  onPropsFiltersChange = (data, key) => {
+    const thisFiltersKey = { ...this.state[key] };
+    Object.keys(data).forEach((filter) => {
+      if (!data[filter]) {
+        delete thisFiltersKey[filter];
+      } else {
+        thisFiltersKey[filter] = data[filter];
       }
+    });
+    if (JSON.stringify(thisFiltersKey) !== JSON.stringify(this.state[key])) {
+      this.setState({ [key]: thisFiltersKey }, () => {
+        const { filters, sorter, pagination } = this.state;
+        this.handleTableChange(pagination, filters, sorter);
+      });
     }
   }
 

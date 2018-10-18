@@ -4,11 +4,17 @@ import {
   Button,
   Divider,
   message,
+  Popover,
   Popconfirm,
 } from 'antd';
 import moment from 'moment';
+import { sexOption } from './add';
+import MoreSearch from './moreSearch';
 import store from './store/store';
+import district from '../../../assets/district';
+import { nation } from '../../../assets/nation';
 import OATable from '../../../components/OATable';
+import { province } from '../../../assets/province';
 import { customerStatus } from '../../../assets/customer';
 import { getFiltersData, customerAuthority } from '../../../utils/utils';
 
@@ -16,6 +22,17 @@ import { getFiltersData, customerAuthority } from '../../../utils/utils';
 @connect(({ customer }) => ({ customer: customer.customer }))
 @store()
 export default class extends PureComponent {
+  state = {
+    visible: false,
+    filters: {},
+  }
+
+  searchParamsFilter = {}
+
+  moreSearchChange = (filters) => {
+    this.setState({ filters: { ...filters }, visible: false });
+  }
+
   makeColumns = () => {
     const { source, tags, brands, deleted, staffBrandsAuth } = this.props;
     const { editable = [], visible = [] } = staffBrandsAuth;
@@ -34,14 +51,12 @@ export default class extends PureComponent {
         align: 'center',
         title: '客户姓名',
         dataIndex: 'name',
-        // width: 160,
         searcher: true,
       },
       {
         align: 'center',
         title: '电话',
         dataIndex: 'mobile',
-        // width: 160,
         searcher: true,
       },
       {
@@ -70,7 +85,7 @@ export default class extends PureComponent {
       {
         // width: 120,
         align: 'center',
-        title: '合作时间',
+        title: '初次合作时间',
         dataIndex: 'first_cooperation_at',
         sorter: true,
         render: time => (time ? moment(time).format('YYYY-MM-DD') : ''),
@@ -150,12 +165,99 @@ export default class extends PureComponent {
         },
       },
     ];
-    return columns;
+    const addressFilter = getFiltersData(district);
+    const filterColumns = [
+      {
+        hidden: true,
+        title: '性别',
+        searcher: true,
+        dataIndex: 'gender',
+      },
+      {
+        hidden: true,
+        title: '备注',
+        searcher: true,
+        dataIndex: 'wechat',
+      },
+      {
+        hidden: true,
+        title: '民族',
+        searcher: true,
+        dataIndex: 'nation',
+      }, {
+        hidden: true,
+        title: '籍贯',
+        searcher: true,
+        dataIndex: 'native_place',
+      }, {
+        hidden: true,
+        title: '备注',
+        searcher: true,
+        dataIndex: 'remark',
+      },
+      {
+        hidden: true,
+        title: '现住地址-省',
+        dataIndex: 'province_id',
+        filters: addressFilter,
+      },
+      {
+        hidden: true,
+        title: '现住地址-市',
+        dataIndex: 'city_id',
+        filters: addressFilter,
+      },
+      {
+        hidden: true,
+        title: '现住地址-区',
+        dataIndex: 'county_id',
+        filters: addressFilter,
+      },
+      {
+        hidden: true,
+        title: '身份证号码',
+        dataIndex: 'id_card_number',
+      },
+    ];
+    return columns.concat(filterColumns);
   }
 
 
   render() {
+    const { visible, filters } = this.state;
     const extraOperator = [];
+    let styleAble = false;
+    Object.keys(filters).forEach((filter) => {
+      if (filters[filter]) {
+        styleAble = true;
+      }
+    });
+    const btnStyle = styleAble ? { color: '#40a9ff', borderColor: '#40a9ff' } : {};
+    extraOperator.push((
+      <Popover
+        key="searchPop"
+        visible={visible}
+        trigger="click"
+        placement="bottomLeft"
+        content={
+          <MoreSearch
+            nation={nation}
+            province={province}
+            sexOption={sexOption}
+            moreChange={this.moreSearchChange}
+          />
+        }
+      >
+        <Button
+          icon="search"
+          style={btnStyle}
+          onClick={() => {
+            this.setState({ visible: !visible });
+          }}
+        >更多筛选
+        </Button>
+      </Popover>
+    ));
     if (customerAuthority(188)) {
       extraOperator.push((
         <Button
@@ -180,18 +282,34 @@ export default class extends PureComponent {
         </Button>
       ));
     }
-
+    if (customerAuthority(192)) {
+      extraOperator.push((
+        <Button
+          key="exprot"
+          icon="cloud-download"
+          onClick={() => {
+            this.props.downloadExcelCustomer(this.searchParamsFilter);
+          }}
+        >
+          导出数据
+        </Button>
+      ));
+    }
     const { loading, customer, fetchDataSource } = this.props;
     return (
       <React.Fragment>
         <OATable
           serverSide
+          filters={filters}
           loading={loading}
           data={customer.data}
           total={customer.total}
           columns={this.makeColumns()}
           extraOperator={extraOperator}
-          fetchDataSource={fetchDataSource}
+          fetchDataSource={(params) => {
+            this.searchParamsFilter.filters = params.filters;
+            fetchDataSource(params);
+          }}
           excelInto={customerAuthority(192) ? '/api/crm/clients/import' : false}
         />
       </React.Fragment>

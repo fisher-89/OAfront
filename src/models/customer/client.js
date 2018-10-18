@@ -1,9 +1,39 @@
 
-import { fetchCustomer, addCustomer, editCustomer, deleteCustomer, customerStaffBrandsAuth, downloadExcelTemp } from '../../services/customer';
+import {
+  downloadExcelCustomer,
+  fetchCustomer,
+  addCustomer,
+  editCustomer,
+  deleteCustomer,
+  customerStaffBrandsAuth,
+  downloadExcelTemp,
+} from '../../services/customer';
 
 const store = 'customer';
 
 export default {
+  * downloadExcelCustomer({ payload }, { call }) {
+    try {
+      const response = yield call(downloadExcelCustomer, payload);
+      if (response) {
+        response.blob().then((body) => {
+          const blob = new Blob([body]);
+          const filename = '客户资料.xls';
+          if ('download' in document.createElement('a')) {
+            const downloadElement = document.createElement('a');
+            let href = '';
+            if (window.URL) href = window.URL.createObjectURL(blob);
+            else href = window.webkitURL.createObjectURL(blob);
+            downloadElement.href = href;
+            downloadElement.download = filename;
+            downloadElement.click();
+            if (window.URL) window.URL.revokeObjectURL(href);
+            else window.webkitURL.revokeObjectURL(href);
+          }
+        });
+      }
+    } catch (err) { return err; }
+  },
   * customerStaffBrandsAuth({ payload }, { call, put, select }) {
     try {
       const { update } = payload || {};

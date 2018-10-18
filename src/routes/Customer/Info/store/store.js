@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'dva';
-import { message } from 'antd';
 import { makeProps } from '../../../../utils/utils';
 
 function makeLoading(loading) {
@@ -100,16 +99,11 @@ export default type => (Compoent) => {
       dispatch({ type: 'brand/fetchBrand' });
     }
 
-    downloadExcelTemp = () => {
+    downloadExcelCustomer = (params) => {
       const { dispatch } = this.props;
       dispatch({
-        type: 'customer/downloadExcelTemp',
-        onError: () => {
-          message.error('下载失败');
-        },
-        onSuccess: () => {
-          message.error('下载成功');
-        },
+        type: 'customer/downloadExcelCustomer',
+        payload: params,
       });
     }
 

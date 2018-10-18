@@ -6,6 +6,7 @@ import {
   Select,
   Button,
   Radio,
+  Upload,
 } from 'antd';
 import moment from 'moment';
 import OAForm, {
@@ -60,7 +61,7 @@ const tailFormItemLayout = {
 const rowGutter = { sm: 16, lg: 8 };
 const colSpan = { sm: rowGutter.sm / 2, lg: rowGutter.lg / 2 };
 
-const sexOption = [
+export const sexOption = [
   { label: '男', value: '男' },
   { label: '女', value: '女' },
 ];
@@ -68,6 +69,10 @@ const sexOption = [
 @store(['submit', 'fetchDataSource'])
 @OAForm.create()
 export default class extends React.PureComponent {
+  state = {
+
+  }
+
   componentDidMount() {
     const { fetchDataSource, match } = this.props;
     const { id } = match.params;
@@ -79,6 +84,13 @@ export default class extends React.PureComponent {
     const params = { ...values };
     if (this.id) params.id = this.id;
     submit({ id: this.id, ...values, shops: [] }, onError);
+  }
+
+  normFile = (e) => {
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e && e.fileList;
   }
 
   render() {
@@ -176,10 +188,36 @@ export default class extends React.PureComponent {
         </Row>
         <Row gutter={rowGutter}>
           <Col {...rowGutter}>
+            <FormItem label="客户头像" {...rowFormItemLayout}>
+              {getFieldDecorator('avata', {
+                initialValue: initialValue.avata || '',
+                valuePropName: 'fileList',
+                getValueFromEvent: this.normFile,
+              })(
+                <Upload name="logo" action="/api/crm/notes/files" listType="picture">
+                  <Button icon="upload">上传</Button>
+                </Upload>
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row gutter={rowGutter}>
+          <Col {...rowGutter}>
             <FormItem label="身份证号码" {...rowFormItemLayout} required>
               {getFieldDecorator('id_card_number', {
                 initialValue: initialValue.id_card_number || '',
                 rules: [validatorRequired],
+              })(
+                <Input placeholder="请输入" />
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row gutter={rowGutter}>
+          <Col {...rowGutter}>
+            <FormItem label="身份证照片" {...rowFormItemLayout}>
+              {getFieldDecorator('id_card_img', {
+                initialValue: initialValue.id_card_img || '',
               })(
                 <Input placeholder="请输入" />
               )}
@@ -246,6 +284,28 @@ export default class extends React.PureComponent {
                     (<Option key={`${item.id}`}>{item.name}</Option>))
                   }
                 </Select>
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row gutter={rowGutter}>
+          <Col {...rowGutter}>
+            <FormItem label="推荐人" {...rowFormItemLayout}>
+              {getFieldDecorator('referee', {
+                initialValue: {},
+              })(
+                <SearchTable.Customer />
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row gutter={rowGutter}>
+          <Col {...rowGutter}>
+            <FormItem label="开发人" {...rowFormItemLayout}>
+              {getFieldDecorator('developer', {
+                initialValue: {},
+              })(
+                <SearchTable.Staff />
               )}
             </FormItem>
           </Col>

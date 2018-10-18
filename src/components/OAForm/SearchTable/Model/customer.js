@@ -86,7 +86,7 @@ export default class Customer extends PureComponent {
     return columns;
   }
 
-  makeStaffProps = () => {
+  makeCustomerProps = () => {
     const {
       loading,
       searcherTotal,
@@ -111,7 +111,7 @@ export default class Customer extends PureComponent {
       valueName: 'id',
       ...this.props,
       tableProps: {
-        ...this.makeStaffProps(),
+        ...this.makeCustomerProps(),
         fetchDataSource: (_, params) => {
           let newParams = { ...params };
           if (!newParams.filters['brands.brand_id']) {

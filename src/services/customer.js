@@ -1,5 +1,13 @@
 import request from '../utils/request';
 
+export async function downloadExcelCustomer(params) {
+  return request('/api/crm/clients/export', {
+    method: 'GET',
+    body: params,
+    headers: { Accept: '*' },
+  });
+}
+
 /** 客户来源 */
 export async function fetchSource() {
   return request('/api/crm/source', { method: 'GET' });

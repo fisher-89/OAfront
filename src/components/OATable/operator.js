@@ -39,7 +39,7 @@ class Operator extends PureComponent {
 
   makeFilterString = (value, column) => {
     let newValue = value;
-    if (Array.isArray(value) && column.filterData) {
+    if (column.filterData) {
       if (Array.isArray(column.filterData)) {
         newValue = column.filterData
           .filter(item => newValue.indexOf(item.value.toString()) !== -1)
@@ -74,8 +74,9 @@ class Operator extends PureComponent {
     const filtersTag = [];
     filterColumns.forEach((item) => {
       Object.keys(filters).forEach((name) => {
+        const filterValue = filters[name];
         if (item.dataIndex === name && filters[name]) {
-          let lable = item.filterData ? filters[name] : filters[name][0];
+          let lable = item.filterData ? filterValue : filterValue[0];
           lable = this.makeFilterString(lable, item);
           if (lable) {
             const filterTag = { label: `${item.title}：${lable}`, dataIndex: name };
