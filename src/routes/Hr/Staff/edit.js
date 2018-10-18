@@ -47,6 +47,8 @@ export default class EditStaff extends PureComponent {
       ...params.recruiter,
       ...params.household,
       ...params.living,
+      is_active: params.is_active ? 1 : 0,
+      account_active: params.account_active ? 1 : 0,
     };
     delete body.recruiter;
     delete body.household;
