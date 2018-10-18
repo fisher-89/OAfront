@@ -359,10 +359,12 @@ const menuData = [
           {
             name: '审批人配置',
             path: 'approverset',
+            authority: '115',
           },
           {
             name: '审核人配置',
             path: 'auditorset',
+            authority: '116',
           },
         ],
       },

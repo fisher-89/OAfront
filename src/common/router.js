@@ -314,9 +314,11 @@ export const getRouterData = (app) => {
     /** 应用管理 */
     '/appmanage/reimburse/approverset': {
       component: dynamicWrapper(app, ['appmanage'], () => import('../routes/Appmanage/Approverset')),
+      authority: '115',
     },
     '/appmanage/reimburse/auditorset': {
       component: dynamicWrapper(app, ['appmanage'], () => import('../routes/Appmanage/Auditorset')),
+      authority: '116',
     },
   };
   // Get name from ./menu.js or just set it in the router data.
