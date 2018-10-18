@@ -32,14 +32,12 @@ export default class Address extends PureComponent {
     };
   }
 
-  componentDidMount() {
-    this.makeSelectOption();
-  }
-
   componentWillReceiveProps(nextProps) {
-    if (JSON.stringify(nextProps.value) !== JSON.stringify(this.props.value)) {
+    if (nextProps.value !== this.props.value) {
       const value = makeInitialValue(nextProps.name, nextProps.value || {});
-      this.setState({ value });
+      this.setState({ value }, () => {
+        this.makeSelectOption();
+      });
     }
   }
 
@@ -51,14 +49,14 @@ export default class Address extends PureComponent {
 
   makeSelectOption = () => {
     const { value } = this.state;
-    const province = district.filter(item => item.parent_id === 0);
+    const province = district.filter(item => `${item.parent_id}` === '0');
     let city = [];
     if (value && value.province_id) {
-      city = district.filter(item => item.parent_id === value.province_id);
+      city = district.filter(item => `${item.parent_id}` === `${value.province_id}`);
     }
     let county = [];
     if (value && value.city_id) {
-      county = district.filter(item => item.parent_id === value.city_id);
+      county = district.filter(item => `${item.parent_id}` === `${value.city_id}`);
     }
     this.setState({ province, city, county });
   }
@@ -101,27 +99,27 @@ export default class Address extends PureComponent {
           <Select
             key="province_id"
             style={{ width: '33.33%' }}
-            value={value.province_id}
+            value={`${value.province_id || ''}`}
             onChange={this.makeCity}
             placeholder="省"
             disabled={able.province}
           >
             <Option value="" key="province" style={{ color: '#8e8e8e' }}>---请选择---</Option>
             {province.map((item) => {
-              return (<Option key={item.id} value={item.id}>{item.name}</Option>);
+              return (<Option key={`${item.id}`}>{item.name}</Option>);
             })}
           </Select>
           <Select
             key="city_id"
             style={{ width: '33.33%' }}
-            value={value.city_id}
+            value={`${value.city_id || ''}`}
             onChange={this.makeCounty}
             placeholder="市"
             disabled={able.city}
           >
             <Option value="" key="city" style={{ color: '#8e8e8e' }}>---请选择---</Option>
             {city.map((item) => {
-              return (<Option key={item.id} value={item.id}>{item.name}</Option>);
+              return (<Option key={`${item.id}`}>{item.name}</Option>);
             })}
           </Select>
           <Select
@@ -136,13 +134,13 @@ export default class Address extends PureComponent {
                 },
               }, this.setPropsValue);
             }}
-            value={value.county_id}
+            value={`${value.county_id || ''}`}
             placeholder="区"
             disabled={able.county}
           >
             <Option value="" key="county_id" style={{ color: '#8e8e8e' }}>---请选择---</Option>
             {county.map((item) => {
-              return (<Option key={item.id} value={item.id}>{item.name}</Option>);
+              return (<Option key={`${item.id}`}>{item.name}</Option>);
             })}
           </Select>
 
