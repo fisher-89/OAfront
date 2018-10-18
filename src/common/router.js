@@ -310,6 +310,14 @@ export const getRouterData = (app) => {
     '/passport/redirect_to_authorize': {
       component: dynamicWrapper(app, [], () => import('../routes/Oauth/RedirectToAuthorize')),
     },
+
+    /** 应用管理 */
+    '/appmanage/reimburse/approverset': {
+      component: dynamicWrapper(app, ['appmanage'], () => import('../routes/Appmanage/Approverset')),
+    },
+    '/appmanage/reimburse/auditorset': {
+      component: dynamicWrapper(app, ['appmanage'], () => import('../routes/Appmanage/Auditorset')),
+    },
   };
   // Get name from ./menu.js or just set it in the router data.
   const menuData = getFlatMenuData(getMenuData());

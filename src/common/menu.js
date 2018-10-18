@@ -346,6 +346,28 @@ const menuData = [
       },
     ],
   },
+  {
+    name: '应用管理',
+    icon: 'form',
+    path: 'appmanage',
+    authority: '51',
+    children: [
+      {
+        name: '报销系统',
+        path: 'reimburse',
+        children: [
+          {
+            name: '审批人配置',
+            path: 'approverset',
+          },
+          {
+            name: '审核人配置',
+            path: 'auditorset',
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 function formatter(data, parentPath = '', parentAuthority) {

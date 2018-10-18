@@ -12,6 +12,7 @@ export default class extends React.PureComponent {
 
   render() {
     const { value, showName, valueName } = this.props;
+
     let tagsData = [];
     if (value && value.length > 0) {
       tagsData = value.map((item, index) => {
@@ -42,6 +43,7 @@ export default class extends React.PureComponent {
       const isLongTag = tag.length > 20;
       const key = `tag${item.value}-${index}`;
       // const TooltipKey = `${tag}-${item.value}`;
+      console.log('value:', key);
       const tagElem = (
         <Tag
           key={key}
