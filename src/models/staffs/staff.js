@@ -7,6 +7,11 @@ import {
   importStaff,
   exportStaff,
   resetPassword,
+  againEntry,
+  unlock,
+  process,
+  transfer,
+  leave,
 } from '../../services/user';
 
 const store = 'staff';
@@ -200,6 +205,90 @@ export default {
       } else {
         onSuccess(response);
       }
+    } catch (error) {
+      return error;
+    }
+  },
+  * againEntry({ payload }, { call, put }) {
+    try {
+      const staffSn = payload.staff_sn;
+      const response = yield call(againEntry, staffSn);
+      yield put({
+        type: 'merge',
+        payload: {
+          store,
+          staff_sn: staffSn,
+          data: response,
+        },
+      });
+    } catch (error) {
+      return error;
+    }
+  },
+  * unlock({ payload }, { call, put }) {
+    try {
+      const staffSn = payload.staff_sn;
+      const response = yield call(unlock, staffSn);
+      yield put({
+        type: 'merge',
+        payload: {
+          store,
+          staff_sn: staffSn,
+          data: response,
+        },
+      });
+    } catch (error) {
+      return error;
+    }
+  },
+  * process({ payload, onError }, { call, put }) {
+    try {
+      const staffSn = payload.staff_sn;
+      const response = yield call(process, payload, staffSn);
+      if (response.errors && onError) {
+        onError(response);
+      } else {
+        yield put({
+          type: 'merge',
+          payload: {
+            store,
+            staff_sn: staffSn,
+            data: response,
+          },
+        });
+      }
+    } catch (error) {
+      return error;
+    }
+  },
+  * transfer({ payload }, { call, put }) {
+    try {
+      const staffSn = payload.staff_sn;
+      const response = yield call(transfer, payload, staffSn);
+      yield put({
+        type: 'merge',
+        payload: {
+          store,
+          staff_sn: staffSn,
+          data: response,
+        },
+      });
+    } catch (error) {
+      return error;
+    }
+  },
+  * leave({ payload }, { call, put }) {
+    try {
+      const staffSn = payload.staff_sn;
+      const response = yield call(leave, payload, staffSn);
+      yield put({
+        type: 'merge',
+        payload: {
+          store,
+          staff_sn: staffSn,
+          data: response,
+        },
+      });
     } catch (error) {
       return error;
     }
