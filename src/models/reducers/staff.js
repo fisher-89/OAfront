@@ -129,4 +129,20 @@ export default {
       ...state[store],
     };
   },
+  merge(state, action) {
+    const { store, data } = action.payload;
+    const staffSn = action.payload.staff_sn;
+    notification.success({
+      message: data.message,
+    });
+    const dataSource = Array.isArray(state[store]) ? state[store] : (state[store].data || []);
+    const dataFilter = dataSource.filter(item => item.staff_sn !== staffSn);
+    const dataItem = dataSource.filter(item => item.staff_sn === staffSn);
+    const mergeData = Object.assign(dataItem, data.changes);
+    const newStore = dataFilter.push(mergeData);
+    return {
+      ...state,
+      [store]: Array.isArray(state[store]) ? newStore : { ...state[store], data: newStore },
+    };
+  },
 };

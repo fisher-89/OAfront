@@ -1,8 +1,10 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import moment from 'moment';
 import {
   Input,
   Select,
+  message,
 } from 'antd';
 
 import OAForm, { DatePicker, OAModal } from '../../../components/OAForm';
@@ -17,7 +19,7 @@ export default class extends PureComponent {
   handleSubmit = (params) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'staffs/editStaff',
+      type: 'staffs/process',
       payload: params,
       onError: this.handleError,
       onSuccess: this.handleSuccess,
@@ -26,7 +28,8 @@ export default class extends PureComponent {
 
   handleError = (err) => {
     const { onError } = this.props;
-    onError(err);
+    console.log(err);
+    onError(err.errors);
   }
 
   handleSuccess = () => {
@@ -91,7 +94,13 @@ export default class extends PureComponent {
           {getFieldDecorator('operate_at', {
             initialValue: '',
           })(
-            <DatePicker />
+            <DatePicker
+              onChange={(time) => {
+                if (moment(time).isAfter()) {
+                  message.warning(`将预约 ${time} 执行`);
+                }
+              }}
+            />
           )}
         </FormItem>
         <FormItem label="操作说明" {...formItemLayout1} name="operation_remark">
