@@ -9,6 +9,7 @@ import {
   TreeSelect,
   Select,
   Icon,
+  Steps,
 } from 'antd';
 import { connect } from 'dva';
 import OAForm, { InputTags, SearchTable } from '../../../../components/OAForm';
@@ -17,6 +18,7 @@ const FormItem = OAForm.Item;
 const RadioGroup = Radio.Group;
 const RadioButton = Radio.Button;
 const { Option } = Select;
+const { Step } = Steps;
 
 const stepDefaultValue = {
   name: '',
@@ -72,6 +74,7 @@ export default class StepForm extends React.PureComponent {
     }
     const defaultValue = data || stepDefaultValue;
     this.state = {
+      current: 0,
       hiddenFields: {
         selectedKeys: [],
         targetKeys: defaultValue.hidden_fields || [],
@@ -228,6 +231,7 @@ export default class StepForm extends React.PureComponent {
         targetKeys: [],
         data: [],
       },
+      current: 0,
       editData: this.props.hiddenData,
       dataCommit: stepDefaultValue,
     });
@@ -253,7 +257,7 @@ export default class StepForm extends React.PureComponent {
     const submitFormLayout = {
       wrapperCol: {
         xs: { span: 24, offset: 0 },
-        sm: { span: 10, offset: 7 },
+        sm: { span: 10, offset: 5 },
       },
     };
     const {
@@ -269,6 +273,7 @@ export default class StepForm extends React.PureComponent {
       editData,
       requireFields,
       dataCommit,
+      current,
     } = this.state;
     const disVisible = editFields.data.length === 0 ? 'none' : 'block';
     const editVisible = editData.length === 0 ? 'none' : 'block';
@@ -281,436 +286,356 @@ export default class StepForm extends React.PureComponent {
         id="addTypeForm"
         onSubmit={this.handleSubmit}
       >
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="名称"
-          name="name"
-        >
-          {getFieldDecorator('name', {
-            rules: [{
-              required: true,
-              message: '请输入名称',
-            }, {
-              max: 20,
-              message: '最大字符不能超过20',
-            }],
-            initialValue: dataCommit.name,
-          })(
-            <Input placeholder="请输入" />
-          )}
-        </FormItem>
+        <Steps current={current} size="small" style={{ padding: '20px 100px' }}>
+          <Step title="基础信息" />
+          <Step title="步骤条件" />
+          <Step title="表单字段" />
+          <Step title="操作类型" />
+          <Step title="回调地址" />
+        </Steps>
+        <div style={{ display: current === 0 ? 'block' : 'none' }}>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="名称"
+          >
+            {getFieldDecorator('name', {
+              rules: [{
+                required: true,
+                message: '请输入名称',
+              }, {
+                max: 20,
+                message: '最大字符不能超过20',
+              }],
+              initialValue: dataCommit.name,
+            })(
+              <Input placeholder="请输入" />
+            )}
+          </FormItem>
 
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="描述"
-          name="description"
-        >
-          {getFieldDecorator('description', {
-            initialValue: dataCommit.description,
-          })(
-            <Input placeholder="请输入" />
-          )}
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="描述"
+            name="description"
+          >
+            {getFieldDecorator('description', {
+              initialValue: dataCommit.description,
+            })(
+              <Input placeholder="请输入" />
+            )}
 
-        </FormItem>
+          </FormItem>
 
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="审批类型"
-        >
-          {getFieldDecorator('approver_type', {
-            initialValue: dataCommit.approver_type,
-          })(
-            <Select
-              placeholder="请选择"
-              onChange={() => {
-                this.props.form.setFieldsValue({
-                  'approvers.roles': [],
-                  'approvers.staff': [],
-                  'approvers.manager': '',
-                  'approvers.departments': [],
-                  step_approver_id: null,
-                });
-              }}
-            >
-              <Option value={0}>全部</Option>
-              <Option value={1}>审批</Option>
-              <Option value={2}>审批模板</Option>
-              <Option value={3}>当前管理员</Option>
-            </Select>
-          )}
-        </FormItem>
-        <div style={{ display: approverType === 2 ? 'block' : 'none' }}>
           <FormItem
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 15 }}
             label="审批类型"
           >
-            {getFieldDecorator('step_approver_id', {
-              initialValue: dataCommit.step_approver_id ? `${dataCommit.step_approver_id}` : null,
+            {getFieldDecorator('approver_type', {
+              initialValue: dataCommit.approver_type,
             })(
-              <Select placeholder="请选择">
-                {this.props.approver.map(item => (<Option key={item.id}>{item.name}</Option>))}
+              <Select
+                placeholder="请选择"
+                onChange={() => {
+                  this.props.form.setFieldsValue({
+                    'approvers.roles': [],
+                    'approvers.staff': [],
+                    'approvers.manager': '',
+                    'approvers.departments': [],
+                    step_approver_id: null,
+                  });
+                }}
+              >
+                <Option value={0}>全部</Option>
+                <Option value={1}>审批</Option>
+                <Option value={2}>审批模板</Option>
+                <Option value={3}>当前管理员</Option>
               </Select>
             )}
           </FormItem>
+          <div style={{ display: approverType === 2 ? 'block' : 'none' }}>
+            <FormItem
+              labelCol={{ span: 5 }}
+              wrapperCol={{ span: 15 }}
+              label="审批类型"
+            >
+              {getFieldDecorator('step_approver_id', {
+                initialValue: dataCommit.step_approver_id ? `${dataCommit.step_approver_id}` : null,
+              })(
+                <Select placeholder="请选择">
+                  {this.props.approver.map(item =>
+                    (<Option key={item.id}>{item.name}</Option>))}
+                </Select>
+              )}
+            </FormItem>
+          </div>
+          <div style={{ display: approverType === 3 ? 'block' : 'none' }}>
+            <FormItem
+              labelCol={{ span: 5 }}
+              wrappercol={{ span: 15 }}
+              label="管理者"
+            >
+              {getFieldDecorator('approvers.manager', {
+                initialValue: dataCommit.approvers.manager,
+              })(
+                <RadioGroup>
+                  <Radio value="shop_manager">当前店长</Radio>
+                  <Radio value="department_manager">当前部门</Radio>
+                </RadioGroup>
+              )}
+            </FormItem>
+          </div>
+          <div style={{ display: approverType === 1 ? 'block' : 'none' }}>
+            <FormItem
+              labelCol={{ span: 5 }}
+              wrapperCol={{ span: 15 }}
+              label="审批人"
+            >
+              {getFieldDecorator('approvers.staff', {
+                initialValue: dataCommit.approvers.staff,
+              })(
+                <SearchTable.Staff
+                  multiple
+                  showName="text"
+                  name={{
+                    value: 'staff_sn',
+                    text: 'realname',
+                  }}
+                  disabled={this.state.formAble}
+                  filters={{ content: 'status_id>=0;', status: [1, 2, 3] }}
+                />
+              )}
+            </FormItem>
+            <FormItem
+              labelCol={{ span: 5 }}
+              wrapperCol={{ span: 15 }}
+              label="审批部门"
+            >
+              {getFieldDecorator('approvers.departments', {
+                initialValue: dataCommit.approvers.departments,
+              })(
+                <TreeSelect
+                  multiple
+                  allowClear
+                  placeholder="请选择部门!"
+                  treeData={departmentTree}
+                  dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                />
+              )}
+            </FormItem>
+            <FormItem
+              labelCol={{ span: 5 }}
+              wrapperCol={{ span: 15 }}
+              label="审批角色"
+            >
+              {getFieldDecorator('approvers.roles', {
+                initialValue: dataCommit.approvers.roles,
+              })(
+                <Select
+                  mode="multiple"
+                  placeholder="请选择角色!"
+                >
+                  {roles.map((item) => {
+                    return (
+                      <Option key={item.id}>{item.role_name}</Option>
+                    );
+                  })}
+                </Select>
+              )}
+            </FormItem>
+          </div>
         </div>
-        <div style={{ display: approverType === 3 ? 'block' : 'none' }}>
+        <div style={{ display: current === 1 ? 'block' : 'none' }}>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="访问条件"
+            name="allow_condition"
+          >
+            {getFieldDecorator('allow_condition', {
+              initialValue: dataCommit.allow_condition,
+            })(
+              <InputTags placeholder="请输入" fields={fields} />
+            )}
+          </FormItem>
+
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="略过条件"
+            name="skip_condition"
+          >
+            {getFieldDecorator('skip_condition', {
+              initialValue: dataCommit.skip_condition,
+            })(
+              <InputTags placeholder="请输入" fields={fields} />
+            )}
+          </FormItem>
+        </div>
+        <div style={{ display: current === 2 ? 'block' : 'none' }}>
           <FormItem
             labelCol={{ span: 5 }}
             wrappercol={{ span: 15 }}
-            label="管理者"
+            label="隐藏字段"
+            name="hidden_fields"
           >
-            {getFieldDecorator('approvers.manager', {
-              initialValue: dataCommit.approvers.manager,
+            <Transfer
+              dataSource={hiddenData}
+              titles={['待选', '选中列表']}
+              targetKeys={hiddenFields.targetKeys}
+              selectedKeys={hiddenFields.selectedKeys}
+              onChange={this.handleHiddenChange}
+              onSelectChange={this.handleHiddenSelectChange}
+              render={(item) => {
+                return item.grids ? (
+                  <React.Fragment>
+                    {item.title} <Icon type="profile" theme="outlined" />
+                  </React.Fragment>
+                ) : item.title;
+              }}
+            />
+          </FormItem>
+
+          <FormItem
+            style={{ display: editVisible }}
+            labelCol={{ span: 5 }}
+            wrappercol={{ span: 15 }}
+            label="可编辑字段"
+            name="editable_fields"
+          >
+            <Transfer
+              dataSource={editData}
+              titles={['待选', '选中列表']}
+              targetKeys={editFields.targetKeys}
+              selectedKeys={editFields.selectedKeys}
+              onChange={this.handleEditChange}
+              onSelectChange={this.handleEditSelectChange}
+              render={(item) => {
+                return item.grids ? (
+                  <React.Fragment>
+                    {item.title} <Icon type="profile" />
+                  </React.Fragment>
+                ) : item.title;
+              }}
+            />
+          </FormItem>
+          <FormItem
+            style={{ display: disVisible }}
+            labelCol={{ span: 5 }}
+            wrappercol={{ span: 15 }}
+            label="必填字段"
+            name="required_fields"
+          >
+            <Transfer
+              dataSource={editFields.data}
+              titles={['待选', '选中列表']}
+              targetKeys={requireFields.targetKeys}
+              selectedKeys={requireFields.selectedKeys}
+              onChange={this.handleRequireChange}
+              onSelectChange={this.handleRequireSelectChange}
+              render={(item) => {
+                return item.grids ? (
+                  <React.Fragment>
+                    {item.title} <Icon type="profile" theme="outlined" />
+                  </React.Fragment>
+                ) : item.title;
+              }}
+            />
+          </FormItem>
+        </div>
+        <div style={{ display: current === 3 ? 'block' : 'none' }}>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrappercol={{ span: 15 }}
+            label="退回类型"
+            name="reject_type"
+          >
+            {getFieldDecorator('reject_type', {
+              rules: [{
+                required: true, message: '请选择退回类型',
+              }],
+              initialValue: dataCommit.reject_type,
             })(
-              <RadioGroup>
-                <Radio value="shop_manager">当前店长</Radio>
-                <Radio value="department_manager">当前部门</Radio>
+              <RadioGroup name="radiogroup1">
+                <RadioButton value={0}>禁止</RadioButton>
+                <RadioButton value={1}>到上一步</RadioButton>
+                <RadioButton value={2}>到之前任意步骤</RadioButton>
+              </RadioGroup>
+            )}
+          </FormItem>
+
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrappercol={{ span: 15 }}
+            label="并发类型"
+            name="concurrent_type"
+          >
+            {getFieldDecorator('concurrent_type', {
+              rules: [{
+                required: true, message: '请选择并发类型',
+              }],
+              initialValue: dataCommit.concurrent_type,
+            })(
+              <RadioGroup name="radiogroup2">
+                <RadioButton value={0}>禁止</RadioButton>
+                <RadioButton value={1}>允许</RadioButton>
+                <RadioButton value={2}>强制</RadioButton>
+              </RadioGroup>
+            )}
+
+          </FormItem>
+
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrappercol={{ span: 15 }}
+            label="合并类型"
+            name="merge_type"
+          >
+            {getFieldDecorator('merge_type', {
+              rules: [{
+                required: true, message: '请选择合并类型',
+              }],
+              initialValue: dataCommit.merge_type,
+            })(
+              <RadioGroup name="radiogroup3">
+                <RadioButton value={0}>非必须</RadioButton>
+                <RadioButton value={1}>必须</RadioButton>
               </RadioGroup>
             )}
           </FormItem>
         </div>
-        <div style={{ display: approverType === 1 ? 'block' : 'none' }}>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="审批人"
-          >
-            {getFieldDecorator('approvers.staff', {
-              initialValue: dataCommit.approvers.staff,
-            })(
-              <SearchTable.Staff
-                multiple
-                showName="text"
-                name={{
-                  value: 'staff_sn',
-                  text: 'realname',
-                }}
-                disabled={this.state.formAble}
-                filters={{ content: 'status_id>=0;', status: [1, 2, 3] }}
-              />
-            )}
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="审批部门"
-          >
-            {getFieldDecorator('approvers.departments', {
-              initialValue: dataCommit.approvers.departments,
-            })(
-              <TreeSelect
-                multiple
-                allowClear
-                placeholder="请选择部门!"
-                treeData={departmentTree}
-                dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-              />
-            )}
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="审批角色"
-          >
-            {getFieldDecorator('approvers.roles', {
-              initialValue: dataCommit.approvers.roles,
-            })(
-              <Select
-                mode="multiple"
-                placeholder="请选择角色!"
-              >
-                {roles.map((item) => {
-                  return (
-                    <Option key={item.id}>{item.role_name}</Option>
-                  );
-                })}
-              </Select>
-            )}
-          </FormItem>
-        </div>
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="访问条件"
-          name="allow_condition"
-        >
-          {getFieldDecorator('allow_condition', {
-            initialValue: dataCommit.allow_condition,
-          })(
-            <InputTags placeholder="请输入" fields={fields} />
-          )}
-        </FormItem>
-
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="略过条件"
-          name="skip_condition"
-        >
-          {getFieldDecorator('skip_condition', {
-            initialValue: dataCommit.skip_condition,
-          })(
-            <InputTags placeholder="请输入" fields={fields} />
-          )}
-        </FormItem>
-
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrappercol={{ span: 15 }}
-          label="隐藏字段"
-          name="hidden_fields"
-        >
-          <Transfer
-            dataSource={hiddenData}
-            titles={['待选', '选中列表']}
-            targetKeys={hiddenFields.targetKeys}
-            selectedKeys={hiddenFields.selectedKeys}
-            onChange={this.handleHiddenChange}
-            onSelectChange={this.handleHiddenSelectChange}
-            render={(item) => {
-              return item.grids ? (
-                <React.Fragment>
-                  {item.title} <Icon type="profile" theme="outlined" />
-                </React.Fragment>
-              ) : item.title;
-            }}
-          />
-        </FormItem>
-
-        <FormItem
-          style={{ display: editVisible }}
-          labelCol={{ span: 5 }}
-          wrappercol={{ span: 15 }}
-          label="可编辑字段"
-          name="editable_fields"
-        >
-          <Transfer
-            dataSource={editData}
-            titles={['待选', '选中列表']}
-            targetKeys={editFields.targetKeys}
-            selectedKeys={editFields.selectedKeys}
-            onChange={this.handleEditChange}
-            onSelectChange={this.handleEditSelectChange}
-            render={(item) => {
-              return item.grids ? (
-                <React.Fragment>
-                  {item.title} <Icon type="profile" />
-                </React.Fragment>
-              ) : item.title;
-            }}
-          />
-        </FormItem>
-        <FormItem
-          style={{ display: disVisible }}
-          labelCol={{ span: 5 }}
-          wrappercol={{ span: 15 }}
-          label="必填字段"
-          name="required_fields"
-        >
-          <Transfer
-            dataSource={editFields.data}
-            titles={['待选', '选中列表']}
-            targetKeys={requireFields.targetKeys}
-            selectedKeys={requireFields.selectedKeys}
-            onChange={this.handleRequireChange}
-            onSelectChange={this.handleRequireSelectChange}
-            render={(item) => {
-              return item.grids ? (
-                <React.Fragment>
-                  {item.title} <Icon type="profile" theme="outlined" />
-                </React.Fragment>
-              ) : item.title;
-            }}
-          />
-        </FormItem>
-
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrappercol={{ span: 15 }}
-          label="退回类型"
-          name="reject_type"
-        >
-          {getFieldDecorator('reject_type', {
-            rules: [{
-              required: true, message: '请选择退回类型',
-            }],
-            initialValue: dataCommit.reject_type,
-          })(
-            <RadioGroup name="radiogroup1">
-              <RadioButton value={0}>禁止</RadioButton>
-              <RadioButton value={1}>到上一步</RadioButton>
-              <RadioButton value={2}>到之前任意步骤</RadioButton>
-            </RadioGroup>
-          )}
-        </FormItem>
-
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrappercol={{ span: 15 }}
-          label="并发类型"
-          name="concurrent_type"
-        >
-          {getFieldDecorator('concurrent_type', {
-            rules: [{
-              required: true, message: '请选择并发类型',
-            }],
-            initialValue: dataCommit.concurrent_type,
-          })(
-            <RadioGroup name="radiogroup2">
-              <RadioButton value={0}>禁止</RadioButton>
-              <RadioButton value={1}>允许</RadioButton>
-              <RadioButton value={2}>强制</RadioButton>
-            </RadioGroup>
-          )}
-
-        </FormItem>
-
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrappercol={{ span: 15 }}
-          label="合并类型"
-          name="merge_type"
-        >
-          {getFieldDecorator('merge_type', {
-            rules: [{
-              required: true, message: '请选择合并类型',
-            }],
-            initialValue: dataCommit.merge_type,
-          })(
-            <RadioGroup name="radiogroup3">
-              <RadioButton value={0}>非必须</RadioButton>
-              <RadioButton value={1}>必须</RadioButton>
-            </RadioGroup>
-          )}
-        </FormItem>
-
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="开始回调地址"
-          name="start_callback_uri"
-        >
-          {getFieldDecorator('start_callback_uri', {
-            rules: [{
-              type: 'url', message: '请输入正确的开始回调地址！',
-            }],
-            initialValue: dataCommit.start_callback_uri,
-          })(
-            <Input placeholder="请输入" />
-          )}
-        </FormItem>
-
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="查看回调地址"
-          name="check_callback_uri"
-        >
-          {getFieldDecorator('check_callback_uri', {
-            rules: [{
-              type: 'url', message: '请输入正确的查看回调地址！',
-            }],
-            initialValue: dataCommit.check_callback_uri,
-          })(
-            <Input placeholder="请输入" />
-          )}
-        </FormItem>
-
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="通过回调地址"
-          name="approve_callback_uri"
-        >
-          {getFieldDecorator('approve_callback_uri', {
-            rules: [{
-              type: 'url', message: '请输入正确的通过回调地址！',
-            }],
-            initialValue: dataCommit.approve_callback_uri,
-          })(
-            <Input placeholder="请输入" />
-          )}
-
-        </FormItem>
-
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="驳回回调地址"
-          name="rejec_callback_uri"
-        >
-          {getFieldDecorator('rejec_callback_uri', {
-            rules: [{
-              type: 'url', message: '请输入正确的驳回回调地址！',
-            }],
-            initialValue: dataCommit.rejec_callback_uri,
-          })(
-            <Input placeholder="请输入" />
-          )}
-        </FormItem>
-
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="转交回调地址"
-          name="transfer_callback_uri"
-        >
-          {getFieldDecorator('transfer_callback_uri', {
-            rules: [{
-              type: 'url', message: '请输入正确的转交回调地址！',
-            }],
-            initialValue: dataCommit.transfer_callback_uri,
-          })(
-            <Input placeholder="请输入" />
-          )}
-        </FormItem>
-
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="结束回调地址"
-          name="end_callback_uri"
-        >
-          {getFieldDecorator('end_callback_uri', {
-            rules: [{
-              type: 'url', message: '请输入正确的结束回调地址！',
-            }],
-            initialValue: dataCommit.end_callback_uri,
-          })(
-            <Input placeholder="请输入" />
-          )}
-
-        </FormItem>
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="撤回回调地址"
-          name="withdraw_callback_uri"
-        >
-          {getFieldDecorator('withdraw_callback_uri', {
-            rules: [{
-              type: 'url', message: '请输入正确的撤回回调地址！',
-            }],
-            initialValue: dataCommit.withdraw_callback_uri,
-          })(
-            <Input placeholder="请输入" />
-          )}
-
-        </FormItem>
 
         <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
+          {current !== 0 && (
+            <Button
+              style={{ marginRight: 8 }}
+              onClick={() => {
+                this.setState({ current: current - 1 });
+              }}
+            >上一步
+            </Button>
+          )}
+          {current !== 3 && (
+            <Button
+              style={{ marginRight: 8 }}
+              onClick={() => {
+                this.setState({ current: current + 1 });
+              }}
+            >下一步
+            </Button>
+          )}
           <Button type="primary" htmlType="submit" loading={submitting}>生成流程</Button>
           <Button
+            type="danger"
+            ghost
             style={{ marginLeft: 8 }}
             onClick={this.handleReset}
           >
-            重置流程
+            重置
           </Button>
         </FormItem>
+
       </Form>
     );
   }

@@ -77,7 +77,7 @@ export default class List extends PureComponent {
         title: '操作',
         render: ({ id }) => (
           <Fragment>
-            <Link to={`/workflow/form/edit/${id}`}> 编辑 </Link>
+            <Link to={`/workflow/form/list/edit/${id}`}> 编辑 </Link>
             <Divider type="vertical" />
             <a onClick={() => this.handleDelete(id)}>删除</a>
           </Fragment>
@@ -86,18 +86,13 @@ export default class List extends PureComponent {
     ];
 
     const extraOperator = [
-      <Link to="/workflow/form/type" key="addType">
+      <Link to="/workflow/form/list/type" key="addType">
         <Button type="primary" icon="folder">
           分类管理
         </Button>
       </Link>,
-      <Link to="/workflow/form/urlSource" key="addUrl">
-        <Button type="primary" icon="link">
-          接口控件配置
-        </Button>
-      </Link>,
       <Tooltip title="新建表单" key="add">
-        <Link to="/workflow/form/add">
+        <Link to="/workflow/form/list/add">
           <Button type="primary" icon="plus" />
         </Link>
       </Tooltip>,
