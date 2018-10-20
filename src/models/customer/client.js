@@ -1,5 +1,7 @@
 
 import {
+  avatar,
+  card,
   downloadExcelCustomer,
   fetchCustomer,
   addCustomer,
@@ -32,6 +34,26 @@ export default {
           }
         });
       }
+    } catch (err) { return err; }
+  },
+  * avatar({ payload, onSuccess, onError }, { call }) {
+    try {
+      const response = yield call(avatar, payload);
+      if (typeof response === 'object' && response.errors) {
+        onError(response.errors);
+        return;
+      }
+      if (onSuccess) onSuccess(response);
+    } catch (err) { return err; }
+  },
+  * card({ payload, onSuccess, onError }, { call }) {
+    try {
+      const response = yield call(card, payload);
+      if (typeof response === 'object' && response.errors) {
+        onError(response.errors);
+        return;
+      }
+      if (onSuccess) onSuccess(response);
     } catch (err) { return err; }
   },
   * customerStaffBrandsAuth({ payload }, { call, put, select }) {

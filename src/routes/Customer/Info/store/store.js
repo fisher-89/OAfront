@@ -5,6 +5,7 @@ import { makeProps } from '../../../../utils/utils';
 function makeLoading(loading) {
   const commoLoading = (
     loading.effects['brand/fetchBrand'] ||
+    loading.effects['customer/fetchLevel'] ||
     loading.effects['customer/fetchTags'] ||
     loading.effects['customer/fetchSource'] ||
     loading.effects['customer/fetchCustomer'] ||
@@ -29,6 +30,7 @@ export default type => (Compoent) => {
     tags: customer.tags,
     brands: brand.brand,
     source: customer.source,
+    level: customer.level,
     tagsType: customer.tagsType,
     details: customer.customerDetails,
     staffBrandsAuth: customer.staffBrandsAuth,
@@ -44,10 +46,17 @@ export default type => (Compoent) => {
         ...values,
         vindicator_sn: values.vindicator.staff_sn || '',
         vindicator_name: values.vindicator.staff_name || '',
+        ...values.developer,
+        ...values.recommend,
+        icon: value.icon[0] || '',
+        id_card_image_f: value.id_card_image_f[0] || '',
+        id_card_image_b: value.id_card_image_b[0] || '',
         tags: (values.tags || []).map(item => ({ tag_id: item })),
         brands: (values.brands || []).map(item => ({ brand_id: item })),
       };
       delete params.vindicator;
+      delete params.developer;
+      delete params.recommend;
       return params;
     }
 
@@ -68,7 +77,13 @@ export default type => (Compoent) => {
       dispatch({
         type: id ? 'customer/editCustomer' : 'customer/addCustomer',
         payload: params,
-        onError: errors => onError(errors, { vindicator_name: 'vindicator' }),
+        onError: errors => onError(errors, {
+          vindicator_name: 'vindicator',
+          develop_sn: 'developer',
+          develop_name: 'developer',
+          recommend_id: 'recommend',
+          recommend_name: 'recommend',
+        }),
         onSuccess: () => {
           this.props.history.push('/client/customer/list');
         },
@@ -96,6 +111,7 @@ export default type => (Compoent) => {
       this.fetchTagsType();
       dispatch({ type: 'customer/fetchSource' });
       dispatch({ type: 'customer/fetchTags' });
+      dispatch({ type: 'customer/fetchLevel' });
       dispatch({ type: 'brand/fetchBrand' });
     }
 
