@@ -105,13 +105,17 @@ export default type => (Compoent) => {
       dispatch({ type: 'customer/customerStaffBrandsAuth' });
     }
 
+    fetchLevel = () => {
+      const { dispatch } = this.props;
+      dispatch({ type: 'customer/fetchLevel' });
+    }
+
     fetchStore() {
       const { dispatch } = this.props;
       this.fetchStaffBrandsAuth();
       this.fetchTagsType();
       dispatch({ type: 'customer/fetchSource' });
       dispatch({ type: 'customer/fetchTags' });
-      dispatch({ type: 'customer/fetchLevel' });
       dispatch({ type: 'brand/fetchBrand' });
     }
 

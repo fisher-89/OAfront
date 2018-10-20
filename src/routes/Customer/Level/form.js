@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-  Input,
-  InputNumber,
-} from 'antd';
+import { Input } from 'antd';
 import store from './store/store';
 import OAForm, { OAModal } from '../../../components/OAForm';
 
@@ -34,13 +31,13 @@ export default class extends React.PureComponent {
       form: { getFieldDecorator },
       visible, validatorRequired, validateFields, onCancel,
     } = this.props;
-    const title = initialValue.id ? '编辑' : '添加';
     return (
       <OAModal
         loading={loading}
         visible={visible}
-        title={`${title}客户来源`}
+        title="客户等级"
         onCancel={() => onCancel(false)}
+        actionType={initialValue.id !== undefined}
         onSubmit={validateFields(this.handleSubmit)}
       >
         <FormItem label="名称" {...formItemLayout} required>
@@ -56,13 +53,6 @@ export default class extends React.PureComponent {
             initialValue: initialValue.describe || '',
           })(
             <Input.TextArea placeholder="请输入" />
-          )}
-        </FormItem>
-        <FormItem label="排序" {...formItemLayout}>
-          {getFieldDecorator('sort', {
-            initialValue: initialValue.sort || 0,
-          })(
-            <InputNumber placeholder="请输入" min={0} />
           )}
         </FormItem>
       </OAModal>

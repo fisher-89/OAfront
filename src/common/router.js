@@ -98,6 +98,9 @@ export const getRouterData = (app) => {
     '/client/customer/source': {
       component: dynamicWrapper(app, ['customer'], () => import('../routes/Customer/Source')),
     },
+    '/client/customer/level': {
+      component: dynamicWrapper(app, ['customer'], () => import('../routes/Customer/Level')),
+    },
 
     '/client/notepad/list': {
       component: dynamicWrapper(app, [], () => import('../routes/Customer/Notepad')),

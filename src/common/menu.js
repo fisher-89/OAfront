@@ -41,6 +41,10 @@ const menuData = [
             path: 'source',
           },
           {
+            name: '客户等级',
+            path: 'level',
+          },
+          {
             name: '标签管理',
             path: 'tags',
             authority: '179',

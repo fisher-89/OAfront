@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, Button, Divider } from 'antd';
 import store from './store/store';
-import SourceForm from './form';
+import LevelForm from './form';
 import OATable from '../../../components/OATable';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 
@@ -58,7 +58,7 @@ export default class extends React.PureComponent {
 
   render() {
     const { visible, initialValue } = this.state;
-    const { fetchSource, source, loading } = this.props;
+    const { fetchLevel, level, loading } = this.props;
     const extraOperator = (
       <Button
         icon="plus"
@@ -67,21 +67,21 @@ export default class extends React.PureComponent {
           this.setState({ visible: true, initialValue: {} });
         }}
       >
-        添加来源
+        添加等级
       </Button>
     );
     return (
       <PageHeaderLayout>
         <Card bordered={false}>
           <OATable
-            data={source}
+            data={level}
             loading={loading}
-            total={source.length}
-            fetchDataSource={fetchSource}
+            total={level.length}
+            fetchDataSource={fetchLevel}
             columns={this.makeColumns()}
             extraOperator={extraOperator}
           />
-          <SourceForm
+          <LevelForm
             visible={visible}
             initialValue={initialValue}
             onCancel={this.handleModalVisible}
