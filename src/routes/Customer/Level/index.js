@@ -28,9 +28,9 @@ export default class extends React.PureComponent {
         dataIndex: 'name',
       },
       {
-        title: '描述',
+        title: '说明',
         searcher: true,
-        dataIndex: 'describe',
+        dataIndex: 'explain',
       },
       {
         title: '操作',

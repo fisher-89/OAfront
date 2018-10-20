@@ -66,17 +66,14 @@ export const sexOption = [
   { label: '女', value: '女' },
 ];
 
-@store(['submit', 'fetchDataSource'])
+@store(['submit', 'fetchDataSource', 'fetchLevel'])
 @OAForm.create()
 export default class extends React.PureComponent {
-  state = {
-
-  }
-
   componentDidMount() {
-    const { fetchDataSource, match } = this.props;
+    const { fetchDataSource, match, fetchLevel } = this.props;
     const { id } = match.params;
     if (id) { this.id = id; fetchDataSource({ id }); }
+    fetchLevel();
   }
 
   handleSubmit = (values, onError) => {
@@ -89,12 +86,15 @@ export default class extends React.PureComponent {
   render() {
     const {
       tags,
+      level,
       source,
       brands,
       tagsType,
       staffBrandsAuth,
       validateFields, validatorRequired,
-      form: { getFieldDecorator },
+      form: {
+        getFieldDecorator, setFieldsValue, getFieldValue,
+      },
     } = this.props;
     let tagsGroup = [];
     const tagsTypeId = tagsType.map(type => type.id);
@@ -153,10 +153,18 @@ export default class extends React.PureComponent {
           <Col {...rowGutter}>
             <FormItem label="客户头像" {...rowFormItemLayout}>
               {getFieldDecorator('icon', {
-                initialValue: initialValue.icon ? [initialValue.icon] : [],
+                initialValue: initialValue.icon || '',
               })(
-                <UploadCropper actionType="customer/avatar" name="iconImage" />
+                <Input type="hidden" />
               )}
+              <UploadCropper
+                name="iconImage"
+                value={getFieldValue('icon') ? [getFieldValue('icon')] : []}
+                actionType="customer/avatar"
+                onChange={(values) => {
+                  setFieldsValue({ icon: values[0] });
+                }}
+              />
             </FormItem>
           </Col>
         </Row>
@@ -179,12 +187,12 @@ export default class extends React.PureComponent {
         <Row gutter={rowGutter}>
           <Col {...rowGutter}>
             <FormItem label="客户等级" {...rowFormItemLayout} required>
-              {getFieldDecorator('level', {
-                initialValue: initialValue.level || [],
+              {getFieldDecorator('levels', {
+                initialValue: (initialValue.levels || []).map(item => item.level_id),
                 rules: [validatorRequired],
               })(
                 <Select placeholder="请选择" mode="multiple">
-                  {staffBransData.map(item =>
+                  {level.map(item =>
                     (<Option key={`${item.id}`}>{item.name}</Option>))
                   }
                 </Select>
@@ -221,11 +229,11 @@ export default class extends React.PureComponent {
         <Row gutter={rowGutter}>
           <Col {...rowGutter}>
             <FormItem label="合作省份" {...rowFormItemLayout} required>
-              {getFieldDecorator('cooperation_province', {
-                initialValue: initialValue.cooperation_province || undefined,
+              {getFieldDecorator('provinces', {
+                initialValue: (initialValue.provinces || []).map(item => item.level_id),
                 rules: [validatorRequired],
               })(
-                <Select placeholder="请选择">
+                <Select placeholder="请选择" mode="multiple">
                   {province.map(item =>
                     (<Option key={`${item.name}`}>{item.name}</Option>))
                   }
@@ -251,19 +259,37 @@ export default class extends React.PureComponent {
           <Col {...colSpan}>
             <FormItem label="身份证照片" {...formItemLayout}>
               {getFieldDecorator('id_card_image_f', {
-                initialValue: initialValue.id_card_image_f ? [initialValue.id_card_image_f] : [],
+                initialValue: initialValue.id_card_image_f || '',
               })(
-                <UploadCropper actionType="customer/card" name="cardImage" placeholder="上传正面" />
+                <Input type="hidden" />
               )}
+              <UploadCropper
+                name="cardImage"
+                placeholder="上传正面"
+                actionType="customer/card"
+                value={getFieldValue('id_card_image_f') ? [getFieldValue('id_card_image_f')] : []}
+                onChange={(values) => {
+                  setFieldsValue({ id_card_image_f: values[0] });
+                }}
+              />
             </FormItem>
           </Col>
           <Col {...colSpan}>
             <FormItem {...formItemLayout}>
               {getFieldDecorator('id_card_image_v', {
-                initialValue: initialValue.id_card_image_v ? [initialValue.id_card_image_v] : [],
+                initialValue: initialValue.id_card_image_v || '',
               })(
-                <UploadCropper actionType="customer/card" name="cardImage" placeholder="上传反面" />
+                <Input type="hidden" />
               )}
+              <UploadCropper
+                name="cardImage"
+                placeholder="上传正面"
+                actionType="customer/card"
+                value={getFieldValue('id_card_image_v') ? [getFieldValue('id_card_image_v')] : []}
+                onChange={(values) => {
+                  setFieldsValue({ id_card_image_v: values[0] });
+                }}
+              />
             </FormItem>
           </Col>
         </Row>

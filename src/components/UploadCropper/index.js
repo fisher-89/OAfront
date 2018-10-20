@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import { Upload, message, Icon, Modal } from 'antd';
 import moment from 'moment';
 import { connect } from 'dva';
@@ -6,7 +6,7 @@ import './index.less';
 import ModalCropper from './ModalCropper';
 
 @connect()
-export default class UploadCropper extends PureComponent {
+export default class UploadCropper extends React.Component {
   constructor(props) {
     super(props);
     const { value, fileList } = this.makeUploadListValue(props.value || []);
@@ -26,6 +26,16 @@ export default class UploadCropper extends PureComponent {
       const { value, fileList } = this.makeUploadListValue(nextProps.value);
       this.setState({ value, fileList });
     }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (JSON.stringify(nextState) !== JSON.stringify(this.state)) {
+      return true;
+    }
+    if (JSON.stringify(nextProps.value) === JSON.stringify(this.props.value)) {
+      return false;
+    }
+    return true;
   }
 
   makeUploadListValue = (files) => {

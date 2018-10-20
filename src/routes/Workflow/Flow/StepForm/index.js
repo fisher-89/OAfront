@@ -210,6 +210,8 @@ export default class StepForm extends React.PureComponent {
         } else {
           message.error('存在相同步骤名，请重新输入步骤！');
         }
+      } else {
+        this.setState({ current: 0 });
       }
     });
   };
@@ -286,7 +288,7 @@ export default class StepForm extends React.PureComponent {
         id="addTypeForm"
         onSubmit={this.handleSubmit}
       >
-        <Steps current={current} size="small" style={{ padding: '20px 100px' }}>
+        <Steps current={2} size="small" style={{ padding: '20px 100px' }}>
           <Step title="基础信息" />
           <Step title="步骤条件" />
           <Step title="表单字段" />
@@ -312,21 +314,6 @@ export default class StepForm extends React.PureComponent {
               <Input placeholder="请输入" />
             )}
           </FormItem>
-
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="描述"
-            name="description"
-          >
-            {getFieldDecorator('description', {
-              initialValue: dataCommit.description,
-            })(
-              <Input placeholder="请输入" />
-            )}
-
-          </FormItem>
-
           <FormItem
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 15 }}
@@ -445,6 +432,20 @@ export default class StepForm extends React.PureComponent {
               )}
             </FormItem>
           </div>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="描述"
+            name="description"
+          >
+            {getFieldDecorator('description', {
+              initialValue: dataCommit.description,
+            })(
+              <Input placeholder="请输入" />
+            )}
+
+          </FormItem>
+
         </div>
         <div style={{ display: current === 1 ? 'block' : 'none' }}>
           <FormItem
@@ -606,6 +607,121 @@ export default class StepForm extends React.PureComponent {
           </FormItem>
         </div>
 
+        <div style={{ display: current === 4 ? 'block' : 'none' }}>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="开始回调地址"
+            name="start_callback_uri"
+          >
+            {getFieldDecorator('start_callback_uri', {
+              rules: [{
+                type: 'url', message: '请输入正确的开始回调地址！',
+              }],
+              initialValue: dataCommit.start_callback_uri,
+            })(
+              <Input placeholder="请输入" />
+            )}
+          </FormItem>
+
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="查看回调地址"
+            name="check_callback_uri"
+          >
+            {getFieldDecorator('check_callback_uri', {
+              rules: [{
+                type: 'url', message: '请输入正确的查看回调地址！',
+              }],
+              initialValue: dataCommit.check_callback_uri,
+            })(
+              <Input placeholder="请输入" />
+            )}
+          </FormItem>
+
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="通过回调地址"
+            name="approve_callback_uri"
+          >
+            {getFieldDecorator('approve_callback_uri', {
+              rules: [{
+                type: 'url', message: '请输入正确的通过回调地址！',
+              }],
+              initialValue: dataCommit.approve_callback_uri,
+            })(
+              <Input placeholder="请输入" />
+            )}
+
+          </FormItem>
+
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="驳回回调地址"
+            name="rejec_callback_uri"
+          >
+            {getFieldDecorator('rejec_callback_uri', {
+              rules: [{
+                type: 'url', message: '请输入正确的驳回回调地址！',
+              }],
+              initialValue: dataCommit.rejec_callback_uri,
+            })(
+              <Input placeholder="请输入" />
+            )}
+          </FormItem>
+
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="转交回调地址"
+            name="transfer_callback_uri"
+          >
+            {getFieldDecorator('transfer_callback_uri', {
+              rules: [{
+                type: 'url', message: '请输入正确的转交回调地址！',
+              }],
+              initialValue: dataCommit.transfer_callback_uri,
+            })(
+              <Input placeholder="请输入" />
+            )}
+          </FormItem>
+
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="结束回调地址"
+            name="end_callback_uri"
+          >
+            {getFieldDecorator('end_callback_uri', {
+              rules: [{
+                type: 'url', message: '请输入正确的结束回调地址！',
+              }],
+              initialValue: dataCommit.end_callback_uri,
+            })(
+              <Input placeholder="请输入" />
+            )}
+
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="撤回回调地址"
+            name="withdraw_callback_uri"
+          >
+            {getFieldDecorator('withdraw_callback_uri', {
+              rules: [{
+                type: 'url', message: '请输入正确的撤回回调地址！',
+              }],
+              initialValue: dataCommit.withdraw_callback_uri,
+            })(
+              <Input placeholder="请输入" />
+            )}
+          </FormItem>
+        </div>
+
         <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
           {current !== 0 && (
             <Button
@@ -616,7 +732,7 @@ export default class StepForm extends React.PureComponent {
             >上一步
             </Button>
           )}
-          {current !== 3 && (
+          {current !== 4 && (
             <Button
               style={{ marginRight: 8 }}
               onClick={() => {
