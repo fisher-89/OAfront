@@ -80,7 +80,7 @@ export default class extends React.PureComponent {
     const { submit } = this.props;
     const params = { ...values };
     if (this.id) params.id = this.id;
-    submit({ id: this.id, ...values, shops: [] }, onError);
+    submit({ ...params, shops: [] }, onError);
   }
 
   render() {
@@ -229,13 +229,13 @@ export default class extends React.PureComponent {
         <Row gutter={rowGutter}>
           <Col {...rowGutter}>
             <FormItem label="合作省份" {...rowFormItemLayout} required>
-              {getFieldDecorator('provinces', {
-                initialValue: (initialValue.provinces || []).map(item => item.level_id),
+              {getFieldDecorator('linkages', {
+                initialValue: (initialValue.linkages || []).map(item => item.linkage_id),
                 rules: [validatorRequired],
               })(
                 <Select placeholder="请选择" mode="multiple">
                   {province.map(item =>
-                    (<Option key={`${item.name}`}>{item.name}</Option>))
+                    (<Option key={`${item.id}`}>{item.name}</Option>))
                   }
                 </Select>
               )}
@@ -323,7 +323,12 @@ export default class extends React.PureComponent {
           <Col {...rowGutter}>
             <FormItem label="现住地址" {...rowFormItemLayout}>
               {getFieldDecorator('present_address', {
-                initialValue: initialValue.present_address || {},
+                initialValue: {
+                  address: initialValue.address || '',
+                  city_id: initialValue.city_id || '',
+                  county_id: initialValue.county_id || '',
+                  province_id: initialValue.province_id || '',
+                },
               })(
                 <Address />
               )}

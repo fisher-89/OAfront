@@ -1,7 +1,7 @@
 import React from 'react';
 import { Drawer, Button } from 'antd';
 import store from './store/store';
-import { getAddress } from '../Info/info';
+// import { getAddress } from '../Info/info';
 import { customerAuthority } from '../../../utils/utils';
 import OATable from '../../../components/OATable';
 
@@ -47,19 +47,10 @@ export default class extends React.PureComponent {
     const changes = !Array.isArray(initialValue.changes) ? (initialValue.changes || {}) : {};
     const data = [];
     Object.keys(changes).forEach((key, index) => {
-      let dirty;
-      let original;
-      const [dirtyStr, originalStr] = changes[key];
-      if (dirtyStr && Object.keys(dirtyStr).length) {
-        dirty = getAddress(dirtyStr);
-      } else {
-        [dirty] = changes[key];
-      }
-      if (originalStr && Object.keys(originalStr).length) {
-        original = getAddress(originalStr);
-      } else {
-        [, original] = changes[key];
-      }
+      // let dirty;
+      // let original;
+      // const [dirtyStr, originalStr] = changes[key];
+      const [dirty, original] = changes[key];
       data.push({
         key: index,
         name: key,

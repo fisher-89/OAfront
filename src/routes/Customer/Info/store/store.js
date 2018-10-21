@@ -48,14 +48,16 @@ export default type => (Compoent) => {
         vindicator_name: values.vindicator.staff_name || '',
         ...values.developer,
         ...values.recommend,
+        ...values.present_address,
         tags: values.tags.map(item => ({ tag_id: item })),
         brands: values.brands.map(item => ({ brand_id: item })),
         levels: values.levels.map(item => ({ level_id: item })),
-        provinces: values.provinces.map(item => ({ province_id: item })),
+        provinces: values.linkages.map(item => ({ linkage_id: item })),
       };
       delete params.vindicator;
       delete params.developer;
       delete params.recommend;
+      delete params.present_address;
       return params;
     }
 

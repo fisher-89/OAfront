@@ -48,7 +48,13 @@ export function getAddress(data) {
 
 function CustomerInfo(props) {
   const { data, loading, source, tags, brands, tagsType } = props;
-  const address = getAddress(data.present_address || {});
+  const presentAddress = {
+    address: data.address || '',
+    city_id: data.city_id || '',
+    county_id: data.county_id || '',
+    province_id: data.province_id || '',
+  };
+  const address = getAddress(presentAddress || {});
   const sourceData = findRenderKey(source, data.source_id);
   const statusData = findRenderKey(customerStatus, data.status);
   const analysisTag = analysisData(tags, data.tags, 'tag_id', false);
