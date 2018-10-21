@@ -118,24 +118,12 @@ export default class extends React.PureComponent {
       img: '',
       thumb: '',
     };
-    const cardImageB = {
-      img: '',
-      thumb: '',
-    };
-    const cardImageF = {
-      img: '',
-      thumb: '',
-    };
     if (details[this.id]) {
       initialValue = details[this.id];
       nameDisabled = (moment().unix() - moment(initialValue.created_at).unix()) > 7 * 86400;
       brandValue = initialValue.brands.map(item => `${item.brand_id}`);
       const { icon = [] } = initialValue;
       ([iconImage.img, iconImage.thumb] = icon);
-      const idCardB = initialValue.id_card_image_b || [];
-      ([cardImageB.img, cardImageB.thumb] = idCardB);
-      const idCardF = initialValue.id_card_image_f || [];
-      ([cardImageF.img, cardImageF.thumb] = idCardF);
     }
     const { editable = [] } = staffBrandsAuth;
     const staffBransData = brands.filter(item => editable.indexOf(item.id) !== -1);
@@ -281,7 +269,7 @@ export default class extends React.PureComponent {
           <Col {...colSpan}>
             <FormItem label="身份证照片" {...formItemLayout}>
               {getFieldDecorator('id_card_image_f', {
-                initialValue: cardImageF.img,
+                initialValue: initialValue.id_card_image_f,
               })(
                 <Input type="hidden" />
               )}
@@ -299,7 +287,7 @@ export default class extends React.PureComponent {
           <Col {...colSpan}>
             <FormItem {...formItemLayout}>
               {getFieldDecorator('id_card_image_b', {
-                initialValue: cardImageB.img,
+                initialValue: initialValue.id_card_image_b,
               })(
                 <Input type="hidden" />
               )}
@@ -309,7 +297,7 @@ export default class extends React.PureComponent {
                 actionType="customer/card"
                 value={images.id_card_image_b ? [images.id_card_image_b] : []}
                 onChange={(values) => {
-                  setFieldsValue({ id_card_image_v: values[0] });
+                  setFieldsValue({ id_card_image_b: values[0] });
                 }}
               />
             </FormItem>
