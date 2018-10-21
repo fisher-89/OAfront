@@ -93,7 +93,7 @@ export default class extends React.PureComponent {
       staffBrandsAuth,
       validateFields, validatorRequired,
       form: {
-        getFieldDecorator, setFieldsValue,
+        getFieldDecorator, setFieldsValue, getFieldsValue,
       },
     } = this.props;
     let tagsGroup = [];
@@ -139,6 +139,7 @@ export default class extends React.PureComponent {
     }
     const { editable = [] } = staffBrandsAuth;
     const staffBransData = brands.filter(item => editable.indexOf(item.id) !== -1);
+    const images = getFieldsValue(['icon', 'id_card_image_b', 'id_card_image_f']);
     return (
       <OAForm onSubmit={validateFields(this.handleSubmit)}>
         <Row gutter={rowGutter}>
@@ -177,7 +178,10 @@ export default class extends React.PureComponent {
               )}
               <UploadCropper
                 name="iconImage"
-                value={iconImage.thumb ? [iconImage.thumb] : []}
+                cropperProps={{
+                  aspectRatio: 1,
+                }}
+                value={images.icon ? [images.icon] : []}
                 actionType="customer/avatar"
                 onChange={(values) => {
                   setFieldsValue({ icon: values[0] });
@@ -285,7 +289,7 @@ export default class extends React.PureComponent {
                 name="cardImage"
                 placeholder="上传正面"
                 actionType="customer/card"
-                value={cardImageF.thumb ? [cardImageF.thumb] : []}
+                value={images.id_card_image_f ? [images.id_card_image_f] : []}
                 onChange={(values) => {
                   setFieldsValue({ id_card_image_f: values[0] });
                 }}
@@ -303,7 +307,7 @@ export default class extends React.PureComponent {
                 name="cardImage"
                 placeholder="上传反面"
                 actionType="customer/card"
-                value={cardImageB.thumb ? [cardImageB.thumb] : []}
+                value={images.id_card_image_b ? [images.id_card_image_b] : []}
                 onChange={(values) => {
                   setFieldsValue({ id_card_image_v: values[0] });
                 }}
@@ -375,7 +379,10 @@ export default class extends React.PureComponent {
           <Col {...rowGutter}>
             <FormItem label="介绍人" {...rowFormItemLayout}>
               {getFieldDecorator('recommend', {
-                initialValue: {},
+                initialValue: {
+                  recommend_id: initialValue.recommend_id || '',
+                  recommend_name: initialValue.recommend_name || '',
+                },
               })(
                 <SearchTable.Customer
                   name={{
@@ -393,7 +400,10 @@ export default class extends React.PureComponent {
           <Col {...rowGutter}>
             <FormItem label="拓展员工" {...rowFormItemLayout}>
               {getFieldDecorator('developer', {
-                initialValue: {},
+                initialValue: {
+                  develop_sn: initialValue.develop_sn || '',
+                  develop_name: initialValue.develop_name || '',
+                },
               })(
                 <SearchTable.Staff
                   name={{

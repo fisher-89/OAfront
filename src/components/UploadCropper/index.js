@@ -173,7 +173,7 @@ export default class UploadCropper extends React.Component {
 
   render() {
     const { fileList, visible, cropperSrc, previewVisible, previewImage } = this.state;
-    const { CropperProps, max, placeholder } = this.props;
+    const { cropperProps, max, placeholder } = this.props;
     const uploadButton = (
       <div>
         <Icon type="plus" />
@@ -196,9 +196,9 @@ export default class UploadCropper extends React.Component {
           <img alt="example" style={{ width: '100%' }} src={previewImage} />
         </Modal>
         <ModalCropper
-          {...CropperProps}
           visible={visible}
           cropperFile={cropperSrc}
+          cropperProps={cropperProps}
           onChange={this.cropperChange}
           onCancel={this.cropperCancel}
         />
@@ -211,6 +211,6 @@ UploadCropper.defaultProps = {
   name: 'file',
   cropper: true,
   actionType: '',
-  CropperProps: {},
+  cropperProps: {},
   onChange: () => { },
 };

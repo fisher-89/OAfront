@@ -47,7 +47,7 @@ export function getAddress(data) {
 }
 
 function CustomerInfo(props) {
-  const { data, loading, source, tags, brands, tagsType } = props;
+  const { data, loading, source, tags, brands, tagsType, level } = props;
   const presentAddress = {
     province_id: data.province_id || '',
     city_id: data.city_id || '',
@@ -70,18 +70,30 @@ function CustomerInfo(props) {
     }
     return item;
   });
+
+  const levelData = analysisData(level, data.levels, 'level_id');
+  const linkagesData = analysisData(district, data.linkages, 'linkage_id');
   return (
     <Spin spinning={loading || false}>
       <div className={styles.customerInfo}>
-        <FormItem label="客户姓名" {...formItemLayout}>{data.name}</FormItem>
+        <FormItem label="客户姓名" {...formItemLayout}>
+          {data.name}
+          {data.icon && (<img src={data.icon[1]} alt="头像" />)}
+        </FormItem>
         <FormItem label="性别" {...formItemLayout}>{data.gender}</FormItem>
         <FormItem label="籍贯" {...formItemLayout}>{data.nation}</FormItem>
         <FormItem label="身份证" {...formItemLayout}>{data.id_card_number}</FormItem>
+        <FormItem label="身份证照片" {...formItemLayout}>
+          {data.id_card_image_f && (<img src={data.id_card_image_f[1]} alt="正面" />)}
+          {data.id_card_image_b && (<img src={data.id_card_image_b[1]} alt="反面" />)}
+        </FormItem>
         <FormItem label="现住地址" {...formItemLayout}>{address}</FormItem>
         <FormItem label="电话" {...formItemLayout}>{data.mobile}</FormItem>
         <FormItem label="微信" {...formItemLayout}>{data.wechat}</FormItem>
         <FormItem label="客户来源" {...formItemLayout}> {sourceData.name}</FormItem>
         <FormItem label="客户状态"{...formItemLayout}>{statusData.name}</FormItem>
+        <FormItem label="客户等级"{...formItemLayout} >{levelData.join('、')}</FormItem>
+        <FormItem label="合作省份"{...formItemLayout} >{linkagesData.join('、')}</FormItem>
         <FormItem label="合作品牌"{...formItemLayout} >{brandData.join('、')}</FormItem>
         <FormItem label="合作时间" {...formItemLayout}>
           {data.first_cooperation_at ? moment(data.first_cooperation_at).format('YYYY-MM-DD') : ''}
@@ -106,9 +118,10 @@ const { TabPane } = Tabs;
 @store()
 export default class extends React.PureComponent {
   componentWillMount() {
-    const { fetchDataSource, match } = this.props;
+    const { fetchDataSource, fetchLevel, match } = this.props;
     const { id } = match.params;
     fetchDataSource({ id });
+    fetchLevel();
     this.id = id || 0;
   }
 
