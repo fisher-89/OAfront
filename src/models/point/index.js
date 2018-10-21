@@ -27,6 +27,8 @@ export default {
     position: [],
     type: [],
     pointLog: {},
+    eventLog: {},
+    eventLogDetails: {},
     certificate: [],
     certificateStaff: [],
     taskAuth: [],

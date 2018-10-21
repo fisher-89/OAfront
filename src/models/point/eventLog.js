@@ -9,13 +9,16 @@ export default {
   * fetchEventLog({ payload }, { call, put }) {
     try {
       const params = { ...payload };
-      const response = yield call(fetchEventLog, params);
+      const { id } = params;
+      delete params.id;
+      const response = yield call(fetchEventLog, params, id || '');
       if (response.errors) {
         return;
       }
       yield put({
         type: 'save',
         payload: {
+          id,
           store,
           data: response,
         },

@@ -2,7 +2,17 @@ import React from 'react';
 import { Input, Icon } from 'antd';
 import './index.less';
 
-export default class SearchInput extends React.PureComponent {
+export default class SearchInput extends React.Component {
+  shouldComponentUpdate(nextProps) {
+    if (JSON.stringify(nextProps.value) !== JSON.stringify(this.props.value)) {
+      return true;
+    } else if (JSON.stringify(nextProps.disabled) !== JSON.stringify(this.props.disabled)) {
+      return true;
+    }
+    return false;
+  }
+
+
   handleFocus = () => {
     const { modalVisible } = this.props;
     this.searchInput.blur();
