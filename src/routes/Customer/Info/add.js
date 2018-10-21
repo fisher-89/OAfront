@@ -93,7 +93,7 @@ export default class extends React.PureComponent {
       staffBrandsAuth,
       validateFields, validatorRequired,
       form: {
-        getFieldDecorator, setFieldsValue, getFieldValue,
+        getFieldDecorator, setFieldsValue,
       },
     } = this.props;
     let tagsGroup = [];
@@ -114,10 +114,28 @@ export default class extends React.PureComponent {
     let initialValue = {};
     let brandValue;
     let nameDisabled = false;
+    const iconImage = {
+      img: '',
+      thumb: '',
+    };
+    const cardImageB = {
+      img: '',
+      thumb: '',
+    };
+    const cardImageF = {
+      img: '',
+      thumb: '',
+    };
     if (details[this.id]) {
       initialValue = details[this.id];
       nameDisabled = (moment().unix() - moment(initialValue.created_at).unix()) > 7 * 86400;
       brandValue = initialValue.brands.map(item => `${item.brand_id}`);
+      const { icon = [] } = initialValue;
+      ([iconImage.img, iconImage.thumb] = icon);
+      const idCardB = initialValue.id_card_image_b || [];
+      ([cardImageB.img, cardImageB.thumb] = idCardB);
+      const idCardF = initialValue.id_card_image_f || [];
+      ([cardImageF.img, cardImageF.thumb] = idCardF);
     }
     const { editable = [] } = staffBrandsAuth;
     const staffBransData = brands.filter(item => editable.indexOf(item.id) !== -1);
@@ -153,13 +171,13 @@ export default class extends React.PureComponent {
           <Col {...rowGutter}>
             <FormItem label="客户头像" {...rowFormItemLayout}>
               {getFieldDecorator('icon', {
-                initialValue: initialValue.icon || '',
+                initialValue: iconImage.img,
               })(
                 <Input type="hidden" />
               )}
               <UploadCropper
                 name="iconImage"
-                value={getFieldValue('icon') ? [getFieldValue('icon')] : []}
+                value={iconImage.thumb ? [iconImage.thumb] : []}
                 actionType="customer/avatar"
                 onChange={(values) => {
                   setFieldsValue({ icon: values[0] });
@@ -188,7 +206,7 @@ export default class extends React.PureComponent {
           <Col {...rowGutter}>
             <FormItem label="客户等级" {...rowFormItemLayout} required>
               {getFieldDecorator('levels', {
-                initialValue: (initialValue.levels || []).map(item => item.level_id),
+                initialValue: (initialValue.levels || []).map(item => `${item.level_id}`),
                 rules: [validatorRequired],
               })(
                 <Select placeholder="请选择" mode="multiple">
@@ -230,7 +248,7 @@ export default class extends React.PureComponent {
           <Col {...rowGutter}>
             <FormItem label="合作省份" {...rowFormItemLayout} required>
               {getFieldDecorator('linkages', {
-                initialValue: (initialValue.linkages || []).map(item => item.linkage_id),
+                initialValue: (initialValue.linkages || []).map(item => `${item.linkage_id}`),
                 rules: [validatorRequired],
               })(
                 <Select placeholder="请选择" mode="multiple">
@@ -259,7 +277,7 @@ export default class extends React.PureComponent {
           <Col {...colSpan}>
             <FormItem label="身份证照片" {...formItemLayout}>
               {getFieldDecorator('id_card_image_f', {
-                initialValue: initialValue.id_card_image_f || '',
+                initialValue: cardImageF.img,
               })(
                 <Input type="hidden" />
               )}
@@ -267,7 +285,7 @@ export default class extends React.PureComponent {
                 name="cardImage"
                 placeholder="上传正面"
                 actionType="customer/card"
-                value={getFieldValue('id_card_image_f') ? [getFieldValue('id_card_image_f')] : []}
+                value={cardImageF.thumb ? [cardImageF.thumb] : []}
                 onChange={(values) => {
                   setFieldsValue({ id_card_image_f: values[0] });
                 }}
@@ -276,16 +294,16 @@ export default class extends React.PureComponent {
           </Col>
           <Col {...colSpan}>
             <FormItem {...formItemLayout}>
-              {getFieldDecorator('id_card_image_v', {
-                initialValue: initialValue.id_card_image_v || '',
+              {getFieldDecorator('id_card_image_b', {
+                initialValue: cardImageB.img,
               })(
                 <Input type="hidden" />
               )}
               <UploadCropper
                 name="cardImage"
-                placeholder="上传正面"
+                placeholder="上传反面"
                 actionType="customer/card"
-                value={getFieldValue('id_card_image_v') ? [getFieldValue('id_card_image_v')] : []}
+                value={cardImageB.thumb ? [cardImageB.thumb] : []}
                 onChange={(values) => {
                   setFieldsValue({ id_card_image_v: values[0] });
                 }}

@@ -40,14 +40,17 @@ export default class UploadCropper extends React.Component {
 
   makeUploadListValue = (files) => {
     const params = [...files];
-    const fileList = params.map((item, index) => {
-      const uid = `${moment().unix()}${index + 1}`;
-      return {
-        uid,
-        url: item,
-        name: uid,
-        status: 'done',
-      };
+    const fileList = [];
+    params.forEach((item, index) => {
+      if (item) {
+        const uid = `${moment().unix()}${index + 1}`;
+        fileList.push({
+          uid,
+          name: uid,
+          status: 'done',
+          url: item,
+        });
+      }
     });
     return { fileList, value: fileList };
   }

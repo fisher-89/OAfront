@@ -48,11 +48,14 @@ export default type => (Compoent) => {
         vindicator_name: values.vindicator.staff_name || '',
         ...values.developer,
         ...values.recommend,
-        ...values.present_address,
+        county_id: values.present_address.county_id || '',
+        city_id: values.present_address.city_id || '',
+        address: values.present_address.address || '',
+        province_id: values.present_address.province_id || '',
         tags: values.tags.map(item => ({ tag_id: item })),
         brands: values.brands.map(item => ({ brand_id: item })),
         levels: values.levels.map(item => ({ level_id: item })),
-        provinces: values.linkages.map(item => ({ linkage_id: item })),
+        linkages: values.linkages.map(item => ({ linkage_id: item })),
       };
       delete params.vindicator;
       delete params.developer;

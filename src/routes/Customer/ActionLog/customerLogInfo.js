@@ -1,14 +1,14 @@
 import React from 'react';
 import { Drawer, Button } from 'antd';
 import store from './store/store';
-// import { getAddress } from '../Info/info';
-import { customerAuthority } from '../../../utils/utils';
+import district from '../../../assets/district';
 import OATable from '../../../components/OATable';
+import { customerAuthority } from '../../../utils/utils';
 
 const columns = [{
+  width: 100,
   title: '变更信息',
   dataIndex: 'name',
-  width: 100,
 }, {
   width: 100,
   title: '变更前',
@@ -50,7 +50,15 @@ export default class extends React.PureComponent {
       // let dirty;
       // let original;
       // const [dirtyStr, originalStr] = changes[key];
-      const [dirty, original] = changes[key];
+      let [dirty, original] = changes[key];
+      if (['县级', '市级', '省级'].indexOf(key) !== -1) {
+        dirty = district.find(item => `${item.id}` === dirty).name;
+        original = district.find(item => `${item.id}` === original).name;
+      }
+      if (['头像照片'].indexOf(key) !== -1) {
+        dirty = <img src={dirty} width={30} height={30} alt="变更前" />;
+        original = <img src={original} width={30} height={30} alt="变更后" />;
+      }
       data.push({
         key: index,
         name: key,
