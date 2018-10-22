@@ -66,35 +66,35 @@ export const sexOption = [
   { label: '女', value: '女' },
 ];
 
-@store(['submit', 'fetchDataSource'])
+@store(['submit', 'fetchDataSource', 'fetchLevel'])
 @OAForm.create()
 export default class extends React.PureComponent {
-  state = {
-
-  }
-
   componentDidMount() {
-    const { fetchDataSource, match } = this.props;
+    const { fetchDataSource, match, fetchLevel } = this.props;
     const { id } = match.params;
     if (id) { this.id = id; fetchDataSource({ id }); }
+    fetchLevel();
   }
 
   handleSubmit = (values, onError) => {
     const { submit } = this.props;
     const params = { ...values };
     if (this.id) params.id = this.id;
-    submit({ id: this.id, ...values, shops: [] }, onError);
+    submit({ ...params, shops: [] }, onError);
   }
 
   render() {
     const {
       tags,
+      level,
       source,
       brands,
       tagsType,
       staffBrandsAuth,
       validateFields, validatorRequired,
-      form: { getFieldDecorator },
+      form: {
+        getFieldDecorator, setFieldsValue, getFieldsValue,
+      },
     } = this.props;
     let tagsGroup = [];
     const tagsTypeId = tagsType.map(type => type.id);
@@ -114,13 +114,20 @@ export default class extends React.PureComponent {
     let initialValue = {};
     let brandValue;
     let nameDisabled = false;
+    const iconImage = {
+      img: '',
+      thumb: '',
+    };
     if (details[this.id]) {
       initialValue = details[this.id];
       nameDisabled = (moment().unix() - moment(initialValue.created_at).unix()) > 7 * 86400;
       brandValue = initialValue.brands.map(item => `${item.brand_id}`);
+      const { icon } = initialValue;
+      ([iconImage.img, iconImage.thumb] = icon || []);
     }
     const { editable = [] } = staffBrandsAuth;
     const staffBransData = brands.filter(item => editable.indexOf(item.id) !== -1);
+    const images = getFieldsValue(['icon', 'id_card_image_b', 'id_card_image_f']);
     return (
       <OAForm onSubmit={validateFields(this.handleSubmit)}>
         <Row gutter={rowGutter}>
@@ -153,10 +160,21 @@ export default class extends React.PureComponent {
           <Col {...rowGutter}>
             <FormItem label="客户头像" {...rowFormItemLayout}>
               {getFieldDecorator('icon', {
-                initialValue: initialValue.icon ? [initialValue.icon] : [],
+                initialValue: iconImage.img,
               })(
-                <UploadCropper actionType="customer/avatar" name="iconImage" />
+                <Input type="hidden" />
               )}
+              <UploadCropper
+                name="iconImage"
+                cropperProps={{
+                  aspectRatio: 1,
+                }}
+                value={images.icon ? [images.icon] : []}
+                actionType="customer/avatar"
+                onChange={(values) => {
+                  setFieldsValue({ icon: values[0] });
+                }}
+              />
             </FormItem>
           </Col>
         </Row>
@@ -179,12 +197,12 @@ export default class extends React.PureComponent {
         <Row gutter={rowGutter}>
           <Col {...rowGutter}>
             <FormItem label="客户等级" {...rowFormItemLayout} required>
-              {getFieldDecorator('level', {
-                initialValue: initialValue.level || [],
+              {getFieldDecorator('levels', {
+                initialValue: (initialValue.levels || []).map(item => `${item.level_id}`),
                 rules: [validatorRequired],
               })(
                 <Select placeholder="请选择" mode="multiple">
-                  {staffBransData.map(item =>
+                  {level.map(item =>
                     (<Option key={`${item.id}`}>{item.name}</Option>))
                   }
                 </Select>
@@ -221,13 +239,13 @@ export default class extends React.PureComponent {
         <Row gutter={rowGutter}>
           <Col {...rowGutter}>
             <FormItem label="合作省份" {...rowFormItemLayout} required>
-              {getFieldDecorator('cooperation_province', {
-                initialValue: initialValue.cooperation_province || undefined,
+              {getFieldDecorator('linkages', {
+                initialValue: (initialValue.linkages || []).map(item => `${item.linkage_id}`),
                 rules: [validatorRequired],
               })(
-                <Select placeholder="请选择">
+                <Select placeholder="请选择" mode="multiple">
                   {province.map(item =>
-                    (<Option key={`${item.name}`}>{item.name}</Option>))
+                    (<Option key={`${item.id}`}>{item.name}</Option>))
                   }
                 </Select>
               )}
@@ -251,19 +269,37 @@ export default class extends React.PureComponent {
           <Col {...colSpan}>
             <FormItem label="身份证照片" {...formItemLayout}>
               {getFieldDecorator('id_card_image_f', {
-                initialValue: initialValue.id_card_image_f ? [initialValue.id_card_image_f] : [],
+                initialValue: initialValue.id_card_image_f,
               })(
-                <UploadCropper actionType="customer/card" name="cardImage" placeholder="上传正面" />
+                <Input type="hidden" />
               )}
+              <UploadCropper
+                name="cardImage"
+                placeholder="上传正面"
+                actionType="customer/card"
+                value={images.id_card_image_f ? [images.id_card_image_f] : []}
+                onChange={(values) => {
+                  setFieldsValue({ id_card_image_f: values[0] });
+                }}
+              />
             </FormItem>
           </Col>
           <Col {...colSpan}>
             <FormItem {...formItemLayout}>
-              {getFieldDecorator('id_card_image_v', {
-                initialValue: initialValue.id_card_image_v ? [initialValue.id_card_image_v] : [],
+              {getFieldDecorator('id_card_image_b', {
+                initialValue: initialValue.id_card_image_b,
               })(
-                <UploadCropper actionType="customer/card" name="cardImage" placeholder="上传反面" />
+                <Input type="hidden" />
               )}
+              <UploadCropper
+                name="cardImage"
+                placeholder="上传反面"
+                actionType="customer/card"
+                value={images.id_card_image_b ? [images.id_card_image_b] : []}
+                onChange={(values) => {
+                  setFieldsValue({ id_card_image_b: values[0] });
+                }}
+              />
             </FormItem>
           </Col>
         </Row>
@@ -297,7 +333,12 @@ export default class extends React.PureComponent {
           <Col {...rowGutter}>
             <FormItem label="现住地址" {...rowFormItemLayout}>
               {getFieldDecorator('present_address', {
-                initialValue: initialValue.present_address || {},
+                initialValue: {
+                  address: initialValue.address || '',
+                  city_id: initialValue.city_id || '',
+                  county_id: initialValue.county_id || '',
+                  province_id: initialValue.province_id || '',
+                },
               })(
                 <Address />
               )}
@@ -326,7 +367,10 @@ export default class extends React.PureComponent {
           <Col {...rowGutter}>
             <FormItem label="介绍人" {...rowFormItemLayout}>
               {getFieldDecorator('recommend', {
-                initialValue: {},
+                initialValue: {
+                  recommend_id: initialValue.recommend_id || '',
+                  recommend_name: initialValue.recommend_name || '',
+                },
               })(
                 <SearchTable.Customer
                   name={{
@@ -344,7 +388,10 @@ export default class extends React.PureComponent {
           <Col {...rowGutter}>
             <FormItem label="拓展员工" {...rowFormItemLayout}>
               {getFieldDecorator('developer', {
-                initialValue: {},
+                initialValue: {
+                  develop_sn: initialValue.develop_sn || '',
+                  develop_name: initialValue.develop_name || '',
+                },
               })(
                 <SearchTable.Staff
                   name={{

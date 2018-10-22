@@ -696,3 +696,25 @@ export function base64ToBlob(dataurl, filename = 'fileImg.png') {
   return new File([u8arr], filename, { type: mime });
 }
 
+
+/**
+ *  审核状态图片
+ */
+
+export function getStatusImg(status) {
+  switch (status) {
+    case 0:
+      return '/checkin.png';
+    case 1:
+      return '/checkin.png';
+    case 2:
+      return '/pass.png';
+    case -1:
+      return '/reject.png';
+    case -2:
+      return '/rollback.png';
+    case -3:
+      return '/cancel.png';
+    default:
+  }
+}

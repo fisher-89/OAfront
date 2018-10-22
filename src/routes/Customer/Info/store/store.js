@@ -48,15 +48,19 @@ export default type => (Compoent) => {
         vindicator_name: values.vindicator.staff_name || '',
         ...values.developer,
         ...values.recommend,
-        icon: value.icon[0] || '',
-        id_card_image_f: value.id_card_image_f[0] || '',
-        id_card_image_b: value.id_card_image_b[0] || '',
-        tags: (values.tags || []).map(item => ({ tag_id: item })),
-        brands: (values.brands || []).map(item => ({ brand_id: item })),
+        county_id: values.present_address.county_id || '',
+        city_id: values.present_address.city_id || '',
+        address: values.present_address.address || '',
+        province_id: values.present_address.province_id || '',
+        tags: values.tags.map(item => ({ tag_id: item })),
+        brands: values.brands.map(item => ({ brand_id: item })),
+        levels: values.levels.map(item => ({ level_id: item })),
+        linkages: values.linkages.map(item => ({ linkage_id: item })),
       };
       delete params.vindicator;
       delete params.developer;
       delete params.recommend;
+      delete params.present_address;
       return params;
     }
 

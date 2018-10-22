@@ -1,14 +1,15 @@
 import React from 'react';
+import RcViewer from 'rc-viewer';
 import { Drawer, Button } from 'antd';
 import store from './store/store';
-import { getAddress } from '../Info/info';
-import { customerAuthority } from '../../../utils/utils';
+import district from '../../../assets/district';
 import OATable from '../../../components/OATable';
+import { customerAuthority } from '../../../utils/utils';
 
 const columns = [{
+  width: 100,
   title: '变更信息',
   dataIndex: 'name',
-  width: 100,
 }, {
   width: 100,
   title: '变更前',
@@ -22,6 +23,37 @@ const columns = [{
   dataIndex: 'original',
   tooltip: true,
 }];
+
+
+const rcViewerOptions = {
+  navbar: true,
+  toolbar: {
+    zoomIn: 0,
+    zoomOut: 0,
+    oneToOne: 0,
+    reset: 0,
+    prev: {
+      show: 2,
+      size: 'large',
+    },
+    play: 0,
+
+    rotateLeft: {
+      show: 2,
+      size: 'large',
+    },
+    rotateRight: {
+      show: 2,
+      size: 'large',
+    },
+    next: {
+      show: 2,
+      size: 'large',
+    },
+    flipHorizontal: 0,
+    flipVertical: 0,
+  },
+};
 
 @store('clientReduction')
 export default class extends React.PureComponent {
@@ -46,20 +78,40 @@ export default class extends React.PureComponent {
     delete restProps.initialValue;
     const changes = !Array.isArray(initialValue.changes) ? (initialValue.changes || {}) : {};
     const data = [];
+    const style = { cursor: 'pointer' };
     Object.keys(changes).forEach((key, index) => {
-      let dirty;
-      let original;
-      const [dirtyStr, originalStr] = changes[key];
-      if (dirtyStr && Object.keys(dirtyStr).length) {
-        dirty = getAddress(dirtyStr);
-      } else {
-        [dirty] = changes[key];
+      let [dirty, original] = changes[key];
+      if (['县级', '市级', '省级'].indexOf(key) !== -1) {
+        dirty = district.find(item => `${item.id}` === dirty).name;
+        original = district.find(item => `${item.id}` === original).name;
       }
-      if (originalStr && Object.keys(originalStr).length) {
-        original = getAddress(originalStr);
-      } else {
-        [, original] = changes[key];
+
+      if (['头像照片'].indexOf(key) !== -1) {
+        dirty = dirty[1] && (
+          <RcViewer options={rcViewerOptions}>
+            <img src={dirty[1]} width={30} height={30} alt="变更前" style={style} />
+          </RcViewer>
+        );
+        original = original[1] && (
+          <RcViewer options={rcViewerOptions}>
+            <img src={original[1]} width={30} height={30} alt="变更后" style={style} />
+          </RcViewer>
+        );
       }
+
+      if (['身份证照片反面', '身份证照片正面'].indexOf(key) !== -1) {
+        dirty = dirty && (
+          <RcViewer options={rcViewerOptions}>
+            <img src={dirty} width={30} height={30} alt="变更前" style={style} />
+          </RcViewer>
+        );
+        original = original && (
+          <RcViewer options={rcViewerOptions}>
+            <img src={original} width={30} height={30} alt="变更后" style={style} />
+          </RcViewer>
+        );
+      }
+
       data.push({
         key: index,
         name: key,

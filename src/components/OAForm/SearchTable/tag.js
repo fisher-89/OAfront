@@ -5,7 +5,17 @@ import {
   Icon,
 } from 'antd';
 
-export default class extends React.PureComponent {
+export default class extends React.Component {
+  shouldComponentUpdate(nextProps) {
+    if (JSON.stringify(nextProps.value) !== JSON.stringify(this.props.value)) {
+      return true;
+    } else if (JSON.stringify(nextProps.disabled) !== JSON.stringify(this.props.disabled)) {
+      return true;
+    }
+    return false;
+  }
+
+
   handleTagRemove = (removedTag) => {
     this.props.setTagSelectedValue(removedTag);
   };

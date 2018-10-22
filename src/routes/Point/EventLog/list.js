@@ -1,12 +1,13 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import { Divider } from 'antd';
 import RevokeForm from './revokeForm';
 import { customerAuthority } from '../../../utils/utils';
-
+import EventLogInfo from './Info/info';
 import OATable from '../../../components/OATable';
 import Ellipsis from '../../../components/Ellipsis';
 
-const stateList = { 0: '待初审', 1: '待终审', 2: '已通过', '-1': '已驳回', '-2': '已撤回', '-3': '已撤销' };
+const stateList = { 0: '待初审', 1: '待终审', 2: '已通过', '-1': '已驳回', '-2': '已撤回', '-3': '已删除' };
 
 @connect(({ point, loading }) => ({
   log: point.eventLog,
@@ -17,11 +18,17 @@ export default class extends PureComponent {
   state = {
     visible: false,
     revokeInfo: {},
+    dataInfo: {},
+    infoVisible: false,
   }
 
   fetchEventLog = (params) => {
     const { dispatch } = this.props;
     dispatch({ type: 'point/fetchEventLog', payload: params });
+  }
+
+  showInfo = (record) => {
+    this.setState({ dataInfo: record, infoVisible: true });
   }
 
   makeColumns = () => {
@@ -79,10 +86,19 @@ export default class extends PureComponent {
       {
         title: '操作',
         render: (rowData) => {
-          return rowData.status_id === 2 ?
-            (customerAuthority(173) && (
-              <a onClick={() => this.showRevokeForm(rowData)}>撤销</a>
-            )) : '';
+          const action = [
+            <a
+              key="info"
+              onClick={() => this.showInfo(rowData)}
+            >
+              查看
+            </a>,
+          ];
+          if (customerAuthority(173) && rowData.status_id === 2) {
+            action.push(<Divider key="vertical" type="vertical" />);
+            action.push(<a key="cancel" onClick={() => this.showRevokeForm(rowData)}>删除</a>);
+          }
+          return action;
         },
       },
     ];
@@ -104,24 +120,30 @@ export default class extends PureComponent {
 
   render() {
     const { log, logLoading, dLoading, bLoading } = this.props;
-    const { visible, revokeInfo } = this.state;
+    const { visible, revokeInfo, infoVisible, dataInfo } = this.state;
     return (
       <React.Fragment>
         <OATable
           serverSide
-          loading={logLoading || dLoading || bLoading}
-          columns={this.makeColumns()}
-          dataSource={log && log.data}
-          total={log && log.total}
-          filtered={log && log.filtered}
-          fetchDataSource={this.fetchEventLog}
+          total={log.total}
           scroll={{ x: 300 }}
+          dataSource={log.data}
+          columns={this.makeColumns()}
+          fetchDataSource={this.fetchEventLog}
+          loading={logLoading || dLoading || bLoading}
         />
         <RevokeForm
           visible={visible}
           initialValue={revokeInfo}
           onCancel={this.handleModalVisible}
           onClose={() => this.setState({ revokeInfo: {} })}
+        />
+        <EventLogInfo
+          id={dataInfo.id || ''}
+          visible={infoVisible}
+          onClose={() => {
+            this.setState({ infoVisible: false, dataInfo: {} });
+          }}
         />
       </React.Fragment>
     );

@@ -7,7 +7,17 @@ import QueueAnim from 'rc-queue-anim';
 import UserCircle from './UserCircle';
 import styles from './index.less';
 
-export default class extends React.PureComponent {
+export default class extends React.Component {
+  shouldComponentUpdate(nextProps) {
+    if (JSON.stringify(nextProps.value) !== JSON.stringify(this.props.value)) {
+      return true;
+    } else if (JSON.stringify(nextProps.disabled) !== JSON.stringify(this.props.disabled)) {
+      return true;
+    }
+    return false;
+  }
+
+
   render() {
     const { value, showName, valueName, clearValue, style, handleModelVisble } = this.props;
     let tagsData = {};

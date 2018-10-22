@@ -72,7 +72,7 @@ export default class ModalCropper extends PureComponent {
 
   render() {
     const { src, cropResult } = this.state;
-    const { visible, onCancel, cropperFile } = this.props;
+    const { visible, onCancel, cropperFile, cropperProps } = this.props;
     return (
       <Modal
         width={800}
@@ -85,7 +85,7 @@ export default class ModalCropper extends PureComponent {
           <Cropper
             src={src}
             guides={false}
-            aspectRatio={1 / 1}
+            {...cropperProps}
             preview=".img-preview"
             crop={debounce(this.cropImage, 500)}
             style={{ height: 400, width: '100%' }}

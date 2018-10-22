@@ -49,8 +49,8 @@ export default class extends React.PureComponent {
           )}
         </FormItem>
         <FormItem label="说明" {...formItemLayout}>
-          {getFieldDecorator('describe', {
-            initialValue: initialValue.describe || '',
+          {getFieldDecorator('explain', {
+            initialValue: initialValue.explain || '',
           })(
             <Input.TextArea placeholder="请输入" />
           )}

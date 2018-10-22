@@ -44,7 +44,7 @@ export default {
         return;
       }
       if (onSuccess) onSuccess(response);
-    } catch (err) { return err; }
+    } catch (err) { console.log(err); return err; }
   },
   * card({ payload, onSuccess, onError }, { call }) {
     try {
