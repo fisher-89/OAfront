@@ -2,16 +2,16 @@ import React, { PureComponent } from 'react';
 import classNames from 'classnames';
 import moment from 'moment';
 import XLSX from 'xlsx';
-import { Table, Input, Icon, Button, Tooltip } from 'antd';
+import { Table, Input, Icon, Button, Tooltip, message } from 'antd';
+import { connect } from 'dva';
+import Operator from './operator';
+import styles from './index.less';
+import TableUpload from './upload';
 import Ellipsis from '../Ellipsis';
 import TreeFilter from './treeFilter';
 import DateFilter from './dateFilter';
 import RangeFilter from './rangeFilter';
-import Operator from './operator';
-import TableUpload from './upload';
 import EdiTableCell from './editTableCell';
-import styles from './index.less';
-import request from '../../utils/request';
 import {
   makerFilters, findRenderKey, analysisData,
 } from '../../utils/utils';
@@ -66,7 +66,7 @@ function analysisColumn(dataSource, key, index = 'id', name = 'name', dataSource
   return renderEllipsis(value.join('、'), tooltip);
 }
 
-
+@connect()
 class OATable extends PureComponent {
   constructor(props) {
     super(props);
@@ -175,7 +175,7 @@ class OATable extends PureComponent {
       }
       fetchDataSource(urlPath, params);
     } else {
-      return params;
+      return urlPath;
     }
   }
 
@@ -609,7 +609,7 @@ class OATable extends PureComponent {
   }
 
   makeExcelFieldsData = (data) => {
-    const { extraExportFields, columns, excelExport: { title } } = this.props;
+    const { extraExportFields, columns, excelExport: { fileName } } = this.props;
     let exportFields = extraExportFields.concat(columns);
     exportFields = exportFields.filter(item => item.dataIndex !== undefined);
     const newData = [];
@@ -642,45 +642,16 @@ class OATable extends PureComponent {
       sheetData: newData,
       sheetHeader: header,
     };
-    let tableString = `${datas.sheetHeader.join(',')}\n`;
-    datas.sheetData.forEach((item) => {
-      Object.keys(item).forEach((key) => {
-        let str = item[key];
-        if (typeof str === 'string') {
-          str = str.replace(/,/ig, '，');
-        }
-        tableString += `${str}\t,`;
-      });
-      tableString += '\n';
-    });
-
-    const uri = `data:application/csv;charset=utf-8,\ufeff${encodeURIComponent(tableString)}`;
-    const link = document.createElement('a');
-    link.href = uri;
-    link.download = `${title}.xls`;
-    link.click();
-    this.excelLoading(false);
+    const workbook = XLSX.utils.book_new();
+    const dataExcel = [...datas.sheetData];
+    dataExcel.unshift(datas.sheetHeader);
+    const errorSheet = XLSX.utils.aoa_to_sheet(dataExcel);
+    XLSX.utils.book_append_sheet(workbook, errorSheet);
+    XLSX.writeFile(workbook, fileName || '导出数据信息.xls');
   }
 
   excelLoading = (loading) => {
     this.setState({ loading });
-  }
-
-  xlsExportExcel = ({ headers, errors }) => {
-    const workbook = XLSX.utils.book_new();
-    const errorExcel = [];
-    const newHeaders = [...headers, '错误信息'];
-    errors.forEach((error) => {
-      const { rowData } = error;
-      const errorMessage = error.message;
-      const errMsg = Object.keys(errorMessage).map(msg => `${msg}:${errorMessage[msg].join(',')}`).join(';');
-      rowData.push(errMsg);
-      errorExcel.push(error.rowData);
-    });
-    errorExcel.unshift(newHeaders);
-    const errorSheet = XLSX.utils.aoa_to_sheet(errorExcel);
-    XLSX.utils.book_append_sheet(workbook, errorSheet, '导出失败信息');
-    XLSX.writeFile(workbook, '导出错误信息.xlsx');
   }
 
   xlsExportExcel = ({ headers, data }) => {
@@ -690,23 +661,18 @@ class OATable extends PureComponent {
     dataExcel.unshift(headers);
     const errorSheet = XLSX.utils.aoa_to_sheet(dataExcel);
     XLSX.utils.book_append_sheet(workbook, errorSheet);
-    XLSX.writeFile(workbook, fileName || '导出数据信息.xlsx');
+    XLSX.writeFile(workbook, fileName || '导出数据信息.xls');
   }
 
   handleExportExcel = () => {
-    const { excelExport: { uri } } = this.props;
+    const { excelExport: { uri }, dispatch } = this.props;
     const params = this.fetchTableDataSource(true);
-    const body = { filters: params.filters };
     this.excelLoading('导出中...');
-    request(`${uri}`, {
-      method: 'GET',
-      body,
-    }).then((response) => {
-      if (Object.keys(response.errors).length) {
-        this.xlsExportExcelError(response);
-      } else {
-        this.xlsExportExcel(response);
-      }
+    dispatch({
+      type: uri,
+      payload: params,
+      onError: () => { message.error('导出失败!!'); },
+      onSuccess: this.makeExcelFieldsData,
     });
   }
 
