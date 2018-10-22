@@ -255,6 +255,12 @@ export default class StepForm extends React.PureComponent {
     });
   };
 
+  clickStepTitle = (current) => {
+    return () => {
+      this.setState({ current });
+    };
+  }
+
   render() {
     const submitFormLayout = {
       wrapperCol: {
@@ -288,12 +294,12 @@ export default class StepForm extends React.PureComponent {
         id="addTypeForm"
         onSubmit={this.handleSubmit}
       >
-        <Steps current={2} size="small" style={{ padding: '20px 100px' }}>
-          <Step title="基础信息" />
-          <Step title="步骤条件" />
-          <Step title="表单字段" />
-          <Step title="操作类型" />
-          <Step title="回调地址" />
+        <Steps current={current} size="small" style={{ padding: '40px 100px' }}>
+          <Step title={<a onClick={this.clickStepTitle(0)}>基础信息</a>} />
+          <Step title={<a onClick={this.clickStepTitle(1)}>步骤条件</a>} />
+          <Step title={<a onClick={this.clickStepTitle(2)}>表单字段</a>} />
+          <Step title={<a onClick={this.clickStepTitle(3)}>操作类型</a>} />
+          <Step title={<a onClick={this.clickStepTitle(4)}>回调地址</a>} />
         </Steps>
         <div style={{ display: current === 0 ? 'block' : 'none' }}>
           <FormItem
@@ -479,9 +485,9 @@ export default class StepForm extends React.PureComponent {
             labelCol={{ span: 5 }}
             wrappercol={{ span: 15 }}
             label="隐藏字段"
-            name="hidden_fields"
           >
             <Transfer
+              key="hiddenData"
               dataSource={hiddenData}
               titles={['待选', '选中列表']}
               targetKeys={hiddenFields.targetKeys}
@@ -503,9 +509,9 @@ export default class StepForm extends React.PureComponent {
             labelCol={{ span: 5 }}
             wrappercol={{ span: 15 }}
             label="可编辑字段"
-            name="editable_fields"
           >
             <Transfer
+              key="editData"
               dataSource={editData}
               titles={['待选', '选中列表']}
               targetKeys={editFields.targetKeys}
@@ -526,9 +532,9 @@ export default class StepForm extends React.PureComponent {
             labelCol={{ span: 5 }}
             wrappercol={{ span: 15 }}
             label="必填字段"
-            name="required_fields"
           >
             <Transfer
+              key="requireFields"
               dataSource={editFields.data}
               titles={['待选', '选中列表']}
               targetKeys={requireFields.targetKeys}

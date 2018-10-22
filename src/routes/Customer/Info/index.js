@@ -7,11 +7,12 @@ import ListComponent from './list';
 
 export default class Form extends PureComponent {
   render() {
-    const { match, routerData } = this.props;
-
+    const { match, routerData, location: { pathname } } = this.props;
+    const style = { backgroundColor: 'transparent' };
+    const infoPath = pathname.indexOf('/client/customer/list/info/') > -1;
     return (
       <PageHeaderLayout>
-        <Card bordered={false}>
+        <Card bordered={false} {...(infoPath && { style })}>
           <Switch>
             {
               getRoutes(match.path, routerData).map(item => (

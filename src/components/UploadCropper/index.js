@@ -56,7 +56,7 @@ export default class UploadCropper extends React.Component {
   }
 
   handleChange = ({ file, fileList }) => {
-    const { max, onChange } = this.props;
+    const { max, onChange, cropper } = this.props;
     if (fileList.length > max) {
       message.error('上传数量已经达到最大限制!!');
       return;
@@ -66,7 +66,10 @@ export default class UploadCropper extends React.Component {
     if (file.status === 'removed') {
       newValue = value.filter(item => item.uid !== file.uid);
     }
-    this.setState({ fileList, value: newValue }, () => {
+    const uploadState = { fileList, value: newValue };
+    if (!cropper) uploadState.fileItem = file;
+
+    this.setState({ ...uploadState }, () => {
       if (file.status === 'removed') onChange(newValue.map(item => item.url));
     });
   }
@@ -130,12 +133,12 @@ export default class UploadCropper extends React.Component {
       () => this.customRequest(blob));
   }
 
-  customRequest = (blob) => {
+  customRequest = (file) => {
     const { fileItem } = this.state;
+    const { actionType, name, dispatch, cropper } = this.props;
     if (!fileItem) return;
-    const { actionType, name, dispatch } = this.props;
     const formData = new FormData();
-    formData.append(name, blob);
+    formData.append(name, !cropper ? file.file : file);
     dispatch({
       type: actionType,
       payload: formData,
@@ -173,7 +176,7 @@ export default class UploadCropper extends React.Component {
 
   render() {
     const { fileList, visible, cropperSrc, previewVisible, previewImage } = this.state;
-    const { cropperProps, max, placeholder } = this.props;
+    const { cropperProps, max, placeholder, cropper } = this.props;
     const uploadButton = (
       <div>
         <Icon type="plus" />
@@ -185,7 +188,9 @@ export default class UploadCropper extends React.Component {
         <Upload
           fileList={fileList}
           listType="picture-card"
-          customRequest={() => { }}
+          customRequest={(file) => {
+            if (!cropper) this.customRequest(file);
+          }}
           onChange={this.handleChange}
           onPreview={this.handlePreview}
           beforeUpload={this.beforeUpload}
@@ -195,13 +200,15 @@ export default class UploadCropper extends React.Component {
         <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
           <img alt="example" style={{ width: '100%' }} src={previewImage} />
         </Modal>
-        <ModalCropper
-          visible={visible}
-          cropperFile={cropperSrc}
-          cropperProps={cropperProps}
-          onChange={this.cropperChange}
-          onCancel={this.cropperCancel}
-        />
+        {cropper && (
+          <ModalCropper
+            visible={visible}
+            cropperFile={cropperSrc}
+            cropperProps={cropperProps}
+            onChange={this.cropperChange}
+            onCancel={this.cropperCancel}
+          />
+        )}
       </React.Fragment>
     );
   }

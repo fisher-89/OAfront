@@ -122,8 +122,8 @@ export default class extends React.PureComponent {
       initialValue = details[this.id];
       nameDisabled = (moment().unix() - moment(initialValue.created_at).unix()) > 7 * 86400;
       brandValue = initialValue.brands.map(item => `${item.brand_id}`);
-      const { icon = [] } = initialValue;
-      ([iconImage.img, iconImage.thumb] = icon);
+      const { icon } = initialValue;
+      ([iconImage.img, iconImage.thumb] = icon || []);
     }
     const { editable = [] } = staffBrandsAuth;
     const staffBransData = brands.filter(item => editable.indexOf(item.id) !== -1);
