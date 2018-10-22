@@ -354,8 +354,20 @@ export default class extends Component {
               </Row>
             )}
             <Row style={{ color: '#8c8c8c', marginTop: 5 }}>
-              {info.manager_approved_at && (<Col span={4}>品牌副总：{info.manager_name}</Col>)}
-              {info.manager_approved_at && (<Col span={8}>通过时间：{info.manager_approved_at}</Col>)}
+              {info.manager_name && (
+                <React.Fragment>
+                  <Col span={4}>品牌副总：{info.manager_name}</Col>
+                  <Col span={8}>{info.manager_approved_at ? `通过时间：${info.manager_approved_at}` : '审批中。。。'}</Col>
+                </React.Fragment>
+              )}
+              {info.finance_approved_name && info.status_id >= 5 && (
+                <React.Fragment>
+                  <Col span={4}>终审人：{info.finance_approved_name}</Col>
+                  <Col span={8}>{info.finance_approved_at ? `通过时间：${info.finance_approved_at}` : '审批中。。。'}</Col>
+                </React.Fragment>
+              )}
+            </Row>
+            <Row style={{ color: '#8c8c8c', marginTop: 5 }}>
               {info.paid_at && (<Col span={4}>出纳：{info.payer_name}</Col>)}
               {info.paid_at && (<Col span={8}>转账时间：{info.paid_at}</Col>)}
             </Row>
