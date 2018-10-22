@@ -487,7 +487,7 @@ export default class StepForm extends React.PureComponent {
             label="隐藏字段"
           >
             <Transfer
-              key="hiddenData"
+              lazy={false}
               dataSource={hiddenData}
               titles={['待选', '选中列表']}
               targetKeys={hiddenFields.targetKeys}
@@ -511,7 +511,7 @@ export default class StepForm extends React.PureComponent {
             label="可编辑字段"
           >
             <Transfer
-              key="editData"
+              lazy={false}
               dataSource={editData}
               titles={['待选', '选中列表']}
               targetKeys={editFields.targetKeys}
@@ -534,7 +534,7 @@ export default class StepForm extends React.PureComponent {
             label="必填字段"
           >
             <Transfer
-              key="requireFields"
+              lazy={false}
               dataSource={editFields.data}
               titles={['待选', '选中列表']}
               targetKeys={requireFields.targetKeys}
