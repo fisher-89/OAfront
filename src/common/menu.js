@@ -41,6 +41,10 @@ const menuData = [
             path: 'source',
           },
           {
+            name: '客户等级',
+            path: 'level',
+          },
+          {
             name: '标签管理',
             path: 'tags',
             authority: '179',
@@ -303,10 +307,6 @@ const menuData = [
         hideInMenu: true,
       },
       {
-        name: '审批人模板',
-        path: 'approver',
-      },
-      {
         name: '添加流程',
         path: 'flow/add',
         hideInMenu: true,
@@ -319,30 +319,39 @@ const menuData = [
       {
         name: '表单管理',
         path: 'form',
-      },
-      {
-        name: '添加表单',
-        path: 'form/add',
-        hideInMenu: true,
-      },
-      {
-        name: '编辑表单',
-        path: 'form/edit/:id',
-        hideInMenu: true,
-      },
-      {
-        name: '表单分类',
-        path: 'form/type',
-        hideInMenu: true,
-      },
-      {
-        name: '接口配置',
-        path: 'form/urlSource',
-        hideInMenu: true,
-      },
-      {
-        name: '验证规则',
-        path: 'validator',
+        children: [
+          {
+            name: '表单列表',
+            path: 'list',
+          },
+          {
+            name: '添加表单',
+            path: 'list/add',
+            hideInMenu: true,
+          },
+          {
+            name: '编辑表单',
+            path: 'list/edit/:id',
+            hideInMenu: true,
+          },
+          {
+            name: '表单分类',
+            path: 'list/type',
+            hideInMenu: true,
+          },
+          {
+            name: '接口配置',
+            path: 'urlSource',
+          },
+          {
+            name: '审批模板',
+            path: 'approver',
+          },
+          {
+            name: '验证规则',
+            path: 'validator',
+          },
+        ],
       },
     ],
   },

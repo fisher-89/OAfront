@@ -85,6 +85,7 @@ export default class Flow extends React.PureComponent {
       formData,
       formAble,
       staff: [],
+      location: {},
     };
   }
 
@@ -106,12 +107,19 @@ export default class Flow extends React.PureComponent {
       const { flowId } = this.state;
       const formData = flow[flowId];
       const stepKey = formData.steps.map(item => item.step_key);
+      const location = {};
+      formData.steps.forEach((item) => {
+        location[item.step_key] = {
+          x: item.x || 0,
+          y: item.y || 0,
+        };
+      });
       this.newTabIndex = Math.max.apply(null, stepKey);
       if (formData.flows_has_staff.length) {
         this.fetchUser(formData.flows_has_staff);
       }
       this.fetchForm({ id: formData.form_id });
-      this.setState({ formData });
+      this.setState({ formData, location });
     }
     const { staffInfo } = nextProps;
 
@@ -214,11 +222,19 @@ export default class Flow extends React.PureComponent {
     if (!this.checkSteps()) {
       return false;
     }
-    const { formData } = this.state;
+    const { formData, formData: { steps }, location } = this.state;
     const { dispatch } = this.props;
+
+    const data = { ...formData };
+    data.steps = steps.map((item) => {
+      return {
+        ...item,
+        ...location[item.step_key],
+      };
+    });
     dispatch({
       type: 'workflow/addFlows',
-      payload: { ...formData },
+      payload: data,
       onSuccess: () => {
         this.props.dispatch(routerRedux.push('/workflow/flow'));
       },
@@ -397,7 +413,11 @@ export default class Flow extends React.PureComponent {
         result = false;
         return result;
       }
-      const flowData = data;
+      const location = !steps.length ? { x: 120, y: 120 } : { x: 0, y: 0 };
+      const flowData = {
+        ...data,
+        ...location,
+      };
       steps.push(flowData);
     }
     this.setState({ formData: { ...formData, steps: [...steps] } });
@@ -408,11 +428,18 @@ export default class Flow extends React.PureComponent {
     if (!this.checkSteps()) {
       return false;
     }
-    const { formData, flowId } = this.state;
+    const { formData, formData: { steps }, location, flowId } = this.state;
     const { dispatch, onError } = this.props;
+    const data = { ...formData };
+    data.steps = steps.map((item) => {
+      return {
+        ...item,
+        ...location[item.step_key],
+      };
+    });
     dispatch({
       type: 'workflow/editFlow',
-      payload: { ...formData, id: flowId },
+      payload: { ...data, id: flowId },
       onSuccess: () => {
         this.props.dispatch(routerRedux.push('/workflow/flow'));
       },
@@ -420,24 +447,21 @@ export default class Flow extends React.PureComponent {
     });
   };
 
-  handleValidateErrors = (_, err) => {
-    const { panes, flowCharts } = this.state;
+  handleValidateErrors = (_, __, err) => {
+    const { panes, formData: { steps } } = this.state;
     const errorData = [];
     Object.keys(err).forEach((i) => {
       const k = i.split('.');
       if (k[0] === 'steps') {
         errorData.push({
-          name: k.length > 1 ? flowCharts[k[1]].data.name : '步骤',
+          name: k.length > 1 ? steps[k[1]].name : '步骤',
           message: err[i][0],
         });
       } else {
-        this.props.form.setFields({ [i]: { errors: [new Error(err[i][0])] } });
         this.setState({ formAble: false, activeKey: panes[0].key });
       }
     });
-
     if (errorData.length > 0) {
-      this.setState({ activeKey: panes[1].key });
       errorData.forEach((item, i) => {
         notification.error({
           message: '请求错误',
@@ -798,6 +822,10 @@ export default class Flow extends React.PureComponent {
     this.setState({ formData: { ...formData, steps: [...steps] } });
   };
 
+  locationUpdate = (location) => {
+    this.setState({ location });
+  }
+
   affirmFlow = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
@@ -820,6 +848,7 @@ export default class Flow extends React.PureComponent {
       activeKey,
       isEdit,
       panes,
+      location,
       formData: { steps },
     } = this.state;
 
@@ -847,8 +876,10 @@ export default class Flow extends React.PureComponent {
     panes[1].content = (
       <FlowChart
         steps={steps}
+        location={location}
         editStep={this.editStep}
         updateSteps={this.updateSteps}
+        loactionUpdate={this.locationUpdate}
       />
     );
 
@@ -884,6 +915,7 @@ export default class Flow extends React.PureComponent {
           >
             {panes.map(pane => (
               <TabPane
+                forceRender
                 tab={pane.title}
                 key={pane.key}
                 closable={pane.closable}

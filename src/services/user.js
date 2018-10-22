@@ -22,7 +22,7 @@ export async function queryCurrent() {
  * @param  object params
  */
 export async function fetchStaff(params) {
-  return request('/api/staff', {
+  return request('/api/staffs', {
     method: 'GET',
     body: params,
   });
@@ -34,7 +34,7 @@ export async function fetchStaff(params) {
  * @param  int staffSn
  */
 export async function fetchStaffInfo(staffSn) {
-  return request(`/api/staff/${staffSn}`, {
+  return request(`/api/staffs/${staffSn}`, {
     method: 'GET',
   });
 }
@@ -44,7 +44,7 @@ export async function fetchStaffInfo(staffSn) {
  * @param object params
  */
 export async function addStaff(params) {
-  return request('/api/staff', {
+  return request('/api/staffs', {
     method: 'POST',
     body: params,
   });
@@ -55,8 +55,8 @@ export async function addStaff(params) {
  * @param object params
  */
 export async function editStaff(params, staffSn) {
-  return request(`/api/staff/${staffSn}`, {
-    method: 'PATCH',
+  return request(`/api/staffs/${staffSn}`, {
+    method: 'PUT',
     body: params,
   });
 }
@@ -66,7 +66,7 @@ export async function editStaff(params, staffSn) {
  * @param int params
  */
 export async function deleteStaff(staffSn) {
-  return request(`/api/staff/${staffSn}`, {
+  return request(`/api/staffs/${staffSn}`, {
     method: 'DELETE',
   });
 }
@@ -76,7 +76,7 @@ export async function deleteStaff(staffSn) {
  * @param object params
  */
 export async function importStaff(params) {
-  return request('/api/staff/import', {
+  return request('/api/staffs/import', {
     method: 'POST',
     body: params,
   });
@@ -87,14 +87,53 @@ export async function importStaff(params) {
  * @param  object params
  */
 export async function exportStaff(params) {
-  return request('/api/staff/export', {
+  return request('/api/staffs/export', {
     method: 'POST',
     body: params,
   });
 }
 
+// 重置密码
 export async function resetPassword(staffSn) {
-  return request(`/api/staff/reset/${staffSn}`, {
+  return request(`/api/staffs/${staffSn}/reset`, {
     method: 'POST',
+  });
+}
+
+// 激活
+export async function unlock(staffSn) {
+  return request(`/api/staffs/${staffSn}/unlock`, {
+    method: 'PATCH',
+  });
+}
+
+// 转正
+export async function process(params, staffSn) {
+  return request(`/api/staffs/${staffSn}/process`, {
+    method: 'PATCH',
+    body: params,
+  });
+}
+
+// 人事变动
+export async function transfer(params, staffSn) {
+  return request(`/api/staffs/${staffSn}/transfer`, {
+    method: 'PATCH',
+    body: params,
+  });
+}
+
+// 离职
+export async function leave(params, staffSn) {
+  return request(`/api/staffs/${staffSn}/leave`, {
+    method: 'PATCH',
+    body: params,
+  });
+}
+
+// 再入职
+export async function againEntry(staffSn) {
+  return request(`/api/staffs/${staffSn}/again-entry`, {
+    method: 'PATCH',
   });
 }

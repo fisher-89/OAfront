@@ -1,4 +1,5 @@
 import sourceEffect from './source';
+import levelEffect from './level';
 import clientEffect from './client';
 import clientLogEffect from './clientLog';
 import tagsTypeEffect from './tagsType';
@@ -16,6 +17,7 @@ export default {
     tags: [],
     notes: {},
     source: [],
+    level: [],
     noteLogs: {},
     customer: {},
     tagsType: [],
@@ -32,6 +34,7 @@ export default {
     ...noteEffect,
     ...tagsEffect,
     ...sourceEffect,
+    ...levelEffect,
     ...clientEffect,
     ...tagsTypeEffect,
     ...noteTypeEffect,

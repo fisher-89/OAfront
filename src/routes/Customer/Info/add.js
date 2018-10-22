@@ -8,6 +8,7 @@ import {
   Radio,
 } from 'antd';
 import moment from 'moment';
+import store from './store/store';
 import OAForm, {
   Address,
   DatePicker,
@@ -16,7 +17,7 @@ import OAForm, {
 import { nation } from '../../../assets/nation';
 import { province } from '../../../assets/province';
 import { customerStatus } from '../../../assets/customer';
-import store from './store/store';
+import UploadCropper from '../../../components/UploadCropper';
 
 const RadioGroup = Radio.Group;
 const FormItem = OAForm.Item;
@@ -60,7 +61,7 @@ const tailFormItemLayout = {
 const rowGutter = { sm: 16, lg: 8 };
 const colSpan = { sm: rowGutter.sm / 2, lg: rowGutter.lg / 2 };
 
-const sexOption = [
+export const sexOption = [
   { label: '男', value: '男' },
   { label: '女', value: '女' },
 ];
@@ -68,6 +69,10 @@ const sexOption = [
 @store(['submit', 'fetchDataSource'])
 @OAForm.create()
 export default class extends React.PureComponent {
+  state = {
+
+  }
+
   componentDidMount() {
     const { fetchDataSource, match } = this.props;
     const { id } = match.params;
@@ -145,25 +150,80 @@ export default class extends React.PureComponent {
           </Col>
         </Row>
         <Row gutter={rowGutter}>
+          <Col {...rowGutter}>
+            <FormItem label="客户头像" {...rowFormItemLayout}>
+              {getFieldDecorator('icon', {
+                initialValue: initialValue.icon ? [initialValue.icon] : [],
+              })(
+                <UploadCropper actionType="customer/avatar" name="iconImage" />
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row gutter={rowGutter}>
+          <Col {...rowGutter}>
+            <FormItem label="合作品牌" {...rowFormItemLayout} required>
+              {getFieldDecorator('brands', {
+                initialValue: brandValue || [],
+                rules: [validatorRequired],
+              })(
+                <Select placeholder="请选择" mode="multiple">
+                  {staffBransData.map(item =>
+                    (<Option key={`${item.id}`}>{item.name}</Option>))
+                  }
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row gutter={rowGutter}>
+          <Col {...rowGutter}>
+            <FormItem label="客户等级" {...rowFormItemLayout} required>
+              {getFieldDecorator('level', {
+                initialValue: initialValue.level || [],
+                rules: [validatorRequired],
+              })(
+                <Select placeholder="请选择" mode="multiple">
+                  {staffBransData.map(item =>
+                    (<Option key={`${item.id}`}>{item.name}</Option>))
+                  }
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row gutter={rowGutter}>
           <Col {...colSpan}>
-            <FormItem label="民族" {...formItemLayout} required>
-              {getFieldDecorator('nation', {
-                initialValue: initialValue.nation || undefined,
+            <FormItem label="客户状态" {...formItemLayout} required>
+              {getFieldDecorator('status', {
+                initialValue: initialValue.status !== undefined ? `${initialValue.status}` : undefined,
                 rules: [validatorRequired],
               })(
                 <Select placeholder="请选择">
-                  {nation.map(item =>
-                    (<Option key={item.name}>{item.name}</Option>))
+                  {customerStatus.map(item =>
+                    (<Option key={`${item.id}`}>{item.name}</Option>))
                   }
                 </Select>
               )}
             </FormItem>
           </Col>
           <Col {...colSpan}>
-            <FormItem label="籍贯" {...formItemLayout} >
-              {getFieldDecorator('native_place', {
-                initialValue: initialValue.native_place || undefined,
-                // rules: [validatorRequired],
+            <FormItem label="初次合作时间" {...formItemLayout}>
+              {getFieldDecorator('first_cooperation_at', {
+                initialValue: initialValue.first_cooperation_at || '',
+              })(
+                <DatePicker placeholder="请输入" style={{ width: '100%' }} />
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+
+        <Row gutter={rowGutter}>
+          <Col {...rowGutter}>
+            <FormItem label="合作省份" {...rowFormItemLayout} required>
+              {getFieldDecorator('cooperation_province', {
+                initialValue: initialValue.cooperation_province || undefined,
+                rules: [validatorRequired],
               })(
                 <Select placeholder="请选择">
                   {province.map(item =>
@@ -174,6 +234,7 @@ export default class extends React.PureComponent {
             </FormItem>
           </Col>
         </Row>
+
         <Row gutter={rowGutter}>
           <Col {...rowGutter}>
             <FormItem label="身份证号码" {...rowFormItemLayout} required>
@@ -187,12 +248,21 @@ export default class extends React.PureComponent {
           </Col>
         </Row>
         <Row gutter={rowGutter}>
-          <Col {...rowGutter}>
-            <FormItem label="现住地址" {...rowFormItemLayout}>
-              {getFieldDecorator('present_address', {
-                initialValue: initialValue.present_address || {},
+          <Col {...colSpan}>
+            <FormItem label="身份证照片" {...formItemLayout}>
+              {getFieldDecorator('id_card_image_f', {
+                initialValue: initialValue.id_card_image_f ? [initialValue.id_card_image_f] : [],
               })(
-                <Address />
+                <UploadCropper actionType="customer/card" name="cardImage" placeholder="上传正面" />
+              )}
+            </FormItem>
+          </Col>
+          <Col {...colSpan}>
+            <FormItem {...formItemLayout}>
+              {getFieldDecorator('id_card_image_v', {
+                initialValue: initialValue.id_card_image_v ? [initialValue.id_card_image_v] : [],
+              })(
+                <UploadCropper actionType="customer/card" name="cardImage" placeholder="上传反面" />
               )}
             </FormItem>
           </Col>
@@ -209,6 +279,7 @@ export default class extends React.PureComponent {
             </FormItem>
           </Col>
         </Row>
+
         <Row gutter={rowGutter}>
           <Col {...rowGutter}>
             <FormItem label="微信" {...rowFormItemLayout}>
@@ -220,9 +291,24 @@ export default class extends React.PureComponent {
             </FormItem>
           </Col>
         </Row>
+
+
         <Row gutter={rowGutter}>
-          <Col {...colSpan}>
-            <FormItem label="客户来源" {...formItemLayout} required>
+          <Col {...rowGutter}>
+            <FormItem label="现住地址" {...rowFormItemLayout}>
+              {getFieldDecorator('present_address', {
+                initialValue: initialValue.present_address || {},
+              })(
+                <Address />
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+
+
+        <Row gutter={rowGutter}>
+          <Col {...rowGutter}>
+            <FormItem label="客户来源" {...rowFormItemLayout} required>
               {getFieldDecorator('source_id', {
                 initialValue: initialValue.source_id ? `${initialValue.source_id}` : undefined,
                 rules: [validatorRequired],
@@ -235,42 +321,68 @@ export default class extends React.PureComponent {
               )}
             </FormItem>
           </Col>
-          <Col {...colSpan}>
-            <FormItem label="客户状态" {...formItemLayout} required>
-              {getFieldDecorator('status', {
-                initialValue: initialValue.status !== undefined ? `${initialValue.status}` : undefined,
-                rules: [validatorRequired],
+        </Row>
+        <Row gutter={rowGutter}>
+          <Col {...rowGutter}>
+            <FormItem label="介绍人" {...rowFormItemLayout}>
+              {getFieldDecorator('recommend', {
+                initialValue: {},
               })(
-                <Select placeholder="请选择">
-                  {customerStatus.map(item =>
-                    (<Option key={`${item.id}`}>{item.name}</Option>))
-                  }
-                </Select>
+                <SearchTable.Customer
+                  name={{
+                    recommend_id: 'id',
+                    recommend_name: 'name',
+                  }}
+                  valueName="recommend_id"
+                  showName="recommend_name"
+                />
               )}
             </FormItem>
           </Col>
         </Row>
         <Row gutter={rowGutter}>
-          <Col {...colSpan}>
-            <FormItem label="合作品牌" {...formItemLayout} required>
-              {getFieldDecorator('brands', {
-                initialValue: brandValue || [],
-                rules: [validatorRequired],
+          <Col {...rowGutter}>
+            <FormItem label="拓展员工" {...rowFormItemLayout}>
+              {getFieldDecorator('developer', {
+                initialValue: {},
               })(
-                <Select placeholder="请选择" mode="multiple">
-                  {staffBransData.map(item =>
-                    (<Option key={`${item.id}`}>{item.name}</Option>))
+                <SearchTable.Staff
+                  name={{
+                    develop_sn: 'staff_sn',
+                    develop_name: 'realname',
+                  }}
+                  valueName="develop_sn"
+                  showName="develop_name"
+                />
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+
+        <Row gutter={rowGutter}>
+          <Col {...colSpan}>
+            <FormItem label="民族" {...formItemLayout} >
+              {getFieldDecorator('nation', {
+                initialValue: initialValue.nation || undefined,
+              })(
+                <Select placeholder="请选择">
+                  {nation.map(item =>
+                    (<Option key={item.name}>{item.name}</Option>))
                   }
                 </Select>
               )}
             </FormItem>
           </Col>
           <Col {...colSpan}>
-            <FormItem label="初次合作时间" {...formItemLayout}>
-              {getFieldDecorator('first_cooperation_at', {
-                initialValue: initialValue.first_cooperation_at || '',
+            <FormItem label="籍贯" {...formItemLayout} >
+              {getFieldDecorator('native_place', {
+                initialValue: initialValue.native_place || undefined,
               })(
-                <DatePicker placeholder="请输入" style={{ width: '100%' }} />
+                <Select placeholder="请选择">
+                  {province.map(item =>
+                    (<Option key={`${item.name}`}>{item.name}</Option>))
+                  }
+                </Select>
               )}
             </FormItem>
           </Col>

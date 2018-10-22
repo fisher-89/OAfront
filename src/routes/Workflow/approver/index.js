@@ -9,23 +9,29 @@ import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 
 @store()
 export default class extends PureComponent {
-  state = {
-    modeId: undefined,
-    initialValue: {},
-    visible: false,
-    type: false,
+  constructor(props) {
+    super(props);
+    let modeId;
+    if (props.list.length) (modeId = props.list[0].id);
+    this.state = {
+      modeId,
+      initialValue: {},
+      visible: false,
+      type: false,
+    };
   }
 
   componentWillMount() {
-    const { fetchMode, fetchDepartment } = this.props;
+    const { fetchMode, fetchDepartment, fetchRoles } = this.props;
     fetchMode();
+    fetchRoles();
     fetchDepartment();
   }
 
   componentWillReceiveProps(nextProps) {
     const { list } = nextProps;
     const { modeId } = this.state;
-    if (nextProps.list !== this.props.list && !modeId) {
+    if (nextProps.list !== this.props.list && !modeId && nextProps.list.length) {
       const [firstData] = list;
       this.fetchDetails(firstData.id);
     }
@@ -51,35 +57,48 @@ export default class extends PureComponent {
       dataIndex: 'department_name',
     },
     {
+      width: 200,
       title: '员工',
       dataIndex: 'approver_staff',
-      render: key => key.text,
+      render: key => this.renderTooltip(key),
     },
     {
+      width: 200,
       title: '角色',
       dataIndex: 'approver_roles',
-      render: key => key.text,
+      render: key => this.renderDataName(key, this.props.roles),
     },
     {
+      width: 200,
       title: '部门',
       dataIndex: 'approver_departments',
-      render: key => key.text,
+      render: key => this.renderDataName(key, this.props.department),
     },
     {
       title: '操作',
       render: rowData => (
         <Fragment>
           <a onClick={() => {
-            this.setState({ initialValue: rowData, visible: true });
+            this.setState({ initialValue: rowData, visible: true, type: true });
           }}
           >编辑
           </a>
           <Divider type="vertical" />
-          <a onClick={() => this.props.deleted(rowData.id)}>删除</a>
+          <a onClick={() => this.props.deleted(rowData.id, this.state.modeId)}>删除</a>
         </Fragment>
       ),
     },
   ]
+
+  renderTooltip = (key) => {
+    const text = key.map(item => item.text).join('、');
+    return OATable.renderEllipsis(text, true);
+  }
+
+  renderDataName = (key, data) => {
+    const value = data.filter(item => key.indexOf(`${item.id}`) !== -1).map(item => item.name);
+    return OATable.renderEllipsis(value.join('、'), true);
+  }
 
   render() {
     const { loading, list, rulesData = {}, modeDeleted } = this.props;

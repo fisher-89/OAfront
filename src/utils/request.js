@@ -76,7 +76,6 @@ export default async function request(url, options) {
       ...(options && options.headers),
     },
   };
-
   const accessToken = localStorage.getItem(`${TOKEN_PREFIX}access_token`);
   const expiresIn = localStorage.getItem(`${TOKEN_PREFIX}access_token_expires_in`);
 
@@ -118,7 +117,12 @@ export default async function request(url, options) {
   const result = fetch(urlParam, newOptions)
     .then(checkStatus)
     .then((response) => {
-      if (response.headers.get('content-type') === 'application/vnd.ms-excel; charset=UTF-8') {
+      const cntType = response.headers.get('content-type');
+      if (
+        cntType === 'application/vnd.ms-excel; charset=UTF-8'
+        ||
+        cntType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=UTF-8'
+      ) {
         return response;
       }
 

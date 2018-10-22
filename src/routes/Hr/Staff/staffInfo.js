@@ -17,6 +17,9 @@ export default class StaffInfo extends PureComponent {
     const relatives = data.relatives ? data.relatives.map((item) => {
       return `${item.realname}   (${item.relative_type.name})   编号(${item.staff_sn})`;
     }).join('') : '  ';
+    const idNumber = data.id_card_number;
+    const birthday = idNumber ? [idNumber.substr(6, 4), idNumber.substr(10, 2), idNumber.substr(12, 2)].join('-') : '';
+
     return (
       <Spin tip="Loading..." spinning={loading}>
         <Card type="inner" key="userInfo" title="用户信息">
@@ -66,19 +69,13 @@ export default class StaffInfo extends PureComponent {
         <Card type="inner" key="details" title="">
           <DescriptionList>
             <Description term="生日">
-              {`${data.birthday || ''}`}
+              {`${birthday || ''}`}
             </Description>
             <Description term="民族">
               {`${data.national || ''}`}
             </Description>
-            <Description term="QQ号">
-              {`${data.qq_number || ''}`}
-            </Description>
             <Description term="微信">
               {`${data.wechat_number || ''}`}
-            </Description>
-            <Description term="邮箱">
-              {`${data.email || ''}`}
             </Description>
             <Description term="学历">
               {`${data.education || ''}`}

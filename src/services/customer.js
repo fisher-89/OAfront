@@ -1,4 +1,22 @@
 import request from '../utils/request';
+import upload from '../utils/upload';
+
+export async function downloadExcelCustomer(params) {
+  return request('/api/crm/clients/export', {
+    method: 'GET',
+    body: params,
+    headers: { Accept: '*' },
+  });
+}
+
+export async function avatar(params) {
+  return upload('/api/crm/clients/image', { body: params });
+}
+
+export async function card(params) {
+  return upload('/api/crm/clients/card', { body: params });
+}
+
 
 /** 客户来源 */
 export async function fetchSource() {
@@ -18,6 +36,27 @@ export async function editSource(params, id) {
 /** 删除客户来源 */
 export async function deleteSource(id) {
   return request(`/api/crm/source/${id}`, { method: 'DELETE' });
+}
+
+
+/** 客户等级 */
+export async function fetchLevel() {
+  return request('/api/crm/level', { method: 'GET' });
+}
+
+/** 添加客户等级 */
+export async function addLevel(params) {
+  return request('/api/crm/level', { method: 'POST', body: params });
+}
+
+/** 编辑客户等级 */
+export async function editLevel(params, id) {
+  return request(`/api/crm/level/${id}`, { method: 'PUT', body: params });
+}
+
+/** 删除客户等级 */
+export async function deleteLevel(id) {
+  return request(`/api/crm/level/${id}`, { method: 'DELETE' });
 }
 
 

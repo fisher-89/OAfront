@@ -1,9 +1,10 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Input, Select, Row, Col, Button, Modal } from 'antd';
+import { Input, Select, Row, Col, Button, Modal, TreeSelect } from 'antd';
 import moment from 'moment';
 
 import OAForm, { SearchTable, DatePicker, OAModal } from '../../../components/OAForm';
+import { markTreeData } from '../../../utils/utils';
 
 const FormItem = OAForm.Item;
 const { Option } = Select;
@@ -77,6 +78,7 @@ export default class extends PureComponent {
       xs: 24,
       lg: 12,
     };
+    const newTreeData = markTreeData(department, { value: 'id', lable: 'name', parentId: 'parent_id' }, 0);
 
     return (
       <OAModal
@@ -116,17 +118,15 @@ export default class extends PureComponent {
         </Row>
         <Row>
           <Col {...fieldsBoxLayout}>
-            <FormItem label="部门" required {...formItemLayout}>
-              {getFieldDecorator('department_id', {
-                initialValue: editStaff.department_id,
-              })(
-                <Select name="department_id" placeholer="请选择">
-                  {department && department.map((item) => {
-                    return (
-                      <Option key={item.id} value={item.id}>{item.name}</Option>
-                    );
-                  })}
-                </Select>
+            <FormItem label="部门" {...formItemLayout} required>
+              {getFieldDecorator('department_id', editStaff.department_id ? {
+                initialValue: editStaff.department_id.toString(),
+              } : { initialValue: '1' })(
+                <TreeSelect
+                  treeDefaultExpandAll
+                  treeData={newTreeData}
+                  dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                />
               )}
             </FormItem>
           </Col>

@@ -72,9 +72,9 @@ export default function upload(url, options) {
   return fetch(urlParam, newOptions)
     .then(checkStatus)
     .then((response) => {
-      if (newOptions.method === 'DELETE' && response.status === 204) {
+      if (response.status === 200) {
         return response.text();
       }
-      return response;
+      return response.json();
     });
 }

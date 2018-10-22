@@ -1,9 +1,10 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import moment from 'moment';
 import {
   Input,
   Select,
-  Switch,
+  message,
 } from 'antd';
 
 import OAForm, { DatePicker, OAModal } from '../../../components/OAForm';
@@ -18,7 +19,7 @@ export default class extends PureComponent {
   handleSubmit = (params) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'staffs/editStaff',
+      type: 'staffs/process',
       payload: params,
       onError: this.handleError,
       onSuccess: this.handleSuccess,
@@ -27,17 +28,12 @@ export default class extends PureComponent {
 
   handleError = (err) => {
     const { onError } = this.props;
-    onError(err);
+    console.log(err);
+    onError(err.errors);
   }
 
   handleSuccess = () => {
     this.props.onCancel();
-  }
-
-  handleChange = (check) => {
-    this.props.form.setFieldsValue({
-      operation_type: (check === true) ? 'leaving' : 'leave',
-    });
   }
 
   render() {
@@ -61,7 +57,7 @@ export default class extends PureComponent {
     return (
       <OAModal
         width={600}
-        title="离职"
+        title="转正"
         loading={loading}
         visible={visible}
         style={{ top: 30 }}
@@ -75,7 +71,7 @@ export default class extends PureComponent {
               <Input type="hidden" />
           )}
           {getFieldDecorator('operation_type', {
-              initialValue: 'leave',
+              initialValue: 'employ',
             })(
               <Input type="hidden" />
           )}
@@ -87,28 +83,24 @@ export default class extends PureComponent {
         </FormItem>
         <FormItem label="状态" required {...formItemLayout}>
           {getFieldDecorator('status_id', {
-            initialValue: -1,
+            initialValue: 2,
           })(
             <Select name="status_id" placeholer="请选择">
-              <Option value={-1}>离职</Option>
-              <Option value={-2}>自动离职</Option>
-              <Option value={-3}>开除</Option>
-              <Option value={-4}>劝退</Option>
+              <Option value={2}>在职</Option>
             </Select>
-          )}
-        </FormItem>
-        <FormItem {...formItemLayout} label="跳过工作交接">
-          {getFieldDecorator('skip_leaving', {
-            initialValue: false,
-          })(
-            <Switch onChange={this.handleChange} />
           )}
         </FormItem>
         <FormItem label="执行时间" name="operate_at" required {...formItemLayout}>
           {getFieldDecorator('operate_at', {
             initialValue: '',
           })(
-            <DatePicker />
+            <DatePicker
+              onChange={(time) => {
+                if (moment(time).isAfter()) {
+                  message.warning(`将预约 ${time} 执行`);
+                }
+              }}
+            />
           )}
         </FormItem>
         <FormItem label="操作说明" {...formItemLayout1} name="operation_remark">

@@ -10,10 +10,13 @@ export default type => (Compoent) => {
     roles: roles.roles,
     department: department.department,
     loading: {
-      deleted: loading.effects['workflow/deleteApprover'],
-      fetchDataSource: loading.effects['workflow/fetchStepDepartment'],
+      deleted: (
+        loading.effects['workflow/deleteApprover'] ||
+        loading.effects['workflow/deleteStepDepartment']
+      ),
       fetchRoles: loading.effects['roles/fetchRoles'],
       fetchDepartment: loading.effects['department/fetchDepartment'],
+      fetchDataSource: loading.effects['workflow/fetchStepDepartment'],
       submit: (
         loading.effects['workflow/editStepDepartment'] ||
         loading.effects['workflow/addStepDepartment']
@@ -38,23 +41,24 @@ export default type => (Compoent) => {
       dispatch({ type: 'workflow/fetchStepDepartment', payload: params });
     }
 
-    deleted = (id, onError, onSuccess) => {
+    deleted = (id, modeId) => {
       const { dispatch } = this.props;
       dispatch({
         type: 'workflow/deleteStepDepartment',
-        payload: { id },
-        onSuccess,
-        onError,
+        payload: { id, modeId },
       });
     }
 
-    submit = (values, onError, onSuccess) => {
-      const { dispatch } = this.props;
+    submit = (values, onError) => {
+      const { dispatch, onCancel } = this.props;
       dispatch({
         type: values.id ? 'workflow/editStepDepartment' : 'workflow/addStepDepartment',
         payload: values,
-        onSuccess,
-        onError,
+        onSuccess: onCancel,
+        onError: errors => onError(errors, {
+          department_name: 'department',
+          department_id: 'department',
+        }),
       });
     }
 

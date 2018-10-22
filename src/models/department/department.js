@@ -14,7 +14,7 @@ export default {
       const { update } = payload || {};
       let response = yield select(model => model[store][store]);
       if (!response.length || update) {
-        response = yield call(fetchDepartment);
+        response = yield call(fetchDepartment, payload);
         yield put({
           type: 'save',
           payload: {
