@@ -1,9 +1,22 @@
 import { notification } from 'antd';
-import { fetchFlow, addFlow, editFlow, deleteFlow } from '../../services/workflow';
+import { fetchFlow, addFlow, editFlow, deleteFlow, flowRunLog } from '../../services/workflow';
 
 const store = 'flow';
 
 export default {
+  * flowRunLog({ payload }, { call, put }) {
+    try {
+      const params = { ...payload };
+      const response = yield call(flowRunLog, params);
+      yield put({
+        type: 'save',
+        payload: {
+          data: response,
+          store: 'flowRunLog',
+        },
+      });
+    } catch (err) { return err; }
+  },
   * fetchFlow({ payload }, { call, put }) {
     try {
       const { id } = payload;
@@ -12,24 +25,14 @@ export default {
       };
       delete params.id;
       const response = yield call(fetchFlow, params, id || '');
-      if (id) {
-        yield put({
-          type: 'save',
-          payload: {
-            store,
-            id,
-            data: response,
-          },
-        });
-      } else {
-        yield put({
-          type: 'save',
-          payload: {
-            store,
-            data: response,
-          },
-        });
-      }
+      yield put({
+        type: 'save',
+        payload: {
+          store,
+          id,
+          data: response,
+        },
+      });
     } catch (err) { return err; }
   },
   * addFlows({ payload, onSuccess, onError }, { call, put }) {

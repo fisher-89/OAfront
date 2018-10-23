@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'dva';
 
-export default (Compoent) => {
+export default (Component) => {
   @connect(({ customer, tableClients, brand, loading }) => ({
     brands: brand.brand,
     source: customer.source,
@@ -16,7 +16,7 @@ export default (Compoent) => {
       loading.effects['tableClients/fetchCustomer']
     ),
   }))
-  class NewCompoent extends React.PureComponent {
+  class NewComponent extends React.PureComponent {
     fetchDataSource = (params) => {
       const { dispatch } = this.props;
       this.fetchStore();
@@ -52,9 +52,9 @@ export default (Compoent) => {
 
     render() {
       return (
-        <Compoent {...this.makeProps()} />
+        <Component {...this.makeProps()} />
       );
     }
   }
-  return NewCompoent;
+  return NewComponent;
 };

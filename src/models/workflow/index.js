@@ -28,6 +28,7 @@ export default {
     apiConfigDetails: {},
     approver: [],
     stepDepartment: {},
+    flowRunLog: {},
   },
   effects: {
     ...formEffects,

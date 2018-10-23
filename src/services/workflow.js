@@ -31,6 +31,16 @@ export async function deleteFlow(id) {
   });
 }
 
+export async function flowRunLog(params) {
+  return request('/api/workflow/flow-run', {
+    method: 'GET',
+    body: {
+      ...params,
+    },
+  });
+}
+
+
 /** flowType */
 
 export async function fetchFlowType(params) {
