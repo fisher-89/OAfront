@@ -44,12 +44,19 @@ export default class extends React.PureComponent {
     const { fetchDataSource, flowRunLog, flowType, formType, flow, form } = this.props;
     let cateData = [];
     let filterData = [];
+    const filters = {};
+    const filterExtra = Object.keys(this.state)
+      .filter(key => this.state[key] !== undefined).length === 3;
     if (type === '1') {
       cateData = flowType;
       if (category) {
         filterData = flow.filter(item => category === `${item.flow_type_id}`);
       } else {
         filterData = flow;
+      }
+      if (filterExtra) {
+        filters.flow_id = [id];
+        filters.flow_type_id = [category];
       }
     } else {
       cateData = formType;
@@ -58,7 +65,12 @@ export default class extends React.PureComponent {
       } else {
         filterData = form;
       }
+      if (filterExtra) {
+        filters.form_id = [id];
+        filters.form_type_id = [category];
+      }
     }
+
     return (
       <PageHeaderLayout>
         <Card bordered={false}>
@@ -102,12 +114,15 @@ export default class extends React.PureComponent {
               </InputGroup>
             </Col>
           </Row>
-          <OATable
-            columns={this.columns}
-            total={flowRunLog.total}
-            dataSource={flowRunLog.data}
-            fetchDataSource={fetchDataSource}
-          />
+          {filterExtra && (
+            <OATable
+              filters={filters}
+              columns={this.columns}
+              total={flowRunLog.total}
+              dataSource={flowRunLog.data}
+              fetchDataSource={fetchDataSource}
+            />
+          )}
         </Card>
       </PageHeaderLayout>
     );
