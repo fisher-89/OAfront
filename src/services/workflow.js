@@ -40,6 +40,14 @@ export async function flowRunLog(params) {
   });
 }
 
+export async function flowRunLogExport(params) {
+  return request('/api/workflow/flow-run/get-export', {
+    method: 'GET',
+    body: {
+      ...params,
+    },
+  });
+}
 
 /** flowType */
 

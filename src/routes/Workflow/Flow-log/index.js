@@ -1,5 +1,6 @@
 import React from 'react';
-import { Row, Col, Card, Radio, Select, Input } from 'antd';
+import XLSX from 'xlsx';
+import { Row, Col, Card, Radio, Select, Input, message } from 'antd';
 import store from './store/store';
 import OATable from '../../../components/OATable';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
@@ -7,6 +8,12 @@ import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 const { Option } = Select;
 const InputGroup = Input.Group;
 
+const status = [
+  { value: '0', text: '运行中' },
+  { value: '1', text: '结束' },
+  { value: '-1', text: '驳回' },
+  { value: '-2', text: '撤回' },
+];
 
 @store()
 export default class extends React.PureComponent {
@@ -22,6 +29,32 @@ export default class extends React.PureComponent {
       title: '编号',
       searcher: true,
       dataIndex: 'id',
+    },
+    {
+      title: '名称',
+      searcher: true,
+      dataIndex: 'name',
+    },
+    {
+      sorter: true,
+      title: '操作时间',
+      dataIndex: 'end_at',
+    },
+    {
+      sorter: true,
+      title: '发起时间',
+      dataIndex: 'created_at',
+    },
+    {
+      title: '状态',
+      filters: status,
+      dataIndex: 'status',
+      render: key => OATable.findRenderKey(status, key, 'value').text,
+    },
+    {
+      title: '发起人',
+      searcher: true,
+      dataIndex: 'creator_name',
     },
   ]
 
@@ -39,41 +72,44 @@ export default class extends React.PureComponent {
     };
   }
 
+  exportSuccess = ({ headers, data }) => {
+    if (!data.length) {
+      message.error('暂无流程运行记录!');
+      return;
+    }
+    const workbook = XLSX.utils.book_new();
+    const dataExcel = [...data];
+    dataExcel.unshift(headers);
+    const errorSheet = XLSX.utils.aoa_to_sheet(dataExcel);
+    XLSX.utils.book_append_sheet(workbook, errorSheet);
+    XLSX.writeFile(workbook, '流程运行记录.xlsx');
+  }
+
   render() {
     const { type, category, id } = this.state;
-    const { fetchDataSource, flowRunLog, flowType, formType, flow, form } = this.props;
+    const { fetchDataSource, flowRunLog, flowType, formType, flow, form, loading } = this.props;
     let cateData = [];
     let filterData = [];
-    const filters = {};
+    const filters = {
+      flow_id: undefined,
+      form_id: undefined,
+      form_type_id: undefined,
+      flow_type_id: undefined,
+    };
     const filterExtra = Object.keys(this.state)
-      .filter(key => this.state[key] !== undefined).length === 3;
+      .filter(key => this.state[key]).length === 3;
     if (type === '1') {
       cateData = flowType;
-      if (category) {
-        filterData = flow.filter(item => category === `${item.flow_type_id}`);
-      } else {
-        filterData = flow;
-      }
-      if (filterExtra) {
-        filters.flow_id = [id];
-        filters.flow_type_id = [category];
-      }
+      if (filterExtra) filters.flow_id = [id];
+      filterData = (category && flow.filter(item => category === `${item.flow_type_id}`)) || flow;
     } else {
       cateData = formType;
-      if (category) {
-        filterData = form.filter(item => category === `${item.form_type_id}`);
-      } else {
-        filterData = form;
-      }
-      if (filterExtra) {
-        filters.form_id = [id];
-        filters.form_type_id = [category];
-      }
+      if (filterExtra) filters.form_id = [id];
+      filterData = (category && form.filter(item => category === `${item.form_type_id}`)) || form;
     }
-
     return (
       <PageHeaderLayout>
-        <Card bordered={false}>
+        <Card bordered={false} style={{ minHeight: 400 }}>
           <Row>
             <Col>
               <Radio.Group
@@ -114,15 +150,25 @@ export default class extends React.PureComponent {
               </InputGroup>
             </Col>
           </Row>
-          {filterExtra && (
+          <div style={{ display: filterExtra ? 'block' : 'none' }}>
             <OATable
+              serverSide
+              loading={loading}
               filters={filters}
               columns={this.columns}
-              total={flowRunLog.total}
-              dataSource={flowRunLog.data}
-              fetchDataSource={fetchDataSource}
+              fetchDataSource={(params) => {
+                if (filterExtra) fetchDataSource(params);
+              }}
+              total={(filterExtra && flowRunLog.total) || 0}
+              dataSource={(filterExtra && flowRunLog.data) || []}
+              fileExportChange={{
+                onSuccess: this.exportSuccess,
+              }}
+              excelExport={{
+                actionType: 'workflow/flowRunLogExport', fileName: '流程运行记录',
+              }}
             />
-          )}
+          </div>
         </Card>
       </PageHeaderLayout>
     );

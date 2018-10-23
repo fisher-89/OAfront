@@ -9,7 +9,8 @@ function makeLoading(loading) {
       loading.effects['workflow/fetchForm'] ||
       loading.effects['workflow/flowRunLog'] ||
       loading.effects['workflow/fetchFlowType'] ||
-      loading.effects['workflow/fetchFormType']
+      loading.effects['workflow/fetchFormType'] ||
+      loading.effects['workflow/flowRunLogExport']
     ),
   };
 }

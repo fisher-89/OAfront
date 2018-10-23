@@ -17,11 +17,7 @@ import {
 } from '../../utils/utils';
 
 const defaultProps = {
-  fileExportChange: {
-    onSuccess: () => { },
-    onError: () => { },
-    afterChange: () => { },
-  },
+  fileExportChange: {},
   multiOperator: null,
   extraOperator: null,
   extraOperatorRight: null,
@@ -107,12 +103,12 @@ class OATable extends PureComponent {
       const { selectedRowKeys, selectedRows } = rowSelection;
       this.setState({ selectedRowKeys, selectedRows });
     }
-    if (filters !== this.props.filters) {
-      this.onPropsFiltersChange(filters, 'filters');
+    if (JSON.stringify(filters) !== JSON.stringify(this.props.filters)) {
+      this.onPropsFiltersChange(filters);
     }
   }
 
-  onPropsFiltersChange = (data, key) => {
+  onPropsFiltersChange = (data, key = 'filters') => {
     const thisFiltersKey = { ...this.state[key] };
     Object.keys(data).forEach((filter) => {
       if (!data[filter]) {
@@ -145,6 +141,17 @@ class OATable extends PureComponent {
     let urlPath = {};
     if (serverSide) {
       const filterParam = {};
+      const columnDataIndex = columns.map(column => column.dataIndex);
+      Object.keys(filters).forEach((key) => {
+        const filter = filters[key];
+        if (columnDataIndex.indexOf(key) === -1) {
+          if (typeof filter === 'string') {
+            filterParam[key] = filter;
+          } else {
+            filterParam[key] = filter.length === 1 ? filter[0] : { in: filter };
+          }
+        }
+      });
       columns.forEach((column, index) => {
         const key = column.dataIndex || index;
         const filter = filters[key];
@@ -647,11 +654,7 @@ class OATable extends PureComponent {
     dataExcel.unshift(datas.sheetHeader);
     const errorSheet = XLSX.utils.aoa_to_sheet(dataExcel);
     XLSX.utils.book_append_sheet(workbook, errorSheet);
-    XLSX.writeFile(workbook, fileName || '导出数据信息.xls');
-  }
-
-  excelLoading = (loading) => {
-    this.setState({ loading });
+    XLSX.writeFile(workbook, fileName || '导出数据信息.xlsx');
   }
 
   xlsExportExcel = ({ headers, data }) => {
@@ -661,18 +664,25 @@ class OATable extends PureComponent {
     dataExcel.unshift(headers);
     const errorSheet = XLSX.utils.aoa_to_sheet(dataExcel);
     XLSX.utils.book_append_sheet(workbook, errorSheet);
-    XLSX.writeFile(workbook, fileName || '导出数据信息.xls');
+    XLSX.writeFile(workbook, fileName || '导出数据信息.xlsx');
   }
 
   handleExportExcel = () => {
-    const { excelExport: { uri }, dispatch } = this.props;
+    const { excelExport: { actionType }, dispatch, fileExportChange } = this.props;
     const params = this.fetchTableDataSource(true);
-    this.excelLoading('导出中...');
+    delete params.page;
+    delete params.pagesize;
     dispatch({
-      type: uri,
+      type: actionType,
       payload: params,
-      onError: () => { message.error('导出失败!!'); },
-      onSuccess: this.makeExcelFieldsData,
+      onError: (errors) => {
+        if (fileExportChange.onError) {
+          fileExportChange.onError(errors);
+          return;
+        }
+        message.error('导出失败!!');
+      },
+      onSuccess: fileExportChange.onSuccess || this.makeExcelFieldsData,
     });
   }
 

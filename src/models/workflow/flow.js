@@ -1,9 +1,20 @@
 import { notification } from 'antd';
-import { fetchFlow, addFlow, editFlow, deleteFlow, flowRunLog } from '../../services/workflow';
+import { flowRunLogExport, fetchFlow, addFlow, editFlow, deleteFlow, flowRunLog } from '../../services/workflow';
 
 const store = 'flow';
 
 export default {
+  *flowRunLogExport({ payload, onError, onSuccess }, { call }) {
+    try {
+      const params = { ...payload };
+      const response = yield call(flowRunLogExport, params);
+      if (response.errors) {
+        onError(response.errors);
+        return;
+      }
+      onSuccess(response);
+    } catch (err) { console.log(err); return err; }
+  },
   * flowRunLog({ payload }, { call, put }) {
     try {
       const params = { ...payload };
