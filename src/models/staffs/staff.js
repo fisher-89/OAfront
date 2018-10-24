@@ -241,7 +241,7 @@ export default {
       return error;
     }
   },
-  * process({ payload, onError }, { call, put }) {
+  * process({ payload, onSuccess, onError }, { call, put }) {
     try {
       const staffSn = payload.staff_sn;
       const response = yield call(process, payload, staffSn);
@@ -256,6 +256,7 @@ export default {
             data: response,
           },
         });
+        onSuccess(response);
       }
     } catch (error) {
       return error;
