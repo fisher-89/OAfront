@@ -237,9 +237,17 @@ const menuData = [
         authority: '42',
       },
       {
+        name: '费用品牌',
+        path: 'expense',
+      },
+      {
         name: '店铺管理',
         path: 'shop',
         authority: '70',
+      },
+      {
+        name: '员工标签',
+        path: 'stafftags',
       },
       {
         name: '大爱',
@@ -355,6 +363,30 @@ const menuData = [
           {
             name: '验证规则',
             path: 'validator',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    name: '应用管理',
+    icon: 'form',
+    path: 'appmanage',
+    authority: '51',
+    children: [
+      {
+        name: '报销系统',
+        path: 'reimburse',
+        children: [
+          {
+            name: '审批人配置',
+            path: 'approverset',
+            authority: '115',
+          },
+          {
+            name: '审核人配置',
+            path: 'auditorset',
+            authority: '116',
           },
         ],
       },

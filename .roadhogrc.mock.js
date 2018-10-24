@@ -7,8 +7,7 @@ const crm_port = `${TEST_URI}:8003`;
 const pms_port = `${TEST_URI}:8009`;
 const api_port = `${TEST_URI}:8002`;
 const workflow_port = `${TEST_URI}:8006`;
-
-
+const reimburse_port = `${TEST_URI}:8001`;
 
 export default !noProxy ? {
   /**
@@ -55,6 +54,12 @@ export default !noProxy ? {
     /**
      * 测试服  ： 报销
      */
+    'GET /api/finance/reimburse/admin/(.*)': `${reimburse_port}/admin/`,
+    'POST /api/finance/reimburse/admin/(.*)': `${reimburse_port}/admin/`,
+    'PATCH /api/finance/reimburse/admin/(.*)': `${reimburse_port}/admin/`,
+    'PUT /api/finance/reimburse/admin/(.*)': `${reimburse_port}/admin/`,
+    'DELETE /api/finance/reimburse/admin/(.*)': `${reimburse_port}/admin/`,
+
     'GET /api/finance/reimburse/(.*)': `${api_port}/reimburse/`,
     'POST /api/finance/reimburse/(.*)': `${api_port}/reimburse/`,
     'PATCH /api/finance/reimburse/(.*)': `${api_port}/reimburse/`,
@@ -105,5 +110,7 @@ export default !noProxy ? {
      * 唐娇  ： 大爱
      */
     // 'POST /api/violation/(.*)': 'http://192.168.20.144:8001/api/',
+
+
   };
 

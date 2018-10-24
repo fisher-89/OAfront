@@ -96,7 +96,7 @@ export default {
     };
   },
   delete(state, action) {
-    const { store, id, data = {} } = action.payload;
+    const { store, id, data = [] } = action.payload;
     if (data.message) {
       notification.error({
         message: data.message,

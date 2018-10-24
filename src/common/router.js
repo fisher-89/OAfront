@@ -207,6 +207,9 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['position', 'brand'], () => import('../routes/Hr/Brand')),
       authority: '42',
     },
+    '/hr/expense': {
+      component: dynamicWrapper(app, [], () => import('../routes/Hr/Expense')),
+    },
     '/hr/shop': {
       component: dynamicWrapper(app, ['department', 'shop', 'brand'], () => import('../routes/Hr/Shop')),
       authority: '70',
@@ -225,6 +228,9 @@ export const getRouterData = (app) => {
     },
     '/hr/violation/regime/edit/:id': {
       component: dynamicWrapper(app, ['violation', 'department', 'brand', 'position'], () => import('../routes/Hr/Violation/Regime/form')),
+    },
+    '/hr/stafftags': {
+      component: dynamicWrapper(app, [], () => import('../routes/Hr/Stafftags')),
     },
 
     /**  系统 */
@@ -319,6 +325,16 @@ export const getRouterData = (app) => {
     },
     '/passport/redirect_to_authorize': {
       component: dynamicWrapper(app, [], () => import('../routes/Oauth/RedirectToAuthorize')),
+    },
+
+    /** 应用管理 */
+    '/appmanage/reimburse/approverset': {
+      component: dynamicWrapper(app, ['appmanage'], () => import('../routes/Appmanage/Approverset')),
+      authority: '115',
+    },
+    '/appmanage/reimburse/auditorset': {
+      component: dynamicWrapper(app, ['appmanage'], () => import('../routes/Appmanage/Auditorset')),
+      authority: '116',
     },
   };
   // Get name from ./menu.js or just set it in the router data.
