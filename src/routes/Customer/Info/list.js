@@ -16,7 +16,7 @@ import { nation } from '../../../assets/nation';
 import OATable from '../../../components/OATable';
 import { province } from '../../../assets/province';
 import { customerStatus } from '../../../assets/customer';
-import { getFiltersData, customerAuthority } from '../../../utils/utils';
+import { getFiltersData, customerAuthority, analysisData } from '../../../utils/utils';
 
 
 @connect(({ customer }) => ({ customer: customer.customer }))
@@ -83,6 +83,12 @@ export default class extends PureComponent {
         render: (_, record) => OATable.analysisColumn(brands, record.brands, 'brand_id'),
       },
       {
+        hidden: true,
+        title: '合作品牌',
+        dataIndex: 'brands',
+        render: (_, record) => analysisData(brands, record.brands, 'brand_id').join('、'),
+      },
+      {
         // width: 120,
         align: 'center',
         title: '初次合作时间',
@@ -104,6 +110,13 @@ export default class extends PureComponent {
         dataIndex: 'tags.tag_id',
         filters: tags.map(tag => ({ text: tag.name, value: tag.id })),
         render: (_, record) => OATable.analysisColumn(tags, record.tags, 'tag_id'),
+      },
+      {
+        hidden: true,
+        title: '标签',
+        align: 'center',
+        dataIndex: 'tags',
+        render: (_, record) => analysisData(tags, record.tags, 'tag_id').join('、'),
       },
       {
         title: '操作',
@@ -175,12 +188,6 @@ export default class extends PureComponent {
       },
       {
         hidden: true,
-        title: '备注',
-        searcher: true,
-        dataIndex: 'wechat',
-      },
-      {
-        hidden: true,
         title: '民族',
         searcher: true,
         dataIndex: 'nation',
@@ -200,18 +207,21 @@ export default class extends PureComponent {
         title: '现住地址-省',
         dataIndex: 'province_id',
         filters: addressFilter,
+        render: key => OATable.findRenderKey(addressFilter, key).text,
       },
       {
         hidden: true,
         title: '现住地址-市',
         dataIndex: 'city_id',
         filters: addressFilter,
+        render: key => OATable.findRenderKey(addressFilter, key).text,
       },
       {
         hidden: true,
         title: '现住地址-区',
         dataIndex: 'county_id',
         filters: addressFilter,
+        render: key => OATable.findRenderKey(addressFilter, key).text,
       },
       {
         hidden: true,
@@ -272,29 +282,19 @@ export default class extends PureComponent {
         </Button>
       ));
     }
+    let excelExport = null;
     if (customerAuthority(192)) {
       extraOperator.push((
         <Button
-          key="download"
+          key="download-temp"
           icon="cloud-download"
         >
           <a href="/api/crm/clients/example" style={{ color: 'rgba(0, 0, 0, 0.65)', marginLeft: 5 }}>下载模板</a>
         </Button>
       ));
+      excelExport = { actionType: 'customer/downloadExcelCustomer', fileName: '客户资料.xlsx' };
     }
-    if (customerAuthority(192)) {
-      extraOperator.push((
-        <Button
-          key="exprot"
-          icon="cloud-download"
-          onClick={() => {
-            this.props.downloadExcelCustomer(this.searchParamsFilter);
-          }}
-        >
-          导出数据
-        </Button>
-      ));
-    }
+
     const { loading, customer, fetchDataSource } = this.props;
     return (
       <React.Fragment>
@@ -304,12 +304,10 @@ export default class extends PureComponent {
           loading={loading}
           data={customer.data}
           total={customer.total}
+          excelExport={excelExport}
           columns={this.makeColumns()}
           extraOperator={extraOperator}
-          fetchDataSource={(params) => {
-            this.searchParamsFilter.filters = params.filters;
-            fetchDataSource(params);
-          }}
+          fetchDataSource={fetchDataSource}
           excelInto={customerAuthority(192) ? '/api/crm/clients/import' : false}
         />
       </React.Fragment>

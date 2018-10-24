@@ -14,19 +14,14 @@ import {
 const store = 'customer';
 
 export default {
-  * downloadExcelCustomer({ payload }, { call, put }) {
+  * downloadExcelCustomer({ payload, onError, onSuccess }, { call }) {
     try {
       const response = yield call(downloadExcelCustomer, payload);
-      if (response) {
-        yield put({
-          type: 'exportExcel',
-          payload: {
-            data: response,
-            fileName: '客户资料.xls',
-          },
-        });
+      if (response.errors) {
+        return onError();
       }
-    } catch (err) { return err; }
+      onSuccess(response);
+    } catch (err) { console.log(err); return err; }
   },
   * avatar({ payload, onSuccess, onError }, { call }) {
     try {
