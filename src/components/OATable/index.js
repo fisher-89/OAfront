@@ -649,6 +649,7 @@ class OATable extends PureComponent {
       sheetData: newData,
       sheetHeader: header,
     };
+    console.log(datas);
     const workbook = XLSX.utils.book_new();
     const dataExcel = [...datas.sheetData];
     dataExcel.unshift(datas.sheetHeader);
