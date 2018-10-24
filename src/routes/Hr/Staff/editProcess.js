@@ -28,7 +28,6 @@ export default class extends PureComponent {
 
   handleError = (err) => {
     const { onError } = this.props;
-    console.log(err);
     onError(err.errors);
   }
 

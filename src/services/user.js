@@ -98,3 +98,41 @@ export async function resetPassword(staffSn) {
     method: 'POST',
   });
 }
+
+// 激活
+export async function unlock(staffSn) {
+  return request(`/api/staff/${staffSn}/unlock`, {
+    method: 'PATCH',
+  });
+}
+
+// 转正
+export async function process(params, staffSn) {
+  return request(`/api/staff/${staffSn}/process`, {
+    method: 'PATCH',
+    body: params,
+  });
+}
+
+// 人事变动
+export async function transfer(params, staffSn) {
+  return request(`/api/staff/${staffSn}/transfer`, {
+    method: 'PATCH',
+    body: params,
+  });
+}
+
+// 离职
+export async function leave(params, staffSn) {
+  return request(`/api/staff/${staffSn}/leave`, {
+    method: 'PATCH',
+    body: params,
+  });
+}
+
+// 再入职
+export async function againEntry(staffSn) {
+  return request(`/api/staff/${staffSn}/again-entry`, {
+    method: 'PATCH',
+  });
+}
