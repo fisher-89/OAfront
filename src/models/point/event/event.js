@@ -95,10 +95,12 @@ export default {
       yield call(importEvent, id);
     } catch (err) { return err; }
   },
-  * exportExcel({ payload }, { call }) {
+  * exportEvent({ payload, onSuccess, onError }, { call }) {
     try {
       const { id } = payload;
-      yield call(exportEvent, id);
+      const response = yield call(exportEvent, id);
+      if (response.errors && onError) return onError(response.errors);
+      onSuccess(response);
     } catch (err) { return err; }
   },
 };

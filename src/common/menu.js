@@ -302,6 +302,11 @@ const menuData = [
         // authority: '100',
       },
       {
+        name: '流程运行记录',
+        path: 'flow-log',
+        // authority: '100',
+      },
+      {
         name: '流程分类',
         path: 'flow/type',
         hideInMenu: true,

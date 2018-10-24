@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { makeProps } from '../../../../utils/utils';
 
 
-export default type => (Compoent) => {
+export default type => (Component) => {
   @connect(({ workflow, department, roles, loading }) => ({
     list: workflow.approver,
     rulesData: workflow.stepDepartment,
@@ -27,7 +27,7 @@ export default type => (Compoent) => {
       ),
     },
   }))
-  class NewCompoent extends React.PureComponent {
+  class NewComponent extends React.PureComponent {
     fetchDepartment = () => {
       this.props.dispatch({ type: 'department/fetchDepartment' });
     }
@@ -90,9 +90,9 @@ export default type => (Compoent) => {
 
     render() {
       return (
-        <Compoent {...makeProps(this, type)} />
+        <Component {...makeProps(this, type)} />
       );
     }
   }
-  return NewCompoent;
+  return NewComponent;
 };

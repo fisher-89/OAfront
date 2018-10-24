@@ -45,6 +45,7 @@ const stepDefaultValue = {
   prev_step_key: [],
 };
 
+const stepsTitle = ['基础信息', '步骤条件', '表单字段', '操作类型', '回调地址'];
 @connect(({ staffs, workflow, department, roles, loading }) => ({
   staffInfo: staffs.staffDetails,
   staffSearcherResult: staffs.tableResult,
@@ -295,11 +296,19 @@ export default class StepForm extends React.PureComponent {
         onSubmit={this.handleSubmit}
       >
         <Steps current={current} size="small" style={{ padding: '40px 100px' }}>
-          <Step title={<a onClick={this.clickStepTitle(0)}>基础信息</a>} />
-          <Step title={<a onClick={this.clickStepTitle(1)}>步骤条件</a>} />
-          <Step title={<a onClick={this.clickStepTitle(2)}>表单字段</a>} />
-          <Step title={<a onClick={this.clickStepTitle(3)}>操作类型</a>} />
-          <Step title={<a onClick={this.clickStepTitle(4)}>回调地址</a>} />
+          {stepsTitle.map((item, index) => (
+            <Step
+              key={item}
+              title={
+                <a
+                  onClick={this.clickStepTitle(index)}
+                  style={{ color: current === index ? '#1890ff' : '#ccc' }}
+                >
+                  {item}
+                </a>
+              }
+            />
+          ))}
         </Steps>
         <div style={{ display: current === 0 ? 'block' : 'none' }}>
           <FormItem
@@ -487,7 +496,7 @@ export default class StepForm extends React.PureComponent {
             label="隐藏字段"
           >
             <Transfer
-              key="hiddenData"
+              lazy={false}
               dataSource={hiddenData}
               titles={['待选', '选中列表']}
               targetKeys={hiddenFields.targetKeys}
@@ -511,7 +520,7 @@ export default class StepForm extends React.PureComponent {
             label="可编辑字段"
           >
             <Transfer
-              key="editData"
+              lazy={false}
               dataSource={editData}
               titles={['待选', '选中列表']}
               targetKeys={editFields.targetKeys}
@@ -534,7 +543,7 @@ export default class StepForm extends React.PureComponent {
             label="必填字段"
           >
             <Transfer
-              key="requireFields"
+              lazy={false}
               dataSource={editFields.data}
               titles={['待选', '选中列表']}
               targetKeys={requireFields.targetKeys}

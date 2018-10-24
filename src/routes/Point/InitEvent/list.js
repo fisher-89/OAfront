@@ -331,8 +331,8 @@ export default class extends PureComponent {
 
     if (customerAuthority(141)) {
       excelAction.excelExport = {
-        uri: '/api/pms/events',
-        title: '事件库',
+        actionType: 'point/exportEvent',
+        fileName: '事件列表.xlsx',
       };
     }
 

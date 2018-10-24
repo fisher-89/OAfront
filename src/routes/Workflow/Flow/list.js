@@ -10,13 +10,19 @@ import {
 import moment from 'moment';
 import { Link } from 'dva/router';
 import OATable from '../../../components/OATable';
-
+import { getFiltersData } from '../../../utils/utils';
 
 @connect(({ workflow, loading }) => ({
   list: workflow.flow,
+  flowType: workflow.flowType,
   loading: loading.models.workflow,
 }))
 export default class Flow extends PureComponent {
+  componentWillMount() {
+    const { dispatch } = this.props;
+    dispatch({ type: 'workflow/fetchFlowType' });
+  }
+
   fetchTable = (params) => {
     const { dispatch } = this.props;
     dispatch({
@@ -36,7 +42,7 @@ export default class Flow extends PureComponent {
   };
 
   render() {
-    const { list, loading } = this.props;
+    const { list, loading, flowType } = this.props;
 
     const status = ['停用', '启用'];
 
@@ -61,6 +67,12 @@ export default class Flow extends PureComponent {
         title: '流程名称',
         dataIndex: 'name',
         searcher: true,
+      },
+      {
+        title: '类型',
+        dataIndex: 'flow_type_id',
+        filters: getFiltersData(flowType),
+        render: key => OATable.findRenderKey(flowType, key).name,
       },
       {
         title: '状态',

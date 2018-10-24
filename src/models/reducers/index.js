@@ -129,4 +129,22 @@ export default {
       [`${store}Details`]: originalStore,
     };
   },
+  exportExcel(_, action) {
+    const { data, filename } = action.payload;
+    data.blob().then((body) => {
+      const blob = new Blob([body]);
+      const newFilename = filename || 'excel.xls';
+      if ('download' in document.createElement('a')) {
+        const downloadElement = document.createElement('a');
+        let href = '';
+        if (window.URL) href = window.URL.createObjectURL(blob);
+        else href = window.webkitURL.createObjectURL(blob);
+        downloadElement.href = href;
+        downloadElement.download = newFilename;
+        downloadElement.click();
+        if (window.URL) window.URL.revokeObjectURL(href);
+        else window.webkitURL.revokeObjectURL(href);
+      }
+    });
+  },
 };

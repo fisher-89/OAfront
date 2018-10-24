@@ -2,26 +2,22 @@ import React, { PureComponent } from 'react';
 import classNames from 'classnames';
 import moment from 'moment';
 import XLSX from 'xlsx';
-import { Table, Input, Icon, Button, Tooltip } from 'antd';
+import { Table, Input, Icon, Button, Tooltip, message } from 'antd';
+import { connect } from 'dva';
+import Operator from './operator';
+import styles from './index.less';
+import TableUpload from './upload';
 import Ellipsis from '../Ellipsis';
 import TreeFilter from './treeFilter';
 import DateFilter from './dateFilter';
 import RangeFilter from './rangeFilter';
-import Operator from './operator';
-import TableUpload from './upload';
 import EdiTableCell from './editTableCell';
-import styles from './index.less';
-import request from '../../utils/request';
 import {
   makerFilters, findRenderKey, analysisData,
 } from '../../utils/utils';
 
 const defaultProps = {
-  fileExportChange: {
-    onSuccess: () => { },
-    onError: () => { },
-    afterChange: () => { },
-  },
+  fileExportChange: {},
   multiOperator: null,
   extraOperator: null,
   extraOperatorRight: null,
@@ -66,7 +62,7 @@ function analysisColumn(dataSource, key, index = 'id', name = 'name', dataSource
   return renderEllipsis(value.join('、'), tooltip);
 }
 
-
+@connect()
 class OATable extends PureComponent {
   constructor(props) {
     super(props);
@@ -107,12 +103,12 @@ class OATable extends PureComponent {
       const { selectedRowKeys, selectedRows } = rowSelection;
       this.setState({ selectedRowKeys, selectedRows });
     }
-    if (filters !== this.props.filters) {
-      this.onPropsFiltersChange(filters, 'filters');
+    if (JSON.stringify(filters) !== JSON.stringify(this.props.filters)) {
+      this.onPropsFiltersChange(filters);
     }
   }
 
-  onPropsFiltersChange = (data, key) => {
+  onPropsFiltersChange = (data, key = 'filters') => {
     const thisFiltersKey = { ...this.state[key] };
     Object.keys(data).forEach((filter) => {
       if (!data[filter]) {
@@ -145,6 +141,17 @@ class OATable extends PureComponent {
     let urlPath = {};
     if (serverSide) {
       const filterParam = {};
+      const columnDataIndex = columns.map(column => column.dataIndex);
+      Object.keys(filters).forEach((key) => {
+        const filter = filters[key];
+        if (columnDataIndex.indexOf(key) === -1) {
+          if (typeof filter === 'string') {
+            filterParam[key] = filter;
+          } else {
+            filterParam[key] = filter.length === 1 ? filter[0] : { in: filter };
+          }
+        }
+      });
       columns.forEach((column, index) => {
         const key = column.dataIndex || index;
         const filter = filters[key];
@@ -175,7 +182,7 @@ class OATable extends PureComponent {
       }
       fetchDataSource(urlPath, params);
     } else {
-      return params;
+      return urlPath;
     }
   }
 
@@ -609,7 +616,7 @@ class OATable extends PureComponent {
   }
 
   makeExcelFieldsData = (data) => {
-    const { extraExportFields, columns, excelExport: { title } } = this.props;
+    const { extraExportFields, columns, excelExport: { fileName } } = this.props;
     let exportFields = extraExportFields.concat(columns);
     exportFields = exportFields.filter(item => item.dataIndex !== undefined);
     const newData = [];
@@ -642,45 +649,13 @@ class OATable extends PureComponent {
       sheetData: newData,
       sheetHeader: header,
     };
-    let tableString = `${datas.sheetHeader.join(',')}\n`;
-    datas.sheetData.forEach((item) => {
-      Object.keys(item).forEach((key) => {
-        let str = item[key];
-        if (typeof str === 'string') {
-          str = str.replace(/,/ig, '，');
-        }
-        tableString += `${str}\t,`;
-      });
-      tableString += '\n';
-    });
-
-    const uri = `data:application/csv;charset=utf-8,\ufeff${encodeURIComponent(tableString)}`;
-    const link = document.createElement('a');
-    link.href = uri;
-    link.download = `${title}.xls`;
-    link.click();
-    this.excelLoading(false);
-  }
-
-  excelLoading = (loading) => {
-    this.setState({ loading });
-  }
-
-  xlsExportExcel = ({ headers, errors }) => {
+    console.log(datas);
     const workbook = XLSX.utils.book_new();
-    const errorExcel = [];
-    const newHeaders = [...headers, '错误信息'];
-    errors.forEach((error) => {
-      const { rowData } = error;
-      const errorMessage = error.message;
-      const errMsg = Object.keys(errorMessage).map(msg => `${msg}:${errorMessage[msg].join(',')}`).join(';');
-      rowData.push(errMsg);
-      errorExcel.push(error.rowData);
-    });
-    errorExcel.unshift(newHeaders);
-    const errorSheet = XLSX.utils.aoa_to_sheet(errorExcel);
-    XLSX.utils.book_append_sheet(workbook, errorSheet, '导出失败信息');
-    XLSX.writeFile(workbook, '导出错误信息.xlsx');
+    const dataExcel = [...datas.sheetData];
+    dataExcel.unshift(datas.sheetHeader);
+    const errorSheet = XLSX.utils.aoa_to_sheet(dataExcel);
+    XLSX.utils.book_append_sheet(workbook, errorSheet);
+    XLSX.writeFile(workbook, fileName || '导出数据信息.xlsx');
   }
 
   xlsExportExcel = ({ headers, data }) => {
@@ -694,19 +669,21 @@ class OATable extends PureComponent {
   }
 
   handleExportExcel = () => {
-    const { excelExport: { uri } } = this.props;
+    const { excelExport: { actionType }, dispatch, fileExportChange } = this.props;
     const params = this.fetchTableDataSource(true);
-    const body = { filters: params.filters };
-    this.excelLoading('导出中...');
-    request(`${uri}`, {
-      method: 'GET',
-      body,
-    }).then((response) => {
-      if (Object.keys(response.errors).length) {
-        this.xlsExportExcelError(response);
-      } else {
-        this.xlsExportExcel(response);
-      }
+    delete params.page;
+    delete params.pagesize;
+    dispatch({
+      type: actionType,
+      payload: params,
+      onError: (errors) => {
+        if (fileExportChange.onError) {
+          fileExportChange.onError(errors);
+          return;
+        }
+        message.error('导出失败!!');
+      },
+      onSuccess: fileExportChange.onSuccess || this.makeExcelFieldsData,
     });
   }
 

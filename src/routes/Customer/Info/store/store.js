@@ -25,7 +25,7 @@ function makeLoading(loading) {
   };
 }
 
-export default type => (Compoent) => {
+export default type => (Component) => {
   @connect(({ customer, brand, loading }) => ({
     tags: customer.tags,
     brands: brand.brand,
@@ -36,7 +36,7 @@ export default type => (Compoent) => {
     staffBrandsAuth: customer.staffBrandsAuth,
     loading: makeLoading(loading),
   }))
-  class NewCompoent extends React.PureComponent {
+  class NewComponent extends React.PureComponent {
     componentWillMount() {
       this.fetchStore();
     }
@@ -133,9 +133,9 @@ export default type => (Compoent) => {
 
     render() {
       return (
-        <Compoent {...makeProps(this, type)} />
+        <Component {...makeProps(this, type)} />
       );
     }
   }
-  return NewCompoent;
+  return NewComponent;
 };

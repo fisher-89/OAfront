@@ -14,24 +14,16 @@ import {
 const store = 'customer';
 
 export default {
-  * downloadExcelCustomer({ payload }, { call }) {
+  * downloadExcelCustomer({ payload }, { call, put }) {
     try {
       const response = yield call(downloadExcelCustomer, payload);
       if (response) {
-        response.blob().then((body) => {
-          const blob = new Blob([body]);
-          const filename = '客户资料.xls';
-          if ('download' in document.createElement('a')) {
-            const downloadElement = document.createElement('a');
-            let href = '';
-            if (window.URL) href = window.URL.createObjectURL(blob);
-            else href = window.webkitURL.createObjectURL(blob);
-            downloadElement.href = href;
-            downloadElement.download = filename;
-            downloadElement.click();
-            if (window.URL) window.URL.revokeObjectURL(href);
-            else window.webkitURL.revokeObjectURL(href);
-          }
+        yield put({
+          type: 'exportExcel',
+          payload: {
+            data: response,
+            fileName: '客户资料.xls',
+          },
         });
       }
     } catch (err) { return err; }
@@ -44,7 +36,7 @@ export default {
         return;
       }
       if (onSuccess) onSuccess(response);
-    } catch (err) { console.log(err); return err; }
+    } catch (err) { return err; }
   },
   * card({ payload, onSuccess, onError }, { call }) {
     try {

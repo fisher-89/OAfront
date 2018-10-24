@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { makeProps } from '../../../../utils/utils';
 
 
-export default type => (Compoent) => {
+export default type => (Component) => {
   @connect(({ customer, loading }) => ({
     tags: customer.tags,
     tagsType: customer.tagsType,
@@ -17,7 +17,7 @@ export default type => (Compoent) => {
       ),
     },
   }))
-  class NewCompoent extends React.PureComponent {
+  class NewComponent extends React.PureComponent {
     fetchTags = (params) => {
       const { dispatch } = this.props;
       dispatch({ type: 'customer/fetchTags', payload: params });
@@ -45,9 +45,9 @@ export default type => (Compoent) => {
 
     render() {
       return (
-        <Compoent {...makeProps(this, type)} />
+        <Component {...makeProps(this, type)} />
       );
     }
   }
-  return NewCompoent;
+  return NewComponent;
 };

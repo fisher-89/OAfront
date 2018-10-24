@@ -16,12 +16,12 @@ function makeLoading(loading) {
   };
 }
 
-export default type => (Compoent) => {
+export default type => (Component) => {
   @connect(({ customer, loading }) => ({
     noteTypes: customer.noteTypes,
     loading: makeLoading(loading),
   }))
-  class NewCompoent extends React.PureComponent {
+  class NewComponent extends React.PureComponent {
     deleted = (id) => {
       const { dispatch } = this.props;
       dispatch({
@@ -50,9 +50,9 @@ export default type => (Compoent) => {
 
     render() {
       return (
-        <Compoent {...makeProps(this, type)} />
+        <Component {...makeProps(this, type)} />
       );
     }
   }
-  return NewCompoent;
+  return NewComponent;
 };

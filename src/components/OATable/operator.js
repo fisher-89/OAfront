@@ -106,17 +106,21 @@ class Operator extends PureComponent {
 
   render() {
     const {
-      selectedRows,
+      sync,
       filters,
+      resetFilter,
+      selectedRows,
       multiOperator,
       extraOperator,
+      filterColumns,
       extraOperatorRight,
       fetchTableDataSource,
-      resetFilter,
-      sync,
     } = this.props;
+    const filterColumnsDataIndex = filterColumns.map(item => item.dataIndex);
+
     const hasFilter = Object.keys(filters)
-      .filter(key => filters[key] && filters[key].length)
+      .filter(key => filters[key] && filters[key].length
+        && filterColumnsDataIndex.indexOf(key) !== -1)
       .length > 0;
     const style = extraOperator.length ? { marginRight: 20 } : {};
     return (

@@ -255,6 +255,12 @@ export const getRouterData = (app) => {
     },
 
 
+    '/workflow/flow-log': {
+      component: dynamicWrapper(app, ['workflow'], () => import('../routes/Workflow/Flow-log')),
+      authority: '51',
+    },
+
+
     '/workflow/form/list': {
       component: dynamicWrapper(app, ['workflow'], () => import('../routes/Workflow/Form')),
       authority: '51',
