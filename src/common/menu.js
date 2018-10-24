@@ -233,9 +233,17 @@ const menuData = [
         authority: '42',
       },
       {
+        name: '费用品牌',
+        path: 'expense',
+      },
+      {
         name: '店铺管理',
         path: 'shop',
         authority: '70',
+      },
+      {
+        name: '员工标签',
+        path: 'stafftags',
       },
       {
         name: '大爱',

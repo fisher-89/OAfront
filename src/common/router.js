@@ -204,6 +204,9 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['position', 'brand'], () => import('../routes/Hr/Brand')),
       authority: '42',
     },
+    '/hr/expense': {
+      component: dynamicWrapper(app, [], () => import('../routes/Hr/Expense')),
+    },
     '/hr/shop': {
       component: dynamicWrapper(app, ['department', 'shop', 'brand'], () => import('../routes/Hr/Shop')),
       authority: '70',
@@ -222,6 +225,9 @@ export const getRouterData = (app) => {
     },
     '/hr/violation/regime/edit/:id': {
       component: dynamicWrapper(app, ['violation', 'department', 'brand', 'position'], () => import('../routes/Hr/Violation/Regime/form')),
+    },
+    '/hr/stafftags': {
+      component: dynamicWrapper(app, [], () => import('../routes/Hr/Stafftags')),
     },
 
     /**  系统 */
