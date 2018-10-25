@@ -12,7 +12,7 @@ export async function query() {
 }
 
 export async function queryCurrent() {
-  const response = request('/api/hr/staff/current-user');
+  const response = request('/api/current-user');
   return response;
 }
 
