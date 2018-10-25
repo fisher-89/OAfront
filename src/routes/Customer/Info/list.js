@@ -36,9 +36,7 @@ export default class extends PureComponent {
   makeColumns = () => {
     const { source, tags, brands, deleted, staffBrandsAuth } = this.props;
     const { editable = [], visible = [] } = staffBrandsAuth;
-    const onClick = (name, id) => {
-      this.props.history.push(`/client/customer/list/${name}/${id}`);
-    };
+    const onClick = (name, id) => this.props.history.push(`/client/customer/list/${name}/${id}`);
     const columns = [
       {
         width: 80,

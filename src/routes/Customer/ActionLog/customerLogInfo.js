@@ -82,8 +82,8 @@ export default class extends React.PureComponent {
     Object.keys(changes).forEach((key, index) => {
       let [dirty, original] = changes[key];
       if (['县级', '市级', '省级'].indexOf(key) !== -1) {
-        dirty = district.find(item => `${item.id}` === dirty).name;
-        original = district.find(item => `${item.id}` === original).name;
+        dirty = (district.find(item => `${item.id}` === dirty) || {}).name;
+        original = (district.find(item => `${item.id}` === original) || {}).name;
       }
 
       if (['头像照片'].indexOf(key) !== -1) {

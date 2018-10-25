@@ -72,6 +72,7 @@ export default class Flow extends React.PureComponent {
       flows_has_roles: [],
       flows_has_departments: [],
       steps: [],
+      send_message: '1',
     };
     const flowId = props.match.params.id ? parseInt(props.match.params.id, 10) : null;
     const isEdit = flowId !== null;
@@ -772,6 +773,23 @@ export default class Flow extends React.PureComponent {
             initialValue: formData.is_active,
           })(
             <RadioGroup name="radiogroup3" disabled={this.state.formAble}>
+              <RadioButton value={0}>停用</RadioButton>
+              <RadioButton value={1}>启用</RadioButton>
+            </RadioGroup>
+          )}
+        </FormItem>
+
+        <FormItem
+          {...formItemLayout}
+          label="是否通知"
+        >
+          {getFieldDecorator('send_message', {
+            rules: [{
+              required: true, message: '必选选项',
+            }],
+            initialValue: formData.send_message,
+          })(
+            <RadioGroup disabled={this.state.formAble}>
               <RadioButton value={0}>停用</RadioButton>
               <RadioButton value={1}>启用</RadioButton>
             </RadioGroup>

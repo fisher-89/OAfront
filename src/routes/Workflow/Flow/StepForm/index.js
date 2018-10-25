@@ -30,7 +30,6 @@ const stepDefaultValue = {
   required_fields: [],
   approver_type: 0,
   step_approver_id: null,
-  approvers: { staff: [], roles: [], departments: [], manager: '' },
   reject_type: 0,
   concurrent_type: 0,
   merge_type: 0,
@@ -43,6 +42,10 @@ const stepDefaultValue = {
   withdraw_callback_uri: '',
   next_step_key: [],
   prev_step_key: [],
+  send_todo: '1',
+  send_start: '0',
+  cc_person: '',
+  approvers: { staff: [], roles: [], departments: [], manager: '' },
 };
 
 const stepsTitle = ['基础信息', '步骤条件', '表单字段', '操作类型', '回调地址'];
