@@ -44,7 +44,7 @@ const stepDefaultValue = {
   prev_step_key: [],
   send_todo: '1',
   send_start: '0',
-  cc_person: '',
+  cc_person: [],
   approvers: { staff: [], roles: [], departments: [], manager: '' },
 };
 
@@ -330,6 +330,54 @@ export default class StepForm extends React.PureComponent {
               initialValue: dataCommit.name,
             })(
               <Input placeholder="请输入" />
+            )}
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="通知"
+          >
+            {getFieldDecorator('send_todo', {
+              rules: [{
+                required: true, message: '必选选项',
+              }],
+              initialValue: dataCommit.send_todo,
+            })(
+              <RadioGroup>
+                <RadioButton value="1">启用</RadioButton>
+                <RadioButton value="0">停用</RadioButton>
+              </RadioGroup>
+            )}
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="通知发起人"
+          >
+            {getFieldDecorator('send_start', {
+              rules: [{
+                required: true, message: '必选选项',
+              }],
+              initialValue: dataCommit.send_start,
+            })(
+              <RadioGroup>
+                <RadioButton value="1">启用</RadioButton>
+                <RadioButton value="0">停用</RadioButton>
+              </RadioGroup>
+            )}
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="审批人"
+          >
+            {getFieldDecorator('cc_person', {
+              initialValue: dataCommit.cc_person,
+            })(
+              <SearchTable.Staff
+                multiple
+                filters={{ content: 'status_id>=0;', status: [1, 2, 3] }}
+              />
             )}
           </FormItem>
           <FormItem

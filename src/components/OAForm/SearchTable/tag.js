@@ -52,8 +52,6 @@ export default class extends React.Component {
       const tag = item.label;
       const isLongTag = tag.length > 20;
       const key = `tag${item.value}-${index}`;
-      // const TooltipKey = `${tag}-${item.value}`;
-      console.log('value:', key);
       const tagElem = (
         <Tag
           key={key}

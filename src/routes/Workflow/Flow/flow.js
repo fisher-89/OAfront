@@ -790,8 +790,8 @@ export default class Flow extends React.PureComponent {
             initialValue: formData.send_message,
           })(
             <RadioGroup disabled={this.state.formAble}>
-              <RadioButton value={0}>停用</RadioButton>
-              <RadioButton value={1}>启用</RadioButton>
+              <RadioButton value="0">停用</RadioButton>
+              <RadioButton value="1">启用</RadioButton>
             </RadioGroup>
           )}
         </FormItem>
