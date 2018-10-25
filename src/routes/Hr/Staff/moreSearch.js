@@ -9,15 +9,14 @@ import {
 } from 'antd';
 import { treeDistrict } from '../../../assets/district';
 
-import OAForm, { SearchTable } from '../../../components/OAForm';
-import OATableSearch from '../../../components/OATable/search';
 import { makerFilters } from '../../../utils/utils';
+import OAForm, { SearchTable } from '../../../components/OAForm';
 
 const district = treeDistrict;
 
 const FormItem = OAForm.Item;
 @OAForm.create()
-class Search extends PureComponent {
+export default class Search extends PureComponent {
   state = {
     info: [],
     live: [],
@@ -188,4 +187,3 @@ class Search extends PureComponent {
     );
   }
 }
-export default OATableSearch(Search);

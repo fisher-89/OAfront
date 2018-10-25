@@ -1,8 +1,20 @@
 import React, { PureComponent } from 'react';
 import classNames from 'classnames';
+import { debounce } from 'lodash';
 import moment from 'moment';
 import XLSX from 'xlsx';
-import { Table, Input, Icon, Button, Tooltip, message } from 'antd';
+import {
+  Row,
+  Col,
+  Icon,
+  Table,
+  Input,
+  Button,
+  Tooltip,
+  message,
+  Popover,
+  Checkbox,
+} from 'antd';
 import { connect } from 'dva';
 import Operator from './operator';
 import styles from './index.less';
@@ -67,8 +79,12 @@ class OATable extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      selectedRowKeys: [],
+      sorter: {},
+      filters: {},
+      filtered: [],
+      loading: false,
       selectedRows: [],
+      selectedRowKeys: [],
       pagination: {
         pageSize: 10,
         current: 1,
@@ -76,12 +92,11 @@ class OATable extends PureComponent {
         showSizeChanger: true,
         showTotal: this.showTotal,
       },
+      columnsMenuVisible: false,
       filterDropdownVisible: false,
-      filtered: [],
-      filters: {},
-      sorter: {},
-      loading: false,
-
+      columns: props.columns || [],
+      columnsMenuValue: props.columns.map(item => item.dataIndex)
+        .filter(item => item),
     };
   }
 
@@ -93,7 +108,7 @@ class OATable extends PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { rowSelection, multiOperator, filters } = nextProps;
+    const { rowSelection, multiOperator, filters, extraColumns } = nextProps;
     if (
       multiOperator && multiOperator.length > 0
       &&
@@ -105,6 +120,9 @@ class OATable extends PureComponent {
     }
     if (JSON.stringify(filters) !== JSON.stringify(this.props.filters)) {
       this.onPropsFiltersChange(filters);
+    }
+    if ('columns' in nextProps && extraColumns) {
+      this.setState({ columns: nextProps.columns });
     }
   }
 
@@ -135,8 +153,8 @@ class OATable extends PureComponent {
   }
 
   fetchTableDataSource = (fetch, update = false) => {
-    const { fetchDataSource, columns, serverSide } = this.props;
-    const { filters, pagination, sorter } = this.state;
+    const { fetchDataSource, serverSide } = this.props;
+    const { filters, pagination, sorter, columns } = this.state;
     let params = {};
     let urlPath = {};
     if (serverSide) {
@@ -189,9 +207,9 @@ class OATable extends PureComponent {
 
   mapColumns = () => {
     const columns = [];
-    this.props.columns.forEach((column, index) => {
-      const { filters, sorter } = this.state;
-      const { serverSide } = this.props;
+    const { filters, sorter } = this.state;
+    const { serverSide } = this.props;
+    this.state.columns.forEach((column, index) => {
       const key = column.dataIndex || index;
       const response = { ...column };
       if (!serverSide) {
@@ -616,7 +634,8 @@ class OATable extends PureComponent {
   }
 
   makeExcelFieldsData = (data) => {
-    const { extraExportFields, columns, excelExport: { fileName } } = this.props;
+    const { extraExportFields, excelExport: { fileName } } = this.props;
+    const { columns } = this.state;
     let exportFields = extraExportFields.concat(columns);
     exportFields = exportFields.filter(item => item.dataIndex !== undefined);
     const newData = [];
@@ -697,9 +716,65 @@ class OATable extends PureComponent {
     location.href = excelTemplate;
   }
 
+  handleChangeColumns = () => {
+    const { columns, columnsMenuValue } = this.state;
+    const propsColumns = {};
+    this.props.columns.forEach((item) => {
+      propsColumns[item.dataIndex] = item;
+    });
+    const newColumns = columns.map((item) => {
+      let temp = { ...item };
+      if (!item.dataIndex || columnsMenuValue.indexOf(item.dataIndex) !== -1) {
+        delete temp.hidden;
+        temp = propsColumns[item.dataIndex];
+      } else {
+        temp.hidden = true;
+        delete temp.fixed;
+      }
+      return temp;
+    });
+    this.setState({ columns: [...newColumns] });
+  }
+
+  handleVisibleColumnsChange = (columnsMenuValue) => {
+    this.setState({ columnsMenuValue }, debounce(this.handleChangeColumns, 100));
+  }
+
+  makeVisibleColumnsList = () => {
+    const { columns, columnsMenuValue } = this.state;
+    const columnsData = columns.filter(item => item.dataIndex);
+    return (
+      <div className={styles.columnsMenu}>
+        <Checkbox.Group
+          defaultValue={columnsMenuValue}
+          onChange={this.handleVisibleColumnsChange}
+        >
+          {columnsData.map(item =>
+            (
+              <Row key={item.dataIndex}>
+                <Col>
+                  <Checkbox value={item.dataIndex}>{item.title}</Checkbox>
+                </Col>
+              </Row>
+            ))
+          }
+        </Checkbox.Group>
+      </div>
+    );
+  }
+
   makeExtraOperator = () => {
-    const { extraOperator, excelInto, excelExport, excelTemplate, fileExportChange } = this.props;
+    const {
+      excelInto,
+      excelExport,
+      extraColumns,
+      extraOperator,
+      excelTemplate,
+      fileExportChange,
+    } = this.props;
+
     const operator = extraOperator || [];
+
     if (excelInto) {
       operator.push(
         <Tooltip key="upload" title="导入数据">
@@ -732,6 +807,20 @@ class OATable extends PureComponent {
         </Tooltip>
       );
     }
+
+    if (extraColumns) {
+      operator.push(
+        <Popover
+          key="eye"
+          placement="bottom"
+          trigger="click"
+          content={this.makeVisibleColumnsList()}
+        >
+          <Button icon="eye">可见信息</Button>
+        </Popover>
+      );
+    }
+
     return operator;
   }
 
@@ -755,13 +844,10 @@ class OATable extends PureComponent {
       return temp;
     });
     return (
-      <div
-        className={styles.filterTable}
-      >
+      <div className={styles.filterTable}>
         {operatorVisble && (
           <Operator
             sync={sync}
-            key="Operator"
             {...this.state}
             filterColumns={filterColumns || []}
             multiOperator={multiOperator}
@@ -776,7 +862,7 @@ class OATable extends PureComponent {
         {(tableVisible === true) && (
           <Table
             {...this.makeTableProps()}
-            key="table"
+            className={styles.filterTableContent}
           />
         )}
       </div>

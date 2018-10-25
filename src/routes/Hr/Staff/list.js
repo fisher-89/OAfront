@@ -16,17 +16,19 @@ import {
 
 import { connect } from 'dva';
 import { Link } from 'dva/router';
-import StaffInfo from './staffInfo';
-import MoreSearch from './moreSearch';
-import EditTransfer from './editTransfer';
-import EditLeave from './editLeave';
-import OATable from '../../../components/OATable';
+
 import EditStaff from './edit';
 import ImportStaff from './import';
 import ExportStaff from './export';
+import StaffInfo from './staffInfo';
+import EditLeave from './editLeave';
+import MoreSearch from './moreSearch';
 import EditProcess from './editProcess';
-
+import EditTransfer from './editTransfer';
+import OATable from '../../../components/OATable';
 import {
+  findRenderKey,
+  getFiltersData,
   customerAuthority,
   getBrandAuthority,
   getDepartmentAuthority,
@@ -45,15 +47,16 @@ const { TabPane } = Tabs;
 
 export default class extends PureComponent {
   state = {
+    panes: [],
+    filters: {},
+    editStaff: {},
     moreInfo: null,
     visible: false,
-    panes: [],
-    activeKey: 'staff_list',
     editVisible: false,
-    transferVisible: false,
     leaveVisible: false,
     processVisible: false,
-    editStaff: {},
+    transferVisible: false,
+    activeKey: 'staff_list',
   }
 
   componentWillMount() {
@@ -67,16 +70,9 @@ export default class extends PureComponent {
     this[action](targetKey);
   }
 
-  fetchStaff = (param) => {
-    this.searchFilter = param;
+  fetchStaff = (params) => {
     const { dispatch } = this.props;
-    if (this.moreSearch) {
-      this.searchFilter = {
-        ...param,
-        ...this.moreSearch.state.formFilter,
-      };
-    }
-    dispatch({ type: 'staffs/fetchStaff', payload: this.searchFilter });
+    dispatch({ type: 'staffs/fetchStaff', payload: params });
   }
 
   handleVisibleChange = (visible) => {
@@ -156,7 +152,7 @@ export default class extends PureComponent {
           payload: { staff_sn: staffsn },
         });
       },
-      onCancel: () => {},
+      onCancel: () => { },
     });
   }
 
@@ -177,7 +173,7 @@ export default class extends PureComponent {
           },
         });
       },
-      onCancel: () => {},
+      onCancel: () => { },
     });
   }
 
@@ -347,11 +343,12 @@ export default class extends PureComponent {
 
     return [
       {
+        width: 70,
+        sorter: true,
         title: '编号',
         fixed: 'left',
-        width: 70,
+        searcher: true,
         dataIndex: 'staff_sn',
-        sorter: true,
       }, {
         title: '姓名',
         fixed: 'left',
@@ -368,23 +365,13 @@ export default class extends PureComponent {
         title: '品牌',
         align: 'center',
         dataIndex: 'brand_id',
-        filters: brand && brand.map((item) => {
-          return { text: item.name, value: item.id };
-        }),
-        render: (val) => {
-          const data = brand && brand.filter(item => item.id === val)[0];
-          return data ? data.name : '';
-        },
+        filters: getFiltersData(brand),
+        render: key => findRenderKey(brand, key).name,
       }, {
         title: '职位',
         dataIndex: 'position_id',
-        filters: position && position.map((item) => {
-          return { text: item.name, value: item.id };
-        }),
-        render: (val) => {
-          const data = position && position.filter(item => item.id === val)[0];
-          return data ? data.name : '';
-        },
+        filters: getFiltersData(position),
+        render: key => findRenderKey(position, key).name,
       }, {
         title: '部门',
         dataIndex: 'department_id',
@@ -392,41 +379,23 @@ export default class extends PureComponent {
         treeFilters: {
           title: 'name',
           value: 'id',
+          data: department,
           parentId: 'parent_id',
-          data: department.map(item => item),
         },
-        render: (val) => {
-          const data = department && department.filter(item => item.id === val)[0];
-          const fullName = data ? data.full_name : '';
-          const content = (
-            <Tooltip title={fullName} placement="right">
-              {fullName}
-            </Tooltip>
-          );
-          return content;
-        },
+        render: key => OATable.renderEllipsis(findRenderKey(department, key).full_name, true),
       },
       {
         title: '状态',
         dataIndex: 'status_id',
         align: 'center',
         filters: status,
-        render: val => status.filter(item => item.value === val)[0].text,
+        render: key => findRenderKey(status, key, 'value').text,
       },
       {
         title: '店铺',
-        dataIndex: 'shop.name',
         searcher: true,
-        render: (val) => {
-          if (val) {
-            const content = (
-              <Tooltip title={val} placement="right">
-                {val}
-              </Tooltip>
-            );
-            return content;
-          }
-        },
+        dataIndex: 'shop.name',
+        render: key => OATable.renderEllipsis(key, true),
       }, {
         title: '店铺代码',
         dataIndex: 'shop_sn',
@@ -449,10 +418,11 @@ export default class extends PureComponent {
         dateFilters: true,
       },
       {
+        hidden: true,
         title: '生日',
-        dataIndex: 'birthday',
         align: 'center',
         dateFilters: true,
+        dataIndex: 'birthday',
       },
       {
         title: '性别',
@@ -462,20 +432,18 @@ export default class extends PureComponent {
         render: val => genderArr[val],
       },
       {
+        align: 'center',
         title: '员工属性',
         dataIndex: 'property_id',
-        align: 'center',
-        filters: staffProperty.map((item, i) => {
-          return { text: item, value: i };
-        }),
         render: val => staffProperty[val],
+        filters: staffProperty.map(item => ({ value: item, text: item })),
       },
       {
         title: '操作',
-        width: 120,
+        width: 160,
         fixed: 'right',
         key: 'operation',
-        render: (val, rowData) => {
+        render: (_, rowData) => {
           const checkBrand = getBrandAuthority(rowData.brand_id);
           const checkDepartment = getDepartmentAuthority(rowData.department_id);
           if ((!checkBrand || !checkDepartment) && rowData.status_id > 0) {
@@ -532,9 +500,6 @@ export default class extends PureComponent {
         onVisibleChange={this.handleVisibleChange}
         content={(
           <MoreSearch
-            ref={(e) => {
-              this.moreSearch = e;
-            }}
             modalVisible={this.searChModal}
             fetchDataSource={this.fetchStaff}
             loading={this.props.staffLoading}
@@ -543,7 +508,7 @@ export default class extends PureComponent {
           />
         )}
       >
-        <Button icon="search" style={style}>更多搜索</Button>
+        <Button icon="search" style={style}>更多筛选</Button>
       </Popover>
     ));
 
@@ -559,7 +524,7 @@ export default class extends PureComponent {
   }
 
   render() {
-    const { panes, activeKey } = this.state;
+    const { panes, activeKey, filters } = this.state;
     const { staffLoading, staffInfo, staff } = this.props;
     return (
       <Fragment>
@@ -578,14 +543,15 @@ export default class extends PureComponent {
           >
             <OATable
               serverSide
+              extraColumns
+              filters={filters}
+              total={staff.total}
+              scroll={{ x: 1600 }}
               loading={staffLoading}
-              scroll={{ x: 300 }}
+              dataSource={staff.data}
               columns={this.makeColumns()}
-              dataSource={staff && staff.data}
-              total={staff && staff.total}
-              filtered={staff && staff.filtered}
-              extraOperator={this.makeExtraOperator()}
               fetchDataSource={this.fetchStaff}
+              extraOperator={this.makeExtraOperator()}
             />
           </TabPane>
           {panes.map((pane) => {
@@ -644,10 +610,10 @@ export default class extends PureComponent {
           visible={this.state.processVisible}
           editStaff={this.state.editStaff}
           onCancel={() => {
-              this.setState({
-                processVisible: false,
-                editStaff: {},
-              });
+            this.setState({
+              processVisible: false,
+              editStaff: {},
+            });
           }}
         />
       </Fragment>
