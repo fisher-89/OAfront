@@ -181,14 +181,23 @@ export default class extends PureComponent {
     });
   }
 
+  unlockStaff = (staffsn) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'staffs/unlock', payload: { staff_sn: staffsn } });
+  }
+
   makeAction = (rowData) => {
     const handleButton = {
       66: (
-        <Link to="/" key="unlock">
-          <Tooltip title="激活" mouseLeaveDelay={0}>
+        <Tooltip title="激活" key="unlock" mouseLeaveDelay={0}>
+          <a
+            onClick={() => {
+              this.unlockStaff(rowData.staff_sn);
+            }}
+          >
             <Icon type="unlock" style={{ fontSize: '18px' }} />
-          </Tooltip>
-        </Link>
+          </a>
+        </Tooltip>
       ),
       55: (
         <Tooltip title="转正" key="user-add" mouseLeaveDelay={0}>
@@ -284,7 +293,7 @@ export default class extends PureComponent {
         </a>
       </Tooltip>,
     ];
-    const buttonKey = this.makeStaffActionKey(rowData.status_id);
+    const buttonKey = this.makeStaffActionKey(rowData);
     buttonKey.forEach((key, i) => {
       const dividerKey = `${i}d`;
       action.push(<Divider key={dividerKey} type="vertical" />);
@@ -293,14 +302,15 @@ export default class extends PureComponent {
     return action;
   }
 
-  makeStaffActionKey = (statusId) => {
+  makeStaffActionKey = (rowData) => {
     const buttonKey = [];
-    const { user, user: { authorities: { oa } } } = window;
-    if (user.is_active === 0) {
+    const statusId = rowData.status_id;
+    const { user: { authorities: { oa } } } = window;
+    if (rowData.is_active === 0) {
       if (oa.indexOf(66)) {
         buttonKey.push(66);
       }
-    } else if (user.is_active === 1) {
+    } else if (rowData.is_active === 1) {
       if (statusId === 1 && oa.indexOf(55)) {
         buttonKey.push(55);
       }

@@ -16,7 +16,7 @@ export default class extends PureComponent {
       lg: 12,
     };
     const { form: { getFieldDecorator, setFieldsValue, getFieldValue }, value, name } = this.props;
-    const forName = `${name}[pivot]`;
+    const forName = `${name}`;
     getFieldDecorator(`${forName}[relative_sn]`, {
       initialValue: value.staff_sn || '',
     });
