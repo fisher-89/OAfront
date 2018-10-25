@@ -175,7 +175,7 @@ export default {
       const params = { ...payload };
       const response = yield call(importStaff, params);
       if (response.errors && onError) {
-        onError(response);
+        onError(response.errors);
       } else {
         onSuccess(response);
       }
@@ -209,18 +209,23 @@ export default {
       return error;
     }
   },
-  * againEntry({ payload }, { call, put }) {
+  * againEntry({ payload, onSuccess, onError }, { call, put }) {
     try {
       const staffSn = payload.staff_sn;
-      const response = yield call(againEntry, staffSn);
-      yield put({
-        type: 'merge',
-        payload: {
-          store,
-          staff_sn: staffSn,
-          data: response,
-        },
-      });
+      const response = yield call(againEntry, payload);
+      if (response.errors && onError) {
+        onError(response.errors);
+      } else {
+        yield put({
+          type: 'merge',
+          payload: {
+            store,
+            staff_sn: staffSn,
+            data: response,
+          },
+        });
+        onSuccess(response);
+      }
     } catch (error) {
       return error;
     }
@@ -244,9 +249,9 @@ export default {
   * process({ payload, onSuccess, onError }, { call, put }) {
     try {
       const staffSn = payload.staff_sn;
-      const response = yield call(process, payload, staffSn);
+      const response = yield call(process, payload);
       if (response.errors && onError) {
-        onError(response);
+        onError(response.errors);
       } else {
         yield put({
           type: 'merge',
@@ -262,34 +267,44 @@ export default {
       return error;
     }
   },
-  * transfer({ payload }, { call, put }) {
+  * transfer({ payload, onSuccess, onError }, { call, put }) {
     try {
       const staffSn = payload.staff_sn;
-      const response = yield call(transfer, payload, staffSn);
-      yield put({
-        type: 'merge',
-        payload: {
-          store,
-          staff_sn: staffSn,
-          data: response,
-        },
-      });
+      const response = yield call(transfer, payload);
+      if (response.errors && onError) {
+        onError(response.errors);
+      } else {
+        yield put({
+          type: 'merge',
+          payload: {
+            store,
+            staff_sn: staffSn,
+            data: response,
+          },
+        });
+        onSuccess(response);
+      }
     } catch (error) {
       return error;
     }
   },
-  * leave({ payload }, { call, put }) {
+  * leave({ payload, onSuccess, onError }, { call, put }) {
     try {
       const staffSn = payload.staff_sn;
-      const response = yield call(leave, payload, staffSn);
-      yield put({
-        type: 'merge',
-        payload: {
-          store,
-          staff_sn: staffSn,
-          data: response,
-        },
-      });
+      const response = yield call(leave, payload);
+      if (response.errors && onError) {
+        onError(response.errors);
+      } else {
+        yield put({
+          type: 'merge',
+          payload: {
+            store,
+            staff_sn: staffSn,
+            data: response,
+          },
+        });
+        onSuccess(response);
+      }
     } catch (error) {
       return error;
     }

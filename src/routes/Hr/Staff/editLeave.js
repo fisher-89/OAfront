@@ -18,8 +18,11 @@ export default class extends PureComponent {
   handleSubmit = (params) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'staffs/editStaff',
-      payload: params,
+      type: 'staffs/leave',
+      payload: {
+        ...params,
+        skip_leaving: params.skip_leaving ? 1 : 0,
+      },
       onError: this.handleError,
       onSuccess: this.handleSuccess,
     });
