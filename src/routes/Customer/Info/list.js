@@ -207,21 +207,21 @@ export default class extends PureComponent {
         title: '现住地址-省',
         dataIndex: 'province_id',
         filters: addressFilter,
-        render: key => OATable.findRenderKey(addressFilter, key).text,
+        render: key => OATable.findRenderKey(addressFilter, key, 'value').text,
       },
       {
         hidden: true,
         title: '现住地址-市',
         dataIndex: 'city_id',
         filters: addressFilter,
-        render: key => OATable.findRenderKey(addressFilter, key).text,
+        render: key => OATable.findRenderKey(addressFilter, key, 'value').text,
       },
       {
         hidden: true,
         title: '现住地址-区',
         dataIndex: 'county_id',
         filters: addressFilter,
-        render: key => OATable.findRenderKey(addressFilter, key).text,
+        render: key => OATable.findRenderKey(addressFilter, key, 'value').text,
       },
       {
         hidden: true,
@@ -294,7 +294,7 @@ export default class extends PureComponent {
       ));
       excelExport = { actionType: 'customer/downloadExcelCustomer', fileName: '客户资料.xlsx' };
     }
-
+    const excelInto = customerAuthority(192) ? '/api/crm/clients/import' : false;
     const { loading, customer, fetchDataSource } = this.props;
     return (
       <React.Fragment>
@@ -303,12 +303,12 @@ export default class extends PureComponent {
           filters={filters}
           loading={loading}
           data={customer.data}
+          excelInto={excelInto}
           total={customer.total}
           excelExport={excelExport}
           columns={this.makeColumns()}
           extraOperator={extraOperator}
           fetchDataSource={fetchDataSource}
-          excelInto={customerAuthority(192) ? '/api/crm/clients/import' : false}
         />
       </React.Fragment>
 
