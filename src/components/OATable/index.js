@@ -622,34 +622,39 @@ class OATable extends PureComponent {
     const newData = [];
     data.forEach((item) => {
       let temp = {};
-      const fieldsKey = Object.keys(item);
+
       Object.keys(exportFields).forEach((column) => {
         const columnValue = exportFields[column];
-        let renderValue;
-        if (columnValue.render) {
-          renderValue = columnValue.render(item[columnValue.dataIndex], item);
-        }
-        if (fieldsKey.indexOf(columnValue.dataIndex) !== -1 && !columnValue.render) {
-          temp[columnValue.dataIndex] = item[columnValue.dataIndex];
-        } else if (columnValue.exportRender) {
+        if (item[columnValue.dataIndex] === undefined) return;
+        if (columnValue.exportRender) {
           temp[columnValue.dataIndex] = columnValue.exportRender(item);
-        } else if (
-          fieldsKey.indexOf(columnValue.dataIndex) !== -1
-          && columnValue.render
-          && typeof renderValue === 'string'
-        ) {
-          temp[columnValue.dataIndex] = renderValue;
+        } else if (columnValue.render) {
+          const renderValue = columnValue.render(item[columnValue.dataIndex], item);
+          if (typeof renderValue === 'string') {
+            temp[columnValue.dataIndex] = renderValue;
+          } else if (React.isValidElement(renderValue)) {
+            temp[columnValue.dataIndex] = renderValue.props.children;
+          } else {
+            temp[columnValue.dataIndex] = item[columnValue.dataIndex] || '';
+          }
+        } else if (!columnValue.render) {
+          temp[columnValue.dataIndex] = item[columnValue.dataIndex] || '';
         }
       });
       temp = Object.values(temp);
       newData.push(temp);
     });
     const header = Object.keys(exportFields).map(key => exportFields[key].title);
+    const sheetHeader = [];
+    header.forEach((item) => {
+      if (sheetHeader.indexOf(item) === -1) {
+        sheetHeader.push(item);
+      }
+    });
     const datas = {
+      sheetHeader,
       sheetData: newData,
-      sheetHeader: header,
     };
-    console.log(datas);
     const workbook = XLSX.utils.book_new();
     const dataExcel = [...datas.sheetData];
     dataExcel.unshift(datas.sheetHeader);

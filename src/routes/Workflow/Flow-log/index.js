@@ -107,6 +107,10 @@ export default class extends React.PureComponent {
       if (filterExtra) filters.form_id = [id];
       filterData = (category && form.filter(item => category === `${item.form_type_id}`)) || form;
     }
+    const excelExport = {
+      fileName: '流程运行记录',
+      actionType: 'workflow/flowRunLogExport',
+    };
     return (
       <PageHeaderLayout>
         <Card bordered={false} style={{ minHeight: 400 }}>
@@ -156,17 +160,11 @@ export default class extends React.PureComponent {
               loading={loading}
               filters={filters}
               columns={this.columns}
-              fetchDataSource={(params) => {
-                if (filterExtra) fetchDataSource(params);
-              }}
+              excelExport={excelExport}
               total={(filterExtra && flowRunLog.total) || 0}
               dataSource={(filterExtra && flowRunLog.data) || []}
-              fileExportChange={{
-                onSuccess: this.exportSuccess,
-              }}
-              excelExport={{
-                actionType: 'workflow/flowRunLogExport', fileName: '流程运行记录',
-              }}
+              fileExportChange={{ onSuccess: this.exportSuccess }}
+              fetchDataSource={params => filterExtra && (fetchDataSource(params))}
             />
           </div>
         </Card>

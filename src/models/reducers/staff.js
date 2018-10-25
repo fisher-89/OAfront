@@ -136,10 +136,13 @@ export default {
       message: data.message,
     });
     const dataSource = Array.isArray(state[store]) ? state[store] : (state[store].data || []);
-    const dataFilter = dataSource.filter(item => item.staff_sn !== staffSn);
-    const dataItem = dataSource.filter(item => item.staff_sn === staffSn);
-    const mergeData = Object.assign(dataItem, data.changes);
-    const newStore = dataFilter.push(mergeData);
+    const newStore = dataSource.map((item) => {
+      if (parseInt(item.staff_sn, 0) === parseInt(staffSn, 0)) {
+        return { ...item, ...data.changes };
+      } else {
+        return item;
+      }
+    });
     return {
       ...state,
       [store]: Array.isArray(state[store]) ? newStore : { ...state[store], data: newStore },
