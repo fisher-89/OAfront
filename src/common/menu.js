@@ -221,55 +221,55 @@ const menuData = [
         path: 'staff/edit/:staff_sn',
         hideInMenu: true,
       },
-      {
-        name: '部门管理',
-        path: 'department',
-        authority: '38',
-      },
-      {
-        name: '职位管理',
-        path: 'position',
-        authority: '42',
-      },
-      {
-        name: '品牌管理',
-        path: 'brand',
-        authority: '42',
-      },
-      {
-        name: '店铺管理',
-        path: 'shop',
-        authority: '70',
-      },
-      {
-        name: '大爱',
-        path: 'violation',
-        authority: '76',
-        children: [
-          {
-            name: '大爱查询',
-            path: 'fine',
-          },
-          {
-            name: '制度列表',
-            path: 'regime',
-          },
-          {
-            name: '添加制度',
-            path: 'regime/add',
-            hideInMenu: true,
-          },
-          {
-            name: '添加制度',
-            path: 'regime/edit/:id',
-            hideInMenu: true,
-          },
-          {
-            name: '大爱统计',
-            path: 'count',
-          },
-        ],
-      },
+      // {
+      //   name: '部门管理',
+      //   path: 'department',
+      //   authority: '38',
+      // },
+      // {
+      //   name: '职位管理',
+      //   path: 'position',
+      //   authority: '42',
+      // },
+      // {
+      //   name: '品牌管理',
+      //   path: 'brand',
+      //   authority: '42',
+      // },
+      // {
+      //   name: '店铺管理',
+      //   path: 'shop',
+      //   authority: '70',
+      // },
+      // {
+      //   name: '大爱',
+      //   path: 'violation',
+      //   authority: '76',
+      //   children: [
+      //     {
+      //       name: '大爱查询',
+      //       path: 'fine',
+      //     },
+      //     {
+      //       name: '制度列表',
+      //       path: 'regime',
+      //     },
+      //     {
+      //       name: '添加制度',
+      //       path: 'regime/add',
+      //       hideInMenu: true,
+      //     },
+      //     {
+      //       name: '添加制度',
+      //       path: 'regime/edit/:id',
+      //       hideInMenu: true,
+      //     },
+      //     {
+      //       name: '大爱统计',
+      //       path: 'count',
+      //     },
+      //   ],
+      // },
     ],
   },
   {

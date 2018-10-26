@@ -22,14 +22,14 @@ import EditTransfer from './editTransfer';
 import EditLeave from './editLeave';
 import OATable from '../../../components/OATable';
 import EditStaff from './edit';
-import ImportStaff from './import';
+// import ImportStaff from './import';
 import ExportStaff from './export';
 import EditProcess from './editProcess';
 
 import {
   customerAuthority,
-  getBrandAuthority,
-  getDepartmentAuthority,
+  // getBrandAuthority,
+  // getDepartmentAuthority,
 } from '../../../utils/utils';
 
 const { TabPane } = Tabs;
@@ -156,7 +156,8 @@ export default class extends PureComponent {
           payload: { staff_sn: staffsn },
         });
       },
-      onCancel: () => {},
+      onCancel: () => {
+      },
     });
   }
 
@@ -177,7 +178,8 @@ export default class extends PureComponent {
           },
         });
       },
-      onCancel: () => {},
+      onCancel: () => {
+      },
     });
   }
 
@@ -470,24 +472,24 @@ export default class extends PureComponent {
         }),
         render: val => staffProperty[val],
       },
-      {
-        title: '操作',
-        width: 120,
-        fixed: 'right',
-        key: 'operation',
-        render: (val, rowData) => {
-          const checkBrand = getBrandAuthority(rowData.brand_id);
-          const checkDepartment = getDepartmentAuthority(rowData.department_id);
-          if ((!checkBrand || !checkDepartment) && rowData.status_id > 0) {
-            return '暂无操作权限';
-          }
-          return (
-            <Fragment>
-              {this.makeAction(rowData)}
-            </Fragment>
-          );
-        },
-      },
+      // {
+      //   title: '操作',
+      //   width: 120,
+      //   fixed: 'right',
+      //   key: 'operation',
+      //   render: (val, rowData) => {
+      //     const checkBrand = getBrandAuthority(rowData.brand_id);
+      //     const checkDepartment = getDepartmentAuthority(rowData.department_id);
+      //     if ((!checkBrand || !checkDepartment) && rowData.status_id > 0) {
+      //       return '暂无操作权限';
+      //     }
+      //     return (
+      //       <Fragment>
+      //         {this.makeAction(rowData)}
+      //       </Fragment>
+      //     );
+      //   },
+      // },
     ];
   }
 
@@ -504,21 +506,21 @@ export default class extends PureComponent {
       };
     }
     extra.push(
-      (customerAuthority(62)) && (
-        <Button
-          icon="plus"
-          key="plus"
-          type="primary"
-          onClick={() => {
-            this.setState({ editVisible: true });
-          }}
-        >
-          添加员工
-        </Button>
-      ),
-      (customerAuthority(62)) && (
-        <ImportStaff key="importPop" />
-      ),
+      // (customerAuthority(62)) && (
+      //   <Button
+      //     icon="plus"
+      //     key="plus"
+      //     type="primary"
+      //     onClick={() => {
+      //       this.setState({ editVisible: true });
+      //     }}
+      //   >
+      //     添加员工
+      //   </Button>
+      // ),
+      // (customerAuthority(62)) && (
+      //   <ImportStaff key="importPop" />
+      // ),
       (customerAuthority(84) && (
         <ExportStaff key="exportBtn" filters={this.searchFilter} total={total} />
       ))
@@ -644,10 +646,10 @@ export default class extends PureComponent {
           visible={this.state.processVisible}
           editStaff={this.state.editStaff}
           onCancel={() => {
-              this.setState({
-                processVisible: false,
-                editStaff: {},
-              });
+            this.setState({
+              processVisible: false,
+              editStaff: {},
+            });
           }}
         />
       </Fragment>
