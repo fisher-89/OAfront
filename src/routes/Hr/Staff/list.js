@@ -465,7 +465,7 @@ export default class extends PureComponent {
       },
       {
         title: '员工属性',
-        dataIndex: 'property_id',
+        dataIndex: 'property',
         align: 'center',
         filters: staffProperty.map((item, i) => {
           return { text: item, value: i };
