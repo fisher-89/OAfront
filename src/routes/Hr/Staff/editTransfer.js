@@ -20,7 +20,7 @@ export default class extends PureComponent {
   handleSubmit = (params) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'staffs/editStaff',
+      type: 'staffs/transfer',
       payload: params,
       onError: this.handleError,
       onSuccess: this.handleSuccess,
@@ -210,6 +210,30 @@ export default class extends PureComponent {
             </FormItem>
           </Col>
         </Row>
+        <FormItem
+          {...{
+            labelCol: {
+              span: 4,
+            },
+            wrapperCol: {
+              span: 18,
+            },
+          }
+          }
+          label="费用品牌"
+        >
+          {getFieldDecorator('cost_brand', {
+            initialValue: editStaff.cost_brand,
+          })(
+            <Select mode="multiple" placeholer="请选择">
+              {brand && brand.map((item) => {
+                return (
+                  <Option key={item.id} value={item.id}>{item.name}</Option>
+                );
+              })}
+            </Select>
+          )}
+        </FormItem>
         <FormItem
           {...{
             labelCol: {
