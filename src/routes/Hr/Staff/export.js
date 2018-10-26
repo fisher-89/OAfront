@@ -40,7 +40,58 @@ export default class extends PureComponent {
         minCols,
       },
       onError: this.handleError,
-      onSuccess: this.handleSuccess,
+      onSuccess: (list) => {
+        if (list.length <= 0) {
+          notification.warning({
+            message: '没有员工数据，导出终止～',
+          });
+          return false;
+        }
+        const workbook = XLSX.utils.book_new();
+        const staff = [];
+        list.forEach((item) => {
+          staff.push([
+            item.staff_sn,
+            item.realname,
+            item.gender,
+            item.brand,
+            item.cost_brand,
+            item.shop_sn,
+            item.shop_name,
+            item.department,
+            item.position,
+            item.status,
+            item.hired_at,
+            item.mobile || '',
+            item.id_card_number || '',
+            item.account_number || '',
+            item.account_name || '',
+            item.account_bank || '',
+            item.national || '',
+            item.wechat_number || '',
+            item.education || '',
+            item.politics || '',
+            item.marital_status || '',
+            item.height || '',
+            item.weight || '',
+            item.household_city || '',
+            item.living_city || '',
+            item.native_place || '',
+            item.concat_name || '',
+            item.concat_tel || '',
+            item.concat_type || '',
+            item.remark || '',
+          ]);
+        });
+        staff.unshift([
+          '员工编号', '姓名', '性别', '品牌', '费用品牌', '店铺代码', '店铺名称', '部门全称', '职位', '员工状态', '入职时间', '手机号码',
+          '身份证号', '银行卡号', '开户人', '开户行', '民族', '微信号', '学历', '政治面貌', '婚姻状况', '身高', '体重',
+          '户口所在地址', '现居住地址', '籍贯', '紧急联系人', '联系人电话', '联系人关系类型', '备注',
+        ]);
+        const staffSheet = XLSX.utils.aoa_to_sheet(staff);
+        XLSX.utils.book_append_sheet(workbook, staffSheet, 'SheetJS');
+        XLSX.writeFile(workbook, '员工信息.xlsx');
+      },
     });
   }
 
@@ -54,19 +105,6 @@ export default class extends PureComponent {
       description: <List size="small" dataSource={desc} renderItem={item => (<List.Item>{item}</List.Item>)} />,
       duration: 10,
     });
-  }
-
-  handleSuccess = (result) => {
-    if (result.length <= 1) {
-      notification.warning({
-        message: '没有员工数据，导出终止～',
-      });
-      return false;
-    }
-    const ws = XLSX.utils.aoa_to_sheet(result);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'SheetJS');
-    XLSX.writeFile(wb, '员工信息.xlsx');
   }
 
   render() {
