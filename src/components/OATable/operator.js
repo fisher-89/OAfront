@@ -151,10 +151,10 @@ class Operator extends PureComponent {
               <ButtonGroup>
                 <Button onClick={() => resetFilter()}>清空筛选</Button>
                 <Popover
-                  content={this.renderFiltersTag()}
                   trigger="hover"
-                  visible={this.state.hovered}
                   placement="bottomLeft"
+                  visible={this.state.hovered}
+                  content={this.renderFiltersTag()}
                   onVisibleChange={this.handleHoverChange}
                   getPopupContainer={triggerNode => (triggerNode)}
                 >

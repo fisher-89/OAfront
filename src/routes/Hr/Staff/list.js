@@ -2,7 +2,6 @@
  * Created by Administrator on 2018/4/11.
  */
 import React, { PureComponent, Fragment } from 'react';
-
 import {
   Divider,
   Popover,
@@ -35,6 +34,19 @@ import {
 } from '../../../utils/utils';
 
 const { TabPane } = Tabs;
+
+const staffProperty = ['无', '108将', '36天罡', '24金刚', '18罗汉'];
+const gender = [{ value: '男', text: '男' }, { value: '女', text: '女' }];
+const status = [
+  { value: 0, text: '离职中' },
+  { value: 1, text: '试用期' },
+  { value: 2, text: '在职' },
+  { value: 3, text: '停薪留职' },
+  { value: -1, text: '离职' },
+  { value: -2, text: '自动离职' },
+  { value: -3, text: '开除' },
+  { value: -4, text: '劝退' },
+];
 
 @connect(({ staffs, brand, department, position, loading }) => ({
   staff: staffs.staff,
@@ -337,122 +349,113 @@ export default class extends PureComponent {
 
   makeColumns = () => {
     const { brand, department, position } = this.props;
-    const genderArr = ['未知', '男', '女'];
-    const gender = [{ value: 1, text: '男' }, { value: 2, text: '女' }];
-    const staffProperty = ['无', '108将', '36天罡', '24金刚', '18罗汉'];
-    const status = [
-      { value: 0, text: '离职中' },
-      { value: 1, text: '试用期' },
-      { value: 2, text: '在职' },
-      { value: 3, text: '停薪留职' },
-      { value: -1, text: '离职' },
-      { value: -2, text: '自动离职' },
-      { value: -3, text: '开除' },
-      { value: -4, text: '劝退' },
-    ];
-
     return [
       {
-        width: 70,
+        width: 90,
         sorter: true,
         title: '编号',
         fixed: 'left',
         searcher: true,
         dataIndex: 'staff_sn',
       }, {
+        width: 70,
         title: '姓名',
         fixed: 'left',
-        align: 'center',
-        width: 70,
+        searcher: true,
         dataIndex: 'realname',
-        searcher: true,
       }, {
+        width: 100,
         title: '电话',
-        dataIndex: 'mobile',
-        align: 'center',
         searcher: true,
+        align: 'center',
+        dataIndex: 'mobile',
       }, {
+        width: 100,
         title: '品牌',
         align: 'center',
         dataIndex: 'brand_id',
         filters: getFiltersData(brand),
         render: key => findRenderKey(brand, key).name,
       }, {
+        width: 100,
         title: '职位',
         dataIndex: 'position_id',
         filters: getFiltersData(position),
         render: key => findRenderKey(position, key).name,
       }, {
-        title: '部门',
-        dataIndex: 'department_id',
         width: 200,
+        title: '部门',
         treeFilters: {
           title: 'name',
           value: 'id',
           data: department,
           parentId: 'parent_id',
         },
+        dataIndex: 'department_id',
         render: key => OATable.renderEllipsis(findRenderKey(department, key).full_name, true),
       },
       {
+        width: 70,
         title: '状态',
-        dataIndex: 'status_id',
         align: 'center',
         filters: status,
+        dataIndex: 'status_id',
         render: key => findRenderKey(status, key, 'value').text,
       },
       {
+        width: 200,
         title: '店铺',
         searcher: true,
         dataIndex: 'shop.name',
         render: key => OATable.renderEllipsis(key, true),
       }, {
+        width: 100,
+        searcher: true,
         title: '店铺代码',
         dataIndex: 'shop_sn',
-        searcher: true,
       },
       {
+        width: 100,
+        align: 'center',
         title: '入职日期',
+        dateFilters: true,
         dataIndex: 'hired_at',
-        align: 'center',
-        dateFilters: true,
       }, {
-        title: '转正日期',
-        dataIndex: 'employed_at',
-        align: 'center',
-        dateFilters: true,
-      }, {
-        title: '离职日期',
-        dataIndex: 'left_at',
-        align: 'center',
-        dateFilters: true,
-      },
-      {
+        width: 100,
         hidden: true,
-        title: '生日',
         align: 'center',
+        title: '转正日期',
         dateFilters: true,
-        dataIndex: 'birthday',
+        dataIndex: 'employed_at',
+      }, {
+        width: 100,
+        hidden: true,
+        align: 'center',
+        title: '离职日期',
+        dateFilters: true,
+        dataIndex: 'left_at',
       },
       {
+        width: 70,
         title: '性别',
-        dataIndex: 'gender_id',
+        hidden: true,
         align: 'center',
         filters: gender,
-        render: val => genderArr[val],
+        dataIndex: 'gender',
       },
       {
+        width: 100,
+        hidden: true,
         align: 'center',
         title: '员工属性',
-        dataIndex: 'property_id',
+        dataIndex: 'property',
         render: val => staffProperty[val],
         filters: staffProperty.map(item => ({ value: item, text: item })),
       },
       {
+        width: 300,
         title: '操作',
-        width: 160,
         fixed: 'right',
-        key: 'operation',
         render: (_, rowData) => {
           const checkBrand = getBrandAuthority(rowData.brand_id);
           const checkDepartment = getDepartmentAuthority(rowData.department_id);
@@ -536,6 +539,7 @@ export default class extends PureComponent {
   render() {
     const { panes, activeKey, filters } = this.state;
     const { staffLoading, staffInfo, staff } = this.props;
+    const columns = this.makeColumns();
     return (
       <Fragment>
         <Tabs
@@ -552,14 +556,15 @@ export default class extends PureComponent {
             closable={false}
           >
             <OATable
+              bordered
               serverSide
               extraColumns
+              columns={columns}
               filters={filters}
               total={staff.total}
-              scroll={{ x: 1600 }}
+              scroll={{ y: 550 }}
               loading={staffLoading}
               dataSource={staff.data}
-              columns={this.makeColumns()}
               fetchDataSource={this.fetchStaff}
               extraOperator={this.makeExtraOperator()}
             />

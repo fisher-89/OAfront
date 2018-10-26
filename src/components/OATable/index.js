@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import classNames from 'classnames';
-import { debounce } from 'lodash';
 import moment from 'moment';
 import XLSX from 'xlsx';
 import {
@@ -9,6 +8,7 @@ import {
   Icon,
   Table,
   Input,
+  Switch,
   Button,
   Tooltip,
   message,
@@ -78,11 +78,16 @@ function analysisColumn(dataSource, key, index = 'id', name = 'name', dataSource
 class OATable extends PureComponent {
   constructor(props) {
     super(props);
+    const columns = props.columns.map(item => ({ ...item }));
+    this.columnsDataIndex = columns.filter(item => item.dataIndex).map(item => item.dataIndex);
+    this.lockColumnsDataIndex = columns.filter(item => item.dataIndex)
+      .filter(item => item.fixed)
+      .map(item => item.dataIndex);
     this.state = {
+      columns,
       sorter: {},
       filters: {},
       filtered: [],
-      loading: false,
       selectedRows: [],
       selectedRowKeys: [],
       pagination: {
@@ -94,9 +99,8 @@ class OATable extends PureComponent {
       },
       columnsMenuVisible: false,
       filterDropdownVisible: false,
-      columns: props.columns || [],
-      columnsMenuValue: props.columns.map(item => item.dataIndex)
-        .filter(item => item),
+      columnsMenuValue: columns.filter(item => !item.hidden && item.dataIndex)
+        .map(item => item.dataIndex),
     };
   }
 
@@ -122,7 +126,8 @@ class OATable extends PureComponent {
       this.onPropsFiltersChange(filters);
     }
     if ('columns' in nextProps && extraColumns) {
-      this.setState({ columns: nextProps.columns });
+      const columns = nextProps.columns.map(item => ({ ...item }));
+      this.setState({ columns });
     }
   }
 
@@ -143,10 +148,6 @@ class OATable extends PureComponent {
     }
   }
 
-  onEnd = (e) => {
-    const dom = e.target;
-    dom.style.height = 'auto';
-  }
 
   showTotal = (total, range) => {
     return <div style={{ color: '#969696' }}>{`显示 ${range[0]} - ${range[1]} 项 , 共 ${total} 项`}</div>;
@@ -212,6 +213,11 @@ class OATable extends PureComponent {
     this.state.columns.forEach((column, index) => {
       const key = column.dataIndex || index;
       const response = { ...column };
+      if (column.hidden) {
+        response.width = 0;
+        response.colSpan = 0;
+        response.onCell = () => ({ style: { display: 'none' } });
+      }
       if (!serverSide) {
         response.sorter = column.sorter === true ? this.makeDefaultSorter(key) : column.sorter;
       }
@@ -232,15 +238,6 @@ class OATable extends PureComponent {
         Object.assign(response, this.makeDateFilterOption(key, column));
       } else if (column.rangeFilters) {
         Object.assign(response, this.makeRangeFilterOption(key, column));
-      }
-      if (column.hidden) {
-        response.colSpan = 0;
-        // response.className = 'colHidden';
-        response.onCell = () => {
-          return {
-            style: { display: 'none' },
-          };
-        };
       }
       if (column.dataIndex !== undefined && !column.render) {
         const { tooltip } = column;
@@ -582,12 +579,13 @@ class OATable extends PureComponent {
   makeTableProps = () => {
     const { pagination, selectedRowKeys } = this.state;
     const {
-      multiOperator,
       data,
-      serverSide,
       total,
+      scroll,
+      serverSide,
       rowSelection,
-      loading,
+      extraColumns,
+      multiOperator,
     } = this.props;
 
     if (serverSide) {
@@ -598,14 +596,32 @@ class OATable extends PureComponent {
       selectedRowKeys,
       onChange: this.handleRowSelectChange,
     } : rowSelection;
+    let columns = this.mapColumns();
+    if (serverSide) {
+      columns = columns.filter(item => !item.hidden);
+    }
+    const newScroll = { ...scroll };
+    if (extraColumns) {
+      columns = this.makeInitColumns(columns);
+      let x = 200;
+      columns.forEach((item) => {
+        if (item.width) {
+          x += item.width;
+        }
+      });
+      newScroll.x = x;
+    }
+    const rowKey = (record, index) => record.id || record.staff_sn || record.shop_sn || index;
     const response = {
-      rowKey: (record, index) => record.id || record.staff_sn || record.shop_sn || index,
-      dataSource: data,
+      rowKey,
+      pagination,
       size: 'middle',
       bordered: false,
-      scroll: {},
-      pagination,
+      dataSource: data,
       ...this.props,
+      columns,
+      scroll: newScroll,
+      rowSelection: newRowSelection,
       onChange: (paginationChange, filters, sorter) => {
         const newFilters = {};
         Object.keys(filters).forEach((key) => {
@@ -615,11 +631,7 @@ class OATable extends PureComponent {
         });
         this.handleTableChange(paginationChange, newFilters, sorter);
       },
-      loading: loading || this.state.loading,
-      rowSelection: newRowSelection,
-      columns: this.mapColumns(),
     };
-
     if (this.props.pagination && typeof this.props.pagination === 'object') {
       response.pagination = {
         ...pagination,
@@ -716,49 +728,83 @@ class OATable extends PureComponent {
     location.href = excelTemplate;
   }
 
-  handleChangeColumns = () => {
-    const { columns, columnsMenuValue } = this.state;
+
+  handleVisibleColumnsChange = (columnsMenuValue) => {
+    const { columns } = this.state;
     const propsColumns = {};
     this.props.columns.forEach((item) => {
-      propsColumns[item.dataIndex] = item;
+      if (item.dataIndex) propsColumns[item.dataIndex] = item;
     });
     const newColumns = columns.map((item) => {
-      let temp = { ...item };
+      if (!item.dataIndex) return item;
+      const temp = propsColumns[item.dataIndex];
       if (!item.dataIndex || columnsMenuValue.indexOf(item.dataIndex) !== -1) {
         delete temp.hidden;
-        temp = propsColumns[item.dataIndex];
       } else {
         temp.hidden = true;
         delete temp.fixed;
       }
       return temp;
     });
-    this.setState({ columns: [...newColumns] });
+    this.setState({ columnsMenuValue, columns: newColumns });
   }
 
-  handleVisibleColumnsChange = (columnsMenuValue) => {
-    this.setState({ columnsMenuValue }, debounce(this.handleChangeColumns, 100));
+  makeInitColumns = (columns) => {
+    let widthAble = false;
+    let fixed = true;
+    const newColumns = columns.map((item) => {
+      if (!item.width) widthAble = true;
+      if (!item.fixed) fixed = false;
+      return item;
+    });
+    if (!widthAble) {
+      let widthIndex = 0;
+      newColumns.forEach((item, index) => {
+        if (item.width && (!item.fixed || fixed) && !item.hidden && item.dataIndex) {
+          widthIndex = index;
+        }
+      });
+      delete newColumns[widthIndex].width;
+    }
+    return newColumns;
   }
+
+  columnsCheckAll = (checked) => {
+    this.handleVisibleColumnsChange(checked ? this.columnsDataIndex : this.lockColumnsDataIndex);
+  }
+
 
   makeVisibleColumnsList = () => {
     const { columns, columnsMenuValue } = this.state;
     const columnsData = columns.filter(item => item.dataIndex);
     return (
       <div className={styles.columnsMenu}>
-        <Checkbox.Group
-          defaultValue={columnsMenuValue}
-          onChange={this.handleVisibleColumnsChange}
-        >
-          {columnsData.map(item =>
-            (
-              <Row key={item.dataIndex}>
-                <Col>
-                  <Checkbox value={item.dataIndex}>{item.title}</Checkbox>
-                </Col>
-              </Row>
-            ))
-          }
-        </Checkbox.Group>
+        <div>
+          全选：
+          <Switch
+            size="small"
+            onChange={this.columnsCheckAll}
+            defaultChecked={columnsMenuValue.length === this.columnsDataIndex.length}
+          />
+        </div>
+        <div style={{ marginTop: 10 }}>
+          <Checkbox.Group
+            value={columnsMenuValue}
+            onChange={this.handleVisibleColumnsChange}
+          >
+            {columnsData.map(item =>
+              (
+                <Row key={item.dataIndex}>
+                  <Col>
+                    <Checkbox disabled={item.fixed !== undefined} value={item.dataIndex}>
+                      {item.title}
+                    </Checkbox>
+                  </Col>
+                </Row>
+              ))
+            }
+          </Checkbox.Group>
+        </div>
       </div>
     );
   }
@@ -773,7 +819,7 @@ class OATable extends PureComponent {
       fileExportChange,
     } = this.props;
 
-    const operator = extraOperator || [];
+    const operator = [...extraOperator];
 
     if (excelInto) {
       operator.push(
@@ -826,12 +872,12 @@ class OATable extends PureComponent {
 
   render() {
     const {
-      multiOperator,
-      tableVisible,
-      extraOperatorRight,
       sync,
       columns,
+      tableVisible,
+      multiOperator,
       operatorVisble,
+      extraOperatorRight,
     } = this.props;
     const filterColumns = columns.map((item) => {
       const temp = { title: item.title, dataIndex: item.dataIndex };
@@ -843,20 +889,22 @@ class OATable extends PureComponent {
       }
       return temp;
     });
+    const { filters, selectedRows } = this.state;
     return (
       <div className={styles.filterTable}>
         {operatorVisble && (
           <Operator
             sync={sync}
-            {...this.state}
-            filterColumns={filterColumns || []}
+            filters={filters}
+            selectedRows={selectedRows}
             multiOperator={multiOperator}
-            extraOperator={this.makeExtraOperator()}
+            resetFilter={this.resetFilter}
+            filterColumns={filterColumns || []}
             extraOperatorRight={extraOperatorRight}
+            extraOperator={this.makeExtraOperator()}
             fetchTableDataSource={() => {
               this.fetchTableDataSource(null, true);
             }}
-            resetFilter={this.resetFilter}
           />
         )}
         {(tableVisible === true) && (
