@@ -7,6 +7,7 @@ import {
   Col,
   Row,
 } from 'antd';
+import { Map } from 'react-amap';
 import { connect } from 'dva';
 import OAForm, {
   OAModal,
@@ -16,11 +17,12 @@ import OAForm, {
 } from '../../../components/OAForm';
 import { markTreeData } from '../../../utils/utils';
 import styles from './form.less';
+import UIMarker from './UIMarker';
 
 const { TabPane } = Tabs;
 const FormItem = OAForm.Item;
 const { Option } = Select;
-
+@connect(({ shop }) => ({ shop }))
 @OAForm.create()
 @connect(({ brand, department, loading }) => ({
   brand: brand.brand,
@@ -31,10 +33,26 @@ const { Option } = Select;
   ),
 }))
 export default class extends PureComponent {
+  constructor() {
+    super();
+    this.state = {
+      shopInfo: {},
+      poiInfo: {},
+    };
+  }
+
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({ type: 'brand/fetchBrand' });
     dispatch({ type: 'department/fetchDepartment' });
+  }
+
+
+  componentWillReceiveProps(nextProps) {
+    const { initialValue } = nextProps;
+    if (initialValue !== this.state.shopInfo) {
+      this.setState({ shopInfo: initialValue });
+    }
   }
 
   handleError = (error) => {
@@ -53,6 +71,14 @@ export default class extends PureComponent {
       payload: body,
       onError: this.handleError,
       onSuccess: () => this.props.handleVisible(false),
+    });
+  }
+
+  handlePosition = (poi) => {
+    this.props.form.setFieldsValue({
+      latitude: poi.lat,
+      longitude: poi.lng,
+      address: poi.address,
     });
   }
 
@@ -82,14 +108,11 @@ export default class extends PureComponent {
 
     const info = initialValue;
     this.makeDecoratorValue(info);
+    const { shopInfo, poiInfo } = this.state;
     const newTreeData = markTreeData(department, { value: 'id', lable: 'name', parentId: 'parent_id' }, 0);
     const longFormItemLayout = {
       labelCol: { span: 4 },
       wrapperCol: { span: 20 },
-    };
-    const shortFormItemLayout = {
-      labelCol: { span: 4 },
-      wrapperCol: { span: 6 },
     };
     const formItemLayout = {
       labelCol: {
@@ -291,7 +314,7 @@ export default class extends PureComponent {
                 </FormItem>
               </Col>
             </Row>
-            <FormItem label="店员" {...shortFormItemLayout}>
+            <FormItem label="店员" {...longFormItemLayout}>
               {
                 getFieldDecorator('staff', {
                   initialValue: info.staff || [],
@@ -311,7 +334,30 @@ export default class extends PureComponent {
           <TabPane
             tab={<div className={styles.tabpane}>定位</div>}
             key="2"
-          />
+          >
+            <FormItem {...longFormItemLayout} label="店铺位置" required>
+              {getFieldDecorator('address', {
+              initialValue: poiInfo.address,
+               })(
+                 <Input placeholder="请输入" style={{ width: '100%' }} />
+               )
+              }
+            </FormItem>
+
+            <div style={{ width: '100%', height: '400px' }}>
+              <Map
+                zoom={15}
+                useAMapUI="true"
+                center={{
+              longitude: (poiInfo.lng || shopInfo.lng),
+              latitude: (poiInfo.lat || shopInfo.lat),
+            }}
+                amapkey="9a54ee2044c8fdd03b3d953d4ace2b4d"
+              >
+                <UIMarker handlePosition={this.handlePosition} />
+              </Map>
+            </div>
+          </TabPane>
           <TabPane
             tab={<div className={styles.tabpane}>利鲨</div>}
             key="3"

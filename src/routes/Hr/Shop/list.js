@@ -10,7 +10,6 @@ import { connect } from 'dva';
 import OATable from '../../../components/OATable';
 import Ellipsis from '../../../components/Ellipsis/index';
 import ShopForm from './form';
-import Amap from './amap';
 import { customerAuthority } from '../../../utils/utils';
 @connect(({ shop, loading }) => ({
   shop: shop.shop,
@@ -20,8 +19,6 @@ export default class extends PureComponent {
   state = {
     visible: false,
     editInfo: {},
-    poiVisible: false,
-    poiInfo: {},
   }
 
   fetchShop = (params) => {
@@ -33,16 +30,8 @@ export default class extends PureComponent {
     this.setState({ visible: !!flag });
   }
 
-  handlePoiVisible = (flag) => {
-    this.setState({ poiVisible: !!flag });
-  }
-
   handleEdit = (data) => {
     this.setState({ editInfo: data }, () => this.handleModalVisible(true));
-  }
-
-  handlePositon = (data) => {
-    this.setState({ poiInfo: data }, () => this.handlePoiVisible(true));
   }
 
   handleDelete = (id) => {
@@ -126,7 +115,6 @@ export default class extends PureComponent {
       columns.push(
         {
           title: '操作',
-          fixed: 'right',
           render: (rowData) => {
             return (
               <Fragment>
@@ -136,10 +124,6 @@ export default class extends PureComponent {
                 <Divider type="vertical" />
                 {customerAuthority(73) && (
                   <a onClick={() => this.handleDelete(rowData.id)}>删除</a>
-                )}
-                <Divider type="vertical" />
-                {customerAuthority(73) && (
-                  <a onClick={() => this.handlePositon(rowData)}>定位</a>
                 )}
               </Fragment>
             );
@@ -171,7 +155,7 @@ export default class extends PureComponent {
 
   render() {
     const { shop, sLoading } = this.props;
-    const { visible, editInfo, poiVisible, poiInfo } = this.state;
+    const { visible, editInfo } = this.state;
     return (
       <React.Fragment>
         {
@@ -183,12 +167,6 @@ export default class extends PureComponent {
                 visible={visible}
                 onCancel={() => { this.setState({ editInfo: {} }); }}
                 handleVisible={this.handleModalVisible}
-              />
-              <Amap
-                initialValue={poiInfo}
-                visible={poiVisible}
-                onCancel={() => { this.setState({ poiInfo: {} }); }}
-                handleVisible={this.handlePoiVisible}
               />
             </React.Fragment>
           )
