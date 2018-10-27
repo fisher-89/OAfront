@@ -718,3 +718,18 @@ export function getStatusImg(status) {
     default:
   }
 }
+
+export function getInitSearchProps(initialValue, cb, valueKey = []) {
+  let response = {};
+  valueKey.forEach((item) => { response[item] = undefined; });
+  response = { ...response, ...initialValue };
+  const newInitialValue = {};
+  Object.keys(response).forEach((key) => {
+    newInitialValue[key] = {
+      onChange: cb(key),
+      value: response[key],
+    };
+  });
+  return newInitialValue;
+}
+

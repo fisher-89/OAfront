@@ -29,7 +29,7 @@ export default class extends React.Component {
         if (typeof item === 'object') {
           return {
             value: item[valueName],
-            label: item[showName] || '',
+            label: item[showName] || item,
             key: index,
           };
         } else {

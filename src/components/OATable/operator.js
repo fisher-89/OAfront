@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Button, Dropdown, Menu, Tooltip, Popover, Tag } from 'antd';
 import styles from './index.less';
+import MoreSearch from './MoreSearch';
 
 
 const ButtonGroup = Button.Group;
@@ -108,6 +109,8 @@ class Operator extends PureComponent {
     const {
       sync,
       filters,
+      onChange,
+      moreSearch,
       resetFilter,
       selectedRows,
       multiOperator,
@@ -115,6 +118,7 @@ class Operator extends PureComponent {
       filterColumns,
       extraOperatorRight,
       fetchTableDataSource,
+      filterDropdownVisible,
     } = this.props;
     const filterColumnsDataIndex = filterColumns.map(item => item.dataIndex);
 
@@ -144,6 +148,14 @@ class Operator extends PureComponent {
             </Tooltip>
           )}
           {extraOperator || null}
+          {moreSearch && (
+            <MoreSearch
+              filters={filters}
+              onChange={onChange}
+              moreSearch={moreSearch}
+              filterDropdownVisible={filterDropdownVisible}
+            />
+          )}
           <span style={style} />
           {
             (hasFilter) &&

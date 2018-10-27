@@ -3,25 +3,24 @@
  */
 import React, { PureComponent, Fragment } from 'react';
 import {
-  Divider,
-  Popover,
-  Button,
   Icon,
-  Tooltip,
   Tabs,
   Modal,
+  Button,
+  Divider,
+  Tooltip,
   notification,
 } from 'antd';
 
 import { connect } from 'dva';
 import { Link } from 'dva/router';
 
+import Search from './search';
 import EditStaff from './edit';
 import ImportStaff from './import';
 import ExportStaff from './export';
 import StaffInfo from './staffInfo';
 import EditLeave from './editLeave';
-import MoreSearch from './moreSearch';
 import EditProcess from './editProcess';
 import EditTransfer from './editTransfer';
 import OATable from '../../../components/OATable';
@@ -62,8 +61,6 @@ export default class extends PureComponent {
     panes: [],
     filters: {},
     editStaff: {},
-    moreInfo: null,
-    visible: false,
     editVisible: false,
     leaveVisible: false,
     processVisible: false,
@@ -85,13 +82,6 @@ export default class extends PureComponent {
   fetchStaff = (params) => {
     const { dispatch } = this.props;
     dispatch({ type: 'staffs/fetchStaff', payload: params });
-  }
-
-  handleVisibleChange = (visible) => {
-    if (this.modalVisible) {
-      return;
-    }
-    this.setState({ visible });
   }
 
   fetchStaffInfo = (param) => {
@@ -364,6 +354,12 @@ export default class extends PureComponent {
         searcher: true,
         dataIndex: 'realname',
       }, {
+        width: 180,
+        searcher: true,
+        align: 'center',
+        title: '身份证号码',
+        dataIndex: 'id_card_number',
+      }, {
         width: 100,
         title: '电话',
         searcher: true,
@@ -410,7 +406,6 @@ export default class extends PureComponent {
         render: key => OATable.renderEllipsis(key, true),
       }, {
         width: 100,
-        searcher: true,
         title: '店铺代码',
         dataIndex: 'shop_sn',
       },
@@ -475,15 +470,6 @@ export default class extends PureComponent {
   makeExtraOperator = () => {
     const extra = [];
     const { staff: { total } } = this.props;
-    const { visible, moreInfo } = this.state;
-    let style = {};
-    if (moreInfo) {
-      style = {
-        color: '#40a9ff',
-        backgroundColor: '#fff',
-        borderColor: '#40a9ff',
-      };
-    }
     extra.push(
       (customerAuthority(62)) && (
         <Button
@@ -504,36 +490,11 @@ export default class extends PureComponent {
         <ExportStaff key="exportBtn" filters={this.searchFilter} total={total} />
       ))
     );
-    extra.push((
-      <Popover
-        key="searchPop"
-        visible={visible}
-        trigger="click"
-        placement="bottomLeft"
-        onVisibleChange={this.handleVisibleChange}
-        content={(
-          <MoreSearch
-            modalVisible={this.searChModal}
-            fetchDataSource={this.fetchStaff}
-            loading={this.props.staffLoading}
-            defaultFilter={this.searchFilter}
-            handleVisibleChange={this.handleVisibleChange}
-          />
-        )}
-      >
-        <Button icon="search" style={style}>更多筛选</Button>
-      </Popover>
-    ));
-
     return extra;
   }
 
   tabsChange = (activeKey) => {
     this.setState({ activeKey });
-  }
-
-  searChModal = (visible) => {
-    this.modalVisible = visible;
   }
 
   render() {
@@ -559,12 +520,14 @@ export default class extends PureComponent {
               bordered
               serverSide
               extraColumns
+              autoComplete
               columns={columns}
               filters={filters}
               total={staff.total}
               scroll={{ y: 550 }}
               loading={staffLoading}
               dataSource={staff.data}
+              moreSearch={<Search />}
               fetchDataSource={this.fetchStaff}
               extraOperator={this.makeExtraOperator()}
             />

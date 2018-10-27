@@ -16,6 +16,7 @@ import {
   Checkbox,
 } from 'antd';
 import { connect } from 'dva';
+import { assign } from 'lodash';
 import Operator from './operator';
 import styles from './index.less';
 import TableUpload from './upload';
@@ -89,6 +90,7 @@ class OATable extends PureComponent {
       filters: {},
       filtered: [],
       selectedRows: [],
+      eyeVisible: false,
       selectedRowKeys: [],
       pagination: {
         pageSize: 10,
@@ -163,6 +165,7 @@ class OATable extends PureComponent {
       const columnDataIndex = columns.map(column => column.dataIndex);
       Object.keys(filters).forEach((key) => {
         const filter = filters[key];
+        if (!filter) return;
         if (columnDataIndex.indexOf(key) === -1) {
           if (typeof filter === 'string') {
             filterParam[key] = filter;
@@ -448,6 +451,14 @@ class OATable extends PureComponent {
         this.handleTableChange(pagination, newFilters, sorter);
       });
     };
+  }
+
+
+  handleMoreFilter = (value) => {
+    const { filters, sorter, pagination } = this.state;
+    const newFilters = {};
+    assign(newFilters, filters, value);
+    this.handleTableChange(pagination, newFilters, sorter);
   }
 
   handleTableChange = (pagination, newFilters, sorter) => {
@@ -818,9 +829,7 @@ class OATable extends PureComponent {
       excelTemplate,
       fileExportChange,
     } = this.props;
-
-    const operator = [...extraOperator];
-
+    const operator = [...(extraOperator || [])];
     if (excelInto) {
       operator.push(
         <Tooltip key="upload" title="导入数据">
@@ -858,9 +867,10 @@ class OATable extends PureComponent {
       operator.push(
         <Popover
           key="eye"
-          placement="bottom"
           trigger="click"
+          placement="bottom"
           content={this.makeVisibleColumnsList()}
+          onVisibleChange={(eyeVisible) => { this.setState({ eyeVisible }); }}
         >
           <Button icon="eye">可见信息</Button>
         </Popover>
@@ -874,6 +884,8 @@ class OATable extends PureComponent {
     const {
       sync,
       columns,
+      moreSearch,
+      autoComplete,
       tableVisible,
       multiOperator,
       operatorVisble,
@@ -889,29 +901,34 @@ class OATable extends PureComponent {
       }
       return temp;
     });
-    const { filters, selectedRows } = this.state;
+    const { filters, selectedRows, filterDropdownVisible, eyeVisible } = this.state;
+    const tableProps = this.makeTableProps();
+    const searchObj = autoComplete ? {
+      content: moreSearch,
+      columns: this.state.columns.filter(item => item.hidden && item.dataIndex),
+    } : moreSearch;
     return (
       <div className={styles.filterTable}>
         {operatorVisble && (
           <Operator
             sync={sync}
             filters={filters}
+            moreSearch={searchObj}
             selectedRows={selectedRows}
             multiOperator={multiOperator}
             resetFilter={this.resetFilter}
+            onChange={this.handleMoreFilter}
             filterColumns={filterColumns || []}
             extraOperatorRight={extraOperatorRight}
             extraOperator={this.makeExtraOperator()}
             fetchTableDataSource={() => {
               this.fetchTableDataSource(null, true);
             }}
+            filterDropdownVisible={filterDropdownVisible || eyeVisible}
           />
         )}
         {(tableVisible === true) && (
-          <Table
-            {...this.makeTableProps()}
-            className={styles.filterTableContent}
-          />
+          <Table {...tableProps} className={styles.filterTableContent} />
         )}
       </div>
     );
