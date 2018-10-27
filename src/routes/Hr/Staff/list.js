@@ -355,9 +355,10 @@ export default class extends PureComponent {
         dataIndex: 'realname',
       }, {
         width: 180,
+        hidden: true,
         searcher: true,
         align: 'center',
-        title: '身份证号码',
+        title: '身份证',
         dataIndex: 'id_card_number',
       }, {
         width: 100,
@@ -551,7 +552,6 @@ export default class extends PureComponent {
           })}
         </Tabs>
         <EditStaff
-          loading={staffLoading}
           visible={this.state.editVisible}
           editStaff={this.state.editStaff}
           onCancel={() => {
@@ -562,7 +562,6 @@ export default class extends PureComponent {
           }}
         />
         <EditTransfer
-          loading={staffLoading}
           visible={this.state.transferVisible}
           editStaff={this.state.editStaff}
           onCancel={() => {
@@ -573,7 +572,6 @@ export default class extends PureComponent {
           }}
         />
         <EditLeave
-          loading={staffLoading}
           visible={this.state.leaveVisible}
           editStaff={this.state.editStaff}
           onCancel={() => {
@@ -584,7 +582,6 @@ export default class extends PureComponent {
           }}
         />
         <EditProcess
-          loading={staffLoading}
           visible={this.state.processVisible}
           editStaff={this.state.editStaff}
           onCancel={() => {

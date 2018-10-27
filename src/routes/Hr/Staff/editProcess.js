@@ -14,7 +14,6 @@ const { Option } = Select;
 
 @OAForm.create()
 @connect(({ staffs }) => ({ staffs }))
-
 export default class extends PureComponent {
   handleSubmit = (params) => {
     const { dispatch } = this.props;
@@ -65,14 +64,14 @@ export default class extends PureComponent {
       >
         <FormItem label="姓名" {...formItemLayout}>
           {getFieldDecorator('staff_sn', {
-              initialValue: editStaff.staff_sn || '',
-            })(
-              <Input type="hidden" />
+            initialValue: editStaff.staff_sn || '',
+          })(
+            <Input type="hidden" />
           )}
           {getFieldDecorator('operation_type', {
-              initialValue: 'employ',
-            })(
-              <Input type="hidden" />
+            initialValue: 'employ',
+          })(
+            <Input type="hidden" />
           )}
           {getFieldDecorator('realname', {
             initialValue: editStaff.realname,

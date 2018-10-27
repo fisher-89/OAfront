@@ -1,6 +1,6 @@
 import React from 'react';
-import { Input, Button, Popover, Form, Select } from 'antd';
-import { mapValues, isArray, isObject, isString, isNumber, map } from 'lodash';
+import { Input, Button, Popover, Form, Select, Row, Col, Slider } from 'antd';
+import { mapValues, isArray, isObject, isString, isNumber, map, has } from 'lodash';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -18,8 +18,14 @@ const formItemLayout = {
 
 export default class MoreSearch extends React.Component {
   state = {
-    visible: false,
     filters: {},
+    visible: false,
+    colCountKey: 1,
+  }
+
+  componentWillMount() {
+    this.colCounts = {};
+    [1, 2, 3].forEach((value, i) => { this.colCounts[i] = value; });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -45,6 +51,10 @@ export default class MoreSearch extends React.Component {
     const { onChange } = this.props;
     const { filters } = this.state;
     this.setState({ visible: false }, onChange(filters));
+  }
+
+  onColCountChange = (colCountKey) => {
+    this.setState({ colCountKey });
   }
 
   handleVisible = () => {
@@ -127,9 +137,12 @@ export default class MoreSearch extends React.Component {
     }).filter(item => item);
   }
 
+
   renderMoreSearch = () => {
     const { moreSearch } = this.props;
-    const { filters } = this.state;
+    const { filters, colCountKey } = this.state;
+    const colCount = this.colCounts[colCountKey];
+    const span = 24 / colCount;
     let searchComponent = moreSearch;
     if (React.isValidElement(moreSearch)) {
       searchComponent = React.cloneElement(moreSearch, {
@@ -142,27 +155,60 @@ export default class MoreSearch extends React.Component {
       const { content, columns } = moreSearch;
       searchComponent = [];
       if (isArray(content)) {
-        searchComponent.this.makeColumnsSearch(content);
+        searchComponent = this.makeColumnsSearch(content);
       } else if (React.isValidElement(content)) {
         const element = React.cloneElement(content, {
+          colSpan: span,
           key: 'content',
           initialValue: filters,
           onChange: this.handleSearchChange,
         });
-        searchComponent.push(element);
+        searchComponent.push({
+          col: false,
+          component: element,
+        });
       } else {
-        searchComponent.push(content);
+        searchComponent.push({
+          col: false,
+          component: content,
+        });
       }
       searchComponent = searchComponent.concat(this.makeColumnsSearch(columns));
     }
+
     return (
-      <React.Fragment>
-        {searchComponent}
+      <div style={{ maxWidth: colCountKey === 2 ? 800 : 600 }}>
+        <div style={{ width: '400px', margin: '0 auto' }}>
+          <FormItem label="排版" {...formItemLayout}>
+            <Slider
+              min={0}
+              step={null}
+              value={colCountKey}
+              marks={this.colCounts}
+              onChange={this.onColCountChange}
+              max={Object.keys(this.colCounts).length - 1}
+            />
+          </FormItem>
+        </div>
+        {
+          isArray(searchComponent) ? (
+            <Row gutter={8}>
+              {
+                map(searchComponent, (component, index) => {
+                  const key = index;
+                  return !has(component, 'component') ? (
+                    <Col key={key} span={span}>{component}</Col>
+                  ) : component.component;
+                })
+              }
+            </Row>
+          ) : searchComponent
+        }
         <div className="ant-table-filter-dropdown-btns">
           <a className="ant-table-filter-dropdown-link clear" onClick={this.resetSearch}>重置</a>
           <a className="ant-table-filter-dropdown-link confirm" onClick={this.onChange}>确定</a>
         </div>
-      </React.Fragment>
+      </div>
     );
   }
 
@@ -175,7 +221,7 @@ export default class MoreSearch extends React.Component {
         placement="bottom"
         content={this.renderMoreSearch()}
       >
-        <Button icon="search" onClick={this.handleVisible}>更多筛选</Button>
+        <Button icon="filter" onClick={this.handleVisible}>更多筛选</Button>
       </Popover>
     );
   }
