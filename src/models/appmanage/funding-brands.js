@@ -58,7 +58,6 @@ export default {
       params.cashier_name = midkey.cashier_sn.cashier_name;
       params.manager_sn = midkey.manager_sn.manager_sn;
       params.manager_name = midkey.manager_sn.manager_name;
-      console.log(params);
       const { id } = payload;
       delete params.id;
       const response = yield call(editReimDepartment, params, id);

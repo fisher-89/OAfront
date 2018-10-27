@@ -208,7 +208,7 @@ export const getRouterData = (app) => {
       authority: '42',
     },
     '/hr/expense': {
-      component: dynamicWrapper(app, [], () => import('../routes/Hr/Expense')),
+      component: dynamicWrapper(app, ['expense', 'brand'], () => import('../routes/Hr/Expense')),
     },
     '/hr/shop': {
       component: dynamicWrapper(app, ['department', 'shop', 'brand'], () => import('../routes/Hr/Shop')),
