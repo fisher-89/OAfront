@@ -7,18 +7,20 @@ import {
 
 const store = 'expense';
 export default {
-  * fetchExpense({ payload }, { call, put }) {
+  * fetchExpense({ payload }, { call, put, select }) {
     try {
-      const params = { ...payload };
-      const response = yield call(fetchExpense, params);
-      if (response.message) { return; }
-      yield put({
-        type: 'save',
-        payload: {
-          store,
-          data: response,
-        },
-      });
+      const { update } = payload || {};
+      let response = yield select(model => model[store][store]);
+      if (!response.length || update) {
+        response = yield call(fetchExpense);
+        yield put({
+          type: 'save',
+          payload: {
+            store,
+            data: response,
+          },
+        });
+      }
     } catch (err) { return err; }
   },
   * addExpense({ payload, onError, onSuccess }, { call, put }) {
