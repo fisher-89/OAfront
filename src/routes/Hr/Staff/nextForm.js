@@ -4,7 +4,7 @@ import {
   Input,
   message,
 } from 'antd';
-
+import { omit } from 'lodash';
 import OAForm, { DatePicker, OAModal } from '../../../components/OAForm';
 
 const FormItem = OAForm.Item;
@@ -14,7 +14,7 @@ const FormItem = OAForm.Item;
 export default class extends PureComponent {
   handleSubmit = (params) => {
     const { dispatch, onError, onCancel, perantOnCancel } = this.props;
-    if (!params.operation_at) {
+    if (!params.operate_at) {
       message.error('请选择执行日期！！');
       return;
     }
@@ -23,13 +23,10 @@ export default class extends PureComponent {
       ...params.recruiter,
       ...params.household,
       ...params.living,
-
       is_active: params.is_active ? 1 : 0,
       account_active: params.account_active ? 1 : 0,
     };
-    delete body.recruiter;
-    delete body.household;
-    delete body.living;
+    omit(body, ['recruiter', 'household', 'living']);
     const relatives = body.relatives.map(item =>
       ({ ...item.relative, relative_type: item.relative_type })
     );
@@ -91,7 +88,7 @@ export default class extends PureComponent {
         onSubmit={validateFields(this.handleSubmit)}
       >
         <FormItem label="执行日期" {...formItemLayout} required>
-          {getFieldDecorator('operation_at', {
+          {getFieldDecorator('operate_at', {
             initialValue: '',
           })(
             <DatePicker />

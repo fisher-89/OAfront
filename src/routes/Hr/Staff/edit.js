@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import moment from 'moment';
 import {
   Row,
   Col,
@@ -57,8 +56,9 @@ const formItemLayout3 = {
   },
 };
 @OAForm.create()
-@connect(({ brand, position, department, staffs, loading }) => ({
+@connect(({ brand, expense, position, department, staffs, loading }) => ({
   brand: brand.brand,
+  expense: expense.expense,
   position: position.position,
   department: department.department,
   staffInfo: staffs.staffDetails,
@@ -127,11 +127,6 @@ export default class EditStaff extends PureComponent {
                     : null}
                   {getFieldDecorator('operation_type', {
                     initialValue: editStaff.staff_sn ? 'edit' : 'entry',
-                  })(
-                    <Input type="hidden" />
-                  )}
-                  {getFieldDecorator('operate_at', {
-                    initialValue: moment().format('YYYY-MM-DD'),
                   })(
                     <Input type="hidden" />
                   )}
@@ -207,7 +202,24 @@ export default class EditStaff extends PureComponent {
                       rules: [validatorRequired],
                     })(
                       <Select placeholer="请选择" disabled={isEdit}>
-                        {position && position.map((item) => {
+                        {position.map((item) => {
+                          return (
+                            <Option key={item.id} value={item.id}>{item.name}</Option>
+                          );
+                        })}
+                      </Select>
+                    )}
+                  </FormItem>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <FormItem label="费用品牌" {...formItemLayout}>
+                    {getFieldDecorator('cost_brands', {
+                      initialValue: (editStaff.cost_brands || []).map(item => `${item.id}`),
+                    })(
+                      <Select placeholer="请选择" mode="multiple">
+                        {position.map((item) => {
                           return (
                             <Option key={item.id} value={item.id}>{item.name}</Option>
                           );
@@ -276,6 +288,7 @@ export default class EditStaff extends PureComponent {
                   </FormItem>
                 </Col>
               </Row>
+
               <FormItem {...formItemLayout} label="所属店铺">
                 {getFieldDecorator('shop_sn', {
                   initialValue: editStaff.shop_sn || '',
