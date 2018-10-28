@@ -188,7 +188,7 @@ export default class extends PureComponent {
     const buttonKey = this.makeStaffActionKey(rowData);
     const action = [];
     data.forEach((item, index) => {
-      const id = item.props.dataAuthId;
+      const id = item.props.dataauthid;
       const authAble = buttonKey.indexOf(id) === -1;
       const style = item.props.style || { color: '#1890ff' };
       if (!divider && authAble) return;
@@ -217,7 +217,7 @@ export default class extends PureComponent {
       (
         <a
           key="user-add"
-          dataAuthId={55}
+          dataauthid={55}
           onClick={() => {
             this.showStaffProcess(rowData);
           }}
@@ -228,7 +228,7 @@ export default class extends PureComponent {
       (
         <a
           key="unlock"
-          dataAuthId={66}
+          dataauthid={66}
           onClick={() => {
             this.unlockStaff(rowData.staff_sn);
           }}
@@ -238,7 +238,7 @@ export default class extends PureComponent {
       ),
       (
         <a
-          dataAuthId={57}
+          dataauthid={57}
           key="user-delete"
           onClick={() => {
             this.showStaffLeave(rowData);
@@ -249,7 +249,7 @@ export default class extends PureComponent {
       ),
       (
         <a
-          dataAuthId={58}
+          dataauthid={58}
           key="again-entry"
           onClick={() => {
             this.showEditStaff(rowData);
@@ -259,14 +259,14 @@ export default class extends PureComponent {
         </a>
       ),
       (
-        <a key="leave" dataAuthId={107}>
+        <a key="leave" dataauthid={107}>
           离职交接
         </a>
       ),
       (
         <a
           key="transfer"
-          dataAuthId={56}
+          dataauthid={56}
           onClick={() => {
             this.showStaffTransfer(rowData);
           }}
@@ -275,14 +275,14 @@ export default class extends PureComponent {
         </a>
       ),
       (
-        <a key="reset" dataAuthId={175} onClick={() => this.resetPassword(rowData.staff_sn)}>
+        <a key="reset" dataauthid={175} onClick={() => this.resetPassword(rowData.staff_sn)}>
           重置密码
         </a>
       ),
       (
         <a
           key="delete"
-          dataAuthId={59}
+          dataauthid={59}
           style={{ color: 'red' }}
           onClick={() => {
             this.deleteStaff(rowData.staff_sn);
@@ -328,7 +328,7 @@ export default class extends PureComponent {
       (
         <a
           key="edit"
-          dataAuthId={82}
+          dataauthid={82}
           onClick={() => {
             this.showEditStaff(rowData);
           }}
@@ -343,7 +343,7 @@ export default class extends PureComponent {
         (
           <a
             key="unlock"
-            dataAuthId={66}
+            dataauthid={66}
             onClick={() => {
               this.unlockStaff(rowData.staff_sn);
             }}
@@ -610,10 +610,7 @@ export default class extends PureComponent {
           visible={this.state.editVisible}
           editStaff={this.state.editStaff}
           onCancel={() => {
-            this.setState({
-              editVisible: false,
-              editStaff: {},
-            });
+            this.setState({ editVisible: false, editStaff: {} });
           }}
         />
         <EditTransfer

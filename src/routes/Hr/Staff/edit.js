@@ -23,6 +23,47 @@ const { TextArea } = Input;
 const { Option } = Select;
 const { TabPane } = Tabs;
 
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 5 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 18 },
+  },
+};
+
+const formItemLayout2 = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 10 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 12 },
+  },
+};
+const fieldsBoxLayout = { xs: 24, lg: 12 };
+const formItemLayout3 = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 10 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 12 },
+  },
+};
+const formItemLayout4 = {
+  labelCol: {
+    sm: { span: 4 },
+  },
+  wrapperCol: {
+    sm: { span: 18 },
+  },
+};
+@OAForm.create()
 @connect(({ brand, position, department, staffs, loading }) => ({
   brand: brand.brand,
   position: position.position,
@@ -31,8 +72,6 @@ const { TabPane } = Tabs;
   staffLoading: loading.models.staffs,
   fetching: loading.effects['staffs/fetchStaff'],
 }))
-
-@OAForm.create()
 export default class EditStaff extends PureComponent {
   constructor(props) {
     super(props);
@@ -76,46 +115,6 @@ export default class EditStaff extends PureComponent {
   }
 
   render() {
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 5 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 18 },
-      },
-    };
-
-    const formItemLayout2 = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 10 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 12 },
-      },
-    };
-    const fieldsBoxLayout = { xs: 24, lg: 12 };
-    const formItemLayout3 = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 10 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 12 },
-      },
-    };
-    const formItemLayout4 = {
-      labelCol: {
-        sm: { span: 4 },
-      },
-      wrapperCol: {
-        sm: { span: 20 },
-      },
-    };
     const {
       form,
       brand,
@@ -125,37 +124,41 @@ export default class EditStaff extends PureComponent {
       validateFields,
       staffLoading,
       editStaff,
+      onCancel,
       form: { getFieldDecorator } } = this.props;
     const newTreeData = markTreeData(department, { value: 'id', lable: 'name', parentId: 'parent_id' }, 0);
+    const style = { maxHeight: 530, overflowY: 'auto', overflowX: 'hidden' };
+
     return (
       <OAModal
-        width={600}
-        title={editStaff.staff_sn ? '编辑员工' : '添加员工'}
+        width={800}
+        title="员工"
         visible={visible}
         style={{ top: 30 }}
+        onCancel={onCancel}
         loading={staffLoading}
-        onCancel={() => this.props.onCancel()}
         onSubmit={validateFields(this.handleSubmit)}
+        actionType={editStaff.staff_sn !== undefined}
       >
         <Card>
           <Tabs defaultActiveKey="1">
-            <TabPane forceRender tab="基础资料" key="1" >
+            <TabPane forceRender tab="基础资料" key="1" style={style}>
               <Row>
                 <Col {...fieldsBoxLayout}>
                   {editStaff.staff_sn
-                  ? getFieldDecorator('staff_sn', {
+                    ? getFieldDecorator('staff_sn', {
                       initialValue: editStaff.staff_sn,
                     })(<Input type="hidden" />)
-                  : null}
+                    : null}
                   {getFieldDecorator('operation_type', {
-                      initialValue: editStaff.staff_sn ? 'edit' : 'entry',
-                    })(
-                      <Input type="hidden" />
+                    initialValue: editStaff.staff_sn ? 'edit' : 'entry',
+                  })(
+                    <Input type="hidden" />
                   )}
                   {getFieldDecorator('operate_at', {
-                      initialValue: moment().format('YYYY-MM-DD'),
-                    })(
-                      <Input type="hidden" />
+                    initialValue: moment().format('YYYY-MM-DD'),
+                  })(
+                    <Input type="hidden" />
                   )}
                   <FormItem {...formItemLayout2} label="员工姓名" required>
                     {getFieldDecorator('realname', {
@@ -228,7 +231,7 @@ export default class EditStaff extends PureComponent {
                 <Col {...fieldsBoxLayout}>
                   <FormItem label="所属品牌" {...formItemLayout2} required>
                     {getFieldDecorator('brand_id', {
-                      initialValue: editStaff.brand_id || 1,
+                      initialValue: editStaff.brand_id || undefined,
                     })(
                       <Select placeholer="请选择">
                         {brand && brand.map((item) => {
@@ -331,7 +334,7 @@ export default class EditStaff extends PureComponent {
               </FormItem>
             </TabPane>
 
-            <TabPane forceRender tab="个人信息" key="2">
+            <TabPane forceRender tab="个人信息1" key="2" style={style}>
               <Row>
                 <Col {...fieldsBoxLayout}>
                   <FormItem {...formItemLayout2} label="银行卡号" >
@@ -443,7 +446,7 @@ export default class EditStaff extends PureComponent {
                 }
               </FormItem>
             </TabPane>
-            <TabPane forceRender tab="个人信息" key="3">
+            <TabPane forceRender tab="个人信息2" key="3" style={style}>
               <FormItem {...formItemLayout} label="户口所在地">
                 {
                   getFieldDecorator('household', {
@@ -692,15 +695,12 @@ export default class EditStaff extends PureComponent {
                 </Col>
               </Row>
             </TabPane>
-            <TabPane forceRender tab="关系人" key="4">
+            <TabPane forceRender tab="关系人" key="4" style={style}>
               <FormItem label="关系人" {...formItemLayout4}>
                 <RelativeList
                   form={form}
                   name="relative"
                   initialValue={editStaff.relatives || []}
-                  onChange={(params, index) => {
-                    console.log(params, index);
-                  }}
                 />
               </FormItem>
             </TabPane>

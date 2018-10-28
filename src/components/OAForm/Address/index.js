@@ -20,10 +20,11 @@ export default class Address extends PureComponent {
     super(props);
     const value = makeInitialValue(this.props.name, this.props.value || {});
     const province = district.filter(item => `${item.parent_id}` === '0');
+    const { city, county } = this.makeSelectOption(value);
     this.state = {
+      city,
+      county,
       province,
-      city: [],
-      county: [],
       value: {
         province_id: value.province_id || undefined,
         city_id: value.city_id || undefined,
@@ -34,11 +35,10 @@ export default class Address extends PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.value !== this.props.value) {
+    if ('value' in nextProps) {
       const value = makeInitialValue(nextProps.name, nextProps.value || {});
-      this.setState({ value }, () => {
-        this.makeSelectOption();
-      });
+      const { city, county } = this.makeSelectOption(value);
+      this.setState({ value, city, county });
     }
   }
 
@@ -48,8 +48,7 @@ export default class Address extends PureComponent {
     onChange(dontInitialValue(name, value));
   }
 
-  makeSelectOption = () => {
-    const { value } = this.state;
+  makeSelectOption = (value) => {
     let city = [];
     if (value && value.province_id) {
       city = district.filter(item => `${item.parent_id}` === `${value.province_id}`);
@@ -58,7 +57,7 @@ export default class Address extends PureComponent {
     if (value && value.city_id) {
       county = district.filter(item => `${item.parent_id}` === `${value.city_id}`);
     }
-    this.setState({ city, county });
+    return { city, county };
   }
 
   makeCity = (value) => {

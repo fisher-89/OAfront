@@ -24,7 +24,7 @@ export default class extends PureComponent {
       initialValue: value.realname || '',
     });
     getFieldDecorator(`${forName}[relative_type]`, {
-      initialValue: value.relative_type ? value.relative_type.id.toString() : '',
+      initialValue: `${value.relative_type.id || ''}`,
     });
     return (
       <FormItem>
@@ -56,9 +56,8 @@ export default class extends PureComponent {
                 showName="relative_name"
                 placeholder="请选择关系人"
                 onChange={(relative) => {
-                  Object.keys(relative).forEach((key) => {
-                    setFieldsValue({ [`${forName}[${key}]`]: relative[key] });
-                  });
+                  setFieldsValue({ [`${forName}[relative_sn]`]: relative.relative_sn });
+                  setFieldsValue({ [`${forName}[relative_name]`]: relative.relative_name });
                 }}
               />
             </FormItem>
@@ -77,7 +76,7 @@ export default class extends PureComponent {
                   sm: { span: 14 },
                 },
               }
-            }
+              }
             >
               <Select
                 placeholder="请选择"
