@@ -91,8 +91,8 @@ export default (CustomerFrom) => {
     makeRmoveIcon = (k, index) => {
       return (
         <Icon
-          className="dynamic-delete-button"
           type="close"
+          className="dynamic-delete-button"
           onClick={() => this.showDeleteConfirm(k, index)}
         />
       );
@@ -125,7 +125,7 @@ export default (CustomerFrom) => {
             <div className={styles.header}>
               {this.makeRmoveIcon(item.key, i)}
             </div>
-            <div className={styles.content} style={{ paddingBottom: 20, paddingTop: 20 }}>
+            <div className={styles.content} style={{ paddingBottom: 20 }}>
               <CustomerFrom
                 {...this.props}
                 index={i}

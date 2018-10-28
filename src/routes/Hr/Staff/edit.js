@@ -4,7 +4,6 @@ import moment from 'moment';
 import {
   Row,
   Col,
-  Card,
   Tabs,
   Input,
   Radio,
@@ -14,7 +13,9 @@ import {
 } from 'antd';
 import OAForm, { SearchTable, Address, OAModal } from '../../../components/OAForm';
 import RelativeList from './relativeList';
+import NextForm from './nextForm';
 import { markTreeData } from '../../../utils/utils';
+
 
 const FormItem = OAForm.Item;
 const RadioButton = Radio.Button;
@@ -55,14 +56,6 @@ const formItemLayout3 = {
     sm: { span: 12 },
   },
 };
-const formItemLayout4 = {
-  labelCol: {
-    sm: { span: 4 },
-  },
-  wrapperCol: {
-    sm: { span: 18 },
-  },
-};
 @OAForm.create()
 @connect(({ brand, position, department, staffs, loading }) => ({
   brand: brand.brand,
@@ -70,44 +63,14 @@ const formItemLayout4 = {
   department: department.department,
   staffInfo: staffs.staffDetails,
   staffLoading: loading.models.staffs,
-  fetching: loading.effects['staffs/fetchStaff'],
 }))
 export default class EditStaff extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-    };
+  state = {
+    visible: false,
   }
 
-  handleSubmit = (params) => {
-    const { dispatch } = this.props;
-    const body = {
-      ...params,
-      ...params.recruiter,
-      ...params.household,
-      ...params.living,
-      is_active: params.is_active ? 1 : 0,
-      account_active: params.account_active ? 1 : 0,
-    };
-    delete body.recruiter;
-    delete body.household;
-    delete body.living;
-
-    dispatch({
-      type: params.staff_sn ? 'staffs/editStaff' : 'staffs/addStaff',
-      payload: body,
-      onError: this.handleError,
-      onSuccess: this.handleSuccess,
-    });
-  }
-
-  handleError = (err) => {
-    const { onError } = this.props;
-    onError(err);
-  }
-
-  handleSuccess = () => {
-    this.props.onCancel();
+  handleNextForm = () => {
+    this.setState({ visible: true });
   }
 
   handleSelectFilter = (input, option) => {
@@ -125,24 +88,36 @@ export default class EditStaff extends PureComponent {
       staffLoading,
       editStaff,
       onCancel,
+      validatorRequired,
       form: { getFieldDecorator } } = this.props;
     const newTreeData = markTreeData(department, { value: 'id', lable: 'name', parentId: 'parent_id' }, 0);
-    const style = { maxHeight: 530, overflowY: 'auto', overflowX: 'hidden' };
+    const style = { maxHeight: 600, overflowY: 'auto', overflowX: 'hidden' };
 
+    const tabPaneTitleStyle = { width: 118, textAlign: 'center' };
+    const renderTitle = title => <div style={tabPaneTitleStyle}>{title}</div>;
+    const isEdit = editStaff.staff_sn !== undefined;
     return (
-      <OAModal
-        width={800}
-        title="员工"
-        visible={visible}
-        style={{ top: 30 }}
-        onCancel={onCancel}
-        loading={staffLoading}
-        onSubmit={validateFields(this.handleSubmit)}
-        actionType={editStaff.staff_sn !== undefined}
-      >
-        <Card>
+      <React.Fragment>
+        <NextForm
+          form={form}
+          perantOnCancel={onCancel}
+          visible={this.state.visible}
+          validateFields={validateFields}
+          onCancel={() => { this.setState({ visible: false }); }}
+        />
+        <OAModal
+          width={800}
+          title="员工"
+          okText="下一步"
+          visible={visible}
+          style={{ top: 30 }}
+          onCancel={onCancel}
+          loading={staffLoading}
+          onSubmit={validateFields(this.handleNextForm)}
+          actionType={editStaff.staff_sn !== undefined}
+        >
           <Tabs defaultActiveKey="1">
-            <TabPane forceRender tab="基础资料" key="1" style={style}>
+            <TabPane forceRender tab={renderTitle('基础资料')} key="1" style={style}>
               <Row>
                 <Col {...fieldsBoxLayout}>
                   {editStaff.staff_sn
@@ -163,60 +138,40 @@ export default class EditStaff extends PureComponent {
                   <FormItem {...formItemLayout2} label="员工姓名" required>
                     {getFieldDecorator('realname', {
                       initialValue: editStaff.realname || '',
+                      rules: [validatorRequired],
                     })(
                       <Input placeholder="请输入员工姓名" />
                     )}
                   </FormItem>
                 </Col>
                 <Col {...fieldsBoxLayout}>
-                  <FormItem {...formItemLayout3} label="电话号码" required>
-                    {getFieldDecorator('mobile', {
-                      initialValue: editStaff.mobile || '',
-                    })(
-                      <Input placeholder="请输入电话号码" />
-                    )}
-                  </FormItem>
-                </Col>
-              </Row>
-              <Row>
-                <Col {...fieldsBoxLayout}>
-                  <FormItem {...formItemLayout2} label="用户名">
-                    {getFieldDecorator('username', {
-                      initialValue: editStaff.username || '',
-                    })(
-                      <Input placeholder="请输入员工用户名" />
-                    )}
-                  </FormItem>
-                </Col>
-                <Col {...fieldsBoxLayout}>
-                  <FormItem {...formItemLayout3} label="是否激活" name="is_active">
-                    {getFieldDecorator('is_active', {
-                      initialValue: editStaff.is_active === 1,
-                      valuePropName: 'checked',
-                    })(
-                      <Switch
-                        onChange={(value) => {
-                          form.setFieldsValue({ is_active: value ? 1 : 0 });
-                        }}
-                      />
-                    )}
-                  </FormItem>
-                </Col>
-              </Row>
-              <Row>
-                <Col {...fieldsBoxLayout}>
                   <FormItem {...formItemLayout2} label="身份证号" required>
                     {getFieldDecorator('id_card_number', {
                       initialValue: editStaff.id_card_number || '',
+                      rules: [validatorRequired],
                     })(
                       <Input placeholder="请输入身份证号" />
                     )}
                   </FormItem>
                 </Col>
+              </Row>
+              <Row>
+                <Col {...fieldsBoxLayout}>
+                  <FormItem {...formItemLayout3} label="电话号码" required>
+                    {getFieldDecorator('mobile', {
+                      initialValue: editStaff.mobile || '',
+                      rules: [validatorRequired],
+                    })(
+                      <Input placeholder="请输入电话号码" />
+                    )}
+                  </FormItem>
+                </Col>
+
                 <Col {...fieldsBoxLayout}>
                   <FormItem {...formItemLayout3} label="性别" required>
                     {getFieldDecorator('gender', {
                       initialValue: editStaff.gender || '未知',
+                      rules: [validatorRequired],
                     })(
                       <RadioGroup size="small" buttonStyle="solid">
                         <RadioButton value="未知">未知</RadioButton>
@@ -232,8 +187,9 @@ export default class EditStaff extends PureComponent {
                   <FormItem label="所属品牌" {...formItemLayout2} required>
                     {getFieldDecorator('brand_id', {
                       initialValue: editStaff.brand_id || undefined,
+                      rules: [validatorRequired],
                     })(
-                      <Select placeholer="请选择">
+                      <Select placeholer="请选择" disabled={isEdit}>
                         {brand && brand.map((item) => {
                           return (
                             <Option key={item.id} value={item.id}>{item.name}</Option>
@@ -243,26 +199,14 @@ export default class EditStaff extends PureComponent {
                     )}
                   </FormItem>
                 </Col>
-                <Col {...fieldsBoxLayout}>
-                  <FormItem {...formItemLayout3} label="店铺搜索">
-                    {getFieldDecorator('shop_sn', {
-                      initialValue: editStaff.shop_sn || '',
-                    })(
-                      <SearchTable.Shop
-                        name="shop_sn"
-                        showName="shop_sn"
-                      />
-                    )}
-                  </FormItem>
-                </Col>
-              </Row>
-              <Row>
+
                 <Col {...fieldsBoxLayout}>
                   <FormItem label="职位" {...formItemLayout2} required>
                     {getFieldDecorator('position_id', {
                       initialValue: editStaff.position_id || 1,
+                      rules: [validatorRequired],
                     })(
-                      <Select placeholer="请选择">
+                      <Select placeholer="请选择" disabled={isEdit}>
                         {position && position.map((item) => {
                           return (
                             <Option key={item.id} value={item.id}>{item.name}</Option>
@@ -272,12 +216,33 @@ export default class EditStaff extends PureComponent {
                     )}
                   </FormItem>
                 </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <FormItem label="所属部门" {...formItemLayout} required>
+                    {getFieldDecorator('department_id', {
+                      initialValue: `${editStaff.department_id || ''}`,
+                      rules: [validatorRequired],
+                    })(
+                      <TreeSelect
+                        disabled={isEdit}
+                        treeDefaultExpandAll
+                        treeData={newTreeData}
+                        dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                      />
+                    )}
+                  </FormItem>
+                </Col>
+              </Row>
+
+              <Row>
                 <Col {...fieldsBoxLayout}>
                   <FormItem {...formItemLayout3} label="员工状态" required>
                     {getFieldDecorator('status_id', {
                       initialValue: (editStaff.status_id !== undefined) ? editStaff.status_id : 1,
+                      rules: [validatorRequired],
                     })(
-                      <Select placeholer="请选择">
+                      <Select placeholer="请选择" disabled={isEdit}>
                         <Option value={0}>离职中</Option>
                         <Option value={1}>试用期</Option>
                         <Option value={2}>在职</Option>
@@ -290,22 +255,46 @@ export default class EditStaff extends PureComponent {
                     )}
                   </FormItem>
                 </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <FormItem label="所属部门" {...formItemLayout} required>
-                    {getFieldDecorator('department_id', editStaff.department_id ? {
-                      initialValue: editStaff.department_id.toString(),
-                    } : { initialValue: '1' })(
-                      <TreeSelect
-                        treeDefaultExpandAll
-                        treeData={newTreeData}
-                        dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                      />
+                <Col {...fieldsBoxLayout}>
+                  <FormItem {...formItemLayout3} label="员工属性">
+                    {getFieldDecorator('property', {
+                      initialValue: `${editStaff.property || 0}`,
+                    })(
+                      <Select
+                        showSearch
+                        placeholder="请选择员工属性"
+                        OptionFilterProp="children"
+                        filterOption={this.handleSelectFilter}
+                      >
+                        <Option value="0">无</Option>
+                        <Option value="1">108将</Option>
+                        <Option value="2">36天罡</Option>
+                        <Option value="3">24金刚</Option>
+                        <Option value="4">18罗汉</Option>
+                      </Select>
                     )}
                   </FormItem>
                 </Col>
               </Row>
+              <FormItem {...formItemLayout} label="所属店铺">
+                {getFieldDecorator('shop_sn', {
+                  initialValue: editStaff.shop_sn || '',
+                })(
+                  <SearchTable.Shop
+                    name="shop_sn"
+                    showName="shop_sn"
+                  />
+                )}
+              </FormItem>
+              {/* <FormItem label="员工标签" {...formItemLayout}>
+              {getFieldDecorator('tags', {
+                initialValue: [],
+              })(
+                <Select placeholer="请选择">
+                  <Option value="">请选择</Option>
+                </Select>
+              )}
+              </FormItem> */}
               <FormItem {...formItemLayout} label="员工备注" name="remark">
                 {getFieldDecorator('remark', {
                   initialValue: editStaff.remark || '',
@@ -319,38 +308,25 @@ export default class EditStaff extends PureComponent {
                   />
                 )}
               </FormItem>
-              <FormItem {...formItemLayout} label="操作说明" name="operation_remark">
-                {getFieldDecorator('operation_remark', {
-                  initialValue: editStaff.operation_remark || '',
-                })(
-                  <TextArea
-                    autosize={{
-                      minRows: 2,
-                      maxRows: 6,
-                    }}
-                    placeholder="最大长度100字符"
-                  />
-                )}
-              </FormItem>
             </TabPane>
 
-            <TabPane forceRender tab="个人信息1" key="2" style={style}>
+            <TabPane forceRender tab={renderTitle('个人信息')} key="2" style={style}>
               <Row>
-                <Col {...fieldsBoxLayout}>
-                  <FormItem {...formItemLayout2} label="银行卡号" >
-                    {getFieldDecorator('account_number', {
-                      initialValue: editStaff.account_number || '',
-                    })(
-                      <Input placeholder="请输入银行卡号" />
-                    )}
-                  </FormItem>
-                </Col>
                 <Col {...fieldsBoxLayout}>
                   <FormItem {...formItemLayout3} label="开户行" name="account_bank">
                     {getFieldDecorator('account_bank', {
                       initialValue: editStaff.account_bank || '',
                     })(
                       <Input placeholder="如：中国农业银行成都荷花池支行" />
+                    )}
+                  </FormItem>
+                </Col>
+                <Col {...fieldsBoxLayout}>
+                  <FormItem {...formItemLayout2} label="银行卡号" >
+                    {getFieldDecorator('account_number', {
+                      initialValue: editStaff.account_number || '',
+                    })(
+                      <Input placeholder="请输入银行卡号" />
                     )}
                   </FormItem>
                 </Col>
@@ -420,33 +396,38 @@ export default class EditStaff extends PureComponent {
                   </FormItem>
                 </Col>
               </Row>
-              <FormItem {...formItemLayout} label="钉钉编号">
-                {getFieldDecorator('dingtalk_number', {
-                  initialValue: editStaff.dingtalk_number || '',
-                })(
-                  <Input placeholder="请输入钉钉编号" />
-                )}
-              </FormItem>
-              <FormItem {...formItemLayout} label="招聘人员">
-                {
-                  getFieldDecorator('recruiter', {
-                    initialValue: {
-                      recruiter_sn: editStaff.recruiter_sn || '',
-                      recruiter_name: editStaff.recruiter_name || '',
-                    },
-                  })(
-                    <SearchTable.Staff
-                      name={{
-                        recruiter_sn: 'staff_sn',
-                        recruiter_name: 'realname',
-                      }}
-                      showName="recruiter_name"
-                    />
-                  )
-                }
-              </FormItem>
+              <Row>
+                <Col {...fieldsBoxLayout}>
+                  <FormItem {...formItemLayout2} label="钉钉编号">
+                    {getFieldDecorator('dingtalk_number', {
+                      initialValue: editStaff.dingtalk_number || '',
+                    })(
+                      <Input placeholder="请输入钉钉编号" />
+                    )}
+                  </FormItem>
+                </Col>
+                <Col {...fieldsBoxLayout}>
+                  <FormItem {...formItemLayout2} label="招聘人员">
+                    {getFieldDecorator('recruiter', {
+                      initialValue: {
+                        recruiter_sn: editStaff.recruiter_sn || '',
+                        recruiter_name: editStaff.recruiter_name || '',
+                      },
+                    })(
+                      <SearchTable.Staff
+                        name={{
+                          recruiter_sn: 'staff_sn',
+                          recruiter_name: 'realname',
+                        }}
+                        showName="recruiter_name"
+                      />
+                    )}
+                  </FormItem>
+                </Col>
+              </Row>
+
             </TabPane>
-            <TabPane forceRender tab="个人信息2" key="3" style={style}>
+            <TabPane forceRender tab={renderTitle('个人信息')} key="3" style={style}>
               <FormItem {...formItemLayout} label="户口所在地">
                 {
                   getFieldDecorator('household', {
@@ -652,31 +633,13 @@ export default class EditStaff extends PureComponent {
                     )}
                   </FormItem>
                 </Col>
-                <Col {...fieldsBoxLayout}>
-                  <FormItem {...formItemLayout3} label="员工属性" >
-                    {getFieldDecorator('property', {
-                      initialValue: editStaff.property ? editStaff.property.toString() : '0',
-                    })(
-                      <Select
-                        showSearch
-                        placeholder="请选择员工属性"
-                        OptionFilterProp="children"
-                        filterOption={this.handleSelectFilter}
-                      >
-                        <Option value="0">无</Option>
-                        <Option value="1">108将</Option>
-                        <Option value="2">36天罡</Option>
-                        <Option value="3">24金刚</Option>
-                        <Option value="4">18罗汉</Option>
-                      </Select>
-                    )}
-                  </FormItem>
-                </Col>
+
+
               </Row>
 
               <Row>
                 <Col {...fieldsBoxLayout}>
-                  <FormItem {...formItemLayout2} label="身高">
+                  <FormItem {...formItemLayout2} label="身高(cm)">
                     {getFieldDecorator('height', {
                       initialValue: editStaff.height || '',
                     })(
@@ -695,18 +658,18 @@ export default class EditStaff extends PureComponent {
                 </Col>
               </Row>
             </TabPane>
-            <TabPane forceRender tab="关系人" key="4" style={style}>
-              <FormItem label="关系人" {...formItemLayout4}>
-                <RelativeList
-                  form={form}
-                  name="relative"
-                  initialValue={editStaff.relatives || []}
-                />
-              </FormItem>
+            <TabPane forceRender tab={renderTitle('关系人')} key="4" style={style}>
+              <RelativeList
+                form={form}
+                name="relatives"
+                validatorRequired={validatorRequired}
+                initialValue={editStaff.relatives || []}
+              />
             </TabPane>
           </Tabs>
-        </Card>
-      </OAModal>
+        </OAModal>
+      </React.Fragment>
+
     );
   }
 }
