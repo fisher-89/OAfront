@@ -114,7 +114,7 @@ class OATable extends PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { rowSelection, multiOperator, filters } = nextProps;
+    const { rowSelection, multiOperator, filters, loading } = nextProps;
     if (
       multiOperator && multiOperator.length > 0
       &&
@@ -127,7 +127,7 @@ class OATable extends PureComponent {
     if (JSON.stringify(filters) !== JSON.stringify(this.props.filters)) {
       this.onPropsFiltersChange(filters);
     }
-    if ('columns' in nextProps) {
+    if ('columns' in nextProps && !loading) {
       const columns = nextProps.columns.map(item => ({ ...item }));
       this.setState({ columns });
     }
