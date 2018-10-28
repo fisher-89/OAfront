@@ -912,8 +912,6 @@ class OATable extends PureComponent {
       content: moreSearch,
       columns: this.state.columns.filter(item => item.hidden && item.dataIndex),
     } : moreSearch;
-    console.log('render');
-
     return (
       <div className={styles.filterTable}>
         {operatorVisble && (
