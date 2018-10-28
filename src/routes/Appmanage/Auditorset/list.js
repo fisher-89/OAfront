@@ -15,11 +15,11 @@ export default class extends PureComponent {
     visible: false,
     editInfo: {},
   }
-  componentDidMount() {
+  fetchreimdepartment = (params) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'appmanage/fetchReimDepartment',
-      payload: 'params',
+      payload: params,
     });
   }
   handleEdit = (data) => {
@@ -94,7 +94,7 @@ export default class extends PureComponent {
         style={{ marginLeft: '10px' }}
         onClick={() => this.handleModalVisible(true)}
       >
-          添加
+          添加审核人
       </Button>
     ));
     return extra;
@@ -111,6 +111,7 @@ export default class extends PureComponent {
               data={reimdepartment}
               columns={this.makeColumns()}
               extraOperator={this.makeExtraOperator()}
+              fetchDataSource={this.fetchreimdepartment}
             />
           </Col>
         </Row>
