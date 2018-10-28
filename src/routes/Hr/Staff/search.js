@@ -2,26 +2,15 @@
  * Created by Administrator on 2018/4/11.
  */
 import React, { PureComponent } from 'react';
-import { Cascader, Col } from 'antd';
+import { Cascader, Col, Input } from 'antd';
 import { treeDistrict } from '../../../assets/district';
 import { getInitSearchProps } from '../../../utils/utils';
 import OAForm, { SearchTable } from '../../../components/OAForm';
+import { formItemLayout } from '../../../components/OATable/MoreSearch';
 
 const district = treeDistrict;
 
 const FormItem = OAForm.Item;
-
-const formItemLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 6 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 16 },
-  },
-};
-
 const valueKey = ['shop_sn', 'id_card_number'];
 
 export default class Search extends PureComponent {
@@ -59,6 +48,11 @@ export default class Search extends PureComponent {
               name="shop_sn"
               {...propsValue.shop_sn}
             />
+          </FormItem>
+        </Col>
+        <Col span={colSpan}>
+          <FormItem {...formItemLayout} label="身份证">
+            <Input placeholder="请输入" {...propsValue.id_card_number} />
           </FormItem>
         </Col>
         <Col span={colSpan}>

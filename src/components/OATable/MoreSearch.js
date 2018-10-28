@@ -5,7 +5,7 @@ import { mapValues, isArray, isObject, isString, isNumber, map, has } from 'loda
 const FormItem = Form.Item;
 const { Option } = Select;
 
-const formItemLayout = {
+export const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
     sm: { span: 6 },
@@ -177,38 +177,47 @@ export default class MoreSearch extends React.Component {
     }
 
     return (
-      <div style={{ maxWidth: colCountKey === 2 ? 800 : 600 }}>
-        <div style={{ width: '400px', margin: '0 auto' }}>
-          <FormItem label="排版" {...formItemLayout}>
-            <Slider
-              min={0}
-              step={null}
-              value={colCountKey}
-              marks={this.colCounts}
-              onChange={this.onColCountChange}
-              max={Object.keys(this.colCounts).length - 1}
-            />
-          </FormItem>
+      <React.Fragment>
+        <div style={{
+          maxHeight: 300,
+          marginBottom: 20,
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          maxWidth: colCountKey === 2 ? 800 : 600,
+        }}
+        >
+          <div style={{ width: '400px', margin: '0 auto' }}>
+            <FormItem label="排版" {...formItemLayout}>
+              <Slider
+                min={0}
+                step={null}
+                value={colCountKey}
+                marks={this.colCounts}
+                onChange={this.onColCountChange}
+                max={Object.keys(this.colCounts).length - 1}
+              />
+            </FormItem>
+          </div>
+          {
+            isArray(searchComponent) ? (
+              <Row gutter={8}>
+                {
+                  map(searchComponent, (component, index) => {
+                    const key = index;
+                    return !has(component, 'component') ? (
+                      <Col key={key} span={span}>{component}</Col>
+                    ) : component.component;
+                  })
+                }
+              </Row>
+            ) : searchComponent
+          }
         </div>
-        {
-          isArray(searchComponent) ? (
-            <Row gutter={8}>
-              {
-                map(searchComponent, (component, index) => {
-                  const key = index;
-                  return !has(component, 'component') ? (
-                    <Col key={key} span={span}>{component}</Col>
-                  ) : component.component;
-                })
-              }
-            </Row>
-          ) : searchComponent
-        }
         <div className="ant-table-filter-dropdown-btns">
           <a className="ant-table-filter-dropdown-link clear" onClick={this.resetSearch}>重置</a>
           <a className="ant-table-filter-dropdown-link confirm" onClick={this.onChange}>确定</a>
         </div>
-      </div>
+      </React.Fragment>
     );
   }
 

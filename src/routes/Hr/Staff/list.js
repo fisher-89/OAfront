@@ -5,15 +5,15 @@ import React, { PureComponent, Fragment } from 'react';
 import {
   Icon,
   Tabs,
+  Menu,
   Modal,
   Button,
   Divider,
-  Tooltip,
+  Dropdown,
   notification,
 } from 'antd';
 
 import { connect } from 'dva';
-import { Link } from 'dva/router';
 
 import Search from './search';
 import EditStaff from './edit';
@@ -184,120 +184,177 @@ export default class extends PureComponent {
     dispatch({ type: 'staffs/unlock', payload: { staff_sn: staffsn } });
   }
 
+  makeActionElement = (data, rowData, divider = true) => {
+    const buttonKey = this.makeStaffActionKey(rowData);
+    const action = [];
+    data.forEach((item, index) => {
+      const id = item.props.dataAuthId;
+      const authAble = buttonKey.indexOf(id) === -1;
+      const style = item.props.style || { color: '#1890ff' };
+      if (!divider && authAble) return;
+      const element = React.cloneElement(item,
+        (
+          authAble ? {
+            key: index,
+            onClick: () => { },
+            style: { color: '#8E8E8E' },
+          } :
+            {
+              style,
+              key: index,
+            }
+        )
+      );
+      const key = `cc-${index}`;
+      if (divider) action.push(<Divider key={key} type="vertical" />);
+      action.push(element);
+    });
+    return action;
+  }
+
+  makeMoreAction = (rowData) => {
+    const moreAction = [
+      (
+        <a
+          key="user-add"
+          dataAuthId={55}
+          onClick={() => {
+            this.showStaffProcess(rowData);
+          }}
+        >
+          转正
+        </a>
+      ),
+      (
+        <a
+          key="unlock"
+          dataAuthId={66}
+          onClick={() => {
+            this.unlockStaff(rowData.staff_sn);
+          }}
+        >
+          锁定
+        </a>
+      ),
+      (
+        <a
+          dataAuthId={57}
+          key="user-delete"
+          onClick={() => {
+            this.showStaffLeave(rowData);
+          }}
+        >
+          离职
+        </a>
+      ),
+      (
+        <a
+          dataAuthId={58}
+          key="again-entry"
+          onClick={() => {
+            this.showEditStaff(rowData);
+          }}
+        >
+          再入职
+        </a>
+      ),
+      (
+        <a key="leave" dataAuthId={107}>
+          离职交接
+        </a>
+      ),
+      (
+        <a
+          key="transfer"
+          dataAuthId={56}
+          onClick={() => {
+            this.showStaffTransfer(rowData);
+          }}
+        >
+          人事变动
+        </a>
+      ),
+      (
+        <a key="reset" dataAuthId={175} onClick={() => this.resetPassword(rowData.staff_sn)}>
+          重置密码
+        </a>
+      ),
+      (
+        <a
+          key="delete"
+          dataAuthId={59}
+          style={{ color: 'red' }}
+          onClick={() => {
+            this.deleteStaff(rowData.staff_sn);
+          }}
+        >
+          删除
+        </a>
+      ),
+    ];
+    const action = this.makeActionElement(moreAction, rowData, false);
+    const menu = (
+      <Menu>
+        {action.map((item, index) => {
+          const key = `dd${index}`;
+          return (
+            <Menu.Item key={key}>
+              {item}
+            </Menu.Item>
+          );
+        })}
+      </Menu>
+    );
+
+    return (
+      <Dropdown overlay={menu} trigger={['click']}>
+        <a className="ant-dropdown-link">
+          更多操作 <Icon type="down" />
+        </a>
+      </Dropdown>
+    );
+  }
+
   makeAction = (rowData) => {
-    const handleButton = {
-      66: (
-        <Tooltip title="激活" key="unlock" mouseLeaveDelay={0}>
+    const action = [
+      <a
+        key="userInfo"
+        onClick={() => { this.showUserInfo(rowData); }}
+      >
+        查看
+      </a>,
+    ];
+    let actionList = [
+      (
+        <a
+          key="edit"
+          dataAuthId={82}
+          onClick={() => {
+            this.showEditStaff(rowData);
+          }}
+        >
+          编辑
+        </a>
+      ),
+
+    ];
+    if (rowData.is_active === 0) {
+      actionList = [
+        (
           <a
+            key="unlock"
+            dataAuthId={66}
             onClick={() => {
               this.unlockStaff(rowData.staff_sn);
             }}
           >
-            <Icon type="unlock" style={{ fontSize: '18px' }} />
+            解除锁定
           </a>
-        </Tooltip>
-      ),
-      55: (
-        <Tooltip title="转正" key="user-add" mouseLeaveDelay={0}>
-          <a
-            onClick={() => {
-              this.showStaffProcess(rowData);
-            }}
-          >
-            <Icon type="user-add" style={{ fontSize: '18px' }} />
-          </a>
-        </Tooltip>
-      ),
-      56: (
-        <Tooltip title="人事变动" key="transfer" mouseLeaveDelay={0}>
-          <a
-            onClick={() => {
-              this.showStaffTransfer(rowData);
-            }}
-          >
-            <Icon type="retweet" style={{ fontSize: '18px' }} />
-          </a>
-        </Tooltip>
-      ),
-      57: (
-        <Tooltip title="离职" key="user-delete" mouseLeaveDelay={0}>
-          <a
-            onClick={() => {
-              this.showStaffLeave(rowData);
-            }}
-          >
-            <Icon type="user-delete" style={{ fontSize: '18px' }} />
-          </a>
-        </Tooltip>
-      ),
-      107: (
-        <Link to="/" key="107">
-          <Tooltip title="离职交接" mouseLeaveDelay={0}>
-            <Icon type="user-delete" style={{ fontSize: '18px' }} />
-          </Tooltip>
-        </Link>
-      ),
-      58: (
-        <Tooltip title="再入职" key="again-entry" mouseLeaveDelay={0}>
-          <a
-            onClick={() => {
-              this.showEditStaff(rowData);
-            }}
-          >
-            <Icon type="user-add" style={{ fontSize: '18px' }} />
-          </a>
-        </Tooltip>
-      ),
-      82: (
-        <Tooltip title="编辑" mouseLeaveDelay={0} key="edit">
-          <a
-            onClick={() => {
-              this.showEditStaff(rowData);
-            }}
-          >
-            <Icon type="form" style={{ fontSize: '18px' }} />
-          </a>
-        </Tooltip>
-      ),
-      59: (
-        <Tooltip title="删除" key="delete" mouseLeaveDelay={0}>
-          <a
-            style={{ color: 'red' }}
-            onClick={() => {
-              this.deleteStaff(rowData.staff_sn);
-            }}
-          >
-            <Icon type="delete" style={{ fontSize: '18px' }} />
-          </a>
-        </Tooltip>
-      ),
-      175: (
-        <Tooltip title="重置密码" key="reset" mouseLeaveDelay={0}>
-          <a onClick={() => this.resetPassword(rowData.staff_sn)}>
-            <Icon type="sync" theme="outlined" style={{ fontSize: '18px' }} />
-          </a>
-        </Tooltip>
-      ),
-    };
-    const action = [
-      <Tooltip title="个人信息" key="solution" mouseLeaveDelay={0}>
-        <a
-          style={{ color: '#08979c' }}
-          onClick={() => {
-            this.showUserInfo(rowData);
-          }}
-        >
-          <Icon type="solution" style={{ fontSize: '18px' }} />
-        </a>
-      </Tooltip>,
-    ];
-    const buttonKey = this.makeStaffActionKey(rowData);
-    buttonKey.forEach((key, i) => {
-      const dividerKey = `${i}d`;
-      action.push(<Divider key={dividerKey} type="vertical" />);
-      action.push(handleButton[key]);
-    });
-    return action;
+        ),
+      ];
+    }
+    const newAction = this.makeActionElement(actionList, rowData);
+    return action.concat(newAction);
   }
 
   makeStaffActionKey = (rowData) => {
@@ -309,6 +366,9 @@ export default class extends PureComponent {
         buttonKey.push(66);
       }
     } else if (rowData.is_active === 1) {
+      if (oa.indexOf(66)) {
+        buttonKey.push(66);
+      }
       if (statusId === 1 && oa.indexOf(55)) {
         buttonKey.push(55);
       }
@@ -353,13 +413,6 @@ export default class extends PureComponent {
         fixed: 'left',
         searcher: true,
         dataIndex: 'realname',
-      }, {
-        width: 180,
-        hidden: true,
-        searcher: true,
-        align: 'center',
-        title: '身份证',
-        dataIndex: 'id_card_number',
       }, {
         width: 100,
         title: '电话',
@@ -449,7 +502,7 @@ export default class extends PureComponent {
         filters: staffProperty.map(item => ({ value: item, text: item })),
       },
       {
-        width: 300,
+        width: 200,
         title: '操作',
         fixed: 'right',
         render: (_, rowData) => {
@@ -461,6 +514,8 @@ export default class extends PureComponent {
           return (
             <Fragment>
               {this.makeAction(rowData)}
+              {rowData.is_active === 1 && <Divider type="vertical" />}
+              {rowData.is_active === 1 && this.makeMoreAction(rowData)}
             </Fragment>
           );
         },
