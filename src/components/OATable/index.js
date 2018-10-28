@@ -16,7 +16,7 @@ import {
   Checkbox,
 } from 'antd';
 import { connect } from 'dva';
-import { assign } from 'lodash';
+import { assign, isArray } from 'lodash';
 import Operator from './operator';
 import styles from './index.less';
 import TableUpload from './upload';
@@ -829,7 +829,12 @@ class OATable extends PureComponent {
       excelTemplate,
       fileExportChange,
     } = this.props;
-    const operator = [...(extraOperator || [])];
+    let operator = [];
+    if (isArray(extraOperator)) {
+      operator = [...extraOperator];
+    } else if (extraOperator) {
+      operator = [React.cloneElement(extraOperator, { key: 'firstOne' })];
+    }
     if (excelInto) {
       operator.push(
         <Tooltip key="upload" title="导入数据">
