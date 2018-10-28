@@ -173,6 +173,7 @@ export default class extends PureComponent {
         }
         <OATable
           serverSide
+          extraColumns
           loading={sLoading || false}
           extraOperator={this.makeExtraOperator()}
           columns={this.makeColumns()}

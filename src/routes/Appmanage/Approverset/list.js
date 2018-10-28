@@ -24,28 +24,36 @@ export default class extends PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'appmanage/fetchApprovers',
-      payload: 'params',
-    });
-    dispatch({
       type: 'department/fetchDepartment',
-      payload: 'params',
+      payload: {},
     });
     dispatch({
       type: 'appmanage/fetchReimDepartment',
-      payload: 'params',
+      payload: {},
     });
   }
+
+  fetchApprovers = (params) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'appmanage/fetchApprovers',
+      payload: params,
+    });
+  }
+
   handleEdit = (data) => {
     this.setState({ editInfo: data }, () => this.handleModalVisible(true));
   }
+
   handleModalVisible = (flag) => {
     this.setState({ visible: !!flag });
   }
+
   handleDelete = (id) => {
     const { dispatch } = this.props;
     dispatch({ type: 'appmanage/deleteApprovers', payload: { id } });
   }
+
   makeColumns = () => {
     const { department, reimdepartment } = this.props;
     const columns = [
@@ -117,7 +125,7 @@ export default class extends PureComponent {
         style={{ marginLeft: '10px' }}
         onClick={() => this.handleModalVisible(true)}
       >
-          添加
+          添加审批人
       </Button>
     ));
     return extra;
@@ -140,18 +148,19 @@ export default class extends PureComponent {
               data={approvers}
               extraOperator={this.makeExtraOperator()}
               columns={this.makeColumns()}
+              fetchDataSource={this.fetchApprovers}
+              loading={
+                       fetchApproversLoading ||
+                       fetchDepartmentLoading ||
+                       fetchReimdepartmentLoading ||
+                       deleteLoading ||
+                      false
+                     }
             />
           </Col>
         </Row>
         <OAModal
           initialValue={editInfo}
-          loading={
-            fetchApproversLoading ||
-            fetchDepartmentLoading ||
-            fetchReimdepartmentLoading ||
-            deleteLoading ||
-            false
-              }
           visible={visible}
           onCancel={() => { this.setState({ editInfo: {} }); }}
           handleVisible={this.handleModalVisible}
