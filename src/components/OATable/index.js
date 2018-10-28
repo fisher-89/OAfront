@@ -114,7 +114,7 @@ class OATable extends PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { rowSelection, multiOperator, filters, extraColumns } = nextProps;
+    const { rowSelection, multiOperator, filters } = nextProps;
     if (
       multiOperator && multiOperator.length > 0
       &&
@@ -127,7 +127,7 @@ class OATable extends PureComponent {
     if (JSON.stringify(filters) !== JSON.stringify(this.props.filters)) {
       this.onPropsFiltersChange(filters);
     }
-    if ('columns' in nextProps && extraColumns) {
+    if ('columns' in nextProps) {
       const columns = nextProps.columns.map(item => ({ ...item }));
       this.setState({ columns });
     }
@@ -912,6 +912,8 @@ class OATable extends PureComponent {
       content: moreSearch,
       columns: this.state.columns.filter(item => item.hidden && item.dataIndex),
     } : moreSearch;
+    console.log('render');
+
     return (
       <div className={styles.filterTable}>
         {operatorVisble && (
