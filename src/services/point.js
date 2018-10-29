@@ -76,7 +76,7 @@ export async function sorterType(params) {
 
 /* 事件日志 */
 export async function fetchEventLog(params, id) {
-  return request(`/api/pms/event-logs/${id}`, {
+  return request(`/api/pms/event-logs/${id ? `groups${id}` : ''}`, {
     method: 'GET',
     body: params,
   });
