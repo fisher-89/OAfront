@@ -8,8 +8,10 @@ import {
   Radio,
   Select,
   Switch,
+  message,
   TreeSelect,
 } from 'antd';
+import { omit } from 'lodash';
 import OAForm, { SearchTable, Address, OAModal } from '../../../components/OAForm';
 import RelativeList from './relativeList';
 import NextForm from './nextForm';
@@ -69,6 +71,37 @@ export default class EditStaff extends PureComponent {
     visible: false,
   }
 
+  handleSubmit = (params) => {
+    const { dispatch, onError, onCancel } = this.props;
+    if (!params.operate_at) {
+      message.error('请选择执行日期！！');
+      return;
+    }
+    const body = {
+      ...params,
+      ...params.recruiter,
+      ...params.household,
+      ...params.living,
+      is_active: params.is_active ? 1 : 0,
+      account_active: params.account_active ? 1 : 0,
+    };
+    omit(body, ['recruiter', 'household', 'living']);
+    const relatives = body.relatives.map(item =>
+      ({ ...item.relative, relative_type: item.relative_type })
+    );
+    body.relatives = relatives;
+    dispatch({
+      type: params.staff_sn ? 'staffs/editStaff' : 'staffs/addStaff',
+      payload: body,
+      onError: (errors) => {
+        this.setState({ visible: false }, onError(errors));
+      },
+      onSuccess: () => {
+        this.setState({ visible: false }, onCancel());
+      },
+    });
+  }
+
   handleNextForm = () => {
     this.setState({ visible: true });
   }
@@ -81,13 +114,14 @@ export default class EditStaff extends PureComponent {
     const {
       form,
       brand,
+      expense,
       visible,
-      position,
-      department,
-      validateFields,
-      staffLoading,
-      editStaff,
       onCancel,
+      position,
+      editStaff,
+      department,
+      staffLoading,
+      validateFields,
       validatorRequired,
       form: { getFieldDecorator } } = this.props;
     const newTreeData = markTreeData(department, { value: 'id', lable: 'name', parentId: 'parent_id' }, 0);
@@ -100,9 +134,8 @@ export default class EditStaff extends PureComponent {
       <React.Fragment>
         <NextForm
           form={form}
-          perantOnCancel={onCancel}
           visible={this.state.visible}
-          validateFields={validateFields}
+          onSubmit={validateFields(this.handleSubmit)}
           onCancel={() => { this.setState({ visible: false }); }}
         />
         <OAModal
@@ -214,14 +247,15 @@ export default class EditStaff extends PureComponent {
               </Row>
               <Row>
                 <Col>
-                  <FormItem label="费用品牌" {...formItemLayout}>
+                  <FormItem label="费用品牌" {...formItemLayout} required>
                     {getFieldDecorator('cost_brands', {
                       initialValue: (editStaff.cost_brands || []).map(item => `${item.id}`),
+                      rules: [validatorRequired],
                     })(
                       <Select placeholer="请选择" mode="multiple">
-                        {position.map((item) => {
+                        {expense.map((item) => {
                           return (
-                            <Option key={item.id} value={item.id}>{item.name}</Option>
+                            <Option key={`${item.id}`}>{item.name}</Option>
                           );
                         })}
                       </Select>

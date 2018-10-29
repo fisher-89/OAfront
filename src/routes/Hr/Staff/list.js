@@ -71,6 +71,7 @@ export default class extends PureComponent {
   componentWillMount() {
     const { dispatch } = this.props;
     dispatch({ type: 'brand/fetchBrand' });
+    dispatch({ type: 'expense/fetchExpense' });
     dispatch({ type: 'position/fetchPosition' });
     dispatch({ type: 'department/fetchDepartment', payload: { withTrashed: true } });
   }
@@ -425,7 +426,7 @@ export default class extends PureComponent {
         align: 'center',
         dataIndex: 'brand_id',
         filters: getFiltersData(brand),
-        render: key => findRenderKey(brand, key).name,
+        render: key => OATable.renderEllipsis(findRenderKey(brand, key).name, true),
       }, {
         width: 100,
         title: '职位',
@@ -499,7 +500,7 @@ export default class extends PureComponent {
         title: '员工属性',
         dataIndex: 'property',
         render: val => staffProperty[val],
-        filters: staffProperty.map(item => ({ value: item, text: item })),
+        filters: staffProperty.map((item, index) => ({ value: `${index}`, text: item })),
       },
       {
         width: 200,

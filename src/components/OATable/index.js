@@ -16,7 +16,7 @@ import {
   Checkbox,
 } from 'antd';
 import { connect } from 'dva';
-import { assign, isArray } from 'lodash';
+import { assign, isArray, forIn, omit } from 'lodash';
 import Operator from './operator';
 import styles from './index.less';
 import TableUpload from './upload';
@@ -127,7 +127,7 @@ class OATable extends PureComponent {
     if (JSON.stringify(filters) !== JSON.stringify(this.props.filters)) {
       this.onPropsFiltersChange(filters);
     }
-    if ('columns' in nextProps && !loading) {
+    if ((JSON.stringify(nextProps.columns) !== JSON.stringify(this.props.columns)) && !loading) {
       const columns = nextProps.columns.map(item => ({ ...item }));
       this.setState({ columns });
     }
@@ -458,6 +458,16 @@ class OATable extends PureComponent {
     const { filters, sorter, pagination } = this.state;
     const newFilters = {};
     assign(newFilters, filters, value);
+    forIn(newFilters, (filter, key) => {
+      if (
+        filter === [] ||
+        filter === '' ||
+        filter === null ||
+        filter === undefined
+      ) {
+        omit(newFilters, [key]);
+      }
+    });
     this.handleTableChange(pagination, newFilters, sorter);
   }
 
@@ -634,11 +644,9 @@ class OATable extends PureComponent {
       scroll: newScroll,
       rowSelection: newRowSelection,
       onChange: (paginationChange, filters, sorter) => {
-        const newFilters = {};
-        Object.keys(filters).forEach((key) => {
-          if (filters[key] !== null) {
-            newFilters[key] = filters[key];
-          }
+        const newFilters = { ...this.state.filters };
+        forIn(filters, (value, key) => {
+          if (value !== null) newFilters[key] = filters[key];
         });
         this.handleTableChange(paginationChange, newFilters, sorter);
       },

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Input, Button, Popover, Form, Select, Row, Col, Slider } from 'antd';
-import { mapValues, isArray, isObject, isString, isNumber, map, has } from 'lodash';
+import { mapValues, isArray, isObject, isString, map, has } from 'lodash';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -81,10 +81,7 @@ export default class MoreSearch extends React.Component {
 
   resetSearch = () => {
     const { filters } = this.state;
-    const newFilters = mapValues(filters, (value) => {
-      if (isArray(value)) return [];
-      if (isObject(value)) return {};
-      if (isString(value) || isNumber(value)) return undefined;
+    const newFilters = mapValues(filters, () => {
       return undefined;
     });
     this.setState({ filters: newFilters }, this.onChange);

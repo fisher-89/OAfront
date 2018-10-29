@@ -1,10 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import {
-  Input,
-  message,
-} from 'antd';
-import { omit } from 'lodash';
+import { Input } from 'antd';
 import OAForm, { DatePicker, OAModal } from '../../../components/OAForm';
 
 const FormItem = OAForm.Item;
@@ -12,60 +8,12 @@ const FormItem = OAForm.Item;
 @OAForm.create()
 @connect(({ loading }) => ({ loading: loading.models.staffs }))
 export default class extends PureComponent {
-  handleSubmit = (params) => {
-    const { dispatch, onError, onCancel, perantOnCancel } = this.props;
-    if (!params.operate_at) {
-      message.error('请选择执行日期！！');
-      return;
-    }
-    const body = {
-      ...params,
-      ...params.recruiter,
-      ...params.household,
-      ...params.living,
-      is_active: params.is_active ? 1 : 0,
-      account_active: params.account_active ? 1 : 0,
-    };
-    omit(body, ['recruiter', 'household', 'living']);
-    const relatives = body.relatives.map(item =>
-      ({ ...item.relative, relative_type: item.relative_type })
-    );
-    body.relatives = relatives;
-    dispatch({
-      type: params.staff_sn ? 'staffs/editStaff' : 'staffs/addStaff',
-      payload: body,
-      onError: (errors) => {
-        onCancel();
-        onError(errors);
-      },
-      onSuccess: () => {
-        onCancel();
-        perantOnCancel();
-      },
-    });
-  }
-
-  handleError = (err) => {
-    const { onError } = this.props;
-    onError(err);
-  }
-
-  handleSuccess = () => {
-    this.props.onCancel();
-  }
-
-  handleChange = (check) => {
-    this.props.form.setFieldsValue({
-      operation_type: (check === true) ? 'leaving' : 'leave',
-    });
-  }
-
   render() {
     const {
       loading,
       visible,
       onCancel,
-      validateFields,
+      onSubmit,
       form: { getFieldDecorator },
     } = this.props;
 
@@ -85,7 +33,7 @@ export default class extends PureComponent {
         loading={loading}
         visible={visible}
         onCancel={onCancel}
-        onSubmit={validateFields(this.handleSubmit)}
+        onSubmit={onSubmit}
       >
         <FormItem label="执行日期" {...formItemLayout} required>
           {getFieldDecorator('operate_at', {
