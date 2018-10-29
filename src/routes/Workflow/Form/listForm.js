@@ -170,7 +170,7 @@ export default class extends React.PureComponent {
         type={type}
         fieldType={fieldType}
         disabledDate={(date) => {
-          if (!validateTime) return validateTime;
+          if (!validateTime.max && !validateTime.min) return false;
           if (date) {
             let currentDate = date.format('YYYY-MM-DD');
             currentDate = moment(currentDate, 'YYYY-MM-DD 00:00:00');
