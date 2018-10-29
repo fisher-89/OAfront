@@ -69,16 +69,15 @@ export default class StepForm extends React.PureComponent {
     super(props);
     const { data, hiddenData } = this.props;
 
-    const defaultValue = data || stepDefaultValue;
-
+    const defaultValue = { ...stepDefaultValue, ...data };
     const hiddenFieldsData = filter(hiddenData, obj =>
-      defaultValue.available_fields.indexOf(obj.key) !== -1);
+      (defaultValue.available_fields || []).indexOf(obj.key) !== -1);
 
     const editFieldsData = filter(hiddenFieldsData, obj =>
-      defaultValue.hidden_fields.indexOf(obj.key) !== -1);
+      (defaultValue.hidden_fields || []).indexOf(obj.key) !== -1);
 
     const requireData = filter(editFieldsData, obj =>
-      defaultValue.editable_fields.indexOf(obj.key) !== -1);
+      (defaultValue.editable_fields || []).indexOf(obj.key) !== -1);
 
     this.state = {
       current: 0,
@@ -170,7 +169,7 @@ export default class StepForm extends React.PureComponent {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        const { hiddenFields, editFields, requireFields, dataCommit } = this.state;
+        const { availableFields, hiddenFields, editFields, requireFields, dataCommit } = this.state;
         const { handleSteps, callbackRemoveTabs, onlyKey } = this.props;
         const commitSource = {
           ...dataCommit,
@@ -179,6 +178,7 @@ export default class StepForm extends React.PureComponent {
           hidden_fields: hiddenFields.targetKeys,
           editable_fields: editFields.targetKeys,
           required_fields: requireFields.targetKeys,
+          available_fields: availableFields.targetKeys,
         };
         const isEdit = typeof this.props.data === 'object';
         const result = handleSteps(commitSource, isEdit);
