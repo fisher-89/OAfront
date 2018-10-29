@@ -12,6 +12,7 @@ import {
   Steps,
 } from 'antd';
 import { connect } from 'dva';
+import { filter, forEach } from 'lodash';
 import OAForm, { InputTags, SearchTable } from '../../../../components/OAForm';
 
 const FormItem = OAForm.Item;
@@ -22,29 +23,31 @@ const { Step } = Steps;
 
 const stepDefaultValue = {
   name: '',
-  description: '',
-  allow_condition: '',
-  skip_condition: '',
-  hidden_fields: [],
-  editable_fields: [],
-  required_fields: [],
-  approver_type: 0,
-  step_approver_id: null,
-  reject_type: 0,
-  concurrent_type: 0,
+  is_cc: '0',
   merge_type: 0,
-  start_callback_uri: '',
-  check_callback_uri: '',
-  approve_callback_uri: '',
-  rejec_callback_uri: '',
-  transfer_callback_uri: '',
-  end_callback_uri: '',
-  withdraw_callback_uri: '',
+  cc_person: [],
+  send_todo: '1',
+  reject_type: 0,
+  send_start: '0',
+  description: '',
+  approver_type: 0,
+  hidden_fields: [],
   next_step_key: [],
   prev_step_key: [],
-  send_todo: '1',
-  send_start: '0',
-  cc_person: [],
+  skip_condition: '',
+  concurrent_type: 0,
+  editable_fields: [],
+  required_fields: [],
+  allow_condition: '',
+  end_callback_uri: '',
+  available_fields: [],
+  start_callback_uri: '',
+  check_callback_uri: '',
+  rejec_callback_uri: '',
+  step_approver_id: null,
+  approve_callback_uri: '',
+  transfer_callback_uri: '',
+  withdraw_callback_uri: '',
   approvers: { staff: [], roles: [], departments: [], manager: '' },
 };
 
@@ -65,24 +68,29 @@ export default class StepForm extends React.PureComponent {
   constructor(props) {
     super(props);
     const { data, hiddenData } = this.props;
-    const editData = hiddenData;
-    const requireData = [];
-    if (data) {
-      if (data.editable_fields) {
-        editData.forEach((item) => {
-          if (data.editable_fields.indexOf(item.key) !== -1) {
-            requireData.push(item);
-          }
-        });
-      }
-    }
+
     const defaultValue = data || stepDefaultValue;
+
+    const hiddenFieldsData = filter(hiddenData, obj =>
+      defaultValue.available_fields.indexOf(obj.key) !== -1);
+
+    const editFieldsData = filter(hiddenFieldsData, obj =>
+      defaultValue.hidden_fields.indexOf(obj.key) !== -1);
+
+    const requireData = filter(editFieldsData, obj =>
+      defaultValue.editable_fields.indexOf(obj.key) !== -1);
+
     this.state = {
       current: 0,
+      availableFields: {
+        selectedKeys: [],
+        targetKeys: defaultValue.available_fields || [],
+        data: hiddenFieldsData || [],
+      },
       hiddenFields: {
         selectedKeys: [],
         targetKeys: defaultValue.hidden_fields || [],
-        data: [],
+        data: hiddenFieldsData || [],
       },
       editFields: {
         selectedKeys: [],
@@ -94,7 +102,6 @@ export default class StepForm extends React.PureComponent {
         targetKeys: defaultValue.required_fields || [],
         data: [],
       },
-      editData: editData || [],
       dataCommit: data || { ...stepDefaultValue },
     };
   }
@@ -126,71 +133,38 @@ export default class StepForm extends React.PureComponent {
     });
   };
 
-
-  handleHiddenChange = (nextTargetKeys) => {
-    const { hiddenFields } = this.state;
-    const { hiddenData } = this.props;
-
-    const data = hiddenData.forEach((item) => {
-      if (nextTargetKeys.indexOf(item.key) !== -1) {
-        return item;
+  handleCommChange = (key, fields = []) => {
+    return (nextTargetKeys) => {
+      const { hiddenData } = this.props;
+      const dataSouce = { ...this.state[key] };
+      if (key === 'hiddenFields') {
+        dataSouce.data = filter(hiddenData, obj => (nextTargetKeys.indexOf(obj.key) === -1));
+      } else {
+        dataSouce.data = filter(hiddenData, obj => (nextTargetKeys.indexOf(obj.key) !== -1));
       }
-    });
-
-    this.setState({ hiddenFields: { ...hiddenFields, targetKeys: nextTargetKeys, data } });
-  };
-
-  handleHiddenSelectChange = (sourceSelectedKeys, targetSelectedKeys) => {
-    const data = [...sourceSelectedKeys, ...targetSelectedKeys];
-    const { hiddenFields } = this.state;
-    this.setState({
-      hiddenFields: {
-        ...hiddenFields,
-        selectedKeys: data,
-      },
-    });
-  };
-
-  handleEditChange = (nextTargetKeys) => {
-    const { editFields, editData } = this.state;
-    const data = [];
-    editData.forEach((item) => {
-      if (nextTargetKeys.indexOf(item.key) !== -1) {
-        data.push(item);
+      const stateFields = { [key]: dataSouce };
+      if (fields.length) {
+        forEach(fields, (item) => {
+          stateFields[item] = {
+            selectedKeys: [],
+            targetKeys: [],
+            data: [],
+          };
+        });
       }
-    });
-    this.setState({
-      editFields: { ...editFields, targetKeys: nextTargetKeys, data },
-      requireFields: {
-        selectedKeys: [],
-        targetKeys: [],
-        data: [],
-      },
-    });
+      dataSouce.targetKeys = nextTargetKeys;
+      this.setState({ ...stateFields });
+    };
   };
 
-  handleEditSelectChange = (sourceSelectedKeys, targetSelectedKeys) => {
-    const data = [...sourceSelectedKeys, ...targetSelectedKeys];
-    const { editFields } = this.state;
-    this.setState({ editFields: { ...editFields, selectedKeys: data } });
-  };
-
-  handleRequireChange = (nextTargetKeys) => {
-    const { requireFields, editFields } = this.state;
-    const data = [];
-    editFields.data.forEach((item) => {
-      if (nextTargetKeys.indexOf(item.key) === 0) {
-        data.push(item);
-      }
-    });
-    this.setState({ requireFields: { ...requireFields, targetKeys: nextTargetKeys, data } });
-  };
-
-  handleRequireSelectChange = (sourceSelectedKeys, targetSelectedKeys) => {
-    const data = [...sourceSelectedKeys, ...targetSelectedKeys];
-    const { requireFields } = this.state;
-    this.setState({ requireFields: { ...requireFields, selectedKeys: data } });
-  };
+  handleCommSelectChange = (key) => {
+    return (sourceSelectedKeys, targetSelectedKeys) => {
+      const selectedKeys = [...sourceSelectedKeys, ...targetSelectedKeys];
+      const newObj = { ...this.state[key] };
+      newObj.selectedKeys = selectedKeys;
+      this.setState({ [key]: newObj });
+    };
+  }
 
   handleSubmit = (e) => {
     e.preventDefault();
@@ -273,22 +247,22 @@ export default class StepForm extends React.PureComponent {
       },
     };
     const {
-      submitting,
-      hiddenData,
       roles,
       fields,
+      submitting,
+      hiddenData,
       department,
     } = this.props;
     const {
-      hiddenFields,
-      editFields,
-      editData,
-      requireFields,
+      // current,
       dataCommit,
-      current,
+      editFields,
+      hiddenFields,
+      requireFields,
+      availableFields,
     } = this.state;
     const disVisible = editFields.data.length === 0 ? 'none' : 'block';
-    const editVisible = editData.length === 0 ? 'none' : 'block';
+    const current = 2;
     const { getFieldDecorator, getFieldValue } = this.props.form;
     const departmentTree = [];
     this.markDepartmentTree(department, departmentTree);
@@ -368,14 +342,29 @@ export default class StepForm extends React.PureComponent {
           </FormItem>
           <FormItem
             labelCol={{ span: 5 }}
+            wrappercol={{ span: 15 }}
+            label="是否抄送"
+          >
+            {getFieldDecorator('is_cc', {
+              initialValue: dataCommit.is_cc,
+            })(
+              <RadioGroup>
+                <Radio value="1">是</Radio>
+                <Radio value="0">否</Radio>
+              </RadioGroup>
+            )}
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 5 }}
             wrapperCol={{ span: 15 }}
-            label="审批人"
+            label="抄送人"
           >
             {getFieldDecorator('cc_person', {
               initialValue: dataCommit.cc_person,
             })(
               <SearchTable.Staff
                 multiple
+                disabled={getFieldValue('is_cc') === '0'}
                 filters={{ content: 'status_id>=0;', status: [1, 2, 3] }}
               />
             )}
@@ -544,16 +533,38 @@ export default class StepForm extends React.PureComponent {
           <FormItem
             labelCol={{ span: 5 }}
             wrappercol={{ span: 15 }}
-            label="隐藏字段"
+            label="可选字段"
           >
             <Transfer
               lazy={false}
               dataSource={hiddenData}
               titles={['待选', '选中列表']}
+              targetKeys={availableFields.targetKeys}
+              selectedKeys={availableFields.selectedKeys}
+              onSelectChange={this.handleCommSelectChange('availableFields')}
+              onChange={this.handleCommChange('availableFields', ['hiddenFields', 'editFields', 'requireFields'])}
+              render={(item) => {
+                return item.grids ? (
+                  <React.Fragment>
+                    {item.title} <Icon type="profile" theme="outlined" />
+                  </React.Fragment>
+                ) : item.title;
+              }}
+            />
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrappercol={{ span: 15 }}
+            label="隐藏字段"
+          >
+            <Transfer
+              lazy={false}
+              titles={['待选', '选中列表']}
+              dataSource={availableFields.data}
               targetKeys={hiddenFields.targetKeys}
               selectedKeys={hiddenFields.selectedKeys}
-              onChange={this.handleHiddenChange}
-              onSelectChange={this.handleHiddenSelectChange}
+              onChange={this.handleCommChange('hiddenFields')}
+              onSelectChange={this.handleCommSelectChange('hiddenFields')}
               render={(item) => {
                 return item.grids ? (
                   <React.Fragment>
@@ -565,19 +576,18 @@ export default class StepForm extends React.PureComponent {
           </FormItem>
 
           <FormItem
-            style={{ display: editVisible }}
             labelCol={{ span: 5 }}
             wrappercol={{ span: 15 }}
             label="可编辑字段"
           >
             <Transfer
               lazy={false}
-              dataSource={editData}
               titles={['待选', '选中列表']}
+              dataSource={availableFields.data}
               targetKeys={editFields.targetKeys}
               selectedKeys={editFields.selectedKeys}
-              onChange={this.handleEditChange}
-              onSelectChange={this.handleEditSelectChange}
+              onSelectChange={this.handleCommSelectChange('editFields')}
+              onChange={this.handleCommChange('editFields', ['requireFields'])}
               render={(item) => {
                 return item.grids ? (
                   <React.Fragment>
@@ -599,8 +609,8 @@ export default class StepForm extends React.PureComponent {
               titles={['待选', '选中列表']}
               targetKeys={requireFields.targetKeys}
               selectedKeys={requireFields.selectedKeys}
-              onChange={this.handleRequireChange}
-              onSelectChange={this.handleRequireSelectChange}
+              onChange={this.handleCommChange('requireFields')}
+              onSelectChange={this.handleCommSelectChange('requireFields')}
               render={(item) => {
                 return item.grids ? (
                   <React.Fragment>
