@@ -4,7 +4,7 @@
 import React from 'react';
 
 import { message, Modal } from 'antd';
-
+// import { max } from 'lodash';
 import Rect from './Rect';
 import LineView from './LineView';
 
@@ -504,6 +504,21 @@ export default class FlowChart extends React.PureComponent {
     this.props.updateSteps(newSteps);
   };
 
+  // cloneNewSteps = ({ data }) => {
+  //   const { addSteps } = this.props;
+  //   const { flowCharts } = this.state;
+  //   const stepKey = flowCharts.map(item => item.data.step_key);
+  //   const newStepKey = max(stepKey) + 1;
+  //   const temp = {
+  //     ...data,
+  //     step_key: newStepKey,
+  //     x: '0',
+  //     y: '0',
+  //   };
+  //   console.log(temp);
+  //   // addSteps(temp);
+  // }
+
   render() {
     const {
       currentLine,
@@ -523,15 +538,16 @@ export default class FlowChart extends React.PureComponent {
       return (
         <Rect
           num={i}
-          key={item.data.step_key}
-          style={rectStyle}
           step={item}
+          style={rectStyle}
           smallArc={smallArc}
-          setMouseStyle={this.setMouseStyle}
           parentDom={this.vessel}
+          key={item.data.step_key}
           makeLine={this.makeLine}
           editStep={this.editStep}
           deleteStep={this.deleteStep}
+          cloneNewSteps={this.cloneNewSteps}
+          setMouseStyle={this.setMouseStyle}
           editFlowChart={this.props.editStep}
         />
       );

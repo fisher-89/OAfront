@@ -12,7 +12,6 @@ import {
   Select,
   Radio,
   Modal,
-  Spin,
   TreeSelect,
   notification,
 } from 'antd';
@@ -870,11 +869,11 @@ export default class Flow extends React.PureComponent {
       formData: { steps },
     } = this.state;
 
-    const {
-      staffsLoading,
-      rolesLoading,
-      departmentLoading,
-    } = this.props;
+    // const {
+    //   staffsLoading,
+    //   rolesLoading,
+    //   departmentLoading,
+    // } = this.props;
 
     const operations = (
       <Button
@@ -896,6 +895,7 @@ export default class Flow extends React.PureComponent {
         steps={steps}
         location={location}
         editStep={this.editStep}
+        addSteps={this.handleSteps}
         updateSteps={this.updateSteps}
         loactionUpdate={this.locationUpdate}
       />
@@ -915,34 +915,28 @@ export default class Flow extends React.PureComponent {
         key="i"
         extra={operations}
       >
-        <Spin
-          tip="Loading..."
-          spinning={(rolesLoading || departmentLoading || staffsLoading) === true}
-          delay={500}
+        <Tabs
+          renderTabBar
+          renderTabContent
+          animated
+          tabBarExtraContent={addSteps}
+          onChange={this.onChange}
+          activeKey={activeKey}
+          type="editable-card"
+          onEdit={this.onEdit}
+          hideAdd
         >
-          <Tabs
-            renderTabBar
-            renderTabContent
-            animated
-            tabBarExtraContent={addSteps}
-            onChange={this.onChange}
-            activeKey={activeKey}
-            type="editable-card"
-            onEdit={this.onEdit}
-            hideAdd
-          >
-            {panes.map(pane => (
-              <TabPane
-                forceRender
-                tab={pane.title}
-                key={pane.key}
-                closable={pane.closable}
-              >
-                {pane.content}
-              </TabPane>)
-            )}
-          </Tabs>
-        </Spin>
+          {panes.map(pane => (
+            <TabPane
+              forceRender
+              tab={pane.title}
+              key={pane.key}
+              closable={pane.closable}
+            >
+              {pane.content}
+            </TabPane>)
+          )}
+        </Tabs>
       </Card>
     );
   }
