@@ -8,7 +8,7 @@ import {
   Input,
   Select,
 } from 'antd';
-
+import { split } from 'lodash';
 import OATable from '../../../components/OATable';
 import OAForm, { OAModal } from '../../../components/OAForm';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
@@ -22,6 +22,35 @@ const editableValidatorTypes = [
 const validatorTypes = [
   ...editableValidatorTypes,
   { text: '值唯一', value: 'distinct' },
+];
+
+const fileData = [
+  'jpeg',
+  'png',
+  'gif',
+  'psd',
+  'swf',
+  'bmp',
+  'emf',
+  'txt',
+  'html',
+  'htm',
+  'pdf',
+  'xlsx',
+  'xls',
+  'doc',
+  'docx',
+  'ppt',
+  'zip',
+  'rar',
+  'log',
+  'sql',
+  'mp4',
+  '3gp',
+  'avi',
+  'mp3',
+  'wmv',
+  'wave',
 ];
 
 const { Option } = Select;
@@ -90,37 +119,19 @@ export default class Validator extends PureComponent {
     });
   }
 
-  handleAddSubmit = (params) => {
+
+  handleSubmit = (params) => {
     const { dispatch, onError } = this.props;
+    const newParams = { ...params };
+    newParams.params = newParams.params.join(',');
     dispatch({
-      type: 'workflow/addValidator',
-      payload: {
-        ...params,
-      },
-      onSuccess: this.handleSuccess,
+      type: newParams.id ? 'workflow/editValidator' : 'workflow/addValidator',
+      payload: newParams,
+      onSuccess: this.handleModalVisible,
       onError,
     });
   }
 
-  handleAddSuccess = () => {
-    this.handleAddModalVisible();
-  }
-
-  handleEditSubmit = (params) => {
-    const { dispatch, onError } = this.props;
-    dispatch({
-      type: 'workflow/editValidator',
-      payload: {
-        ...params,
-      },
-      onSuccess: this.handleSuccess,
-      onError,
-    });
-  }
-
-  handleSuccess = () => {
-    this.handleModalVisible(false);
-  }
 
   handleDelete = (id) => {
     const { dispatch } = this.props;
@@ -130,11 +141,7 @@ export default class Validator extends PureComponent {
     });
   }
 
-  handleModalVisible = (flag) => {
-    this.setState({
-      visible: !!flag,
-    });
-  }
+  handleModalVisible = flag => this.setState({ visible: !!flag });
 
   render() {
     const {
@@ -142,7 +149,7 @@ export default class Validator extends PureComponent {
       loading,
       tableLoading,
       validateFields,
-      form: { getFieldDecorator },
+      form: { getFieldDecorator, getFieldValue },
     } = this.props;
     const {
       columns,
@@ -160,7 +167,11 @@ export default class Validator extends PureComponent {
         </Tooltip>
       ),
     ];
-    const sbFunc = editInfo.id ? this.handleEditSubmit : this.handleAddSubmit;
+    const fileType = (getFieldValue('type') || editInfo.type) === 'mimes';
+    let paramsValue = editInfo.params || '';
+    if (fileType) {
+      paramsValue = editInfo.params ? split(editInfo.params, ',') : [];
+    }
     return (
       <PageHeaderLayout>
         <Card bordered={false}>
@@ -180,7 +191,7 @@ export default class Validator extends PureComponent {
           loading={loading}
           onCancel={() => this.handleModalVisible(false)}
           afterClose={() => { this.setState({ editInfo: {} }); }}
-          onSubmit={validateFields(sbFunc)}
+          onSubmit={validateFields(this.handleSubmit)}
         >
           {getFieldDecorator('id', {
             initialValue: editInfo.id || '',
@@ -223,9 +234,16 @@ export default class Validator extends PureComponent {
             required
           >
             {getFieldDecorator('params', {
-              initialValue: editInfo.params || '',
+              initialValue: paramsValue,
             })(
-              <Input.TextArea rows={3} autosize={{ minRows: 2, maxRows: 6 }} placeholder="请输入" />
+              fileType ? (
+                <Select placeholder="请输入" mode="multiple">
+                  {fileData.map((item, index) => {
+                    const key = `cc-${index}`;
+                    return <Option key={key} value={item}>{item}</Option>;
+                  })}
+                </Select>
+              ) : <Input.TextArea rows={3} autosize={{ minRows: 2, maxRows: 6 }} placeholder="请输入" />
             )}
           </FormItem>
         </OAModal>
