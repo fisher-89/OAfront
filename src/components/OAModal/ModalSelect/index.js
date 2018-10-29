@@ -14,11 +14,8 @@ const defaultProps = {
 export default class ModalStaff extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.pushValue = [];
     const value = makeInitialValue(props.name, props.value, props.multiple);
-    this.state = {
-      value,
-    };
+    this.state = { value };
   }
 
   componentWillReceiveProps(nextProps) {
@@ -40,12 +37,10 @@ export default class ModalStaff extends React.PureComponent {
   }
 
   handleOnChange = () => {
-    // this.setState({ value: [...this.pushValue] }, () => {
     const { onCancel, onChange, name, multiple } = this.props;
     const value = dontInitialValue(name, this.state.value, multiple);
     onCancel(false);
     onChange(value);
-    // });
   }
 
 

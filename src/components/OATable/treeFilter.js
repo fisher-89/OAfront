@@ -3,6 +3,12 @@ import { Tree, Switch } from 'antd';
 
 const { TreeNode } = Tree;
 
+const defaultTreeFilters = {
+  value: 'id',
+  title: 'name',
+  initParent: 0,
+  parentId: 'parent_id',
+};
 
 export default class TreeFilter extends PureComponent {
   constructor(props) {
@@ -17,15 +23,12 @@ export default class TreeFilter extends PureComponent {
   }
 
 
-  markTreeData = (data, pId) => {
+  markTreeData = (data, pid = 0) => {
     const tree = [];
-    const { treeFilters: { parentId, title, value } } = this.props;
-    let pid = pId;
-    if (pId === undefined) {
-      pid = null;
-    }
+    const { treeFilters } = this.props;
+    const { parentId, title, value } = { ...defaultTreeFilters, ...treeFilters };
     data.forEach((item) => {
-      if (item[parentId] === pid || !pid) {
+      if (item[parentId] === pid) {
         const temp = {
           title: item[title],
           key: `${item[value]}`,
@@ -81,9 +84,10 @@ export default class TreeFilter extends PureComponent {
   }
 
   render() {
-    const { handleConfirm, treeFilters: { data } } = this.props;
+    const { handleConfirm, treeFilters } = this.props;
     const { checkedKeys, selectChild } = this.state;
-    const treeData = this.markTreeData(data, null);
+    const { data, initParent } = { ...defaultTreeFilters, ...treeFilters };
+    const treeData = this.markTreeData(data, initParent);
     const result = selectChild ? checkedKeys : checkedKeys.checked;
     return (
       <div className="ant-table-filter-dropdown ant-table-tree-filter">

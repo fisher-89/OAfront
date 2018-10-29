@@ -39,14 +39,20 @@ export default class Search extends PureComponent {
       initialValue.household_city_id,
       initialValue.household_county_id,
     ] : [];
+    const shopValue = (initialValue.shop_sn || []).map(item => ({ shop_sn: item }));
     return (
       <React.Fragment>
         <Col span={colSpan}>
           <FormItem {...formItemLayout} label="店铺搜索">
             <SearchTable.Shop
               multiple
-              name="shop_sn"
-              {...propsValue.shop_sn}
+              value={shopValue}
+              showName="shop_sn"
+              name={{ shop_sn: 'shop_sn' }}
+              onChange={(value) => {
+                const changeValue = value.map(item => item.shop_sn);
+                onChange('shop_sn')(changeValue);
+              }}
             />
           </FormItem>
         </Col>

@@ -28,7 +28,7 @@ export default class StaffInfo extends PureComponent {
               {`${data.staff_sn}`}
             </Description>
             <Description term="员工姓名">
-              {`${data.realname}  (${data.gender.name})`}
+              {`${data.realname}  (${data.gender})`}
             </Description>
             <Description term="电话号码">
               {`${data.mobile}`}

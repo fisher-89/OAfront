@@ -82,11 +82,12 @@ export default class EditStaff extends PureComponent {
       ...params.recruiter,
       ...params.household,
       ...params.living,
+      shop_sn: params.shop.shop_sn || '',
       is_active: params.is_active ? 1 : 0,
       account_active: params.account_active ? 1 : 0,
     };
-    omit(body, ['recruiter', 'household', 'living']);
-    const relatives = body.relatives.map(item =>
+    omit(body, ['recruiter', 'household', 'living', 'shop']);
+    const relatives = (body.relatives || []).map(item =>
       ({ ...item.relative, relative_type: item.relative_type })
     );
     body.relatives = relatives;
@@ -94,7 +95,10 @@ export default class EditStaff extends PureComponent {
       type: params.staff_sn ? 'staffs/editStaff' : 'staffs/addStaff',
       payload: body,
       onError: (errors) => {
-        this.setState({ visible: false }, onError(errors));
+        this.setState({ visible: false }, onError(errors, {
+          household_address: 'household',
+          living_address: 'living',
+        }));
       },
       onSuccess: () => {
         this.setState({ visible: false }, onCancel());
@@ -324,13 +328,13 @@ export default class EditStaff extends PureComponent {
               </Row>
 
               <FormItem {...formItemLayout} label="所属店铺">
-                {getFieldDecorator('shop_sn', {
-                  initialValue: editStaff.shop_sn || '',
+                {getFieldDecorator('shop', {
+                  initialValue: editStaff.shop_sn ? {
+                    shop_name: editStaff.shop.name,
+                    shop_sn: editStaff.shop_sn,
+                  } : {},
                 })(
-                  <SearchTable.Shop
-                    name="shop_sn"
-                    showName="shop_sn"
-                  />
+                  <SearchTable.Shop />
                 )}
               </FormItem>
               {/* <FormItem label="员工标签" {...formItemLayout}>
@@ -522,6 +526,7 @@ export default class EditStaff extends PureComponent {
                   <FormItem {...formItemLayout2} label="籍贯">
                     {getFieldDecorator('native_place', {
                       initialValue: editStaff.native_place || '',
+                      rules: [{ max: 30, message: '最大长度为30个字符' }],
                     })(
                       <Input placeholder="请输入0-30个字符" />
                     )}

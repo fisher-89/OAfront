@@ -148,6 +148,7 @@ export default class Address extends PureComponent {
         <Input.TextArea
           onChange={(e) => {
             const address = e.target.value;
+            if (address.length === 50) return;
             this.setState({ value: { ...value, address } }, this.setPropsValue);
           }}
           disabled={able.address}
