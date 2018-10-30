@@ -66,14 +66,14 @@ export default class extends PureComponent {
            }))(
              <Input type="hidden" placeholder="请输入" />
               ) : null}
-        <FormItem label="费用品牌名称" {...formItemLayout} required>
+        <FormItem label="名称" {...formItemLayout} required>
           {getFieldDecorator('name', {
             initialValue: info.name || [],
           })(
             <Input placeholder="请输入" />
             )}
         </FormItem>
-        <FormItem label="关联品牌" {...formItemLayout} >
+        <FormItem label="品牌" {...formItemLayout} >
           {getFieldDecorator('brands', {
             initialValue: brandId || [],
           })(
