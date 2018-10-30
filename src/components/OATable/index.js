@@ -80,15 +80,18 @@ class OATable extends PureComponent {
   constructor(props) {
     super(props);
     const columns = props.columns.map(item => ({ ...item }));
+    this.columnsText = {};
     this.columnsDataIndex = columns.filter(item => item.dataIndex).map(item => item.dataIndex);
     this.lockColumnsDataIndex = columns.filter(item => item.dataIndex)
       .filter(item => item.fixed)
       .map(item => item.dataIndex);
+
     this.state = {
       columns,
       sorter: {},
       filters: {},
       filtered: [],
+      filtersText: {},
       selectedRows: [],
       eyeVisible: false,
       selectedRowKeys: [],
@@ -128,7 +131,10 @@ class OATable extends PureComponent {
       this.onPropsFiltersChange(filters);
     }
     if ((JSON.stringify(nextProps.columns) !== JSON.stringify(this.props.columns)) && !loading) {
-      const columns = nextProps.columns.map(item => ({ ...item }));
+      const columns = nextProps.columns.map((item) => {
+        if (item.dataIndex) this.columnsText[item.dataIndex] = item;
+        return { ...item };
+      });
       this.setState({ columns });
     }
   }
@@ -376,6 +382,27 @@ class OATable extends PureComponent {
     return rangeFilterOption;
   }
 
+  makerFiltersText = (key, value) => {
+    const { title, filters, treeFilters, dateFilters } = this.columnsText[key];
+    const filtersText = { ...this.state.filtersText };
+    if (value.length === 0) return filtersText;
+    if (filters) {
+      filtersText[title] = filters.filter(item => value.indexOf(item.value) !== -1)
+        .map(item => item.text).join('，');
+    } else if (treeFilters) {
+      const { data } = treeFilters;
+      const text = treeFilters.title;
+      const dataIndex = treeFilters.value;
+      filtersText[title] = data.filter(item => value.indexOf(item[dataIndex]) !== -1)
+        .map(item => item[text]).join('，');
+    } else if (dateFilters || rangeFilters) {
+      filtersText[title] = `${value[0].min} ~ ${value[0].max}`;
+    } else {
+      filtersText[title] = value;
+    }
+    return filtersText;
+  }
+
   handleSearch = (key) => {
     return (value) => {
       const { pagination, filters, sorter, filtered } = this.state;
@@ -388,9 +415,11 @@ class OATable extends PureComponent {
         ...filters,
         [key]: searchFilter,
       };
+      const filtersText = this.makerFiltersText(key, value);
       this.setState({
-        filterDropdownVisible: false,
+        filtersText,
         filtered: filteredState,
+        filterDropdownVisible: false,
       }, () => {
         this.handleTableChange(pagination, newFilters, sorter);
       });
@@ -404,7 +433,9 @@ class OATable extends PureComponent {
         ...filters,
         [key]: checkedKeys,
       };
+      const filtersText = this.makerFiltersText(key, checkedKeys);
       this.setState({
+        filtersText,
         filterDropdownVisible: false,
       }, () => {
         this.handleTableChange(pagination, newFilters, sorter);
@@ -423,9 +454,11 @@ class OATable extends PureComponent {
         ...filters,
         [key]: timeValue,
       };
+      const filtersText = this.makerFiltersText(key, timeValue);
       this.setState({
-        filterDropdownVisible: false,
+        filtersText,
         filtered: filteredState,
+        filterDropdownVisible: false,
       }, () => {
         this.handleTableChange(pagination, newFilters, sorter);
       });
@@ -444,9 +477,11 @@ class OATable extends PureComponent {
       } else {
         delete newFilters[key];
       }
+      const filtersText = this.makerFiltersText(key, timeValue);
       this.setState({
-        filterDropdownVisible: false,
+        filtersText,
         filtered: filteredState,
+        filterDropdownVisible: false,
       }, () => {
         this.handleTableChange(pagination, newFilters, sorter);
       });
@@ -454,10 +489,24 @@ class OATable extends PureComponent {
   }
 
 
-  handleMoreFilter = (value) => {
-    const { filters, sorter, pagination } = this.state;
+  handleMoreFilter = (value, valueText) => {
+    const { filters, sorter, pagination, filtersText } = this.state;
     const newFilters = {};
+    const newFilterText = {};
     assign(newFilters, filters, value);
+    assign(newFilterText, filtersText, valueText);
+
+    forIn(newFilterText, (filter, key) => {
+      if (
+        filter === [] ||
+        filter === '' ||
+        filter === null ||
+        filter === undefined
+      ) {
+        omit(newFilterText, [key]);
+      }
+    });
+
     forIn(newFilters, (filter, key) => {
       if (
         filter === [] ||
@@ -468,7 +517,9 @@ class OATable extends PureComponent {
         omit(newFilters, [key]);
       }
     });
-    this.handleTableChange(pagination, newFilters, sorter);
+    this.setState({ filtersText: newFilterText },
+      this.handleTableChange(pagination, newFilters, sorter)
+    );
   }
 
   handleTableChange = (pagination, newFilters, sorter) => {

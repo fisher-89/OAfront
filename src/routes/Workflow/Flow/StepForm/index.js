@@ -254,7 +254,7 @@ export default class StepForm extends React.PureComponent {
       department,
     } = this.props;
     const {
-      // current,
+      current,
       dataCommit,
       editFields,
       hiddenFields,
@@ -262,7 +262,6 @@ export default class StepForm extends React.PureComponent {
       availableFields,
     } = this.state;
     const disVisible = editFields.data.length === 0 ? 'none' : 'block';
-    const current = 2;
     const { getFieldDecorator, getFieldValue } = this.props.form;
     const departmentTree = [];
     this.markDepartmentTree(department, departmentTree);
