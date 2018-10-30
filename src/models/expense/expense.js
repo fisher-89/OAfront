@@ -42,22 +42,20 @@ export default {
   * editExpense({ payload, onSuccess, onError }, { call, put }) {
     try {
       const params = { ...payload };
-      const { id } = payload;
+      const { id } = params;
       delete params.id;
       const response = yield call(editExpense, params, id);
-      if (response.errors && onError) {
-        onError(response.errors);
-      } else {
-        yield put({
-          type: 'update',
-          payload: {
-            store,
-            id,
-            data: response,
-          },
-        });
-        onSuccess(response);
-      }
+      if (response.errors) { onError(response.errors); return; }
+      yield put({
+        type: 'update',
+        payload: {
+          id,
+          store,
+          data: response,
+        },
+      });
+      if (response.message) { return; }
+      onSuccess(response);
     } catch (err) { return err; }
   },
   * deleteExpense({ payload }, { call, put }) {
@@ -72,6 +70,7 @@ export default {
           data: response,
         },
       });
+      onSuccess(response);
     } catch (error) {
       return error;
     }

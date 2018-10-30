@@ -17,9 +17,14 @@ export default class extends PureComponent {
   }
   componentDidMount() {
     const { dispatch } = this.props;
+    dispatch({ type: 'brand/fetchExpense' });
+  }
+
+  fetchExpense = (params) => {
+    const { dispatch } = this.props;
     dispatch({
       type: 'expense/fetchExpense',
-      payload: 'params',
+      payload: params,
     });
   }
   handleEdit = (data) => {
@@ -97,6 +102,7 @@ export default class extends PureComponent {
           columns={this.makeColumns()}
           data={expense}
           extraOperator={this.makeExtraOperator()}
+          fetchDataSource={this.fetchExpense}
         />
         <ExpenseForm
           initialValue={editInfo}
