@@ -16,7 +16,7 @@ import {
   Checkbox,
 } from 'antd';
 import { connect } from 'dva';
-import { assign, isArray, forIn, omit } from 'lodash';
+import { assign, isArray, forIn, omit, mapKeys } from 'lodash';
 import Filter from './filters';
 import Operator from './operator';
 import styles from './index.less';
@@ -121,7 +121,7 @@ class OATable extends PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { rowSelection, multiOperator, filters, loading } = nextProps;
+    const { rowSelection, multiOperator, filters } = nextProps;
     if (
       multiOperator && multiOperator.length > 0
       &&
@@ -134,7 +134,8 @@ class OATable extends PureComponent {
     if (JSON.stringify(filters) !== JSON.stringify(this.props.filters)) {
       this.onPropsFiltersChange(filters);
     }
-    if ((JSON.stringify(nextProps.columns) !== JSON.stringify(this.props.columns)) && !loading) {
+
+    if ((JSON.stringify(nextProps.columns) !== JSON.stringify(this.state.columns))) {
       const columns = nextProps.columns.map((item) => {
         if (item.dataIndex) this.columnsText[item.dataIndex] = item;
         return { ...item };
@@ -153,7 +154,14 @@ class OATable extends PureComponent {
       }
     });
     if (JSON.stringify(thisFiltersKey) !== JSON.stringify(this.state[key])) {
-      this.setState({ [key]: thisFiltersKey }, () => {
+      let filtersText = {};
+      mapKeys(thisFiltersKey, (value, filterKey) => {
+        filtersText = {
+          ...filtersText,
+          ...this.makerFiltersText(filterKey, value),
+        };
+      });
+      this.setState({ [key]: thisFiltersKey, filtersText }, () => {
         const { filters, sorter, pagination } = this.state;
         this.handleTableChange(pagination, filters, sorter);
       });
@@ -412,7 +420,7 @@ class OATable extends PureComponent {
 
   makerFiltersText = (key, value) => {
     const { title, filters, treeFilters, dateFilters, rangeFilters } = this.columnsText[key];
-    const filtersText = { ...this.state.filtersText };
+    const filtersText = {};
     if (value.length === 0 || !value) return filtersText;
     if (filters) {
       filtersText[key] = { title };
@@ -447,7 +455,10 @@ class OATable extends PureComponent {
         ...filters,
         [key]: searchFilter,
       };
-      const filtersText = this.makerFiltersText(key, value);
+      const filtersText = {
+        ...this.state.filtersText,
+        ...this.makerFiltersText(key, value),
+      };
       this.setState({
         filtersText,
         filtered: filteredState,
@@ -465,7 +476,10 @@ class OATable extends PureComponent {
         ...filters,
         [key]: checkedKeys,
       };
-      const filtersText = this.makerFiltersText(key, checkedKeys);
+      const filtersText = {
+        ...this.state.filtersText,
+        ...this.makerFiltersText(key, checkedKeys),
+      };
       this.setState({
         filtersText,
         filterDropdownVisible: false,
@@ -486,7 +500,10 @@ class OATable extends PureComponent {
         ...filters,
         [key]: timeValue,
       };
-      const filtersText = this.makerFiltersText(key, timeValue);
+      const filtersText = {
+        ...this.state.filtersText,
+        ...this.makerFiltersText(key, timeValue),
+      };
       this.setState({
         filtersText,
         filtered: filteredState,
@@ -509,7 +526,10 @@ class OATable extends PureComponent {
       } else {
         delete newFilters[key];
       }
-      const filtersText = this.makerFiltersText(key, timeValue);
+      const filtersText = {
+        ...this.state.filtersText,
+        ...this.makerFiltersText(key, rangeValue),
+      };
       this.setState({
         filtersText,
         filtered: filteredState,
