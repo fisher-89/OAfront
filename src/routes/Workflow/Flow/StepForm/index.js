@@ -48,6 +48,12 @@ const stepDefaultValue = {
   approve_callback_uri: '',
   transfer_callback_uri: '',
   withdraw_callback_uri: '',
+  accept_end_callback: '0',
+  accept_start_callback: '0',
+  accept_check_callback: '0',
+  accept_approve_callback: '0',
+  accept_reject_callback: '0',
+  accept_withdraw_callback: '0',
   approvers: { staff: [], roles: [], departments: [], manager: '' },
 };
 
@@ -700,6 +706,22 @@ export default class StepForm extends React.PureComponent {
           <FormItem
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 15 }}
+            label="接收开始回调值"
+          >
+            {getFieldDecorator('accept_start_callback', {
+              initialValue: dataCommit.accept_start_callback,
+            })(
+              <RadioGroup name="radiogroup3" >
+                <RadioButton value="0">停用</RadioButton>
+                <RadioButton value="1">启用</RadioButton>
+              </RadioGroup>
+            )}
+          </FormItem>
+
+
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
             label="查看回调地址"
             name="check_callback_uri"
           >
@@ -710,6 +732,21 @@ export default class StepForm extends React.PureComponent {
               initialValue: dataCommit.check_callback_uri,
             })(
               <Input placeholder="请输入" />
+            )}
+          </FormItem>
+
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="接收查看回调值"
+          >
+            {getFieldDecorator('accept_check_callback', {
+              initialValue: dataCommit.accept_check_callback,
+            })(
+              <RadioGroup name="radiogroup3" >
+                <RadioButton value="0">停用</RadioButton>
+                <RadioButton value="1">启用</RadioButton>
+              </RadioGroup>
             )}
           </FormItem>
 
@@ -733,6 +770,21 @@ export default class StepForm extends React.PureComponent {
           <FormItem
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 15 }}
+            label="接收通过回调值"
+          >
+            {getFieldDecorator('accept_approve_callback', {
+              initialValue: dataCommit.accept_approve_callback,
+            })(
+              <RadioGroup name="radiogroup3" >
+                <RadioButton value="0">停用</RadioButton>
+                <RadioButton value="1">启用</RadioButton>
+              </RadioGroup>
+            )}
+          </FormItem>
+
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
             label="驳回回调地址"
             name="rejec_callback_uri"
           >
@@ -743,6 +795,21 @@ export default class StepForm extends React.PureComponent {
               initialValue: dataCommit.rejec_callback_uri,
             })(
               <Input placeholder="请输入" />
+            )}
+          </FormItem>
+
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="接收驳回回调值"
+          >
+            {getFieldDecorator('accept_reject_callback', {
+              initialValue: dataCommit.accept_reject_callback,
+            })(
+              <RadioGroup name="radiogroup3" >
+                <RadioButton value="0">停用</RadioButton>
+                <RadioButton value="1">启用</RadioButton>
+              </RadioGroup>
             )}
           </FormItem>
 
@@ -765,6 +832,21 @@ export default class StepForm extends React.PureComponent {
           <FormItem
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 15 }}
+            label="接收转交回调值"
+          >
+            {getFieldDecorator('accept_transfer_callback', {
+              initialValue: dataCommit.accept_transfer_callback,
+            })(
+              <RadioGroup name="radiogroup3" >
+                <RadioButton value="0">停用</RadioButton>
+                <RadioButton value="1">启用</RadioButton>
+              </RadioGroup>
+            )}
+          </FormItem>
+
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
             label="结束回调地址"
             name="end_callback_uri"
           >
@@ -776,8 +858,24 @@ export default class StepForm extends React.PureComponent {
             })(
               <Input placeholder="请输入" />
             )}
-
           </FormItem>
+
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="接收结束回调值"
+          >
+            {getFieldDecorator('accept_end_callback', {
+              initialValue: dataCommit.accept_end_callback,
+            })(
+              <RadioGroup name="radiogroup3" >
+                <RadioButton value="0">停用</RadioButton>
+                <RadioButton value="1">启用</RadioButton>
+              </RadioGroup>
+            )}
+          </FormItem>
+
+
           <FormItem
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 15 }}
@@ -793,6 +891,22 @@ export default class StepForm extends React.PureComponent {
               <Input placeholder="请输入" />
             )}
           </FormItem>
+
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="接收撤回回调值"
+          >
+            {getFieldDecorator('accept_withdraw_callback', {
+              initialValue: dataCommit.accept_withdraw_callback,
+            })(
+              <RadioGroup name="radiogroup3" >
+                <RadioButton value="0">停用</RadioButton>
+                <RadioButton value="1">启用</RadioButton>
+              </RadioGroup>
+            )}
+          </FormItem>
+
         </div>
 
         <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>

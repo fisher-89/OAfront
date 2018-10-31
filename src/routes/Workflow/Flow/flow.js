@@ -72,6 +72,8 @@ export default class Flow extends React.PureComponent {
       flows_has_departments: [],
       steps: [],
       send_message: '1',
+      accept_end_callback: '0',
+      accept_start_callback: '0',
     };
     const flowId = props.match.params.id ? parseInt(props.match.params.id, 10) : null;
     const isEdit = flowId !== null;
@@ -586,6 +588,7 @@ export default class Flow extends React.PureComponent {
             <Input placeholder="请输入流程描述" disabled={this.state.formAble} />
           )}
         </FormItem>
+
         <FormItem
           labelCol={formItemLayout.labelCol}
           wrapperCol={{ span: 5 }}
@@ -604,6 +607,7 @@ export default class Flow extends React.PureComponent {
             </Select>
           )}
         </FormItem>
+
 
         <FormItem
           labelCol={formItemLayout.labelCol}
@@ -746,7 +750,22 @@ export default class Flow extends React.PureComponent {
           )}
 
         </FormItem>
-
+        <FormItem
+          {...formItemLayout}
+          label="接收开始回调返回值"
+        >
+          {getFieldDecorator('accept_start_callback', {
+            rules: [
+              { required: true, message: '请选择' },
+            ],
+            initialValue: formData.accept_end_callback || '0',
+          })(
+            <RadioGroup name="radiogroup3" disabled={this.state.formAble}>
+              <RadioButton value="0">停用</RadioButton>
+              <RadioButton value="1">启用</RadioButton>
+            </RadioGroup>
+          )}
+        </FormItem>
         <FormItem
           {...formItemLayout}
           label="结束回调地址"
@@ -760,7 +779,22 @@ export default class Flow extends React.PureComponent {
             <Input placeholder="请输入结束回调地址" disabled={this.state.formAble} />
           )}
         </FormItem>
-
+        <FormItem
+          {...formItemLayout}
+          label="接收结束回调返回值"
+        >
+          {getFieldDecorator('accept_end_callback', {
+            rules: [
+              { required: true, message: '请选择' },
+            ],
+            initialValue: formData.accept_end_callback || '0',
+          })(
+            <RadioGroup name="radiogroup3" disabled={this.state.formAble}>
+              <RadioButton value="0">停用</RadioButton>
+              <RadioButton value="1">启用</RadioButton>
+            </RadioGroup>
+          )}
+        </FormItem>
         <FormItem
           {...formItemLayout}
           label="是否启用"
