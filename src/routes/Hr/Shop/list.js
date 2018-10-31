@@ -56,52 +56,105 @@ export default class extends PureComponent {
         title: '店铺代码',
         dataIndex: 'shop_sn',
         searcher: true,
+        width: 100,
+        fixed: 'left',
       },
       {
         title: '店铺名称',
         dataIndex: 'name',
+        align: 'center',
         searcher: true,
         width: 250,
+        fixed: 'left',
       },
       {
         title: '所属部门',
         dataIndex: 'department.name',
+        align: 'center',
         searcher: true,
         render: val => (val || '未分配'),
+        width: 120,
       },
       {
         title: '所属品牌',
         dataIndex: 'brand.name',
+        align: 'center',
         searcher: true,
         render: val => (val || '未分配'),
+        width: 150,
       },
       {
         title: '店铺地址',
         dataIndex: 'address',
+        align: 'center',
         searcher: true,
-        width: 250,
+        width: 300,
+      },
+      {
+        title: '店铺标签',
+        dataIndex: 'tags',
+        align: 'center',
+        width: 200,
+      },
+      {
+        title: '店铺状态',
+        dataIndex: 'status_id',
+        align: 'center',
+        width: 100,
+      },
+      {
+        title: '开业日期',
+        hidden: true,
+        dataIndex: 'opening_at',
+        align: 'center',
+        width: 100,
+      },
+      {
+        title: '闭店日期',
+        hidden: true,
+        dataIndex: 'end_at',
+        align: 'center',
+        width: 100,
       },
       {
         title: '上班时间',
+        hidden: true,
         dataIndex: 'clock_in',
+        width: 100,
       },
       {
         title: '下班时间',
+        hidden: true,
         dataIndex: 'clock_out',
+        width: 100,
       },
       {
         title: '店长',
         dataIndex: 'manager_name',
         render: val => (val || '暂无'),
+        width: 60,
       },
       {
-        title: '店长电话',
-        dataIndex: 'manager_mobile',
-        width: 120,
-        render: val => (val || '暂无'),
+        title: '一级负责人',
+        hidden: true,
+        dataIndex: 'manager1_name',
+        width: 60,
+      },
+      {
+        title: '二级负责人',
+        hidden: true,
+        dataIndex: 'manager2_name',
+        width: 60,
+      },
+      {
+        title: '三级负责人',
+        hidden: true,
+        dataIndex: 'manager3_name',
+        width: 60,
       },
       {
         title: '店员',
+        hidden: true,
         dataIndex: 'staff',
         width: 300,
         render: (staff) => {
@@ -115,6 +168,8 @@ export default class extends PureComponent {
       columns.push(
         {
           title: '操作',
+          fixed: 'right',
+          width: 100,
           render: (rowData) => {
             return (
               <Fragment>
@@ -172,6 +227,7 @@ export default class extends PureComponent {
           )
         }
         <OATable
+          bordered
           serverSide
           extraColumns
           loading={sLoading || false}

@@ -64,8 +64,13 @@ export default class extends PureComponent {
     const { dispatch } = this.props;
     const body = {
       ...params,
-      ...params.manager,
+      ...params.shop_address,
+      ...params.manager1_sn,
+      ...params.manager_sn,
+      ...params.manager2_sn,
+      ...params.manager3_sn,
     };
+    delete body.shop_address;
     dispatch({
       type: params.id ? 'shop/editShop' : 'shop/addShop',
       payload: body,
@@ -103,7 +108,7 @@ export default class extends PureComponent {
       initialValue,
       onCancel,
       validateFields,
-      form: { getFieldDecorator, setFieldsValue },
+      form: { getFieldDecorator },
     } = this.props;
 
     const info = initialValue;
@@ -158,7 +163,7 @@ export default class extends PureComponent {
                 <FormItem label="店铺代码" {...formItemLayout} required>
                   {
                     getFieldDecorator('shop_sn', {
-                    initialValue: info.shop_sn,
+                    initialValue: info.shop_sn || '',
                      })(
                        <Input placeholder="请输入" style={{ width: '100%' }} />
                     )
@@ -167,10 +172,14 @@ export default class extends PureComponent {
               </Col>
               <Col {...colSpan}>
                 <FormItem label="店铺状态" {...formItemLayout} required>
-                  <Select defaultValue="2">
-                    <Option value="1">开业</Option>
-                    <Option value="2">未开业</Option>
+                  {getFieldDecorator('status_id', {
+                  initialValue: info.status_id !== undefined ? info.status_id.toString() : '0',
+                })(
+                  <Select>
+                    <Option value="0">开业</Option>
+                    <Option value="1">未开业</Option>
                   </Select>
+                   )}
                 </FormItem>
               </Col>
             </Row>
@@ -208,46 +217,47 @@ export default class extends PureComponent {
             <Row gutter={rowGutter} >
               <Col {...colSpan}>
                 <FormItem label="开业日期" {...formItemLayout} required>
-                  <DatePicker placeholder="请选择日期" />
+                  {getFieldDecorator('opening_at',
+                    { initialValue: info.opening_at || undefined,
+                    })(
+                      <DatePicker placeholder="请选择日期" />
+                      )}
                 </FormItem>
               </Col>
               <Col {...colSpan}>
                 <FormItem label="结束日期" {...formItemLayout} required>
-                  <DatePicker placeholder="请选择日期" />
+                  {getFieldDecorator('end_at',
+                    { initialValue: info.end_at || undefined,
+                    })(
+                      <DatePicker placeholder="请选择日期" />
+                      )}
                 </FormItem>
               </Col>
             </Row>
             <FormItem label="店铺地址" {...longFormItemLayout} required>
-              <Address
-                name={{
-                  city_id: 'city_id',
-                  province_id: 'province_id',
-                  county_id: 'county_id',
-                  address: 'address',
-                  }}
-                value={{
-                  city_id: info.city_id || null,
-                  province_id: info.province_id || null,
-                  county_id: info.county_id || null,
-                  address: info.address || null,
-                  }}
-                onChange={(value) => {
-                  setFieldsValue(value);
-                  }}
-              />
+              {getFieldDecorator('shop_address', {
+              initialValue: {
+                address: initialValue.address || '',
+                city_id: initialValue.city_id || '',
+                county_id: initialValue.county_id || '',
+                province_id: initialValue.province_id || '',
+              },
+            })(
+              <Address />
+            )}
+
             </FormItem>
             <FormItem label="店铺标签" {...longFormItemLayout}>
-              <Select />
+              {getFieldDecorator('tags', {
+              initialValue: info.tags || [],
+               })(<Select />)}
             </FormItem>
             <Row gutter={rowGutter}>
               <Col {...colSpan}>
                 <FormItem label="店长" {...formItemLayout}>
                   {
-                getFieldDecorator('manager', {
-                  initialValue: {
-                    manager_sn: info.manager_sn || null,
-                    manager_name: info.manager_name || null,
-                  } || {},
+                getFieldDecorator('manager_sn', {
+                  initialValue: info.manager_sn || null,
                     })(
                       <SearchTable.Staff
                         name={{
@@ -263,15 +273,15 @@ export default class extends PureComponent {
               <Col {...colSpan}>
                 <FormItem label="一级负责人" {...formItemLayout}>
                   {
-                getFieldDecorator('staff', {
-                  initialValue: info.staff || [],
+                getFieldDecorator('manager1_sn', {
+                  initialValue: info.manager1_sn || [],
                 })(
                   <SearchTable.Staff
                     name={{
-                      staff_sn: 'staff_sn',
-                      realname: 'realname',
+                      manager1_sn: 'staff_sn',
+                      manager1_name: 'realname',
                     }}
-                    showName="realname"
+                    showName="manager1_name"
                   />
                 )
               }
@@ -282,15 +292,15 @@ export default class extends PureComponent {
               <Col {...colSpan}>
                 <FormItem label="二级负责人" {...formItemLayout}>
                   {
-                 getFieldDecorator('staff', {
-                initialValue: info.staff || [],
+                 getFieldDecorator('manager2_sn', {
+                initialValue: info.manager2_sn || [],
                      })(
                        <SearchTable.Staff
                          name={{
-                    staff_sn: 'staff_sn',
-                    realname: 'realname',
+                          manager2_sn: 'staff_sn',
+                          manager2_name: 'realname',
                        }}
-                         showName="realname"
+                         showName="manager2_name"
                        />
                        )
                   }
@@ -299,15 +309,15 @@ export default class extends PureComponent {
               <Col {...colSpan}>
                 <FormItem label="三级负责人" {...formItemLayout}>
                   {
-               getFieldDecorator('staff', {
-              initialValue: info.staff || [],
+               getFieldDecorator('manager3_sn', {
+              initialValue: info.manager3_sn || [],
                    })(
                      <SearchTable.Staff
                        name={{
-                  staff_sn: 'staff_sn',
-                  realname: 'realname',
+                        manager3_sn: 'staff_sn',
+                        manager3_name: 'realname',
                     }}
-                       showName="realname"
+                       showName="manager3_name"
                      />
                      )
                   }
@@ -335,7 +345,7 @@ export default class extends PureComponent {
             tab={<div className={styles.tabpane}>定位</div>}
             key="2"
           >
-            <FormItem {...longFormItemLayout} label="店铺位置" required>
+            <FormItem {...longFormItemLayout} label="店铺位置" >
               {getFieldDecorator('address', {
               initialValue: poiInfo.address,
                })(
@@ -367,7 +377,7 @@ export default class extends PureComponent {
 
                 <FormItem label="上班时间" {...formItemLayout}>
                   {getFieldDecorator('clock_in', {
-                initialValue: `${info.clock_in}:00`,
+                initialValue: `${info.clock_in}`,
                     })(
                       <DatePicker
                         mode="time"
@@ -381,7 +391,7 @@ export default class extends PureComponent {
               <Col {...colSpan}>
                 <FormItem label="下班时间" {...formItemLayout}>
                   {getFieldDecorator('clock_out', {
-                initialValue: `${info.clock_out}:00`,
+                initialValue: `${info.clock_out}`,
                    })(
                      <DatePicker
                        mode="time"
