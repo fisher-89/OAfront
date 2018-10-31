@@ -78,7 +78,7 @@ export default class MoreSearch extends React.Component {
       const { filtersText } = this.state;
       const newFiltersText = { ...filtersText };
       if (key) {
-        newFiltersText[key] = filterTextValue || { title: '未知条件', text: value };
+        newFiltersText[key] = filterTextValue || { title: null, text: value };
       } else {
         assign(newFiltersText, filtersText, filterTextValue);
       }
@@ -127,10 +127,20 @@ export default class MoreSearch extends React.Component {
   }
 
   makeDefaultFilters = (item) => {
+    const selectProps = this.makeSearchProps(item);
+    const { filters, title, dataIndex } = item;
+    selectProps.onChange = (value) => {
+      const filterTextValue = filters.filter(i => value.indexOf(`${i.value}`) !== -1)
+        .map(i => i.text).join(',');
+      this.handleSearchChange(dataIndex, {
+        title,
+        text: filterTextValue,
+      })(value);
+    };
     return (
       <FormItem {...this.makeFormItemProps(item)}>
-        <Select {...this.makeSearchProps(item)} mode="multiple">
-          {map(item.filters, filter => (<Option key={`${filter.value}`}>{filter.text}</Option>))}
+        <Select {...selectProps} mode="multiple">
+          {map(filters, filter => (<Option key={`${filter.value}`}>{filter.text}</Option>))}
         </Select>
       </FormItem>
     );

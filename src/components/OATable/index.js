@@ -564,7 +564,11 @@ class OATable extends PureComponent {
       ) {
         delete newFilterText[key];
       }
+      if (!filter.title && this.columnsText[key]) {
+        newFilterText[key].title = this.columnsText[key].title;
+      }
     });
+
     forIn(newFilters, (filter, key) => {
       if (
         filter === [] ||

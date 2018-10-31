@@ -723,16 +723,19 @@ export function getStatusImg(status) {
 
 export function getInitSearchProps(initialValue, cb, filterText = {}) {
   let response = {};
-  mapKeys(filterText, (_, key) => {
-    response[key] = undefined;
-  });
+  mapKeys(filterText, (_, key) => { response[key] = undefined; });
   response = { ...response, ...initialValue };
   const newInitialValue = {};
   Object.keys(response).forEach((key) => {
     newInitialValue[key] = {
       onChange: (e) => {
         const value = e.target ? e.target.value : e;
-        const filterTextValue = { ...filterText[key], text: value };
+        const filterTextValue = { title: filterText[key].title };
+        if (filterText[key].filters) {
+          filterTextValue[key].text = filterText[key].filters.filter((item) => {
+            return value.indexOf(item.value) !== -1;
+          }).map(item => item.text).join('，');
+        }
         cb(key, filterTextValue)(value);
       },
       value: response[key],
