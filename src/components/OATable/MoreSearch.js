@@ -1,6 +1,6 @@
 import React from 'react';
 import { Input, Button, Popover, Form, Select, Row, Col, Slider } from 'antd';
-import { mapValues, isArray, isObject, isString, map, has } from 'lodash';
+import { mapValues, isArray, isObject, isString, map, has, assign } from 'lodash';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -21,11 +21,12 @@ export default class MoreSearch extends React.Component {
     filters: {},
     visible: false,
     colCountKey: 1,
+    filtersText: {},
   }
 
   componentWillMount() {
     this.colCounts = {};
-    [1, 2, 3].forEach((value, i) => { this.colCounts[i] = value; });
+    [1, 2, 3].forEach((value, i) => { this.colCounts[i] = `${value}列`; });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -49,8 +50,8 @@ export default class MoreSearch extends React.Component {
 
   onChange = () => {
     const { onChange } = this.props;
-    const { filters } = this.state;
-    this.setState({ visible: false }, onChange(filters));
+    const { filters, filtersText } = this.state;
+    this.setState({ visible: false }, onChange(filters, filtersText));
   }
 
   onColCountChange = (colCountKey) => {
@@ -58,23 +59,35 @@ export default class MoreSearch extends React.Component {
   }
 
   handleVisible = () => {
-    const { visible, filters } = this.state;
+    const { visible, filters, filtersText } = this.state;
     const state = { visible: !visible };
-    if (!visible === true && JSON.stringify(filters) !== JSON.stringify(this.props.filters)) {
+    if (state.visible === true && JSON.stringify(filters) !== JSON.stringify(this.props.filters)) {
       state.filters = { ...this.props.filters };
+    }
+    if (state.visible === true &&
+      JSON.stringify(filtersText) !== JSON.stringify(this.props.filtersText)) {
+      state.filtersText = { ...this.props.filtersText };
     }
     this.setState(state);
   }
 
-  handleSearchChange = (key) => {
+  handleSearchChange = (key, filterTextValue) => {
     return (e) => {
       const value = e.target ? e.target.value : e;
       const { filters } = this.state;
+      const { filtersText } = this.state;
+      const newFiltersText = { ...filtersText };
+      if (key) {
+        newFiltersText[key] = filterTextValue || { title: '未知条件', text: value };
+      } else {
+        assign(newFiltersText, filtersText, filterTextValue);
+      }
       this.setState({
         filters: {
           ...filters,
           ...(!key ? e : { [key]: isString(value) ? [value] : value }),
         },
+        filtersText: newFiltersText,
       });
     };
   }
@@ -138,7 +151,7 @@ export default class MoreSearch extends React.Component {
   renderMoreSearch = () => {
     const { moreSearch } = this.props;
     const { filters, colCountKey } = this.state;
-    const colCount = this.colCounts[colCountKey];
+    const colCount = this.colCounts[colCountKey].replace('列', '');
     const span = 24 / colCount;
     let searchComponent = moreSearch;
     if (React.isValidElement(moreSearch)) {

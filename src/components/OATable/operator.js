@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Button, Dropdown, Menu, Tooltip, Popover, Tag } from 'antd';
+import { keys } from 'lodash';
 import styles from './index.less';
 import MoreSearch from './MoreSearch';
 
@@ -38,63 +39,18 @@ class Operator extends PureComponent {
     );
   }
 
-  makeFilterString = (value, column) => {
-    let newValue = value;
-    if (column.filterData) {
-      if (Array.isArray(column.filterData)) {
-        newValue = column.filterData
-          .filter(item => newValue.indexOf(item.value.toString()) !== -1)
-          .map(item => item.text);
-      } else if (typeof column.filterData === 'object') {
-        const filterData = column.filterData.data;
-        const dataIndex = column.filterData.value;
-        const text = column.filterData.title;
-        newValue = filterData
-          .filter(item => (value.indexOf(`${item[dataIndex]}`) !== -1))
-          .map(item => item[text]);
-      }
-      newValue = newValue.join('，');
-    } else if (typeof value === 'object') {
-      newValue = [];
-      Object.keys(value).forEach((key) => {
-        if (key === 'like') {
-          newValue = value[key];
-        } else if (key === 'min' || key === 'max') {
-          newValue.push(value[key]);
-        }
-      });
-      if (typeof newValue !== 'string') {
-        newValue = newValue.join('~');
-      }
-    }
-    return newValue;
-  }
-
   renderFiltersTag = () => {
-    const { filterColumns, resetFilter, filters } = this.props;
-    const filtersTag = [];
-    filterColumns.forEach((item) => {
-      Object.keys(filters).forEach((name) => {
-        const filterValue = filters[name];
-        if (item.dataIndex === name && filters[name]) {
-          let lable = item.filterData ? filterValue : filterValue[0];
-          lable = this.makeFilterString(lable, item);
-          if (lable) {
-            const filterTag = { label: `${item.title}：${lable}`, dataIndex: name };
-            filtersTag.push(filterTag);
-          }
-        }
-      });
-    });
+    const { filtersText, resetFilter } = this.props;
     return (
       <div style={{ width: 300, maxHeight: 230, overflowY: 'scroll' }}>
         {
-          filtersTag.map((item) => {
-            const tag = item.label;
-            const key = item.dataIndex;
+          Object.keys(filtersText).map((key) => {
+            const value = filtersText[key];
+            const tag = `${value.title}：${value.text}`;
+            const onlyk = key;
             const isLongTag = tag.length > 10;
             const tagElem = (
-              <Tag key={key} closable afterClose={() => resetFilter(key)}>
+              <Tag key={onlyk} closable afterClose={() => resetFilter(key)}>
                 {isLongTag ? `${tag.slice(0, 10)}...` : tag}
               </Tag>
             );
@@ -112,20 +68,16 @@ class Operator extends PureComponent {
       onChange,
       moreSearch,
       resetFilter,
+      filtersText,
       selectedRows,
       multiOperator,
       extraOperator,
-      filterColumns,
       extraOperatorRight,
       fetchTableDataSource,
       filterDropdownVisible,
     } = this.props;
-    const filterColumnsDataIndex = filterColumns.map(item => item.dataIndex);
 
-    const hasFilter = Object.keys(filters)
-      .filter(key => filters[key] && filters[key].length
-        && filterColumnsDataIndex.indexOf(key) !== -1)
-      .length > 0;
+    const hasFilter = keys(filtersText).length > 0;
     const style = extraOperator.length ? { marginRight: 20 } : {};
     return (
       <div style={{ display: 'flex' }}>
@@ -141,9 +93,7 @@ class Operator extends PureComponent {
             <Tooltip title="数据同步">
               <Button
                 icon="sync"
-                onClick={() => {
-                  fetchTableDataSource();
-                }}
+                onClick={fetchTableDataSource}
               />
             </Tooltip>
           )}
@@ -153,6 +103,7 @@ class Operator extends PureComponent {
               filters={filters}
               onChange={onChange}
               moreSearch={moreSearch}
+              filtersText={filtersText}
               filterDropdownVisible={filterDropdownVisible}
             />
           )}

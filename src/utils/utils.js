@@ -1,4 +1,6 @@
 import moment from 'moment';
+import { mapKeys } from 'lodash';
+
 
 export function fixedZero(val) {
   return val * 1 < 10 ? `0${val}` : val;
@@ -719,14 +721,20 @@ export function getStatusImg(status) {
   }
 }
 
-export function getInitSearchProps(initialValue, cb, valueKey = []) {
+export function getInitSearchProps(initialValue, cb, filterText = {}) {
   let response = {};
-  valueKey.forEach((item) => { response[item] = undefined; });
+  mapKeys(filterText, (_, key) => {
+    response[key] = undefined;
+  });
   response = { ...response, ...initialValue };
   const newInitialValue = {};
   Object.keys(response).forEach((key) => {
     newInitialValue[key] = {
-      onChange: cb(key),
+      onChange: (e) => {
+        const value = e.target ? e.target.value : e;
+        const filterTextValue = { ...filterText[key], text: value };
+        cb(key, filterTextValue)(value);
+      },
       value: response[key],
     };
   });

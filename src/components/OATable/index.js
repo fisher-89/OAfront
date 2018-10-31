@@ -17,6 +17,7 @@ import {
 } from 'antd';
 import { connect } from 'dva';
 import { assign, isArray, forIn, omit } from 'lodash';
+import Filter from './filters';
 import Operator from './operator';
 import styles from './index.less';
 import TableUpload from './upload';
@@ -246,6 +247,7 @@ class OATable extends PureComponent {
         Object.assign(response, this.makeTreeFilterOption(key, column));
       } else if (column.filters) {
         response.onFilter = column.onFilter || this.makeDefaultOnFilter(key);
+        Object.assign(response, this.makeFilterOption(key, column));
       } else if (column.dateFilters) {
         Object.assign(response, this.makeDateFilterOption(key, column));
       } else if (column.rangeFilters) {
@@ -300,6 +302,29 @@ class OATable extends PureComponent {
       searchFilterOption.onFilter = this.makeDefaultOnSearch(key);
     }
     return searchFilterOption;
+  }
+
+  makeFilterOption = (key, column) => {
+    const { filterDropdownVisible } = this.state;
+    const { serverSide } = this.props;
+    const filterOption = {
+      filterDropdown: (
+        <Filter
+          filters={column.filters}
+          handleConfirm={this.handleTreeFilter(key)}
+        />
+      ),
+      filterDropdownVisible: filterDropdownVisible === key,
+      onFilterDropdownVisibleChange: (visible) => {
+        this.setState({
+          filterDropdownVisible: visible ? key : false,
+        });
+      },
+    };
+    if (!serverSide && !column.onFilter) {
+      filterOption.onFilter = this.makeDefaultOnFilter(key);
+    }
+    return filterOption;
   }
 
   makeTreeFilterOption = (key, column) => {
@@ -398,7 +423,7 @@ class OATable extends PureComponent {
       const text = treeFilters.title;
       const dataIndex = treeFilters.value;
       filtersText[key] = { title };
-      filtersText[key].text = data.filter(item => value.indexOf(item[dataIndex]) !== -1)
+      filtersText[key].text = data.filter(item => value.indexOf(`${item[dataIndex]}`) !== -1)
         .map(item => item[text]).join('，');
     } else if (dateFilters || rangeFilters) {
       filtersText[key] = { title };
@@ -627,19 +652,18 @@ class OATable extends PureComponent {
 
   resetFilter = (key) => {
     const { pagination, filters, sorter, filtered, filtersText } = this.state;
-    if (filters[key]) {
-      omit(filters, [key]);
-      omit(filtersText, [key]);
+    let newFilters = {};
+    let newFiltersText = {};
+    if (filters[key] !== undefined) {
+      newFilters = omit(filters, [key]);
+      newFiltersText = omit(filtersText, [key]);
     }
     let newFiltered = [];
-    if (key) {
-      newFiltered = filtered.filter(item => item !== key);
-    }
-    const newFilters = key ? filters : {};
-
+    if (key) newFiltered = filtered.filter(item => item !== key);
     this.setState({
-      filters: key ? filters : {},
+      filters: newFilters,
       filtered: newFiltered,
+      filtersText: newFiltersText,
     }, () => {
       this.handleTableChange(pagination, newFilters, sorter);
     });
@@ -959,7 +983,6 @@ class OATable extends PureComponent {
   render() {
     const {
       sync,
-      columns,
       moreSearch,
       autoComplete,
       tableVisible,
@@ -967,24 +990,13 @@ class OATable extends PureComponent {
       operatorVisble,
       extraOperatorRight,
     } = this.props;
-    const filterColumns = columns.map((item) => {
-      const temp = { title: item.title, dataIndex: item.dataIndex };
-      if (item.filters) {
-        temp.filterData = item.filters;
-      }
-      if (item.treeFilters) {
-        temp.filterData = item.treeFilters;
-      }
-      return temp;
-    });
-    const { filters, selectedRows, filterDropdownVisible, eyeVisible } = this.state;
+
+    const { filters, filtersText, selectedRows, filterDropdownVisible, eyeVisible } = this.state;
     const tableProps = this.makeTableProps();
     const searchObj = autoComplete ? {
       content: moreSearch,
       columns: this.state.columns.filter(item => item.hidden && item.dataIndex),
     } : moreSearch;
-
-    console.log(this.state.filtersText);
 
     return (
       <div className={styles.filterTable}>
@@ -993,11 +1005,11 @@ class OATable extends PureComponent {
             sync={sync}
             filters={filters}
             moreSearch={searchObj}
+            filtersText={filtersText}
             selectedRows={selectedRows}
             multiOperator={multiOperator}
             resetFilter={this.resetFilter}
             onChange={this.handleMoreFilter}
-            filterColumns={filterColumns || []}
             extraOperatorRight={extraOperatorRight}
             extraOperator={this.makeExtraOperator()}
             fetchTableDataSource={() => {
