@@ -3,28 +3,36 @@ import { Button, List, Icon } from 'antd';
 import Ellipsis from '../../../../components/Ellipsis';
 import TagTypeForm from './form';
 import styles from './form.less';
+import store from '../store/type';
 
+@store(['fetchTypes', 'deleted'])
 export default class extends PureComponent {
   state = {
     visible: false,
+    initialValue: {},
   }
+
+  componentWillMount() {
+    const { fetchTypes } = this.props;
+    fetchTypes();
+  }
+
   handleModalVisible= (flag) => {
     this.setState({
       visible: !!flag,
     });
   }
+
+  handleClose = (record) => {
+    const { deleted } = this.props;
+    deleted(record.id);
+  }
+
   render() {
-    const data = [{
-      id: 6,
-      name: 'aaaaws',
-      color: '#2a52be',
-    },
-    {
-      id: 7,
-      name: 'abaws',
-      color: '#2a52be',
-    }];
     const { visible, initialValue } = this.state;
+    const {
+      stafftagtypes,
+    } = this.props;
     return (
       <Fragment>
         <Button
@@ -32,12 +40,15 @@ export default class extends PureComponent {
           type="dashed"
           size="small"
           style={{ color: '#888', width: 200, marginBottom: 10 }}
-          onClick={() => this.handleModalVisible(true)}
+          onClick={() => {
+            this.handleModalVisible(true);
+            this.setState({ initialValue: {} });
+          }}
         >
       标签类型
         </Button>
         <List
-          dataSource={data}
+          dataSource={stafftagtypes}
           bordered
           size="small"
           style={{ width: 200 }}
@@ -51,10 +62,14 @@ export default class extends PureComponent {
                     <Icon
                       className={styles.edit}
                       type="edit"
+                      onClick={() => {
+                        this.setState({ visible: true, initialValue: item });
+                      }}
                     />
                     <Icon
                       className={styles.edit}
                       type="close"
+                      onClick={() => this.handleClose(item)}
                     />
                   </div>
                 </div>

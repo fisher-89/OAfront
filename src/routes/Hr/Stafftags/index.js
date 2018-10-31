@@ -4,10 +4,13 @@ import OATable from '../../../components/OATable';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 import StaffTagType from './Type/index';
 import TagForm from './form';
+import store from './store/store';
 
+@store(['fetchTags', 'deleted'])
 export default class extends PureComponent {
   state = {
     visible: false,
+    initialValue: {},
   }
   makeExtraOperator = () => {
     const extra = [];
@@ -17,7 +20,10 @@ export default class extends PureComponent {
         key="plus"
         type="primary"
         style={{ marginLeft: '10px' }}
-        onClick={() => this.handleModalVisible(true)}
+        onClick={() => {
+          this.handleModalVisible(true);
+          this.setState({ initialValue: {} });
+        }}
       >
           添加标签
       </Button>
@@ -28,6 +34,7 @@ export default class extends PureComponent {
     this.setState({ visible: !!flag });
   }
   makeColunms = () => {
+    const { deleted } = this.props;
     const colunms = [
       {
         width: 100,
@@ -46,23 +53,26 @@ export default class extends PureComponent {
       {
         align: 'center',
         title: '标签类型',
-        dataIndex: 'tagType',
+        dataIndex: 'tag_category_id',
+        render: (_, record) => {
+          const name = { ...record.category };
+          return name.name;
+        },
       },
       {
         align: 'center',
         title: '描述',
-        dataIndex: 'describe',
-        searcher: true,
+        dataIndex: 'description',
       },
       {
         align: 'center',
         title: '操作',
-        render: () => {
+        render: (rowData) => {
           return (
             <Fragment>
-              <a>编辑</a>
+              <a onClick={() => this.setState({ visible: true, initialValue: rowData })}>编辑</a>
               <Divider type="vertical" />
-              <a>删除</a>
+              <a onClick={() => deleted(rowData.id)}>删除</a>
             </Fragment>
           );
         },
@@ -71,20 +81,8 @@ export default class extends PureComponent {
     return colunms;
   }
   render() {
-    const { visible } = this.state;
-    const data = [{
-      id: '1',
-      name: 'John Brown',
-    }, {
-      id: '2',
-      name: 'Jim Green',
-    }, {
-      id: '3',
-      name: 'Joe Black',
-    }, {
-      id: '4',
-      name: 'Disabled User',
-    }];
+    const { visible, initialValue } = this.state;
+    const { fetchTags, stafftags, loading } = this.props;
     return (
       <PageHeaderLayout>
         <Card bordered={false}>
@@ -93,11 +91,15 @@ export default class extends PureComponent {
             <Col span={20} push={0}>
               <Fragment>
                 <OATable
+                  data={stafftags}
+                  loading={loading}
+                  fetchDataSource={fetchTags}
+                  total={stafftags.length}
                   columns={this.makeColunms()}
-                  data={data}
                   extraOperator={this.makeExtraOperator()}
                 />
                 <TagForm
+                  initialValue={initialValue}
                   visible={visible}
                   onCancel={this.handleModalVisible}
                 />

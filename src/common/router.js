@@ -230,7 +230,7 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['violation', 'department', 'brand', 'position'], () => import('../routes/Hr/Violation/Regime/form')),
     },
     '/hr/stafftags': {
-      component: dynamicWrapper(app, [], () => import('../routes/Hr/Stafftags')),
+      component: dynamicWrapper(app, ['stafftags'], () => import('../routes/Hr/Stafftags')),
     },
 
     /**  系统 */
