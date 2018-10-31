@@ -16,7 +16,7 @@ import {
   Checkbox,
 } from 'antd';
 import { connect } from 'dva';
-import { assign, isArray, forIn, omit, mapKeys } from 'lodash';
+import { assign, isArray, forIn, omit, mapKeys, isBoolean } from 'lodash';
 import Filter from './filters';
 import Operator from './operator';
 import styles from './index.less';
@@ -166,14 +166,12 @@ class OATable extends PureComponent {
           ...this.makerFiltersText(filterKey, value),
         };
       });
-      console.log(thisFiltersKey);
       this.setState({ [key]: thisFiltersKey, filtersText }, () => {
         const { filters, sorter, pagination } = this.state;
         this.handleTableChange(pagination, filters, sorter);
       });
     }
   }
-
 
   showTotal = (total, range) => {
     return <div style={{ color: '#969696' }}>{`显示 ${range[0]} - ${range[1]} 项 , 共 ${total} 项`}</div>;
@@ -731,9 +729,7 @@ class OATable extends PureComponent {
       onChange: this.handleRowSelectChange,
     } : rowSelection;
     let columns = this.mapColumns();
-    if (serverSide) {
-      columns = columns.filter(item => !item.hidden);
-    }
+    if (serverSide) columns = columns.filter(item => !item.hidden);
     const newScroll = { ...scroll };
     if (extraColumns) {
       columns = this.makeInitColumns(columns);
@@ -1021,10 +1017,17 @@ class OATable extends PureComponent {
 
     const { filters, filtersText, selectedRows, filterDropdownVisible, eyeVisible } = this.state;
     const tableProps = this.makeTableProps();
-    const searchObj = autoComplete ? {
-      content: moreSearch,
-      columns: this.state.columns.filter(item => item.hidden && item.dataIndex),
-    } : moreSearch;
+    let searchObj = {};
+    if (isBoolean(moreSearch) && moreSearch) {
+      searchObj = this.state.columns.filter(item => item.hidden && item.dataIndex);
+    } else if (autoComplete) {
+      searchObj = {
+        content: moreSearch,
+        columns: this.state.columns.filter(item => item.hidden && item.dataIndex),
+      };
+    } else {
+      searchObj = moreSearch;
+    }
 
     return (
       <div className={styles.filterTable}>
