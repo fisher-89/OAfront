@@ -78,7 +78,7 @@ export default class extends PureComponent {
       form: { getFieldDecorator, setFieldsValue },
     } = this.props;
 
-    const newTreeData = markTreeData(department, { value: 'id', lable: 'name', parentId: 'parent_id' }, 0);
+    const newTreeData = markTreeData(department, { value: 'id', label: 'name', parentId: 'parent_id' }, 0);
 
     return (
       <React.Fragment>

@@ -121,7 +121,7 @@ class OATable extends PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { rowSelection, multiOperator, filters } = nextProps;
+    const { rowSelection, multiOperator, filters, loading } = nextProps;
     if (
       multiOperator && multiOperator.length > 0
       &&
@@ -134,13 +134,8 @@ class OATable extends PureComponent {
     if (JSON.stringify(filters) !== JSON.stringify(this.props.filters)) {
       this.onPropsFiltersChange(filters);
     }
-
-    if ((JSON.stringify(nextProps.columns) !== JSON.stringify(this.state.columns))) {
-      const columns = nextProps.columns.map((item) => {
-        if (item.dataIndex) this.columnsText[item.dataIndex] = item;
-        return { ...item };
-      });
-      this.setState({ columns });
+    if ((JSON.stringify(nextProps.columns) !== JSON.stringify(this.props.columns)) && !loading) {
+      this.getPropsColumnsValue(nextProps);
     }
   }
 
@@ -170,6 +165,24 @@ class OATable extends PureComponent {
         const { filters, sorter, pagination } = this.state;
         this.handleTableChange(pagination, filters, sorter);
       });
+    }
+  }
+
+  getPropsColumnsValue = (nextProps) => {
+    const nextColumns = nextProps.columns.map(item => ({
+      filters: item.filters || [],
+      treeFilters: item.treeFilters || {},
+    }));
+    const thisColumns = this.props.columns.map(item => ({
+      filters: item.filters || [],
+      treeFilters: item.treeFilters || {},
+    }));
+    if (JSON.stringify(nextColumns) !== JSON.stringify(thisColumns)) {
+      const columns = nextProps.columns.map((item) => {
+        if (item.dataIndex) this.columnsText[item.dataIndex] = item;
+        return { ...item };
+      });
+      this.setState({ columns });
     }
   }
 

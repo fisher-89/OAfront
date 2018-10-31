@@ -47,7 +47,7 @@ export default class extends PureComponent {
       validateFields,
       form: { getFieldDecorator },
     } = this.props;
-    const newTreeData = markTreeData(treeData, { value: 'id', lable: 'name', parentId: 'parent_id' }, null);
+    const newTreeData = markTreeData(treeData, { value: 'id', label: 'name', parentId: 'parent_id' }, null);
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 16 },

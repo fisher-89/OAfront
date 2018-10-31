@@ -58,7 +58,7 @@ export default class extends PureComponent {
       labelCol: { span: 6 },
       wrapperCol: { span: 16 },
     };
-    const newTreeData = markTreeData(treeData, { value: 'id', lable: 'auth_name', parentId: 'parent_id' }, 0);
+    const newTreeData = markTreeData(treeData, { value: 'id', label: 'auth_name', parentId: 'parent_id' }, 0);
 
     return (
       <OAModal

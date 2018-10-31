@@ -508,7 +508,7 @@ export default class Flow extends React.PureComponent {
 
   flowChartForm = () => {
     const { formData, formData: { steps } } = this.state;
-    const departmentTree = markTreeData(this.props.department, { parentId: 'parent_id', value: 'id', lable: 'full_name' }, 0);
+    const departmentTree = markTreeData(this.props.department, { parentId: 'parent_id', value: 'id', label: 'full_name' }, 0);
     const {
       form: { getFieldDecorator },
       formsList,

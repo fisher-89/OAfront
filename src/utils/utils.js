@@ -294,16 +294,17 @@ export function makerFilters(params) {
 
 /* selectTree */
 
-export function markTreeData(data = [], { value, lable, parentId }, pid = null) {
+export function markTreeData(data = [], { value, label, parentId }, pid = null) {
   const tree = [];
   data.forEach((item) => {
     if (item[parentId] === pid) {
       const temp = {
-        value: item[value].toString(),
-        title: item[lable],
+        title: item[label],
         key: `${item[value]}`,
+        disabled: item.disabled,
+        value: `${item[value] || ''}`,
       };
-      const children = markTreeData(data, { value, lable, parentId }, item[value]);
+      const children = markTreeData(data, { value, label, parentId }, item[value]);
       if (children.length > 0) {
         temp.children = children;
       }

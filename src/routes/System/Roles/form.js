@@ -77,7 +77,7 @@ export default class extends PureComponent {
 
     const brandVal = (initialValue.brand || []).map(item => item.id.toString());
     const departmentVal = (initialValue.department || []).map(item => item.id.toString());
-    const newTreeData = markTreeData(department, { value: 'id', lable: 'name', parentId: 'parent_id' }, 0);
+    const newTreeData = markTreeData(department, { value: 'id', label: 'name', parentId: 'parent_id' }, 0);
     return (
       <OAModal
         title={initialValue.id ? '编辑角色' : '创建角色'}

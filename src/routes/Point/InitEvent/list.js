@@ -322,7 +322,7 @@ export default class extends PureComponent {
       labelCol: { span: 6 },
       wrapperCol: { span: 14 },
     };
-    const treeData = markTreeData(typeList, { parentId: 'parent_id', value: 'id', lable: 'name' });
+    const treeData = markTreeData(typeList, { parentId: 'parent_id', value: 'id', label: 'name' });
     const isEdit = Object.keys(editInfo).length !== 0;
     const excelAction = {};
     if (customerAuthority(140)) {
