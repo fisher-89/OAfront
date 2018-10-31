@@ -71,7 +71,7 @@ export default class extends PureComponent {
     };
 
     const authorityVal = (initialValue.authority || []).map(item => item.id.toString());
-    const newTreeData = markTreeData(authority, { value: 'id', lable: 'auth_name', parentId: 'parent_id' }, 0);
+    const newTreeData = markTreeData(authority, { value: 'id', label: 'auth_name', parentId: 'parent_id' }, 0);
 
     return (
       <OAModal

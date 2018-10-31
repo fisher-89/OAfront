@@ -128,7 +128,7 @@ export default class EditStaff extends PureComponent {
       validateFields,
       validatorRequired,
       form: { getFieldDecorator } } = this.props;
-    const newTreeData = markTreeData(department, { value: 'id', lable: 'name', parentId: 'parent_id' }, 0);
+    const newTreeData = markTreeData(department, { value: 'id', label: 'name', parentId: 'parent_id' }, 0);
     const style = { maxHeight: 600, overflowY: 'auto', overflowX: 'hidden' };
 
     const tabPaneTitleStyle = { width: 118, textAlign: 'center' };

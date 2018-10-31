@@ -109,7 +109,7 @@ export default class extends PureComponent {
     const info = initialValue;
     this.makeDecoratorValue(info);
     const { shopInfo, poiInfo } = this.state;
-    const newTreeData = markTreeData(department, { value: 'id', lable: 'name', parentId: 'parent_id' }, 0);
+    const newTreeData = markTreeData(department, { value: 'id', label: 'name', parentId: 'parent_id' }, 0);
     const longFormItemLayout = {
       labelCol: { span: 4 },
       wrapperCol: { span: 20 },

@@ -1,6 +1,11 @@
 import React from 'react';
-import { Input, Button, Popover, Form, Select, Row, Col, Slider } from 'antd';
+import moment from 'moment';
+import { Input, Button, Popover, Form, Select, Row, Col, Slider, DatePicker, TreeSelect } from 'antd';
 import { mapValues, isArray, isObject, isString, map, has, assign } from 'lodash';
+import InputRange from '../InputRange';
+import { markTreeData } from '../../utils/utils';
+
+const { RangePicker } = DatePicker;
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -82,10 +87,16 @@ export default class MoreSearch extends React.Component {
       } else {
         assign(newFiltersText, filtersText, filterTextValue);
       }
+      let keyValue = value;
+      if (isArray(value)) {
+        keyValue = value;
+      } else if (isObject(value) || isString(value)) {
+        keyValue = [value];
+      }
       this.setState({
         filters: {
           ...filters,
-          ...(!key ? e : { [key]: isString(value) ? [value] : value }),
+          ...(!key ? e : { [key]: keyValue }),
         },
         filtersText: newFiltersText,
       });
@@ -146,17 +157,98 @@ export default class MoreSearch extends React.Component {
     );
   }
 
+  makeTreeFilters = (item) => {
+    const selectProps = this.makeSearchProps(item);
+    const { treeFilters, treeFilters: { data }, title, dataIndex } = item;
+    selectProps.onChange = (value) => {
+      const filterTextValue = data.filter(i => value.indexOf(`${i[treeFilters.value]}`) !== -1)
+        .map(i => i[treeFilters.title]).join('，');
+      this.handleSearchChange(dataIndex, {
+        title,
+        text: filterTextValue,
+      })(value);
+    };
+
+    selectProps.treeData = markTreeData(data, {
+      value: treeFilters.value,
+      label: treeFilters.title,
+      parentId: treeFilters.parentId,
+    }, treeFilters.initParent || 0);
+
+    return (
+      <FormItem {...this.makeFormItemProps(item)}>
+        <TreeSelect
+          multiple
+          allowClear
+          treeCheckable
+          {...selectProps}
+          dropdownMatchSelectWidth
+          getPopupContainer={triggerNode => triggerNode}
+          dropdownStyle={{ width: '100%', maxHeight: '200px' }}
+        />
+      </FormItem>
+    );
+  }
+
+  makeRangeFilter = (item) => {
+    const selectProps = this.makeSearchProps(item);
+    const { title, dataIndex } = item;
+    selectProps.onChange = (range) => {
+      const value = { ...range };
+      this.handleSearchChange(dataIndex, { title, text: `${value.min} ~ ${value.max}` })(value);
+    };
+    [selectProps.value] = selectProps.value || [{}];
+    const { min, max } = selectProps.value;
+    selectProps.value = [min, max];
+    return (
+      <FormItem {...this.makeFormItemProps(item)}>
+        <InputRange {...selectProps} />
+      </FormItem>
+    );
+  }
+
+  makeDateFilter = (item) => {
+    const selectProps = this.makeSearchProps(item);
+    const { title, dataIndex } = item;
+    selectProps.onChange = (_, dateStrings) => {
+      const value = {
+        min: dateStrings[0],
+        max: dateStrings[1],
+      };
+      this.handleSearchChange(dataIndex, { title, text: `${value.min} ~ ${value.max}` })(value);
+    };
+    const dateFormat = 'YYYY-MM-DD';
+    [selectProps.value] = selectProps.value || [{}];
+    const min = selectProps.value.min ? moment(selectProps.value.min, dateFormat) : undefined;
+    const max = selectProps.value.max ? moment(selectProps.value.max, dateFormat) : undefined;
+    selectProps.value = [min, max];
+    selectProps.placeholder = ['开始时间', '结束时间'];
+    return (
+      <FormItem {...this.makeFormItemProps(item)}>
+        <RangePicker
+          {...selectProps}
+          format={dateFormat}
+        />
+      </FormItem>
+    );
+  }
+
   makeColumnsSearch = (moreSearch) => {
     return moreSearch.map((item) => {
       if (item.searcher) {
         return this.makeSearcherFilter(item);
       } else if (item.filters) {
         return this.makeDefaultFilters(item);
+      } else if (item.treeFilters) {
+        return this.makeTreeFilters(item);
+      } else if (item.rangeFilters) {
+        return this.makeRangeFilter(item);
+      } else if (item.dateFilters) {
+        return this.makeDateFilter(item);
       }
       return null;
     }).filter(item => item);
   }
-
 
   renderMoreSearch = () => {
     const { moreSearch } = this.props;

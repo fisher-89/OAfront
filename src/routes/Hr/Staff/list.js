@@ -437,8 +437,8 @@ export default class extends PureComponent {
         width: 200,
         title: '部门',
         treeFilters: {
-          title: 'name',
           value: 'id',
+          title: 'name',
           data: department,
           parentId: 'parent_id',
         },
