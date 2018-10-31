@@ -419,6 +419,7 @@ class OATable extends PureComponent {
   }
 
   makerFiltersText = (key, value) => {
+    if (!this.columnsText[key]) return {};
     const { title, filters, treeFilters, dateFilters, rangeFilters } = this.columnsText[key];
     const filtersText = {};
     if (value.length === 0 || !value) return filtersText;
