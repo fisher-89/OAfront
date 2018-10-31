@@ -181,8 +181,13 @@ export default class extends PureComponent {
       {
         hidden: true,
         title: '性别',
-        searcher: true,
         dataIndex: 'gender',
+      },
+      {
+        hidden: true,
+        title: '微信',
+        searcher: true,
+        dataIndex: 'wechat',
       },
       {
         hidden: true,

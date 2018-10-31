@@ -77,6 +77,7 @@ export default class ModalCropper extends PureComponent {
       <Modal
         width={800}
         title="裁剪"
+        destroyOnClose
         visible={visible}
         onOk={this.handleOk}
         onCancel={() => onCancel(cropperFile)}
@@ -85,6 +86,7 @@ export default class ModalCropper extends PureComponent {
           <Cropper
             src={src}
             guides={false}
+            dragMode="move"
             {...cropperProps}
             preview=".img-preview"
             crop={debounce(this.cropImage, 500)}

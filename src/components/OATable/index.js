@@ -147,7 +147,12 @@ class OATable extends PureComponent {
   onPropsFiltersChange = (data, key = 'filters') => {
     const thisFiltersKey = { ...this.state[key] };
     Object.keys(data).forEach((filter) => {
-      if (!data[filter]) {
+      if (
+        data[filter] === '' ||
+        data[filter] === [] ||
+        data[filter] === null ||
+        data[filter] === undefined
+      ) {
         delete thisFiltersKey[filter];
       } else {
         thisFiltersKey[filter] = data[filter];
@@ -161,6 +166,7 @@ class OATable extends PureComponent {
           ...this.makerFiltersText(filterKey, value),
         };
       });
+      console.log(thisFiltersKey);
       this.setState({ [key]: thisFiltersKey, filtersText }, () => {
         const { filters, sorter, pagination } = this.state;
         this.handleTableChange(pagination, filters, sorter);
@@ -424,15 +430,17 @@ class OATable extends PureComponent {
     const filtersText = {};
     if (value.length === 0 || !value) return filtersText;
     if (filters) {
+      const newValue = value.join(',').split(',');
       filtersText[key] = { title };
-      filtersText[key].text = filters.filter(item => value.indexOf(item.value) !== -1)
+      filtersText[key].text = filters.filter(item => newValue.indexOf(`${item.value}`) !== -1)
         .map(item => item.text).join('，');
     } else if (treeFilters) {
       const { data } = treeFilters;
       const text = treeFilters.title;
       const dataIndex = treeFilters.value;
       filtersText[key] = { title };
-      filtersText[key].text = data.filter(item => value.indexOf(`${item[dataIndex]}`) !== -1)
+      const newValue = value.join(',').split(',');
+      filtersText[key].text = data.filter(item => newValue.indexOf(`${item[dataIndex]}`) !== -1)
         .map(item => item[text]).join('，');
     } else if (dateFilters || rangeFilters) {
       filtersText[key] = { title };
@@ -441,7 +449,7 @@ class OATable extends PureComponent {
       filtersText[key] = { title };
       filtersText[key].text = value;
     }
-    return filtersText;
+    return `${filtersText[key].text}` ? filtersText : {};
   }
 
   handleSearch = (key) => {
@@ -958,8 +966,8 @@ class OATable extends PureComponent {
             uri={excelInto}
             {...fileExportChange}
             onSuccess={(response) => {
-              this.fetchTableDataSource();
-              fileExportChange.onSuccess(response);
+              this.fetchTableDataSource(null, true);
+              if (fileExportChange.onSuccess) fileExportChange.onSuccess(response);
             }}
           >
             EXCEL导入

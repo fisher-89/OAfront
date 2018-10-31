@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
-import { Input, Select, Button, Radio } from 'antd';
+import { Input, Select, Button } from 'antd';
+import { isArray } from 'lodash';
 import OAForm, { Address } from '../../../components/OAForm';
 
-const RadioGroup = Radio.Group;
 const { Option } = Select;
 const formItemLayout = {
   labelCol: {
@@ -26,7 +26,7 @@ export default class Search extends PureComponent {
       if (!params[key]) {
         delete params[key];
       } else {
-        params[key] = [params[key]];
+        params[key] = isArray(params[key]) ? params[key] : [params[key]];
       }
     });
     moreChange(params);
@@ -48,14 +48,12 @@ export default class Search extends PureComponent {
         onSubmit={validateFields(this.handleSubmit)}
       >
         <FormItem label="性别" {...formItemLayout} >
-          {getFieldDecorator('gender', {
-            initialValue: undefined,
-          })(
-            <RadioGroup>
+          {getFieldDecorator('gender')(
+            <Select placeholder="请选择" mode="multiple">
               {sexOption.map(item =>
-                (<Radio key={item.value} value={item.value}>{item.label}</Radio>))
+                (<Option key={item.value}>{item.value}</Option>))
               }
-            </RadioGroup>
+            </Select>
           )}
         </FormItem>
         <FormItem label="微信" {...formItemLayout}>
@@ -105,11 +103,12 @@ export default class Search extends PureComponent {
             onClick={() => {
               resetFields();
               moreChange({
-                id_card_number: null,
-                native_place: null,
-                province_id: null,
-                county_id: null,
-                city_id: null,
+                id_card_number: undefined,
+                native_place: undefined,
+                province_id: undefined,
+                county_id: undefined,
+                city_id: undefined,
+                gender: undefined,
               });
             }}
           >重置
