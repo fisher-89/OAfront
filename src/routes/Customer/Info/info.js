@@ -118,7 +118,7 @@ function CustomerInfo(props) {
       <Button icon="left" onClick={() => { props.history.goBack(-1); }}>返回</Button>
       <Card bordered={false} style={style} loading={loading}>
         <Meta
-          avatar={<Avatar src={data.icon && data.icon[1]} size="large" />}
+          avatar={<Avatar src={data.icon && data.icon[1]} size="large" style={{ width: 96, height: 96 }} />}
           title={
             <React.Fragment>
               {data.name}&nbsp;&nbsp;

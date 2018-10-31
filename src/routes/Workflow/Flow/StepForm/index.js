@@ -261,7 +261,6 @@ export default class StepForm extends React.PureComponent {
       requireFields,
       availableFields,
     } = this.state;
-    const disVisible = editFields.data.length === 0 ? 'none' : 'block';
     const { getFieldDecorator, getFieldValue } = this.props.form;
     const departmentTree = [];
     this.markDepartmentTree(department, departmentTree);
@@ -337,35 +336,6 @@ export default class StepForm extends React.PureComponent {
                 <RadioButton value="1">启用</RadioButton>
                 <RadioButton value="0">停用</RadioButton>
               </RadioGroup>
-            )}
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrappercol={{ span: 15 }}
-            label="是否抄送"
-          >
-            {getFieldDecorator('is_cc', {
-              initialValue: dataCommit.is_cc,
-            })(
-              <RadioGroup>
-                <Radio value="1">是</Radio>
-                <Radio value="0">否</Radio>
-              </RadioGroup>
-            )}
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="抄送人"
-          >
-            {getFieldDecorator('cc_person', {
-              initialValue: dataCommit.cc_person,
-            })(
-              <SearchTable.Staff
-                multiple
-                disabled={getFieldValue('is_cc') === '0'}
-                filters={{ content: 'status_id>=0;', status: [1, 2, 3] }}
-              />
             )}
           </FormItem>
           <FormItem
@@ -488,6 +458,35 @@ export default class StepForm extends React.PureComponent {
           </div>
           <FormItem
             labelCol={{ span: 5 }}
+            wrappercol={{ span: 15 }}
+            label="是否抄送"
+          >
+            {getFieldDecorator('is_cc', {
+              initialValue: dataCommit.is_cc,
+            })(
+              <RadioGroup>
+                <Radio value="1">是</Radio>
+                <Radio value="0">否</Radio>
+              </RadioGroup>
+            )}
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="抄送人"
+          >
+            {getFieldDecorator('cc_person', {
+              initialValue: dataCommit.cc_person,
+            })(
+              <SearchTable.Staff
+                multiple
+                disabled={getFieldValue('is_cc') === '0'}
+                filters={{ content: 'status_id>=0;', status: [1, 2, 3] }}
+              />
+            )}
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 5 }}
             wrapperCol={{ span: 15 }}
             label="描述"
             name="description"
@@ -597,7 +596,6 @@ export default class StepForm extends React.PureComponent {
             />
           </FormItem>
           <FormItem
-            style={{ display: disVisible }}
             labelCol={{ span: 5 }}
             wrappercol={{ span: 15 }}
             label="必填字段"

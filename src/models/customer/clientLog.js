@@ -35,14 +35,14 @@ export default {
       if (id) {
         const response = yield call(clientReduction, id);
         if (response.error) { onError(response.error); return; }
-        // yield put({
-        //   type: 'update',
-        //   payload: {
-        //     id,
-        //     store,
-        //     data: response,
-        //   },
-        // });
+        yield put({
+          type: 'update',
+          payload: {
+            store,
+            data: response,
+            id: response.id,
+          },
+        });
         onSuccess(response);
       }
     } catch (err) { return err; }

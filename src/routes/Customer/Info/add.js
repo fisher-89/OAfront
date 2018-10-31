@@ -157,8 +157,8 @@ export default class extends React.PureComponent {
           </Col>
         </Row>
         <Row gutter={rowGutter}>
-          <Col {...rowGutter}>
-            <FormItem label="客户头像" {...rowFormItemLayout}>
+          <Col {...colSpan}>
+            <FormItem label="客户头像" {...formItemLayout}>
               {getFieldDecorator('icon', {
                 initialValue: iconImage.img,
               })(
@@ -175,6 +175,11 @@ export default class extends React.PureComponent {
                   setFieldsValue({ icon: values[0] });
                 }}
               />
+            </FormItem>
+          </Col>
+          <Col {...rowGutter}>
+            <FormItem label="预览" {...rowFormItemLayout}>
+              {images.icon && (<img src={images.icon} alt="头像" width="96" height="96" style={{ borderRadius: '50%' }} />)}
             </FormItem>
           </Col>
         </Row>

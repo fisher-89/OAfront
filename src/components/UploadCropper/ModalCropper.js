@@ -29,8 +29,8 @@ export default class ModalCropper extends PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    if ('cropperFile' in nextProps) {
-      this.setState({ src: nextProps.cropperFile.url }, this.cropImage);
+    if ('cropperFile' in nextProps && nextProps.cropperFile.url) {
+      this.setState({ src: nextProps.cropperFile.url }, debounce(this.cropImage, 100));
     }
   }
 
@@ -50,10 +50,7 @@ export default class ModalCropper extends PureComponent {
   }
 
   cropImage = () => {
-    if (!this.cropper) return;
-    if (typeof this.cropper.getCroppedCanvas() === 'undefined') {
-      return;
-    }
+    if (!this.cropper || !this.cropper.getCroppedCanvas()) return;
     this.setState({
       cropResult: this.cropper.getCroppedCanvas().toDataURL(),
     });
