@@ -559,15 +559,14 @@ class OATable extends PureComponent {
 
     forIn(newFilterText, (filter, key) => {
       if (
-        filter === [] ||
-        filter === '' ||
-        filter === null ||
-        filter === undefined
+        filter.text === [] ||
+        filter.text === '' ||
+        filter.text === null ||
+        filter.text === undefined
       ) {
-        omit(newFilterText, [key]);
+        delete newFilterText[key];
       }
     });
-
     forIn(newFilters, (filter, key) => {
       if (
         filter === [] ||
@@ -575,7 +574,7 @@ class OATable extends PureComponent {
         filter === null ||
         filter === undefined
       ) {
-        omit(newFilters, [key]);
+        delete newFilters[key];
       }
     });
 

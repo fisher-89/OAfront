@@ -28,7 +28,7 @@ export default class Search extends PureComponent {
       };
       const { onChange } = this.props;
       const filterText = mapValues(response, (filterValue) => {
-        const text = find(district, ['id', filterValue]).name;
+        const text = (find(district, ['id', filterValue]) || {}).name || '';
         return { text };
       });
       filterText[`${name}_province_id`].title = `${title}省`;
