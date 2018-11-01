@@ -58,14 +58,19 @@ const status = [
 
 export default class extends PureComponent {
   state = {
-    panes: [],
+    panes: [
+      {
+        title: '陈贤喜',
+        key: '100001',
+      },
+    ],
     filters: {},
     editStaff: {},
     editVisible: false,
     leaveVisible: false,
     processVisible: false,
     transferVisible: false,
-    activeKey: 'staff_list',
+    activeKey: '100001',
   }
 
   componentWillMount() {
@@ -74,6 +79,7 @@ export default class extends PureComponent {
     dispatch({ type: 'expense/fetchExpense' });
     dispatch({ type: 'position/fetchPosition' });
     dispatch({ type: 'department/fetchDepartment', payload: { withTrashed: true } });
+    this.fetchStaffInfo({ staff_sn: '100001' });
   }
 
   onEdit = (targetKey, action) => {
