@@ -7,7 +7,6 @@ import {
   Col,
   Row,
 } from 'antd';
-import { Map } from 'react-amap';
 import { connect } from 'dva';
 import OAForm, {
   OAModal,
@@ -16,13 +15,12 @@ import OAForm, {
   SearchTable,
 } from '../../../components/OAForm';
 import { markTreeData } from '../../../utils/utils';
+import Maps from './maps';
 import styles from './form.less';
-import UIMarker from './UIMarker';
 
 const { TabPane } = Tabs;
 const FormItem = OAForm.Item;
 const { Option } = Select;
-@connect(({ shop }) => ({ shop }))
 @OAForm.create()
 @connect(({ brand, department, loading }) => ({
   brand: brand.brand,
@@ -33,26 +31,10 @@ const { Option } = Select;
   ),
 }))
 export default class extends PureComponent {
-  constructor() {
-    super();
-    this.state = {
-      shopInfo: {},
-      poiInfo: {},
-    };
-  }
-
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({ type: 'brand/fetchBrand' });
     dispatch({ type: 'department/fetchDepartment' });
-  }
-
-
-  componentWillReceiveProps(nextProps) {
-    const { initialValue } = nextProps;
-    if (initialValue !== this.state.shopInfo) {
-      this.setState({ shopInfo: initialValue });
-    }
   }
 
   handleError = (error) => {
@@ -76,14 +58,6 @@ export default class extends PureComponent {
       payload: body,
       onError: this.handleError,
       onSuccess: () => this.props.handleVisible(false),
-    });
-  }
-
-  handlePosition = (poi) => {
-    this.props.form.setFieldsValue({
-      latitude: poi.lat,
-      longitude: poi.lng,
-      address: poi.address,
     });
   }
 
@@ -113,7 +87,6 @@ export default class extends PureComponent {
 
     const info = initialValue;
     this.makeDecoratorValue(info);
-    const { shopInfo, poiInfo } = this.state;
     const newTreeData = markTreeData(department, { value: 'id', label: 'name', parentId: 'parent_id' }, 0);
     const longFormItemLayout = {
       labelCol: { span: 4 },
@@ -150,15 +123,19 @@ export default class extends PureComponent {
             tab={<div className={styles.tabpane}>基础信息</div>}
             key="1"
           >
-            <FormItem label="店铺名称" {...longFormItemLayout} required>
-              {getFieldDecorator('name', {
-                initialValue: info.name,
-               })(
-                 <Input placeholder="请输入" style={{ width: '100%' }} />
-                 )
-              }
-            </FormItem>
             <Row gutter={rowGutter}>
+              <Col {...rowGutter}>
+                <FormItem label="店铺名称" {...longFormItemLayout} required>
+                  {getFieldDecorator('name', {
+                     initialValue: info.name,
+                    })(
+                      <Input placeholder="请输入" style={{ width: '100%' }} />
+                     )
+              }
+                </FormItem>
+              </Col>
+
+
               <Col {...colSpan}>
                 <FormItem label="店铺代码" {...formItemLayout} required>
                   {
@@ -170,6 +147,8 @@ export default class extends PureComponent {
                  }
                 </FormItem>
               </Col>
+
+
               <Col {...colSpan}>
                 <FormItem label="店铺状态" {...formItemLayout} required>
                   {getFieldDecorator('status_id', {
@@ -182,8 +161,8 @@ export default class extends PureComponent {
                    )}
                 </FormItem>
               </Col>
-            </Row>
-            <Row gutter={rowGutter} >
+
+
               <Col {...colSpan}>
                 <FormItem label="所属部门" {...formItemLayout} required>
                   {getFieldDecorator('department_id', {
@@ -198,6 +177,8 @@ export default class extends PureComponent {
                   )}
                 </FormItem>
               </Col>
+
+
               <Col {...colSpan}>
                 <FormItem label="所属品牌" {...formItemLayout} required>
                   {getFieldDecorator('brand_id', {
@@ -213,8 +194,8 @@ export default class extends PureComponent {
                   )}
                 </FormItem>
               </Col>
-            </Row>
-            <Row gutter={rowGutter} >
+
+
               <Col {...colSpan}>
                 <FormItem label="开业日期" {...formItemLayout} required>
                   {getFieldDecorator('opening_at',
@@ -233,31 +214,77 @@ export default class extends PureComponent {
                       )}
                 </FormItem>
               </Col>
-            </Row>
-            <FormItem label="店铺地址" {...longFormItemLayout} required>
-              {getFieldDecorator('shop_address', {
-              initialValue: {
+
+
+              <Col {...rowGutter}>
+                <FormItem label="店铺地址" {...longFormItemLayout} required>
+                  {getFieldDecorator('shop_address', {
+                  initialValue: {
                 address: initialValue.address || '',
                 city_id: initialValue.city_id || '',
                 county_id: initialValue.county_id || '',
                 province_id: initialValue.province_id || '',
-              },
-            })(
-              <Address />
-            )}
+                 },
+                })(
+                  <Address />
+                )}
+                </FormItem>
+              </Col>
 
-            </FormItem>
-            <FormItem label="店铺标签" {...longFormItemLayout}>
-              {getFieldDecorator('tags', {
-              initialValue: info.tags || [],
-               })(<Select />)}
-            </FormItem>
+
+              <Col {...colSpan}>
+                <FormItem label="上班时间" {...formItemLayout}>
+                  {getFieldDecorator('clock_in', {
+              initialValue: info.clock_in || '00:00:00',
+                  })(
+                    <DatePicker
+                      mode="time"
+                      format="HH:mm:ss"
+                      showTime={{ format: 'HH:mm:ss' }}
+                      style={{ width: '100%' }}
+                    />
+                 )}
+                </FormItem>
+              </Col>
+
+
+              <Col {...colSpan}>
+                <FormItem label="下班时间" {...formItemLayout}>
+                  {getFieldDecorator('clock_out', {
+              initialValue: info.clock_out || '00:00:00',
+                 })(
+                   <DatePicker
+                     mode="time"
+                     format="HH:mm:ss"
+                     showTime={{ format: 'HH:mm:ss' }}
+                     style={{ width: '100%' }}
+                   />
+                 )}
+                </FormItem>
+              </Col>
+
+
+              <Col {...rowGutter}>
+                <FormItem label="店铺标签" {...longFormItemLayout}>
+                  {getFieldDecorator('tags', {
+                   initialValue: info.tags || [],
+                 })(<Select />)}
+                </FormItem>
+              </Col>
+            </Row>
+          </TabPane>
+
+
+          <TabPane
+            tab={<div className={styles.tabpane}>定位</div>}
+            key="2"
+          >
             <Row gutter={rowGutter}>
               <Col {...colSpan}>
                 <FormItem label="店长" {...formItemLayout}>
                   {
                 getFieldDecorator('manager_sn', {
-                  initialValue: info.manager_sn || null,
+                  initialValue: info.manager_name || null,
                     })(
                       <SearchTable.Staff
                         name={{
@@ -270,11 +297,13 @@ export default class extends PureComponent {
                    }
                 </FormItem>
               </Col>
+
+
               <Col {...colSpan}>
                 <FormItem label="一级负责人" {...formItemLayout}>
                   {
                 getFieldDecorator('manager1_sn', {
-                  initialValue: info.manager1_sn || [],
+                  initialValue: info.manager1_name || [],
                 })(
                   <SearchTable.Staff
                     name={{
@@ -287,13 +316,13 @@ export default class extends PureComponent {
               }
                 </FormItem>
               </Col>
-            </Row>
-            <Row gutter={rowGutter}>
+
+
               <Col {...colSpan}>
                 <FormItem label="二级负责人" {...formItemLayout}>
                   {
                  getFieldDecorator('manager2_sn', {
-                initialValue: info.manager2_sn || [],
+                initialValue: info.manager2_name || [],
                      })(
                        <SearchTable.Staff
                          name={{
@@ -306,11 +335,13 @@ export default class extends PureComponent {
                   }
                 </FormItem>
               </Col>
+
+
               <Col {...colSpan}>
                 <FormItem label="三级负责人" {...formItemLayout}>
                   {
                getFieldDecorator('manager3_sn', {
-              initialValue: info.manager3_sn || [],
+              initialValue: info.manager3_name || [],
                    })(
                      <SearchTable.Staff
                        name={{
@@ -323,9 +354,11 @@ export default class extends PureComponent {
                   }
                 </FormItem>
               </Col>
-            </Row>
-            <FormItem label="店员" {...longFormItemLayout}>
-              {
+
+
+              <Col {...rowGutter}>
+                <FormItem label="店员" {...longFormItemLayout}>
+                  {
                 getFieldDecorator('staff', {
                   initialValue: info.staff || [],
                 })(
@@ -339,70 +372,22 @@ export default class extends PureComponent {
                   />
                 )
               }
-            </FormItem>
+                </FormItem>
+              </Col>
+            </Row>
           </TabPane>
-          <TabPane
-            tab={<div className={styles.tabpane}>定位</div>}
-            key="2"
-          >
-            <FormItem {...longFormItemLayout} label="店铺位置" >
-              {getFieldDecorator('address', {
-              initialValue: poiInfo.address,
-               })(
-                 <Input placeholder="请输入" style={{ width: '100%' }} />
-               )
-              }
-            </FormItem>
 
-            <div style={{ width: '100%', height: '400px' }}>
-              <Map
-                zoom={15}
-                useAMapUI="true"
-                center={{
-              longitude: (poiInfo.lng || shopInfo.lng),
-              latitude: (poiInfo.lat || shopInfo.lat),
-            }}
-                amapkey="9a54ee2044c8fdd03b3d953d4ace2b4d"
-              >
-                <UIMarker handlePosition={this.handlePosition} />
-              </Map>
-            </div>
-          </TabPane>
+
           <TabPane
             tab={<div className={styles.tabpane}>利鲨</div>}
             key="3"
           >
-            <Row gutter={rowGutter}>
-              <Col {...colSpan}>
-
-                <FormItem label="上班时间" {...formItemLayout}>
-                  {getFieldDecorator('clock_in', {
-                initialValue: `${info.clock_in}`,
-                    })(
-                      <DatePicker
-                        mode="time"
-                        format="HH:mm:ss"
-                        showTime={{ format: 'HH:mm:ss' }}
-                        style={{ width: '100%' }}
-                      />
-                   )}
-                </FormItem>
-              </Col>
-              <Col {...colSpan}>
-                <FormItem label="下班时间" {...formItemLayout}>
-                  {getFieldDecorator('clock_out', {
-                initialValue: `${info.clock_out}`,
-                   })(
-                     <DatePicker
-                       mode="time"
-                       format="HH:mm:ss"
-                       showTime={{ format: 'HH:mm:ss' }}
-                       style={{ width: '100%' }}
-                     />
-                   )}
-                </FormItem>
-              </Col>
-            </Row>
+            <FormItem label="店铺定位" {...longFormItemLayout}>
+              <Input />
+            </FormItem>
+            <div style={{ width: '100%', height: '400px' }} >
+              <Maps />
+            </div>
           </TabPane>
         </Tabs>
       </OAModal>
