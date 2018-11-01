@@ -54,6 +54,7 @@ const status = [
   department: department.department,
   staffInfo: staffs.staffDetails,
   staffLoading: loading.models.staffs,
+  staffInfoLoading: loading.effects['staffs/fetchStaff'],
 }))
 
 export default class extends PureComponent {
@@ -562,7 +563,7 @@ export default class extends PureComponent {
 
   render() {
     const { panes, activeKey, filters } = this.state;
-    const { staffLoading, staffInfo, staff } = this.props;
+    const { staffLoading, staffInfo, staffInfoLoading, staff } = this.props;
     const columns = this.makeColumns();
     return (
       <Fragment>
@@ -604,7 +605,7 @@ export default class extends PureComponent {
               >
                 {staffInfo[pane.key] && (Object.keys(staffInfo[pane.key]).length !== 0) && (
                   <StaffInfo
-                    loading={staffLoading}
+                    loading={staffInfoLoading}
                     data={staffInfo[pane.key]}
                     staffId={pane.key}
                   />

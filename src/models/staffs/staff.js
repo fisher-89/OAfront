@@ -12,11 +12,45 @@ import {
   process,
   transfer,
   leave,
+  fetchStaffLog,
+  fetchBespokeStaff,
 } from '../../services/user';
 
 const store = 'staff';
 
 export default {
+  * fetchStaffLog({ payload }, { call, put }) {
+    try {
+      const params = { ...payload };
+      const response = yield call(fetchStaffLog, params.id || '');
+      yield put({
+        type: 'save',
+        payload: {
+          data: response,
+          store: 'staffLog',
+          staffSn: params.id,
+        },
+      });
+    } catch (err) {
+      return err;
+    }
+  },
+  * fetchBespokeStaff({ payload }, { call, put }) {
+    try {
+      const params = { ...payload };
+      const response = yield call(fetchBespokeStaff, params.id || '');
+      yield put({
+        type: 'save',
+        payload: {
+          data: response,
+          staffSn: params.id,
+          store: 'staffBespoke',
+        },
+      });
+    } catch (err) {
+      return err;
+    }
+  },
   * fetchStaff({ payload }, { call, put }) {
     try {
       const staffSn = payload.staff_sn;

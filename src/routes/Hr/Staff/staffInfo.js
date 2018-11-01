@@ -160,12 +160,12 @@ export default class StaffInfo extends PureComponent {
           <div style={{ flexGrow: 1, width: 650 }}>
             <Tabs defaultActiveKey="changeLog">
               <TabPane key="changeLog" tab="变更记录" >
-                <ChangeLog data={data.staff_sn} />
+                <ChangeLog staffSn={data.staff_sn} />
               </TabPane>
               <TabPane key="userAuth" tab="员工权限" />
               <TabPane key="relatives" tab="关系网" />
               <TabPane key="bespoke" tab="预约操作" >
-                <Bespoke data={data.staff_sn} />
+                <Bespoke staffSn={data.staff_sn} />
               </TabPane>
             </Tabs>
           </div>

@@ -138,3 +138,14 @@ export async function againEntry(params) {
     body: params,
   });
 }
+
+// 操作记录
+export async function fetchStaffLog(id) {
+  return request(`/api/hr/staff/${id}/logs`, { method: 'GET' });
+}
+
+// 预约操作
+export async function fetchBespokeStaff(id) {
+  return request(`/api/hr/staff/${id}/reserve`, { method: 'GET' });
+}
+

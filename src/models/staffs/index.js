@@ -6,6 +6,8 @@ export default {
   state: {
     staff: [],
     staffDetails: {},
+    staffLogDetails: {},
+    staffBespokeDetails: {},
     tableResult: {},
     totalResult: {},
     total: 0,

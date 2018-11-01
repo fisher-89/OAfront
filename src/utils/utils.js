@@ -731,7 +731,7 @@ export function getInitSearchProps(initialValue, cb, filterText = {}) {
     newInitialValue[key] = {
       onChange: (e) => {
         const value = e.target ? e.target.value : e;
-        const filterTextValue = { title: filterText[key].title };
+        const filterTextValue = { title: filterText[key].title, text: value };
         if (filterText[key].filters) {
           filterTextValue[key].text = filterText[key].filters.filter((item) => {
             return value.indexOf(item.value) !== -1;
