@@ -161,7 +161,7 @@ export default class StaffInfo extends PureComponent {
             <TabPane key="userAuth" tab="员工权限" >
               <StaffAuth data={data} />
             </TabPane>
-            <TabPane key="relatives" tab="关系网" />
+            {/* <TabPane key="relatives" tab="关系网" /> */}
             <TabPane key="bespoke" tab="预约操作" >
               <Bespoke staffSn={data.staff_sn} />
             </TabPane>

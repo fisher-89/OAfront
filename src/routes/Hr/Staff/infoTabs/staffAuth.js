@@ -12,10 +12,6 @@ const { TreeNode } = Tree;
   ),
 }))
 export default class extends PureComponent {
-  state = {
-    checkedKeys: [],
-  }
-
   componentWillMount() {
     const { dispatch } = this.props;
     dispatch({ type: 'authority/fetchAuth' });
@@ -35,12 +31,13 @@ export default class extends PureComponent {
   }
 
   render() {
-    const { checkedKeys } = this.state;
-    const { authority, loading } = this.props;
+    const { authority, loading, data } = this.props;
+    const checkedKeys = data.oa || [];
     const treeData = markTreeData(authority, { value: 'id', label: 'auth_name', parentId: 'parent_id' }, 0);
     return (
       <Spin spinning={loading || false}>
         <Tree
+          showLine
           checkable
           checkedKeys={checkedKeys}
         >
