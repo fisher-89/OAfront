@@ -3,6 +3,7 @@
  */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import ChangeInfo from '../changeInfo';
 import OATable from '../../../../components/OATable';
 
 @connect(({ staffs, loading }) => ({
@@ -10,6 +11,21 @@ import OATable from '../../../../components/OATable';
   loading: loading.effects['staffs/fetchStaffLog'],
 }))
 export default class extends PureComponent {
+  state = {
+    visible: false,
+    initialValue: {},
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if ('actionType' in nextProps) this.setState({ visible: false, initialValue: {} });
+  }
+
+  lookUpDetails = (record) => {
+    return () => {
+      this.setState({ visible: true, initialValue: record });
+    };
+  }
+
   columns = [
     {
       title: '执行日期',
@@ -27,6 +43,10 @@ export default class extends PureComponent {
       title: '操作人',
       dataIndex: 'admin.realname',
     },
+    {
+      title: '操作',
+      render: record => record.operation_type === '编辑' && <a onClick={this.lookUpDetails(record)}>查看</a>,
+    },
   ]
 
   fetch = () => {
@@ -37,14 +57,24 @@ export default class extends PureComponent {
 
   render() {
     const { list, loading } = this.props;
+    const { visible, initialValue } = this.state;
     const data = list[this.id] || [];
     return (
-      <OATable
-        data={data}
-        loading={loading}
-        columns={this.columns}
-        fetchDataSource={this.fetch}
-      />
+      <React.Fragment>
+        <ChangeInfo
+          visible={visible}
+          onClose={() => {
+            this.setState({ visible: false, initialValue: {} });
+          }}
+          initialValue={initialValue}
+        />
+        <OATable
+          data={data}
+          loading={loading}
+          columns={this.columns}
+          fetchDataSource={this.fetch}
+        />
+      </React.Fragment>
     );
   }
 }
