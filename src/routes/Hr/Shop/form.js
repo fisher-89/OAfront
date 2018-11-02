@@ -276,7 +276,7 @@ export default class extends PureComponent {
 
 
           <TabPane
-            tab={<div className={styles.tabpane}>定位</div>}
+            tab={<div className={styles.tabpane}>店铺成员</div>}
             key="2"
           >
             <Row gutter={rowGutter}>
@@ -300,7 +300,7 @@ export default class extends PureComponent {
 
 
               <Col {...colSpan}>
-                <FormItem label="一级负责人" {...formItemLayout}>
+                <FormItem label="区域经理" {...formItemLayout}>
                   {
                 getFieldDecorator('manager1_sn', {
                   initialValue: info.manager1_name || [],
@@ -319,7 +319,7 @@ export default class extends PureComponent {
 
 
               <Col {...colSpan}>
-                <FormItem label="二级负责人" {...formItemLayout}>
+                <FormItem label="大区经理" {...formItemLayout}>
                   {
                  getFieldDecorator('manager2_sn', {
                 initialValue: info.manager2_name || [],
@@ -338,7 +338,7 @@ export default class extends PureComponent {
 
 
               <Col {...colSpan}>
-                <FormItem label="三级负责人" {...formItemLayout}>
+                <FormItem label="部长" {...formItemLayout}>
                   {
                getFieldDecorator('manager3_sn', {
               initialValue: info.manager3_name || [],
@@ -379,7 +379,7 @@ export default class extends PureComponent {
 
 
           <TabPane
-            tab={<div className={styles.tabpane}>利鲨</div>}
+            tab={<div className={styles.tabpane}>店铺定位</div>}
             key="3"
           >
             <FormItem label="店铺定位" {...longFormItemLayout}>
