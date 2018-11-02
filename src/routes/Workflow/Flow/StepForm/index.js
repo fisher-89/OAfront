@@ -53,6 +53,7 @@ const stepDefaultValue = {
   accept_check_callback: '0',
   accept_approve_callback: '0',
   accept_reject_callback: '0',
+  accept_transfer_callback: '0',
   accept_withdraw_callback: '0',
   approvers: { staff: [], roles: [], departments: [], manager: '' },
 };
