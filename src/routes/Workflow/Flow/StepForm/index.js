@@ -53,6 +53,7 @@ const stepDefaultValue = {
   accept_check_callback: '0',
   accept_approve_callback: '0',
   accept_reject_callback: '0',
+  accept_transfer_callback: '0',
   accept_withdraw_callback: '0',
   approvers: { staff: [], roles: [], departments: [], manager: '' },
 };
@@ -190,7 +191,7 @@ export default class StepForm extends React.PureComponent {
         const result = handleSteps(commitSource, isEdit);
         if (result) {
           callbackRemoveTabs(`newTabs${onlyKey}`);
-          message.info('生成流程成功！');
+          message.info('生成步骤成功！');
         } else {
           message.error('存在相同步骤名，请重新输入步骤！');
         }
@@ -537,7 +538,7 @@ export default class StepForm extends React.PureComponent {
           <FormItem
             labelCol={{ span: 5 }}
             wrappercol={{ span: 15 }}
-            label="可选字段"
+            label="可用字段"
           >
             <Transfer
               lazy={false}
@@ -928,7 +929,7 @@ export default class StepForm extends React.PureComponent {
             >下一步
             </Button>
           )}
-          <Button type="primary" htmlType="submit" loading={submitting}>生成流程</Button>
+          <Button type="primary" htmlType="submit" loading={submitting}>生成步骤</Button>
           <Button
             type="danger"
             ghost

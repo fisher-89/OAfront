@@ -93,7 +93,7 @@ export default class extends React.PureComponent {
       staffBrandsAuth,
       validateFields, validatorRequired,
       form: {
-        getFieldDecorator, setFieldsValue, getFieldsValue,
+        getFieldDecorator, setFieldsValue, getFieldsValue, getFieldValue,
       },
     } = this.props;
     let tagsGroup = [];
@@ -128,6 +128,7 @@ export default class extends React.PureComponent {
     const { editable = [] } = staffBrandsAuth;
     const staffBransData = brands.filter(item => editable.indexOf(item.id) !== -1);
     const images = getFieldsValue(['icon', 'id_card_image_b', 'id_card_image_f']);
+    const required = !(getFieldValue('status') === '0');
     return (
       <OAForm onSubmit={validateFields(this.handleSubmit)}>
         <Row gutter={rowGutter}>
@@ -188,7 +189,7 @@ export default class extends React.PureComponent {
             <FormItem label="合作品牌" {...rowFormItemLayout} required>
               {getFieldDecorator('brands', {
                 initialValue: brandValue || [],
-                rules: [validatorRequired],
+                // ...required && { rules: [validatorRequired] },
               })(
                 <Select placeholder="请选择" mode="multiple">
                   {staffBransData.map(item =>
@@ -201,10 +202,10 @@ export default class extends React.PureComponent {
         </Row>
         <Row gutter={rowGutter}>
           <Col {...rowGutter}>
-            <FormItem label="客户等级" {...rowFormItemLayout} required>
+            <FormItem label="客户等级" {...rowFormItemLayout} required={required}>
               {getFieldDecorator('levels', {
                 initialValue: (initialValue.levels || []).map(item => `${item.level_id}`),
-                rules: [validatorRequired],
+                ...required && { rules: [validatorRequired] },
               })(
                 <Select placeholder="请选择" mode="multiple">
                   {level.map(item =>
@@ -243,10 +244,10 @@ export default class extends React.PureComponent {
 
         <Row gutter={rowGutter}>
           <Col {...rowGutter}>
-            <FormItem label="合作省份" {...rowFormItemLayout} required>
+            <FormItem label="合作省份" {...rowFormItemLayout} required={required}>
               {getFieldDecorator('linkages', {
                 initialValue: (initialValue.linkages || []).map(item => `${item.linkage_id}`),
-                rules: [validatorRequired],
+                ...required && { rules: [validatorRequired] },
               })(
                 <Select placeholder="请选择" mode="multiple">
                   {province.map(item =>
@@ -260,10 +261,10 @@ export default class extends React.PureComponent {
 
         <Row gutter={rowGutter}>
           <Col {...rowGutter}>
-            <FormItem label="身份证号码" {...rowFormItemLayout} required>
+            <FormItem label="身份证号码" {...rowFormItemLayout} required={required}>
               {getFieldDecorator('id_card_number', {
                 initialValue: initialValue.id_card_number || '',
-                rules: [validatorRequired],
+                ...required && { rules: [validatorRequired] },
               })(
                 <Input placeholder="请输入" />
               )}
