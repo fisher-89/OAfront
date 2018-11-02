@@ -87,17 +87,6 @@ export default class extends React.PureComponent {
         });
       }
     });
-    console.log(data);
-    // Object.keys(changes).forEach((key, index) => {
-    //   const [dirty, original] = changes[key];
-    //   data.push({
-    //     key: index,
-    //     name: key,
-    //     create_at: initialValue.created_at,
-    //     dirty: '(空)',
-    //     original: '(空)',
-    //   });
-    // });
 
     return (
       <Drawer
