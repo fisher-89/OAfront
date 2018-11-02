@@ -33,10 +33,6 @@ const formItemLayout = {
 const staffProperty = ['无', '108将', '36天罡', '24金刚', '18罗汉'];
 
 export default class StaffInfo extends PureComponent {
-  componentWillMount() {
-
-  }
-
   render() {
     const { data, loading } = this.props;
     // const relatives = data.relatives ? data.relatives.map((item) => {
