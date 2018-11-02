@@ -2,11 +2,17 @@
  * Created by Administrator on 2018/4/15.
  */
 import React, { PureComponent } from 'react';
+import { connect } from 'dva';
 import OATable from '../../../../components/OATable';
 
+@connect(({ staffs, loading }) => ({
+  list: staffs.staffBespokeDetails,
+  loading: loading.effects['staffs/fetchBespokeStaff'],
+}))
 export default class extends PureComponent {
-  componentWillMount() {
-
+  constructor(props) {
+    super(props);
+    this.id = props.staffSn;
   }
 
   columns = [
@@ -36,11 +42,21 @@ export default class extends PureComponent {
     },
   ]
 
+  fetch = () => {
+    const { dispatch, staffSn } = this.props;
+    this.id = staffSn;
+    dispatch({ type: 'staffs/fetchBespokeStaff', payload: { id: this.id } });
+  }
+
   render() {
+    const { list, loading } = this.props;
+    const data = list[this.id] || [];
     return (
       <OATable
-        columns={[]}
-        data={[]}
+        data={data}
+        loading={loading}
+        columns={this.columns}
+        fetchDataSource={this.fetch}
       />
     );
   }

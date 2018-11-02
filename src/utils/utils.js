@@ -294,7 +294,7 @@ export function makerFilters(params) {
 
 /* selectTree */
 
-export function markTreeData(data = [], { value, label, parentId }, pid = null) {
+export function markTreeData(data = [], { value = 'id', label = 'name', parentId = 'parent_id' }, pid = null) {
   const tree = [];
   data.forEach((item) => {
     if (item[parentId] === pid) {
