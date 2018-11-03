@@ -89,21 +89,26 @@ export default class extends PureComponent {
     this.makeDecoratorValue(info);
     const newTreeData = markTreeData(department, { value: 'id', label: 'name', parentId: 'parent_id' }, 0);
     const longFormItemLayout = {
-      labelCol: { span: 4 },
-      wrapperCol: { span: 20 },
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 5 },
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 18 },
+      },
     };
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 8 },
+        sm: { span: 10 },
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 16 },
+        sm: { span: 12 },
       },
     };
-    const rowGutter = { xs: 16, lg: 24 };
-    const colSpan = { xs: 6, lg: 12 };
+    const colSpan = { xs: 24, lg: 12 };
     return (
       <OAModal
         title={info.id ? '编辑店铺' : '添加店铺'}
@@ -123,8 +128,8 @@ export default class extends PureComponent {
             tab={<div className={styles.tabpane}>基础信息</div>}
             key="1"
           >
-            <Row gutter={rowGutter}>
-              <Col {...rowGutter}>
+            <Row>
+              <Col>
                 <FormItem label="店铺名称" {...longFormItemLayout} required>
                   {getFieldDecorator('name', {
                      initialValue: info.name,
@@ -134,8 +139,10 @@ export default class extends PureComponent {
               }
                 </FormItem>
               </Col>
+            </Row>
 
 
+            <Row>
               <Col {...colSpan}>
                 <FormItem label="店铺代码" {...formItemLayout} required>
                   {
@@ -161,8 +168,10 @@ export default class extends PureComponent {
                    )}
                 </FormItem>
               </Col>
+            </Row>
 
 
+            <Row>
               <Col {...colSpan}>
                 <FormItem label="所属部门" {...formItemLayout} required>
                   {getFieldDecorator('department_id', {
@@ -194,8 +203,10 @@ export default class extends PureComponent {
                   )}
                 </FormItem>
               </Col>
+            </Row>
 
 
+            <Row>
               <Col {...colSpan}>
                 <FormItem label="开业日期" {...formItemLayout} required>
                   {getFieldDecorator('opening_at',
@@ -214,9 +225,11 @@ export default class extends PureComponent {
                       )}
                 </FormItem>
               </Col>
+            </Row>
 
 
-              <Col {...rowGutter}>
+            <Row>
+              <Col>
                 <FormItem label="店铺地址" {...longFormItemLayout} required>
                   {getFieldDecorator('shop_address', {
                   initialValue: {
@@ -230,8 +243,10 @@ export default class extends PureComponent {
                 )}
                 </FormItem>
               </Col>
+            </Row>
 
 
+            <Row>
               <Col {...colSpan}>
                 <FormItem label="上班时间" {...formItemLayout}>
                   {getFieldDecorator('clock_in', {
@@ -262,9 +277,11 @@ export default class extends PureComponent {
                  )}
                 </FormItem>
               </Col>
+            </Row>
 
 
-              <Col {...rowGutter}>
+            <Row>
+              <Col>
                 <FormItem label="店铺标签" {...longFormItemLayout}>
                   {getFieldDecorator('tags', {
                    initialValue: info.tags || [],
@@ -279,7 +296,7 @@ export default class extends PureComponent {
             tab={<div className={styles.tabpane}>店铺成员</div>}
             key="2"
           >
-            <Row gutter={rowGutter}>
+            <Row>
               <Col {...colSpan}>
                 <FormItem label="店长" {...formItemLayout}>
                   {
@@ -316,8 +333,10 @@ export default class extends PureComponent {
               }
                 </FormItem>
               </Col>
+            </Row>
 
 
+            <Row>
               <Col {...colSpan}>
                 <FormItem label="大区经理" {...formItemLayout}>
                   {
@@ -354,9 +373,11 @@ export default class extends PureComponent {
                   }
                 </FormItem>
               </Col>
+            </Row>
 
 
-              <Col {...rowGutter}>
+            <Row>
+              <Col>
                 <FormItem label="店员" {...longFormItemLayout}>
                   {
                 getFieldDecorator('staff', {
