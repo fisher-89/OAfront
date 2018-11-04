@@ -25,7 +25,7 @@ export default class extends PureComponent {
       filters: status,
       dataIndex: 'errcode',
       render: (key) => {
-        const value = find(status, ['value', `${key}`]) || {};
+        const value = find(status, ['value', key]) || {};
         return value.text || '失败';
       },
     },
@@ -38,7 +38,7 @@ export default class extends PureComponent {
     {
       title: '操作',
       render: (record) => {
-        return (record.errcode || record.errcode === null) ? (
+        return (record.errcode !== '0' || !record.errcode) ? (
           <a onClick={this.props.resendWaitMsg(record.id)}>发送</a>
         ) : '';
       },
