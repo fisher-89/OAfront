@@ -470,17 +470,19 @@ class OATable extends PureComponent {
       const { pagination, filters, sorter, filtered } = this.state;
       const searchFilter = value ? [value] : [];
       const filteredState = filtered.filter(item => item !== key);
-      if (value) {
-        filteredState.push(key);
-      }
-      const newFilters = {
-        ...filters,
-        [key]: searchFilter,
-      };
-
       const filtersText = {
         ...this.state.filtersText,
         ...this.makerFiltersText(key, value),
+      };
+      if (value) {
+        filteredState.push(key);
+      } else {
+        delete filtersText[key];
+      }
+
+      const newFilters = {
+        ...filters,
+        [key]: searchFilter,
       };
 
       this.setState({
@@ -504,6 +506,7 @@ class OATable extends PureComponent {
         ...this.state.filtersText,
         ...this.makerFiltersText(key, checkedKeys),
       };
+      if (!checkedKeys.length) delete filtersText[key];
       this.setState({
         filtersText,
         filterDropdownVisible: false,
@@ -517,17 +520,25 @@ class OATable extends PureComponent {
     return (timeValue) => {
       const { pagination, filters, sorter, filtered } = this.state;
       const filteredState = filtered.filter(item => item !== key);
-      if (timeValue.length > 0) {
-        filteredState.push(key);
-      }
-      const newFilters = {
-        ...filters,
-        [key]: timeValue,
-      };
+
       const filtersText = {
         ...this.state.filtersText,
         ...this.makerFiltersText(key, timeValue),
       };
+
+      const newFilters = {
+        ...filters,
+        [key]: timeValue,
+      };
+
+      if (timeValue.length > 0) {
+        filteredState.push(key);
+      } else {
+        delete newFilters[key];
+        delete filtersText[key];
+      }
+
+
       this.setState({
         filtersText,
         filtered: filteredState,
@@ -544,16 +555,18 @@ class OATable extends PureComponent {
       const filteredState = filtered.filter(item => item !== key);
       const newFilters = { ...filters };
       const { min, max } = rangeValue[0];
+      const filtersText = {
+        ...this.state.filtersText,
+        ...this.makerFiltersText(key, rangeValue),
+      };
       if (min || max) {
         filteredState.push(key);
         newFilters[key] = rangeValue;
       } else {
         delete newFilters[key];
+        delete filtersText[key];
       }
-      const filtersText = {
-        ...this.state.filtersText,
-        ...this.makerFiltersText(key, rangeValue),
-      };
+
       this.setState({
         filtersText,
         filtered: filteredState,
@@ -707,7 +720,6 @@ class OATable extends PureComponent {
     }
     let newFiltered = [];
     if (key) newFiltered = filtered.filter(item => item !== key);
-    console.log(newFilters, newFilters);
     this.setState({
       filters: newFilters,
       filtered: newFiltered,
