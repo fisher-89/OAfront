@@ -763,7 +763,7 @@ class OATable extends PureComponent {
       rowKey,
       pagination,
       size: 'middle',
-      bordered: false,
+      bordered: true,
       dataSource: data,
       ...this.props,
       columns,

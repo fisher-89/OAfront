@@ -12,15 +12,16 @@ const status = [
 ];
 
 @store()
-export default class Validator extends PureComponent {
+export default class extends PureComponent {
   columns = [
     { title: '编号', dataIndex: 'id' },
     { title: '标题', dataIndex: 'title' },
     {
-      title: '发起人', dataIndex: 'create_realname',
+      title: '发起人', dataIndex: 'create_realname', align: 'center',
     },
     {
       title: '状态',
+      align: 'center',
       filters: status,
       dataIndex: 'errcode',
       render: (key) => {
@@ -28,11 +29,18 @@ export default class Validator extends PureComponent {
         return value.text || '失败';
       },
     },
-    { title: '完成', dataIndex: 'is_finish' },
+    {
+      align: 'center',
+      title: '完成情况',
+      dataIndex: 'is_finish',
+      render: key => (key === 1 ? '已完成' : '未完成'),
+    },
     {
       title: '操作',
       render: (record) => {
-        return (record.errcode || record.errcode === null) ? (<a>发送</a>) : '';
+        return (record.errcode || record.errcode === null) ? (
+          <a onClick={this.props.resendWaitMsg(record.id)}>发送</a>
+        ) : '';
       },
     },
   ]

@@ -9,7 +9,7 @@ import apiConfigEffects from './apiConfig';
 import approverModeEffects from './approverMode';
 import approverEffects from './approver';
 import messageEffects from './message';
-import defaultReducers from '../reducers/default';
+import defaultReducers from '../reducers';
 
 
 export default {

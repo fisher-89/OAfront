@@ -300,10 +300,22 @@ export async function fetchWaitMsg(params) {
   });
 }
 
+export async function resendWaitMsg(id) {
+  return request(`/api/workflow/todo/${id}`, {
+    method: 'PATCH',
+  });
+}
+
 export async function fetchWorkMsg(params) {
   return request('/api/workflow/job', {
     method: 'GET',
     body: params,
+  });
+}
+
+export async function resendWorkMsg(id) {
+  return request(`/api/workflow/job/${id}`, {
+    method: 'PATCH',
   });
 }
 

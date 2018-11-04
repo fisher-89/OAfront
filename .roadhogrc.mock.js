@@ -73,6 +73,7 @@ export default !noProxy ? {
     'POST /api/workflow/(.*)': `${workflow_port}/admin/`,
     'PUT /api/workflow/(.*)': `${workflow_port}/admin/`,
     'DELETE /api/workflow/(.*)': `${workflow_port}/admin/`,
+    'PATCH /api/workflow/(.*)': `${workflow_port}/admin/`,
 
     /** 客户端管理 */
     'GET /api/crm/(.*)': `${crm_port}/admin/`,

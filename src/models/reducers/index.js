@@ -23,7 +23,7 @@ export default {
     }
   },
   add(state, action) {
-    const { store, data } = action.payload;
+    const { store, data, message } = action.payload;
     if (data.message) {
       notification.error({
         message: data.message,
@@ -31,7 +31,7 @@ export default {
       return state;
     }
     notification.success({
-      message: '添加成功',
+      message: message || '添加成功',
     });
     let dataState = state[store];
     if (Array.isArray(state[store])) {
@@ -49,7 +49,7 @@ export default {
     };
   },
   update(state, action) {
-    const { store, id, data } = action.payload;
+    const { store, id, data, message } = action.payload;
     if (data.message) {
       notification.error({
         message: data.message,
@@ -57,7 +57,7 @@ export default {
       return { ...state };
     }
     notification.success({
-      message: '编辑成功',
+      message: message || '编辑成功',
     });
     const originalStore = { ...state[`${store}Details`] };
     Object.keys(originalStore).forEach((key) => {
@@ -96,7 +96,7 @@ export default {
     };
   },
   delete(state, action) {
-    const { store, id, data = [] } = action.payload;
+    const { store, id, data = [], message } = action.payload;
     if (data.message) {
       notification.error({
         message: data.message,
@@ -104,7 +104,7 @@ export default {
       return { ...state };
     }
     notification.success({
-      message: '删除成功',
+      message: message || '删除成功',
     });
     const originalStore = { ...state[`${store}Details`] };
     Object.keys(originalStore).forEach((key) => {
