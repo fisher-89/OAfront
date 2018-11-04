@@ -19,6 +19,7 @@ export default class extends PureComponent {
     {
       title: '发起人', dataIndex: 'create_realname', align: 'center',
     },
+    { title: '发起时间', dataIndex: 'created_at', dateFilters: true },
     {
       title: '状态',
       align: 'center',

@@ -437,6 +437,8 @@ class OATable extends PureComponent {
 
   makerFiltersText = (key, value) => {
     if (!this.columnsText[key]) return {};
+    if (value === '' || value === undefined) return { [key]: null };
+    if (isArray(value) && !value.length) return { [key]: null };
     const { title, filters, treeFilters, dateFilters, rangeFilters } = this.columnsText[key];
     const filtersText = {};
     if (value.length === 0 || !value) return filtersText;
@@ -475,10 +477,12 @@ class OATable extends PureComponent {
         ...filters,
         [key]: searchFilter,
       };
+
       const filtersText = {
         ...this.state.filtersText,
         ...this.makerFiltersText(key, value),
       };
+
       this.setState({
         filtersText,
         filtered: filteredState,
@@ -703,6 +707,7 @@ class OATable extends PureComponent {
     }
     let newFiltered = [];
     if (key) newFiltered = filtered.filter(item => item !== key);
+    console.log(newFilters, newFilters);
     this.setState({
       filters: newFilters,
       filtered: newFiltered,
@@ -1045,7 +1050,10 @@ class OATable extends PureComponent {
     } else {
       searchObj = moreSearch;
     }
-
+    const newFiltersText = {};
+    forIn(filtersText, (value, key) => {
+      if (value) newFiltersText[key] = value;
+    });
     return (
       <div className={styles.filterTable}>
         {operatorVisble && (
@@ -1053,8 +1061,8 @@ class OATable extends PureComponent {
             sync={sync}
             filters={filters}
             moreSearch={searchObj}
-            filtersText={filtersText}
             selectedRows={selectedRows}
+            filtersText={newFiltersText}
             multiOperator={multiOperator}
             resetFilter={this.resetFilter}
             onChange={this.handleMoreFilter}
