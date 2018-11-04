@@ -8,6 +8,7 @@ import flowTypeEffects from './flowType';
 import apiConfigEffects from './apiConfig';
 import approverModeEffects from './approverMode';
 import approverEffects from './approver';
+import messageEffects from './message';
 import defaultReducers from '../reducers/default';
 
 
@@ -29,6 +30,8 @@ export default {
     approver: [],
     stepDepartment: {},
     flowRunLog: {},
+    waitMsg: {},
+    workMsg: {},
   },
   effects: {
     ...formEffects,
@@ -40,6 +43,7 @@ export default {
     ...apiConfigEffects,
     ...approverModeEffects,
     ...approverEffects,
+    ...messageEffects,
   },
   reducers: {
     ...defaultReducers,

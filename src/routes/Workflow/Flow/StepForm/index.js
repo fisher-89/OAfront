@@ -81,7 +81,7 @@ export default class StepForm extends React.PureComponent {
       (defaultValue.available_fields || []).indexOf(obj.key) !== -1);
 
     const editFieldsData = filter(hiddenFieldsData, obj =>
-      (defaultValue.hidden_fields || []).indexOf(obj.key) !== -1);
+      (defaultValue.editable_fields || []).indexOf(obj.key) !== -1);
 
     const requireData = filter(editFieldsData, obj =>
       (defaultValue.editable_fields || []).indexOf(obj.key) !== -1);

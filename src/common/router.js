@@ -294,7 +294,14 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['workflow'], () => import('../routes/Workflow/Validator')),
       authority: '51',
     },
-
+    '/workflow/dingTalk/waitMsg': {
+      component: dynamicWrapper(app, ['workflow'], () => import('../routes/Workflow/WaitMsg')),
+      authority: '51',
+    },
+    '/workflow/dingTalk/workMsg': {
+      component: dynamicWrapper(app, ['workflow'], () => import('../routes/Workflow/WorkMsg')),
+      authority: '51',
+    },
 
     /** 异常界面 */
     '/exception/403': {

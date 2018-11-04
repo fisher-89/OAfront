@@ -366,6 +366,20 @@ const menuData = [
           },
         ],
       },
+      {
+        name: '消息管理',
+        path: 'dingTalk',
+        children: [
+          {
+            name: '待办通知',
+            path: 'waitMsg',
+          },
+          {
+            name: '工作通知',
+            path: 'workMsg',
+          },
+        ],
+      },
     ],
   },
   {

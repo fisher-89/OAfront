@@ -549,17 +549,16 @@ export function unicodeFieldsError(temp, isUnicode = true, values) {
 export function makeProps(_this, type) {
   const response = { ..._this.props };
   const { loading } = _this.props;
+  response.loading = false;
   if (typeof type === 'string') {
     response.loading = loading[type];
     if (_this[type]) response[type] = _this[type];
   } else if (Array.isArray(type)) {
-    response.loading = false;
     type.forEach((item) => {
       if (loading[item]) response.loading = true;
       if (_this[item]) response[item] = _this[item];
     });
   } else {
-    response.loading = false;
     Object.keys(_this).forEach((item) => {
       const func = _this[item];
       if (typeof func === 'function') response[item] = func;

@@ -292,3 +292,18 @@ export async function deleteStepDepartment(id) {
   });
 }
 
+
+export async function fetchWaitMsg(params) {
+  return request('/api/workflow/todo', {
+    method: 'GET',
+    body: params,
+  });
+}
+
+export async function fetchWorkMsg(params) {
+  return request('/api/workflow/job', {
+    method: 'GET',
+    body: params,
+  });
+}
+
