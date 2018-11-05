@@ -8,11 +8,12 @@ import './index.less';
 
 export default class Form extends PureComponent {
   render() {
-    const { match, routerData } = this.props;
-
+    const { match, routerData, location: { pathname } } = this.props;
+    const style = { backgroundColor: 'transparent' };
+    const infoPath = pathname.indexOf('/workflow/form/list') > -1;
     return (
       <PageHeaderLayout>
-        <Card bordered={false}>
+        <Card bordered={false} {...(infoPath && { style })}>
           <Switch>
             {
               getRoutes(match.path, routerData).map(item => (

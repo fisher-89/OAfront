@@ -355,10 +355,10 @@ export default class extends React.PureComponent {
 
         <Row gutter={rowGutter}>
           <Col {...rowGutter}>
-            <FormItem label="客户来源" {...rowFormItemLayout} required>
+            <FormItem label="客户来源" {...rowFormItemLayout} required={required}>
               {getFieldDecorator('source_id', {
                 initialValue: initialValue.source_id ? `${initialValue.source_id}` : undefined,
-                rules: [validatorRequired],
+                ...required && { rules: [validatorRequired] },
               })(
                 <Select placeholder="请选择">
                   {source.map(item =>
