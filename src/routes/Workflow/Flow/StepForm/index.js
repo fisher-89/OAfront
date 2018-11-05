@@ -79,8 +79,12 @@ export default class StepForm extends React.PureComponent {
     const defaultValue = { ...stepDefaultValue, ...data };
     defaultValue.available_fields = isArray(defaultValue.available_fields) ?
       defaultValue.available_fields : [];
+    defaultValue.hidden_fields = isArray(defaultValue.hidden_fields) ?
+      defaultValue.hidden_fields : [];
     defaultValue.editable_fields = isArray(defaultValue.editable_fields) ?
       defaultValue.editable_fields : [];
+    defaultValue.required_fields = isArray(defaultValue.required_fields) ?
+      defaultValue.required_fields : [];
 
     const hiddenFieldsData = filter(hiddenData, obj =>
       defaultValue.available_fields.indexOf(obj.key) !== -1);
@@ -90,7 +94,6 @@ export default class StepForm extends React.PureComponent {
 
     const requireData = filter(editFieldsData, obj =>
       defaultValue.editable_fields.indexOf(obj.key) !== -1);
-
     this.state = {
       current: 0,
       availableFields: {
@@ -621,6 +624,7 @@ export default class StepForm extends React.PureComponent {
               onChange={this.handleCommChange('requireFields')}
               onSelectChange={this.handleCommSelectChange('requireFields')}
               render={(item) => {
+                if (!item) return '';
                 return item.grids ? (
                   <React.Fragment>
                     {item.title} <Icon type="profile" theme="outlined" />
