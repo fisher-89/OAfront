@@ -12,7 +12,7 @@ import {
   Steps,
 } from 'antd';
 import { connect } from 'dva';
-import { filter, forEach } from 'lodash';
+import { filter, forEach, isArray } from 'lodash';
 import OAForm, { InputTags, SearchTable } from '../../../../components/OAForm';
 
 const FormItem = OAForm.Item;
@@ -77,14 +77,19 @@ export default class StepForm extends React.PureComponent {
     const { data, hiddenData } = this.props;
 
     const defaultValue = { ...stepDefaultValue, ...data };
+    defaultValue.available_fields = isArray(defaultValue.available_fields) ?
+      defaultValue.available_fields : [];
+    defaultValue.editable_fields = isArray(defaultValue.editable_fields) ?
+      defaultValue.editable_fields : [];
+
     const hiddenFieldsData = filter(hiddenData, obj =>
-      (defaultValue.available_fields || []).indexOf(obj.key) !== -1);
+      defaultValue.available_fields.indexOf(obj.key) !== -1);
 
     const editFieldsData = filter(hiddenFieldsData, obj =>
-      (defaultValue.editable_fields || []).indexOf(obj.key) !== -1);
+      defaultValue.editable_fields.indexOf(obj.key) !== -1);
 
     const requireData = filter(editFieldsData, obj =>
-      (defaultValue.editable_fields || []).indexOf(obj.key) !== -1);
+      defaultValue.editable_fields.indexOf(obj.key) !== -1);
 
     this.state = {
       current: 0,
