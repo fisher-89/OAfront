@@ -95,6 +95,12 @@ export async function deleteFlowType(id) {
 
 
 /* form */
+export async function fetchOldForm(id) {
+  return request(`/api/workflow/form-old/${id}`, {
+    method: 'GET',
+  });
+}
+
 export async function fetchForm(params, id) {
   return request(`/api/workflow/form/${id}`, {
     method: 'GET',

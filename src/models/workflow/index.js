@@ -20,6 +20,7 @@ export default {
     flowDetails: {},
     form: [],
     formDetails: {},
+    oldFormDetails: {},
     formType: [],
     formTypeDetails: [],
     validator: [],

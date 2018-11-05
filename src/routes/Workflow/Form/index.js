@@ -10,7 +10,7 @@ export default class Form extends PureComponent {
   render() {
     const { match, routerData, location: { pathname } } = this.props;
     const style = { backgroundColor: 'transparent' };
-    const infoPath = pathname.indexOf('/workflow/form/list') > -1;
+    const infoPath = pathname === '/workflow/form/list';
     return (
       <PageHeaderLayout>
         <Card bordered={false} {...(infoPath && { style })}>

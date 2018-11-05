@@ -1,8 +1,25 @@
-import { fetchForm, addForm, editForm, deleteForm } from '../../services/workflow';
+import { fetchOldForm, fetchForm, addForm, editForm, deleteForm } from '../../services/workflow';
 
 const store = 'form';
 
 export default {
+  * fetchOldForm({ payload }, { call, put, select }) {
+    try {
+      const { id, update } = payload;
+      let response = yield select(model => model.workflow.oldFormDetails[id]);
+      if (!response || update) {
+        response = yield call(fetchOldForm, id || '');
+        yield put({
+          type: 'save',
+          payload: {
+            id,
+            store: 'oldForm',
+            data: response,
+          },
+        });
+      }
+    } catch (err) { return err; }
+  },
   * fetchForm({ payload }, { call, put }) {
     try {
       const { id } = payload;

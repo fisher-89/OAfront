@@ -346,6 +346,10 @@ const menuData = [
             name: '编辑表单',
             path: 'list/edit/:id',
             hideInMenu: true,
+          }, {
+            name: '历史表单',
+            path: 'list/info/:id',
+            hideInMenu: true,
           },
           {
             name: '表单分类',

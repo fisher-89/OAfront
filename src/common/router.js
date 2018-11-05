@@ -279,6 +279,10 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['workflow'], () => import('../routes/Workflow/Form/form')),
       authority: '51',
     },
+    '/workflow/form/list/info/:id': {
+      component: dynamicWrapper(app, ['workflow'], () => import('../routes/Workflow/Form/info')),
+      authority: '51',
+    },
     '/workflow/form/list/type': {
       component: dynamicWrapper(app, ['workflow'], () => import('../routes/Workflow/Form/type')),
       authority: '51',
