@@ -91,6 +91,7 @@ export default class extends PureComponent {
       lng: poi.lnt,
       address: poi.address,
     });
+    console.log(poi);
   }
 
   render() {
@@ -104,9 +105,7 @@ export default class extends PureComponent {
       validateFields,
       form: { getFieldDecorator },
     } = this.props;
-
-    const info = initialValue;
-    this.makeDecoratorValue(info);
+    this.makeDecoratorValue(initialValue);
     const newTreeData = markTreeData(department, { value: 'id', label: 'name', parentId: 'parent_id' }, 0);
     const longFormItemLayout = {
       labelCol: {
@@ -129,20 +128,16 @@ export default class extends PureComponent {
       },
     };
     const colSpan = { xs: 24, lg: 12 };
-    const poiInfo = {};
-    poiInfo.address = info.address;
-    poiInfo.lat = info.lat;
-    poiInfo.lng = info.lng;
     const mng = {};
-    mng.manager_sn = info.manager_sn;
-    mng.manager_name = info.manager_name;
-    mng.manager1_sn = info.manager1_sn;
-    mng.manager1_name = info.manager1_name;
-    mng.manager2_sn = info.manager2_sn;
-    mng.manager2_name = info.manager2_name;
-    mng.manager3_sn = info.manager3_sn;
-    mng.manager3_name = info.manager3_name;
-    const mapCenter = { longitude: poiInfo.lng || '120', latitude: poiInfo.lat || '30' };
+    mng.manager_sn = initialValue.manager_sn;
+    mng.manager_name = initialValue.manager_name;
+    mng.manager1_sn = initialValue.manager1_sn;
+    mng.manager1_name = initialValue.manager1_name;
+    mng.manager2_sn = initialValue.manager2_sn;
+    mng.manager2_name = initialValue.manager2_name;
+    mng.manager3_sn = initialValue.manager3_sn;
+    mng.manager3_name = initialValue.manager3_name;
+    const mapCenter = { longitude: initialValue.lng || '120', latitude: initialValue.lat || '30' };
     const loadingStyle = {
       position: 'relative',
       height: '100%',
@@ -154,15 +149,15 @@ export default class extends PureComponent {
     const Loading = <div style={loadingStyle}>Loading Map...</div>;
     return (
       <OAModal
-        title={info.id ? '编辑店铺' : '添加店铺'}
+        title={initialValue.id ? '编辑店铺' : '添加店铺'}
         visible={visible}
         loading={this.props.loading}
         onSubmit={validateFields(this.handleSubmit)}
         onCancel={() => handleVisible(false)}
         afterClose={onCancel}
       >
-        {info.id ? (getFieldDecorator('id', {
-          initialValue: info.id,
+        {initialValue.id ? (getFieldDecorator('id', {
+          initialValue: initialValue.id,
         }))(
           <Input type="hidden" placeholder="请输入" />
         ) : null}
@@ -175,7 +170,7 @@ export default class extends PureComponent {
               <Col>
                 <FormItem label="店铺名称" {...longFormItemLayout} required>
                   {getFieldDecorator('name', {
-                     initialValue: info.name,
+                     initialValue: initialValue.name,
                     })(
                       <Input placeholder="请输入" style={{ width: '100%' }} />
                      )
@@ -190,7 +185,7 @@ export default class extends PureComponent {
                 <FormItem label="店铺代码" {...formItemLayout} required>
                   {
                     getFieldDecorator('shop_sn', {
-                    initialValue: info.shop_sn || '',
+                    initialValue: initialValue.shop_sn || '',
                      })(
                        <Input placeholder="请输入" style={{ width: '100%' }} />
                     )
@@ -202,7 +197,7 @@ export default class extends PureComponent {
               <Col {...colSpan}>
                 <FormItem label="店铺状态" {...formItemLayout} required>
                   {getFieldDecorator('status_id', {
-                  initialValue: info.status_id !== undefined ? info.status_id.toString() : '0',
+                  initialValue: initialValue.status_id !== undefined ? initialValue.status_id.toString() : '0',
                 })(
                   <Select>
                     <Option value="0">开业</Option>
@@ -218,7 +213,7 @@ export default class extends PureComponent {
               <Col {...colSpan}>
                 <FormItem label="所属部门" {...formItemLayout} required>
                   {getFieldDecorator('department_id', {
-                    initialValue: info.department_id ? info.department_id.toString() : '',
+                    initialValue: initialValue.department_id ? initialValue.department_id.toString() : '',
                   })(
                     <TreeSelect
                       placeholder="请选择部门"
@@ -234,7 +229,7 @@ export default class extends PureComponent {
               <Col {...colSpan}>
                 <FormItem label="所属品牌" {...formItemLayout} required>
                   {getFieldDecorator('brand_id', {
-                    initialValue: info.brand_id ? info.brand_id.toString() : '',
+                    initialValue: initialValue.brand_id ? initialValue.brand_id.toString() : '',
                   })(
                     <Select showSearch placeholder="请选择">
                       {brand && brand.map((item) => {
@@ -253,7 +248,7 @@ export default class extends PureComponent {
               <Col {...colSpan}>
                 <FormItem label="开业日期" {...formItemLayout} required>
                   {getFieldDecorator('opening_at',
-                    { initialValue: info.opening_at || undefined,
+                    { initialValue: initialValue.opening_at || undefined,
                     })(
                       <DatePicker placeholder="请选择日期" />
                       )}
@@ -262,7 +257,7 @@ export default class extends PureComponent {
               <Col {...colSpan}>
                 <FormItem label="结束日期" {...formItemLayout} required>
                   {getFieldDecorator('end_at',
-                    { initialValue: info.end_at || undefined,
+                    { initialValue: initialValue.end_at || undefined,
                     })(
                       <DatePicker placeholder="请选择日期" />
                       )}
@@ -276,10 +271,10 @@ export default class extends PureComponent {
                 <FormItem label="店铺地址" {...longFormItemLayout} required>
                   {getFieldDecorator('shop_address', {
                   initialValue: {
-                address: info.address || null,
-                city_id: info.city_id || null,
-                county_id: info.county_id || null,
-                province_id: info.province_id || null,
+                address: initialValue.address || null,
+                city_id: initialValue.city_id || null,
+                county_id: initialValue.county_id || null,
+                province_id: initialValue.province_id || null,
                  },
                 })(
                   <Address />
@@ -293,7 +288,7 @@ export default class extends PureComponent {
               <Col {...colSpan}>
                 <FormItem label="上班时间" {...formItemLayout}>
                   {getFieldDecorator('clock_in', {
-              initialValue: info.clock_in || '00:00:00',
+              initialValue: initialValue.clock_in || '00:00:00',
                   })(
                     <DatePicker
                       mode="time"
@@ -309,7 +304,7 @@ export default class extends PureComponent {
               <Col {...colSpan}>
                 <FormItem label="下班时间" {...formItemLayout}>
                   {getFieldDecorator('clock_out', {
-              initialValue: info.clock_out || '00:00:00',
+              initialValue: initialValue.clock_out || '00:00:00',
                  })(
                    <DatePicker
                      mode="time"
@@ -327,7 +322,7 @@ export default class extends PureComponent {
               <Col>
                 <FormItem label="店铺标签" {...longFormItemLayout}>
                   {getFieldDecorator('tags', {
-                   initialValue: info.tags || [],
+                   initialValue: initialValue.tags || [],
                  })(<Select />)}
                 </FormItem>
               </Col>
@@ -424,7 +419,7 @@ export default class extends PureComponent {
                 <FormItem label="店员" {...longFormItemLayout}>
                   {
                 getFieldDecorator('staff', {
-                  initialValue: info.staff || [],
+                  initialValue: initialValue.staff || [],
                 })(
                   <SearchTable.Staff
                     multiple
@@ -446,14 +441,14 @@ export default class extends PureComponent {
             tab={<div className={styles.tabpane}>店铺定位</div>}
             key="3"
           > {getFieldDecorator('lng', {
-               initialValue: poiInfo.lng || '',
+               initialValue: initialValue.lng || '',
                 })(<Input type="hidden" />)}
             {getFieldDecorator('lat', {
-                  initialValue: poiInfo.lat || '',
+                  initialValue: initialValue.lat || '',
                    })(<Input type="hidden" />)}
             <FormItem label="店铺定位" {...longFormItemLayout}>
               {getFieldDecorator('address', {
-              initialValue: poiInfo.address || '',
+              initialValue: initialValue.address || '',
 
                })(<Input />)}
             </FormItem>
