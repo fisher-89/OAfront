@@ -44,6 +44,15 @@ export default class List extends PureComponent {
     dispatch({ type: 'workflow/fetchFormType' });
   }
 
+  fetchOldForm = (params) => {
+    const { dispatch } = this.props;
+    const { formId } = this.state;
+    dispatch({
+      type: 'workflow/fetchOldForm',
+      payload: { id: formId, ...params },
+    });
+  }
+
   handleDelete = (id) => {
     const { dispatch } = this.props;
     dispatch({
@@ -54,13 +63,7 @@ export default class List extends PureComponent {
 
   searchHistory = (id) => {
     return () => {
-      this.setState({ formId: id }, () => {
-        const { dispatch } = this.props;
-        dispatch({
-          type: 'workflow/fetchOldForm',
-          payload: { id },
-        });
-      });
+      this.setState({ formId: id }, () => { if (this.state.formId) this.fetchOldForm(); });
     };
   }
 
@@ -179,10 +182,10 @@ export default class List extends PureComponent {
               )}
             >
               <OATable
-                sync={false}
                 data={oldData}
                 loading={oldLoading}
                 columns={this.odlColumns()}
+                fetchDataSource={this.fetchOldForm}
               />
             </Card>
           </Col>
