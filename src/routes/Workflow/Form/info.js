@@ -2,12 +2,13 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import {
   Tabs,
+  Card,
   Input,
   Select,
   InputNumber,
 } from 'antd';
-import OAForm from '../../../components/OAForm';
 import FieldList from './fieldList';
+import OAForm from '../../../components/OAForm';
 
 const FormItem = OAForm.Item;
 const { Option } = Select;
@@ -122,7 +123,7 @@ export default class extends PureComponent {
     };
 
     return (
-      <OAForm>
+      <Card bordered={false}>
         <Tabs
           tabPosition="left"
           activeKey={activeKey}
@@ -173,7 +174,7 @@ export default class extends PureComponent {
             );
           })}
         </Tabs>
-      </OAForm>
+      </Card>
     );
   }
 }
