@@ -49,6 +49,15 @@ export async function flowRunLogExport(params) {
   });
 }
 
+
+export async function flowClone(id) {
+  return request('/api/workflow/flow-clone', {
+    method: 'POST',
+    body: { flow_id: id },
+  });
+}
+
+
 /** flowType */
 
 export async function fetchFlowType(params) {

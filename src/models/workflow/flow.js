@@ -1,9 +1,28 @@
 import { notification } from 'antd';
-import { flowRunLogExport, fetchFlow, addFlow, editFlow, deleteFlow, flowRunLog } from '../../services/workflow';
+import { flowClone, flowRunLogExport, fetchFlow, addFlow, editFlow, deleteFlow, flowRunLog } from '../../services/workflow';
 
 const store = 'flow';
 
 export default {
+  *flowClone({ payload, onError, onSuccess }, { call, put }) {
+    try {
+      const params = { ...payload };
+      const response = yield call(flowClone, params.id || '');
+      if (response.errors) {
+        onError(response.errors);
+        return;
+      }
+      yield put({
+        type: 'add',
+        payload: {
+          store,
+          message: '克隆成功',
+          data: response,
+        },
+      });
+      onSuccess(response);
+    } catch (err) { return err; }
+  },
   *flowRunLogExport({ payload, onError, onSuccess }, { call }) {
     try {
       const params = { ...payload };
@@ -13,7 +32,7 @@ export default {
         return;
       }
       onSuccess(response);
-    } catch (err) { console.log(err); return err; }
+    } catch (err) { return err; }
   },
   * flowRunLog({ payload }, { call, put }) {
     try {

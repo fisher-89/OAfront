@@ -6,6 +6,7 @@ import {
   Divider,
   Tooltip,
   Button,
+  Popconfirm,
 } from 'antd';
 import moment from 'moment';
 import { Link } from 'dva/router';
@@ -40,6 +41,16 @@ export default class Flow extends PureComponent {
       payload: { id },
     });
   };
+
+  fetchClone = (id) => {
+    return () => {
+      const { dispatch } = this.props;
+      dispatch({
+        type: 'workflow/flowClone',
+        payload: { id },
+      });
+    };
+  }
 
   render() {
     const { list, loading, flowType } = this.props;
@@ -99,9 +110,16 @@ export default class Flow extends PureComponent {
         title: '操作',
         render: ({ id }) => (
           <Fragment>
+            <Popconfirm onConfirm={this.fetchClone(id)} title="确定要克隆该流程？">
+              <a>克隆</a>
+            </Popconfirm>
+            <Divider type="vertical" />
             <Link to={`/workflow/flow/edit/${id}`}>编辑</Link>
             <Divider type="vertical" />
-            <a onClick={() => this.deleteFlows(id)}>删除</a>
+            <Popconfirm onConfirm={() => this.deleteFlows(id)} title="确定要删除该流程？">
+              <a>删除</a>
+            </Popconfirm>
+
           </Fragment>
         ),
       },

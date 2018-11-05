@@ -202,7 +202,7 @@ export default class Rect extends React.PureComponent {
       num,
       step,
       deleteStep,
-      // cloneNewSteps,
+      cloneNewSteps,
     } = this.props;
     const { visible, zIndex, TooltipVisible, pointVisible } = this.state;
     const rectStyle = { ...style, left: step.x, top: step.y, zIndex };
@@ -274,11 +274,11 @@ export default class Rect extends React.PureComponent {
                   onClick={this.editFlow}
                 ><Icon type="edit" />&nbsp;&nbsp;&nbsp;编辑
                 </div>
-                {/* <div
+                <div
                   className={RectCss.option}
                   onClick={() => cloneNewSteps(step)}
                 ><Icon type="copy" />&nbsp;&nbsp;&nbsp;克隆
-                </div> */}
+                </div>
                 <div
                   className={RectCss.option}
                   onClick={() => {

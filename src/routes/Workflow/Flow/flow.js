@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
+import { find, filter } from 'lodash';
 import {
   Button,
   Tabs,
@@ -389,41 +390,21 @@ export default class Flow extends React.PureComponent {
     return result;
   };
 
-  handleSteps = (data, isEdit) => {
+  handleSteps = (data) => {
     const { formData, formData: { steps } } = this.state;
-    let step = 0;
-    let result = true;
-
-    steps.forEach((item) => {
-      if (data.name === item.name) {
-        step += 1;
-      }
-    });
-
-    if (isEdit) {
-      if (step > 1) {
-        result = false;
-        return result;
-      }
-      steps.forEach((item, i) => {
-        if (item.step_key === data.step_key) {
-          steps[i] = data;
-        }
-      });
+    const nameData = filter(steps, ['name', data.name]);
+    if (nameData.length > 1) { return false; }
+    const oldStep = find(steps, ['step_key', data.step_key]);
+    let newSteps = [...steps];
+    if (oldStep) {
+      newSteps = newSteps.map(value => (oldStep.step_key === value.step_key ? data : value));
     } else {
-      if (step > 0) {
-        result = false;
-        return result;
-      }
       const location = !steps.length ? { x: 120, y: 120 } : { x: 0, y: 0 };
-      const flowData = {
-        ...data,
-        ...location,
-      };
-      steps.push(flowData);
+      const newData = { ...data, ...location };
+      newSteps.push(newData);
     }
-    this.setState({ formData: { ...formData, steps: [...steps] } });
-    return result;
+    this.setState({ formData: { ...formData, steps: [...newSteps] } });
+    return true;
   };
 
   editFlows = () => {
