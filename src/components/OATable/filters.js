@@ -38,7 +38,7 @@ export default class TreeFilter extends PureComponent {
             onChange={this.handleSwitchOnChange}
           />
         </div>
-        <div className="scroll-bar" style={{ maxHeight: 208, padding: '0 10px', minWidth: 100 }}>
+        <div className="scroll-bar" style={{ maxHeight: 208, padding: '0 10px', minWidth: 100, marginBottom: 10 }}>
           <Checkbox.Group
             value={value}
             onChange={this.handleChange}
