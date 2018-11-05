@@ -276,10 +276,10 @@ export default class extends PureComponent {
                 <FormItem label="店铺地址" {...longFormItemLayout} required>
                   {getFieldDecorator('shop_address', {
                   initialValue: {
-                address: initialValue.address || null,
-                city_id: initialValue.city_id || null,
-                county_id: initialValue.county_id || null,
-                province_id: initialValue.province_id || null,
+                address: info.address || null,
+                city_id: info.city_id || null,
+                county_id: info.county_id || null,
+                province_id: info.province_id || null,
                  },
                 })(
                   <Address />
@@ -445,10 +445,16 @@ export default class extends PureComponent {
           <TabPane
             tab={<div className={styles.tabpane}>店铺定位</div>}
             key="3"
-          >
+          > {getFieldDecorator('lng', {
+               initialValue: poiInfo.lng || '',
+                })(<Input type="hidden" />)}
+            {getFieldDecorator('lat', {
+                  initialValue: poiInfo.lat || '',
+                   })(<Input type="hidden" />)}
             <FormItem label="店铺定位" {...longFormItemLayout}>
               {getFieldDecorator('address', {
               initialValue: poiInfo.address || '',
+
                })(<Input />)}
             </FormItem>
             <div style={{ width: '100%', height: '400px' }} >
