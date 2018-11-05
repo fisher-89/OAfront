@@ -7,6 +7,7 @@ import {
   Col,
   Row,
 } from 'antd';
+import { Map } from 'react-amap';
 import { connect } from 'dva';
 import OAForm, {
   OAModal,
@@ -15,8 +16,8 @@ import OAForm, {
   SearchTable,
 } from '../../../components/OAForm';
 import { markTreeData } from '../../../utils/utils';
-import Maps from './maps';
 import styles from './form.less';
+import ACfun from './autocomplete';
 
 const { TabPane } = Tabs;
 const FormItem = OAForm.Item;
@@ -31,6 +32,16 @@ const { Option } = Select;
   ),
 }))
 export default class extends PureComponent {
+  constructor() {
+    super();
+    this.toolEvents = {
+      created: (tool) => {
+        this.tool = tool;
+      },
+    };
+    this.mapPlugins = ['ToolBar'];
+  }
+
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({ type: 'brand/fetchBrand' });
@@ -41,6 +52,7 @@ export default class extends PureComponent {
     const { onError } = this.props;
     onError(error);
   }
+
 
   handleSubmit = (params) => {
     const { dispatch } = this.props;
@@ -70,6 +82,14 @@ export default class extends PureComponent {
       'address',
     ].forEach((item) => {
       getFieldDecorator(item, { initialValue: info[item] });
+    });
+  }
+
+  handlePosition = (poi) => {
+    this.props.form.setFieldsValue({
+      lat: poi.lat,
+      lng: poi.lnt,
+      address: poi.address,
     });
   }
 
@@ -109,6 +129,29 @@ export default class extends PureComponent {
       },
     };
     const colSpan = { xs: 24, lg: 12 };
+    const poiInfo = {};
+    poiInfo.address = info.address;
+    poiInfo.lat = info.lat;
+    poiInfo.lng = info.lng;
+    const mng = {};
+    mng.manager_sn = info.manager_sn;
+    mng.manager_name = info.manager_name;
+    mng.manager1_sn = info.manager1_sn;
+    mng.manager1_name = info.manager1_name;
+    mng.manager2_sn = info.manager2_sn;
+    mng.manager2_name = info.manager2_name;
+    mng.manager3_sn = info.manager3_sn;
+    mng.manager3_name = info.manager3_name;
+    const mapCenter = { longitude: poiInfo.lng || '120', latitude: poiInfo.lat || '30' };
+    const loadingStyle = {
+      position: 'relative',
+      height: '100%',
+      width: '100%',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    };
+    const Loading = <div style={loadingStyle}>Loading Map...</div>;
     return (
       <OAModal
         title={info.id ? '编辑店铺' : '添加店铺'}
@@ -233,10 +276,10 @@ export default class extends PureComponent {
                 <FormItem label="店铺地址" {...longFormItemLayout} required>
                   {getFieldDecorator('shop_address', {
                   initialValue: {
-                address: initialValue.address || '',
-                city_id: initialValue.city_id || '',
-                county_id: initialValue.county_id || '',
-                province_id: initialValue.province_id || '',
+                address: initialValue.address || null,
+                city_id: initialValue.city_id || null,
+                county_id: initialValue.county_id || null,
+                province_id: initialValue.province_id || null,
                  },
                 })(
                   <Address />
@@ -301,7 +344,7 @@ export default class extends PureComponent {
                 <FormItem label="店长" {...formItemLayout}>
                   {
                 getFieldDecorator('manager_sn', {
-                  initialValue: info.manager_name || null,
+                  initialValue: mng || null,
                     })(
                       <SearchTable.Staff
                         name={{
@@ -320,7 +363,7 @@ export default class extends PureComponent {
                 <FormItem label="区域经理" {...formItemLayout}>
                   {
                 getFieldDecorator('manager1_sn', {
-                  initialValue: info.manager1_name || [],
+                  initialValue: mng || [],
                 })(
                   <SearchTable.Staff
                     name={{
@@ -341,7 +384,7 @@ export default class extends PureComponent {
                 <FormItem label="大区经理" {...formItemLayout}>
                   {
                  getFieldDecorator('manager2_sn', {
-                initialValue: info.manager2_name || [],
+                initialValue: mng || [],
                      })(
                        <SearchTable.Staff
                          name={{
@@ -360,7 +403,7 @@ export default class extends PureComponent {
                 <FormItem label="部长" {...formItemLayout}>
                   {
                getFieldDecorator('manager3_sn', {
-              initialValue: info.manager3_name || [],
+              initialValue: mng || [],
                    })(
                      <SearchTable.Staff
                        name={{
@@ -404,10 +447,21 @@ export default class extends PureComponent {
             key="3"
           >
             <FormItem label="店铺定位" {...longFormItemLayout}>
-              <Input />
+              {getFieldDecorator('address', {
+              initialValue: poiInfo.address || '',
+               })(<Input />)}
             </FormItem>
             <div style={{ width: '100%', height: '400px' }} >
-              <Maps />
+              <Map
+                amapkey="9a54ee2044c8fdd03b3d953d4ace2b4d"
+                loading={Loading}
+                center={mapCenter}
+                plugins={this.mapPlugins}
+                zoom={15}
+                useAMapUI
+              >
+                <ACfun handlePosition={this.handlePosition} />
+              </Map>
             </div>
           </TabPane>
         </Tabs>
