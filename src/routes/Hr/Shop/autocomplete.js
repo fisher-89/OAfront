@@ -21,13 +21,12 @@ export default class extends PureComponent {
       // 监听poi选中信息
       poiPicker.on('poiPicked', (poiResult) => {
       // 用户选中的poi点信息
-        const { item } = poiResult;
         handlePosition({
-          lat: item.location.lat,
-          lnt: item.location.lng,
-          address: item.address,
+          lat: poiResult.location.lat,
+          lnt: poiResult.location.lng,
+          address: poiResult.address,
         });
-        __map__.panTo([item.location.lng, item.location.lat]);
+        __map__.panTo([poiResult.location.lng, poiResult.location.lat]);
       });
 
       // 加载PositionPicker
@@ -43,12 +42,11 @@ export default class extends PureComponent {
           lat: positionResult.position.lat,
           lng: positionResult.position.lng,
         });
-        console.log(positionResult);
       });
       positionPicker.on('fail', () => {
         message.error('请重试');
       });
-      positionPicker.start();
+      positionPicker.start(__map__.getBounds().getCenter());
       __map__.panBy(0, 1);
     });
   }
