@@ -18,8 +18,11 @@ export default class extends PureComponent {
       // TODO:事件绑定、结果处理等
 
       positionPicker.on('success', (positionResult) => {
-        handlePosition(positionResult);
-        console.log(positionResult);
+        handlePosition({
+          lat: positionResult.position.lat,
+          lng: positionResult.position.lnt,
+          address: positionResult.address,
+        });
       });
       positionPicker.on('fail', () => {
         message.error('请重试');
