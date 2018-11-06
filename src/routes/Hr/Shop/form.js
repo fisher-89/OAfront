@@ -18,6 +18,7 @@ import OAForm, {
 import { markTreeData } from '../../../utils/utils';
 import styles from './form.less';
 import ACfun from './autocomplete';
+import PTfun from './positionpicker';
 
 const { TabPane } = Tabs;
 const FormItem = OAForm.Item;
@@ -91,7 +92,6 @@ export default class extends PureComponent {
       lng: poi.lnt,
       address: poi.address,
     });
-    console.log(poi);
   }
 
   render() {
@@ -462,6 +462,7 @@ export default class extends PureComponent {
                 useAMapUI
               >
                 <ACfun handlePosition={this.handlePosition} />
+                <PTfun handlePosition={this.handlePosition} />
               </Map>
             </div>
           </TabPane>
