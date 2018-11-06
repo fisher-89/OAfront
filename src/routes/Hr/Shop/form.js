@@ -472,6 +472,7 @@ export default class extends PureComponent {
               </Map>
             </div>
           */}
+
             <SearchMap />
           </TabPane>
         </Tabs>
