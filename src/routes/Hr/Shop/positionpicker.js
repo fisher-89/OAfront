@@ -1,34 +1,82 @@
-import { PureComponent } from 'react';
-import { message } from 'antd';
+import React, { PureComponent } from 'react';
+import { Input } from 'antd';
+import { debounce } from 'lodash';
 
+
+const spanStyle = {
+  position: 'absolute',
+  top: '0',
+  width: 200,
+};
 export default class extends PureComponent {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+    this.handleSearch = debounce((e) => {
+      this.autoInput(e);
+    }, 800);
     this.loadUI();
   }
 
-  loadUI() {
-    window.AMapUI.loadUI(['misc/PositionPicker'], (PositionPicker) => {
-      const { __map__, handlePosition } = this.props;
-      // 加载PositionPicker
-      const positionPicker = new PositionPicker({
-        mode: 'dragMap', // 设定为拖拽地图模式，可选'dragMap'、'dragMarker'，默认为'dragMap'
-        map: __map__, // 依赖地图对象
-      });
-      // TODO:事件绑定、结果处理等
+  state = {
+    value: undefined,
+  }
 
-      positionPicker.on('success', (positionResult) => {
-        handlePosition(positionResult);
-        console.log(positionResult);
+  loadUI = () => {
+    const { __map__ } = this.props;
+    const { AMap } = window;
+    window.AMapUI.loadUI(['misc/PositionPicker'], (PositionPicker) => {
+      /* 拖拽定位 */
+      const positionPicker = new PositionPicker({
+        mode: 'dragMap',
+        map: __map__,
       });
-      positionPicker.on('fail', () => {
-        message.error('请重试');
-      });
-      positionPicker.start(__map__.getBounds().getCenter());
+      positionPicker.start();
       __map__.panBy(0, 1);
     });
+    __map__.on('dragend', () => {
+      const center = __map__.getCenter();
+      AMap.plugin('AMap.Autocomplete', () => {
+        // 实例化Autocomplete
+        const autoOptions = { city: '全国' };
+        const geocoder = new AMap.Geocoder(autoOptions);
+        geocoder.getAddress([center.lng, center.lat], (status, result) => {
+          if (status === 'complete' && result.regeocode) {
+            console.log(status, result);
+          }
+        });
+      });
+    });
   }
+
+  search = (e) => {
+    this.setState({ value: e.target.value }, this.handleSearch(this.state.value));
+  }
+
+  autoInput = (keyWords) => {
+    const { AMap } = window;
+    AMap.plugin('AMap.Autocomplete', () => {
+      // 实例化Autocomplete
+      const autoOptions = { city: '全国' };
+      const autoComplete = new AMap.Autocomplete(autoOptions);
+      autoComplete.search(keyWords, (status, result) => {
+        if (status === 'complete' && result.count) {
+          console.log(status, result);
+        }
+      });
+    });
+  }
+
   render() {
-    return null;
+    return (
+      <React.Fragment>
+        <div style={spanStyle}>
+          <Input
+            value={this.state.value}
+            placeholder="请输入搜索地址"
+            onChange={e => this.search(e)}
+          />
+        </div>
+      </React.Fragment>
+    );
   }
 }
