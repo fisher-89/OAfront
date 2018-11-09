@@ -10,7 +10,8 @@ function makeLoading(loading) {
       loading.effects['workflow/flowRunLog'] ||
       loading.effects['workflow/fetchFlowType'] ||
       loading.effects['workflow/fetchFormType'] ||
-      loading.effects['workflow/flowRunLogExport']
+      loading.effects['workflow/flowRunLogExport'] ||
+      loading.effects['workflow/flowRunFormVersion']
     ),
   };
 }
@@ -22,6 +23,7 @@ export default type => (Component) => {
     flowType: workflow.flowType,
     formType: workflow.formType,
     flowRunLog: workflow.flowRunLog,
+    formVersion: workflow.formVersionDetails,
     loading: makeLoading(loading),
   }))
   class NewComponent extends React.PureComponent {
@@ -36,6 +38,11 @@ export default type => (Component) => {
     fetchDataSource = (params) => {
       const { dispatch } = this.props;
       dispatch({ type: 'workflow/flowRunLog', payload: params });
+    }
+
+    flowRunFormVersion = (id) => {
+      const { dispatch } = this.props;
+      dispatch({ type: 'workflow/flowRunFormVersion', payload: { id } });
     }
 
     render() {

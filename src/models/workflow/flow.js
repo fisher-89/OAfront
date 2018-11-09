@@ -1,9 +1,29 @@
 import { notification } from 'antd';
-import { flowClone, flowRunLogExport, fetchFlow, addFlow, editFlow, deleteFlow, flowRunLog } from '../../services/workflow';
+import { flowRunFormVersion, flowClone, flowRunLogExport, fetchFlow, addFlow, editFlow, deleteFlow, flowRunLog } from '../../services/workflow';
 
 const store = 'flow';
 
 export default {
+  *flowRunFormVersion({ payload, onError }, { call, put, select }) {
+    try {
+      const params = { ...payload };
+      let response = yield select(models => models.workflow.formVersionDetails[params.id]);
+      if (response) return;
+      response = yield call(flowRunFormVersion, params.id || '');
+      if (response.errors) {
+        onError(response.errors);
+        return;
+      }
+      yield put({
+        type: 'save',
+        payload: {
+          id: params.id,
+          data: response,
+          store: 'formVersion',
+        },
+      });
+    } catch (err) { return err; }
+  },
   *flowClone({ payload, onError, onSuccess }, { call, put }) {
     try {
       const params = { ...payload };

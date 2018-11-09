@@ -31,6 +31,7 @@ export default {
     approver: [],
     stepDepartment: {},
     flowRunLog: {},
+    formVersionDetails: {},
     waitMsg: {},
     workMsg: {},
   },
