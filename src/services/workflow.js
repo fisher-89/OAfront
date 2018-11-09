@@ -41,6 +41,10 @@ export async function flowRunLog(params) {
 }
 
 export async function flowRunFormVersion(id) {
+  return request(`/api/workflow/flow-run/form/flow/${id}`, { method: 'GET' });
+}
+
+export async function formVersion(id) {
   return request(`/api/workflow/flow-run/form/${id}`, { method: 'GET' });
 }
 

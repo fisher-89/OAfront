@@ -32,6 +32,7 @@ export default {
     stepDepartment: {},
     flowRunLog: {},
     formVersionDetails: {},
+    formVDetails: {},
     waitMsg: {},
     workMsg: {},
   },

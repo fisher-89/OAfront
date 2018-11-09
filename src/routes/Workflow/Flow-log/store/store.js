@@ -11,7 +11,8 @@ function makeLoading(loading) {
       loading.effects['workflow/fetchFlowType'] ||
       loading.effects['workflow/fetchFormType'] ||
       loading.effects['workflow/flowRunLogExport'] ||
-      loading.effects['workflow/flowRunFormVersion']
+      loading.effects['workflow/flowRunFormVersion'] ||
+      loading.effects['workflow/formVersion']
     ),
   };
 }
@@ -24,6 +25,7 @@ export default type => (Component) => {
     formType: workflow.formType,
     flowRunLog: workflow.flowRunLog,
     formVersion: workflow.formVersionDetails,
+    formVData: workflow.formVDetails,
     loading: makeLoading(loading),
   }))
   class NewComponent extends React.PureComponent {
@@ -43,6 +45,11 @@ export default type => (Component) => {
     flowRunFormVersion = (id) => {
       const { dispatch } = this.props;
       dispatch({ type: 'workflow/flowRunFormVersion', payload: { id } });
+    }
+
+    fetchFormVersion = (id) => {
+      const { dispatch } = this.props;
+      dispatch({ type: 'workflow/formVersion', payload: { id } });
     }
 
     render() {

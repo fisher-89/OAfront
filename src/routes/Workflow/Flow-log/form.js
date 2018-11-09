@@ -63,11 +63,11 @@ export default class extends React.PureComponent {
   ]
 
   fetchForm = () => {
-    const { flowRunFormVersion } = this.props;
+    const { fetchFormVersion } = this.props;
     const { id } = this.state;
     const formId = id ? [`${id}`] : [];
     this.setState({ formId }, () => {
-      if (id) flowRunFormVersion(id);
+      if (id) fetchFormVersion(id);
     });
   }
 
@@ -108,19 +108,16 @@ export default class extends React.PureComponent {
 
   render() {
     const { category, id, formId } = this.state;
-    const { fetchDataSource, flowRunLog, formType, form, loading, formVersion } = this.props;
+    const { fetchDataSource, flowRunLog, formType, form, loading, formVData } = this.props;
     const cateData = formType;
     let filterData = [];
-    const filters = {
-      form_id: formId,
-    };
-    filters.form_id = [id];
-    filterData = (category && form.filter(item => category === `${item.flow_type_id}`)) || form;
+    const filters = { form_id: formId };
+    filterData = (category && form.filter(item => category === `${item.form_type_id}`)) || form;
     const excelExport = {
       fileName: '流程运行记录',
       actionType: 'workflow/flowRunLogExport',
     };
-    const formVersionData = id ? (formVersion[id] || []) : [];
+    const formVersionData = id ? (formVData[id] || []) : [];
     return (
       <React.Fragment>
         <Row style={{ marginTop: 10, marginBottom: 10 }}>
