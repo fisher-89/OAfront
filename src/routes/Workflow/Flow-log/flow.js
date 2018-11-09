@@ -124,7 +124,6 @@ export default class extends React.PureComponent {
       actionType: 'workflow/flowRunLogExport',
     };
     const formVersionData = id ? (formVersion[id] || []) : [];
-    console.log(formVersion);
     return (
       <React.Fragment>
         <Row style={{ marginTop: 10, marginBottom: 10 }}>
