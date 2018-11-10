@@ -19,7 +19,7 @@ import { markTreeData } from '../../../utils/utils';
 import styles from './form.less';
 // import ACfun from './autocomplete';
 // import PTfun from './positionpicker';
-import SearchMap from './Address';
+import SearchMap from './Maps';
 
 const { TabPane } = Tabs;
 const FormItem = OAForm.Item;
@@ -34,16 +34,6 @@ const { Option } = Select;
   ),
 }))
 export default class extends PureComponent {
-  constructor() {
-    super();
-    this.toolEvents = {
-      created: (tool) => {
-        this.tool = tool;
-      },
-    };
-    this.mapPlugins = ['ToolBar'];
-  }
-
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({ type: 'brand/fetchBrand' });
@@ -85,15 +75,6 @@ export default class extends PureComponent {
     ].forEach((item) => {
       getFieldDecorator(item, { initialValue: info[item] });
     });
-  }
-
-  handlePosition = (address) => {
-    // this.props.form.setFieldsValue({
-    //   lat: poi.lat,
-    //   lng: poi.lnt,
-    //   address: poi.address,
-    // });
-    console.log(address);
   }
 
   render() {
@@ -139,17 +120,6 @@ export default class extends PureComponent {
     mng.manager2_name = initialValue.manager2_name;
     mng.manager3_sn = initialValue.manager3_sn;
     mng.manager3_name = initialValue.manager3_name;
-    // const map
-    // Center = { longitude: initialValue.lng || '120', latitude: initialValue.lat || '30' };
-    // const loadingStyle = {
-    //   position: 'relative',
-    //   height: '100%',
-    //   width: '100%',
-    //   display: 'flex',
-    //   justifyContent: 'center',
-    //   alignItems: 'center',
-    // };
-    // const Loading = <div style={loadingStyle}>Loading Map...</div>;
     return (
       <OAModal
         title={initialValue.id ? '编辑店铺' : '添加店铺'}
@@ -164,7 +134,7 @@ export default class extends PureComponent {
         }))(
           <Input type="hidden" placeholder="请输入" />
         ) : null}
-        <Tabs defaultActiveKey="3" className={styles.tabs}>
+        <Tabs defaultActiveKey="1" className={styles.tabs}>
           <TabPane
             tab={<div className={styles.tabpane}>基础信息</div>}
             key="1"
@@ -451,29 +421,16 @@ export default class extends PureComponent {
             {getFieldDecorator('lat', {
               initialValue: initialValue.lat || '',
             })(<Input type="hidden" />)}
-            {/*
-             <FormItem label="店铺定位" {...longFormItemLayout}>
+
+            <FormItem>
               {getFieldDecorator('address', {
-                initialValue: initialValue.address || '',
-
-              })(<Input />)}
+                initialValue: {
+                  address: initialValue.address || '',
+                  lng: initialValue.lng || undefined,
+                  lat: initialValue.lat || undefined,
+              },
+              })(<SearchMap />)}
             </FormItem>
-            <div style={{ width: '100%', height: '400px' }} >
-              <Map
-                amapkey="9a54ee2044c8fdd03b3d953d4ace2b4d"
-                loading={Loading}
-                center={mapCenter}
-                plugins={this.mapPlugins}
-                zoom={15}
-                useAMapUI
-              >
-                <ACfun handlePosition={this.handlePosition} />
-                <PTfun handlePosition={this.handlePosition} />
-              </Map>
-            </div>
-          */}
-
-            <SearchMap />
           </TabPane>
         </Tabs>
       </OAModal>

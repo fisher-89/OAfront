@@ -228,6 +228,7 @@ export default class extends PureComponent {
         }
         <OATable
           bordered
+          autoComplete
           serverSide
           extraColumns
           loading={sLoading || false}
