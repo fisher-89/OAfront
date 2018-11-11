@@ -123,9 +123,9 @@ export default class extends React.PureComponent {
     let filterData = [];
     const filters = {
       form_id: formId,
-      flow_id: undefined,
+      // flow_id: undefined,
     };
-    filters.flow_id = [id];
+    // filters.flow_id = [id];
     filterData = (category && flow.filter(item => category === `${item.flow_type_id}`)) || flow;
     const formVersionData = id ? (formVersion[id] || []) : [];
     const extraOperator = [(
