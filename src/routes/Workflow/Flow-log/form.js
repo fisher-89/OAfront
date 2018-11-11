@@ -1,6 +1,6 @@
 import React from 'react';
 import XLSX from 'xlsx';
-import { Row, Col, Select, Input, message, Spin, Form } from 'antd';
+import { Row, Col, Select, Input, message, Spin, Form, Button } from 'antd';
 import store from './store/store';
 import OATable from '../../../components/OATable';
 import TagSelect from '../../../components/TagSelect';
@@ -108,15 +108,22 @@ export default class extends React.PureComponent {
 
   render() {
     const { category, id, formId } = this.state;
-    const { fetchDataSource, flowRunLog, formType, form, loading, formVData } = this.props;
+    const {
+      form,
+      loading,
+      formType,
+      formVData,
+      flowRunLog,
+      exportExcel,
+      fetchDataSource,
+    } = this.props;
     const cateData = formType;
     let filterData = [];
     const filters = { form_id: formId };
     filterData = (category && form.filter(item => category === `${item.form_type_id}`)) || form;
-    const excelExport = {
-      fileName: '流程运行记录',
-      actionType: 'workflow/flowRunLogExport',
-    };
+    const extraOperator = [(
+      <Button key="download" icon="download" onClick={() => exportExcel(formId)}>导出</Button>
+    )];
     const formVersionData = id ? (formVData[id] || []) : [];
     return (
       <React.Fragment>
@@ -180,11 +187,11 @@ export default class extends React.PureComponent {
           loading={loading}
           filters={filters}
           columns={this.columns}
-          excelExport={excelExport}
+          extraOperator={extraOperator}
           total={(formId.length && flowRunLog.total) || 0}
           dataSource={(formId.length && flowRunLog.data) || []}
           fileExportChange={{ onSuccess: this.exportSuccess }}
-          fetchDataSource={params => formId.length &&
+          fetchDataSource={params => formId.length > 0 &&
             (fetchDataSource(params))}
         />
       </React.Fragment>

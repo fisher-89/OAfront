@@ -54,6 +54,9 @@ export async function flowRunLogExport(params) {
     body: {
       ...params,
     },
+    headers: {
+      Accept: 'application/octet-stream',
+    },
   });
 }
 

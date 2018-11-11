@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'dva';
+import { message } from 'antd';
 import { makeProps } from '../../../../utils/utils';
 
 function makeLoading(loading) {
@@ -50,6 +51,12 @@ export default type => (Component) => {
     fetchFormVersion = (id) => {
       const { dispatch } = this.props;
       dispatch({ type: 'workflow/formVersion', payload: { id } });
+    }
+
+    exportExcel = (formId) => {
+      const { dispatch } = this.props;
+      if (!formId.length) return message.error('请选择导出的表单!');
+      dispatch({ type: 'workflow/flowRunLogExport', payload: { form_id: formId } });
     }
 
     render() {

@@ -129,8 +129,8 @@ export default {
       [`${store}Details`]: originalStore,
     };
   },
-  exportExcel(_, action) {
-    const { data, filename } = action.payload;
+  exportExcel(state, action) {
+    const { data, filename, message } = action.payload;
     data.blob().then((body) => {
       const blob = new Blob([body]);
       const newFilename = filename || 'excel.xls';
@@ -144,7 +144,11 @@ export default {
         downloadElement.click();
         if (window.URL) window.URL.revokeObjectURL(href);
         else window.webkitURL.revokeObjectURL(href);
+        notification.success({
+          message: message || '导出成功',
+        });
       }
     });
+    return state;
   },
 };

@@ -43,15 +43,17 @@ export default {
       onSuccess(response);
     } catch (err) { return err; }
   },
-  *flowRunLogExport({ payload, onError, onSuccess }, { call }) {
+  *flowRunLogExport({ payload }, { call, put }) {
     try {
       const params = { ...payload };
       const response = yield call(flowRunLogExport, params);
-      if (response.errors) {
-        onError(response.errors);
-        return;
-      }
-      onSuccess(response);
+      yield put({
+        type: 'exportExcel',
+        payload: {
+          data: response,
+          filename: '流程运行记录.xls',
+        },
+      });
     } catch (err) { return err; }
   },
   * flowRunLog({ payload }, { call, put }) {

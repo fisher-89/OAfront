@@ -122,6 +122,8 @@ export default async function request(url, options) {
         cntType === 'application/vnd.ms-excel; charset=UTF-8'
         ||
         cntType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=UTF-8'
+        ||
+        cntType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       ) {
         return response;
       }
