@@ -1,12 +1,12 @@
 import React, { PureComponent } from 'react';
 import { Map } from 'react-amap';
-import { keys } from 'lodash';
-import PTfun from '../positionpicker';
+import SP from './searchAndposition';
 
-export default class Address extends PureComponent {
+export default class extends PureComponent {
   constructor(props) {
     super(props);
     const value = props.value || {};
+    this.mapPlugins = ['ToolBar'];
     this.state = {
       value,
       address: value.address || '',
@@ -14,40 +14,35 @@ export default class Address extends PureComponent {
     };
   }
 
-  componentWillReceiveProps(nextProps) {
-    const { value } = nextProps;
-    if (!keys(this.state.value).length && 'value' in nextProps) {
-      this.setState({ value, address: value.address, position: value.position });
-    }
-  }
-
   handlePosition = (position) => {
-    console.log(position);
     const value = {
       address: position.address,
       position: { longitude: position.position.lng, latitude: position.position.lat },
     };
     this.setState({ value, ...value });
   }
-
-  handleInputChange = (e) => {
-    this.setState({ address: e.target.value });
-  }
-
   render() {
-    const { position, address } = this.state;
+    const loadingStyle = {
+      position: 'relative',
+      height: '100%',
+      width: '100%',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    };
+    const Loading = <div style={loadingStyle}>Loading Map...</div>;
+    const { position } = this.state;
     return (
-      <div style={{ width: '100%', height: '400px', position: 'relative' }} >
+      <div style={{ width: '100%', height: '500px', position: 'relative' }} >
         <Map
           amapkey="9a54ee2044c8fdd03b3d953d4ace2b4d"
-          // loading={Loading}
           zoom={15}
-          useAMapUI
+          loading={Loading}
           center={position}
+          plugins={this.mapPlugins}
+          useAMapUI
         >
-          <PTfun
-            address={address}
-            handleInput={this.handleInputChange}
+          <SP
             handlePosition={this.handlePosition}
           />
         </Map>
@@ -55,7 +50,3 @@ export default class Address extends PureComponent {
     );
   }
 }
-
-Address.default = {
-  onChange: () => { },
-};
