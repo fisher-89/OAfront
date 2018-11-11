@@ -55,7 +55,7 @@ export default class extends PureComponent {
   }
 
   makeColumns = () => {
-    const { department, reimdepartment } = this.props;
+    const { department, reimdepartment, fetchReimdepartmentLoading } = this.props;
     const columns = [
       {
         title: '编号',
@@ -74,6 +74,7 @@ export default class extends PureComponent {
         title: '资金归属',
         align: 'center',
         dataIndex: 'reim_department_id',
+        loading: fetchReimdepartmentLoading,
         render: key => OATable.findRenderKey(reimdepartment, key).name,
       }, {
         title: '一级审批人',
@@ -125,7 +126,7 @@ export default class extends PureComponent {
         style={{ marginLeft: '10px' }}
         onClick={() => this.handleModalVisible(true)}
       >
-          添加审批人
+        添加审批人
       </Button>
     ));
     return extra;
@@ -149,13 +150,13 @@ export default class extends PureComponent {
               extraOperator={this.makeExtraOperator()}
               columns={this.makeColumns()}
               fetchDataSource={this.fetchApprovers}
-              loading={
-                       fetchApproversLoading ||
-                       fetchDepartmentLoading ||
-                       fetchReimdepartmentLoading ||
-                       deleteLoading ||
-                      false
-                     }
+              loading={(
+                fetchApproversLoading ||
+                fetchDepartmentLoading ||
+                fetchReimdepartmentLoading ||
+                deleteLoading ||
+                false
+              )}
             />
           </Col>
         </Row>

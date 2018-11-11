@@ -134,7 +134,7 @@ class OATable extends PureComponent {
     if (JSON.stringify(filters) !== JSON.stringify(this.props.filters)) {
       this.onPropsFiltersChange(filters);
     }
-    if ((JSON.stringify(nextProps.columns) !== JSON.stringify(this.props.columns))) {
+    if ('columns' in nextProps) {
       this.getPropsColumnsValue(nextProps);
     }
   }
@@ -172,10 +172,12 @@ class OATable extends PureComponent {
     const nextColumns = nextProps.columns.map(item => ({
       filters: item.filters || [],
       treeFilters: item.treeFilters || {},
+      loading: item.loading || false,
     }));
     const thisColumns = this.props.columns.map(item => ({
       filters: item.filters || [],
       treeFilters: item.treeFilters || {},
+      loading: item.loading || false,
     }));
     if (JSON.stringify(nextColumns) !== JSON.stringify(thisColumns)) {
       const columns = nextProps.columns.map((item) => {
