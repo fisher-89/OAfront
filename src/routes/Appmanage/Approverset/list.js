@@ -1,7 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Divider, Row, Col, Button } from 'antd';
 import { connect } from 'dva';
-import { getFiltersData } from '../../../utils/utils';
 import OATable from '../../../components/OATable';
 import OAModal from './form';
 
@@ -68,7 +67,12 @@ export default class extends PureComponent {
         title: '部门',
         align: 'center',
         dataIndex: 'department_id',
-        filters: getFiltersData(department),
+        treeFilters: {
+          value: 'id',
+          title: 'name',
+          data: department,
+          parentId: 'parent_id',
+        },
         render: key => OATable.findRenderKey(department, key).name,
       }, {
         title: '资金归属',

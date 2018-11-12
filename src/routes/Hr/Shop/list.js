@@ -6,19 +6,23 @@ import {
 
 } from 'antd';
 import { connect } from 'dva';
-
+import Search from './search';
 import OATable from '../../../components/OATable';
 import Ellipsis from '../../../components/Ellipsis/index';
 import ShopForm from './form';
-import { customerAuthority } from '../../../utils/utils';
-@connect(({ shop, loading }) => ({
+import { customerAuthority, getFiltersData } from '../../../utils/utils';
+@connect(({ shop, loading, department, brand }) => ({
+  brand: brand.brand,
   shop: shop.shop,
+  department: department.department,
   sLoading: loading.effects['shop/fetchShop'],
+  brandLoading: loading.effects['brand/fetchBrand'],
 }))
 export default class extends PureComponent {
   state = {
     visible: false,
     editInfo: {},
+    options: [{ id: '0', name: '开业' }, { id: 1, name: '未开业' }], // 店铺状态
   }
 
   fetchShop = (params) => {
@@ -50,7 +54,13 @@ export default class extends PureComponent {
     });
   }
 
+  /* 店铺状态筛选 */
+  statusSelect = (dataSource, value = 'id', text = 'name') => {
+    return (dataSource || []).map(item => ({ value: item[value], text: item[text] }));
+  }
+
   makeColumns = () => {
+    const { department, brand, brandLoading } = this.props;
     const columns = [
       {
         title: '店铺代码',
@@ -62,25 +72,30 @@ export default class extends PureComponent {
       {
         title: '店铺名称',
         dataIndex: 'name',
-        align: 'center',
         searcher: true,
         width: 250,
         fixed: 'left',
       },
       {
         title: '所属部门',
-        dataIndex: 'department.name',
+        dataIndex: 'department.id',
         align: 'center',
-        searcher: true,
-        render: val => (val || '未分配'),
+        treeFilters: {
+          value: 'id',
+          title: 'name',
+          data: department,
+          parentId: 'parent_id',
+        },
+        render: key => OATable.findRenderKey(department, key).name,
         width: 120,
       },
       {
         title: '所属品牌',
-        dataIndex: 'brand.name',
+        dataIndex: 'brand.id',
         align: 'center',
-        searcher: true,
-        render: val => (val || '未分配'),
+        filters: getFiltersData(brand),
+        loading: brandLoading,
+        render: key => OATable.findRenderKey(brand, key).name,
         width: 150,
       },
       {
@@ -93,6 +108,7 @@ export default class extends PureComponent {
       {
         title: '店铺标签',
         dataIndex: 'tags',
+        searcher: true,
         align: 'center',
         width: 200,
       },
@@ -100,12 +116,18 @@ export default class extends PureComponent {
         title: '店铺状态',
         dataIndex: 'status_id',
         align: 'center',
+        filters: this.statusSelect(this.state.options),
         width: 100,
-      },
+        render: (key) => {
+          if (key === 1) {
+            return '未开业';
+          } else { return '开业'; }
+        } },
       {
         title: '开业日期',
         hidden: true,
         dataIndex: 'opening_at',
+        dateFilters: true,
         align: 'center',
         width: 100,
       },
@@ -113,6 +135,7 @@ export default class extends PureComponent {
         title: '闭店日期',
         hidden: true,
         dataIndex: 'end_at',
+        dateFilters: true,
         align: 'center',
         width: 100,
       },
@@ -130,25 +153,29 @@ export default class extends PureComponent {
       },
       {
         title: '店长',
+        searcher: true,
         dataIndex: 'manager_name',
         render: val => (val || '暂无'),
         width: 60,
       },
       {
-        title: '一级负责人',
+        title: '区域经理',
         hidden: true,
+        searcher: true,
         dataIndex: 'manager1_name',
         width: 60,
       },
       {
-        title: '二级负责人',
+        title: '大区经理',
         hidden: true,
+        searcher: true,
         dataIndex: 'manager2_name',
         width: 60,
       },
       {
-        title: '三级负责人',
+        title: '部长',
         hidden: true,
+        searcher: true,
         dataIndex: 'manager3_name',
         width: 60,
       },
@@ -230,6 +257,7 @@ export default class extends PureComponent {
           bordered
           autoComplete
           serverSide
+          moreSearch={<Search />}
           extraColumns
           loading={sLoading || false}
           extraOperator={this.makeExtraOperator()}
