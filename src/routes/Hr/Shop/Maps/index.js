@@ -8,10 +8,13 @@ export default class extends PureComponent {
     const value = props.value || {};
     this.mapPlugins = ['ToolBar'];
     this.state = {
-      value,
       address: value.address || '',
-      position: value.position || { longitude: '120', latitude: '30' },
+      position: {
+        longitude: value.lng || 120,
+        latitude: value.lat || 30,
+      },
     };
+    console.log(this.state);
   }
 
   handlePosition = (position) => {
@@ -19,8 +22,13 @@ export default class extends PureComponent {
       address: position.address,
       position: { longitude: position.position.lng, latitude: position.position.lat },
     };
-    this.setState({ value, ...value });
+    this.setState({ ...value });
   }
+
+  dragPosition = (position) => {
+    this.setState({ position: { longitude: position.lng, latitude: position.lat } });
+  }
+
   render() {
     const loadingStyle = {
       position: 'relative',
@@ -43,7 +51,9 @@ export default class extends PureComponent {
           useAMapUI
         >
           <SP
+            value={this.state}
             handlePosition={this.handlePosition}
+            dragPosition={this.dragPosition}
           />
         </Map>
       </div>

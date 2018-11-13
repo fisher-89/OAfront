@@ -170,11 +170,13 @@ export default class extends PureComponent {
               <Col {...colSpan}>
                 <FormItem label="店铺状态" {...formItemLayout} required>
                   {getFieldDecorator('status_id', {
-                    initialValue: initialValue.status_id !== undefined ? initialValue.status_id.toString() : '0',
+                    initialValue: initialValue.status_id !== undefined ? initialValue.status_id.toString() : '1',
                   })(
                     <Select>
-                      <Option value="0">开业</Option>
-                      <Option value="1">未开业</Option>
+                      <Option value="1">未营业</Option>
+                      <Option value="2">营业中</Option>
+                      <Option value="3">闭店</Option>
+                      <Option value="4">取消</Option>
                     </Select>
                   )}
                 </FormItem>
@@ -416,10 +418,10 @@ export default class extends PureComponent {
             tab={<div className={styles.tabpane}>店铺定位</div>}
             key="3"
           > {getFieldDecorator('lng', {
-            initialValue: initialValue.lng || '',
+            initialValue: initialValue.lng || null,
           })(<Input type="hidden" />)}
             {getFieldDecorator('lat', {
-              initialValue: initialValue.lat || '',
+              initialValue: initialValue.lat || null,
             })(<Input type="hidden" />)}
 
             <FormItem>

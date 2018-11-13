@@ -6,7 +6,7 @@ import './style.less';
 const divStyle = {
   position: 'absolute',
   top: '0',
-  width: 300,
+  width: 500,
 };
 const lowStyle = {
   position: 'absolute',
@@ -26,13 +26,7 @@ export default class extends PureComponent {
     this.loadUI();
   }
   state = {
-    value: {
-      address: '浙江省杭州市富阳区大源镇G25长深高速',
-      position: {
-        lng: 120,
-        lat: 30,
-      },
-    },
+    value: this.props.value,
     dataSource: [],
   }
 
@@ -47,6 +41,7 @@ export default class extends PureComponent {
         },
       };
       this.props.handlePosition(position);
+      this.setState({ value: { address: this.state.dataSource[value].address } });
     }
   }
 
@@ -69,6 +64,8 @@ export default class extends PureComponent {
         const geocoder = new AMap.Geocoder(autoOptions);
         geocoder.getAddress([center.lng, center.lat], (status, result) => {
           if (status === 'complete' && result.info === 'OK') {
+            console.log(center);
+            this.props.dragPosition(center);
             this.setState({
               value: {
                 address: result.regeocode.formattedAddress,
@@ -77,7 +74,8 @@ export default class extends PureComponent {
                   lat: center.lat,
                 },
               },
-            });
+            },
+            ); console.log(this.state.value.position);
           }
         });
       });
@@ -86,7 +84,7 @@ export default class extends PureComponent {
 
   /* 搜索 */
   sendInput = (info) => {
-    this.setState({ value: info }, this.handleSearch(this.state.value));
+    this.handleSearch(info);
   }
 
   autoComplete = (keywords) => {
@@ -107,7 +105,6 @@ export default class extends PureComponent {
 
   render() {
     const { dataSource, value } = this.state;
-
     const options = dataSource.map((item, index) => {
       const key = `${index}`;
       return (
@@ -121,6 +118,7 @@ export default class extends PureComponent {
       <Fragment>
         <div style={divStyle}>
           <AutoComplete
+            defaultValue={value.address}
             dataSource={options}
             onSelect={this.onSelect}
             onSearch={this.sendInput}
@@ -130,7 +128,11 @@ export default class extends PureComponent {
         </div>
         <div style={lowStyle}>
           <label>当前标签位置，仅供参考</label>
-          <Input className="poiStyle" value={value.address} readOnly />
+          <Input
+            className="poiStyle"
+            value={value.address}
+            readOnly
+          />
         </div>
       </Fragment>
     );
