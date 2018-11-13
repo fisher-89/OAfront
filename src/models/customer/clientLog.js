@@ -29,7 +29,7 @@ export default {
       }
     } catch (err) { return err; }
   },
-  * clientReduction({ payload, onSuccess, onError }, { call }) {
+  * clientReduction({ payload, onSuccess, onError }, { call, put }) {
     try {
       const { id } = { ...payload };
       if (id) {

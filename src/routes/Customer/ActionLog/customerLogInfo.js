@@ -54,11 +54,17 @@ const rcViewerOptions = {
     flipVertical: 0,
   },
 };
-
 @store('clientReduction')
 export default class extends React.PureComponent {
   handleClick = () => {
-    const { onSuccess, initialValue, initialValue: { id }, clientReduction, type } = this.props;
+    const {
+      type,
+      onSuccess,
+      initialValue,
+      clientReduction,
+      // fetchDataSource,
+      initialValue: { id },
+    } = this.props;
     if (id && (
       initialValue.status === 1 || (
         customerAuthority(191) && initialValue.status === -1
@@ -66,6 +72,7 @@ export default class extends React.PureComponent {
     )) {
       clientReduction(id, () => {
         const params = !type ? { page: 1, pageSize: 10, filters: '', sort: 'id-desc' } : undefined;
+        // fetchDataSource({ id });
         onSuccess(params);
         this.props.onClose();
       });
