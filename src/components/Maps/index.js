@@ -25,7 +25,10 @@ export default class extends PureComponent {
   }
 
   dragPosition = (position) => {
-    this.setState({ position: { longitude: position.lng, latitude: position.lat } });
+    const value = {
+      position: { longitude: position.lng, latitude: position.lat },
+    };
+    this.setState({ ...value }, () => this.props.onChange(value));
   }
 
   render() {

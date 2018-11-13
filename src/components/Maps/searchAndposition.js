@@ -1,12 +1,12 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Input, AutoComplete } from 'antd';
+import { Input, AutoComplete, Tooltip } from 'antd';
 import { debounce } from 'lodash';
 import './style.less';
 
 const divStyle = {
   position: 'absolute',
   top: '0',
-  width: 500,
+  width: 300,
 };
 const lowStyle = {
   position: 'absolute',
@@ -75,7 +75,7 @@ export default class extends PureComponent {
                 },
               },
             },
-            ); console.log(this.state.value.position);
+            );
           }
         });
       });
@@ -109,8 +109,10 @@ export default class extends PureComponent {
       const key = `${index}`;
       return (
         <Option key={key} text={`${item.district}${item.address}`}>
-          <span>{item.name}</span>
-          <span style={fontStyle}>&nbsp;&nbsp;&nbsp;{item.district}{item.address}</span>
+          <Tooltip title={`${item.district}${item.address}`} placement="right">
+            <span>{item.name}</span>
+            <span style={fontStyle}>&nbsp;&nbsp;&nbsp;{item.district}{item.address}</span>
+          </Tooltip>
         </Option>
       );
     });

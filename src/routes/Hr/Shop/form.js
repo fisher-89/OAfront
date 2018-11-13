@@ -19,7 +19,7 @@ import { markTreeData } from '../../../utils/utils';
 import styles from './form.less';
 // import ACfun from './autocomplete';
 // import PTfun from './positionpicker';
-import SearchMap from './Maps';
+import SearchMap from '../../../components/Maps';
 
 const { TabPane } = Tabs;
 const FormItem = OAForm.Item;
@@ -48,15 +48,19 @@ export default class extends PureComponent {
 
   handleSubmit = (params) => {
     const { dispatch } = this.props;
+    console.log(params);
     const body = {
       ...params,
-      ...params.shop_address,
       ...params.manager1_sn,
       ...params.manager_sn,
       ...params.manager2_sn,
       ...params.manager3_sn,
+      lat: params.address.position.latitude,
+      lng: params.address.position.longitude,
+      ...params.shop_address,
     };
     delete body.shop_address;
+    console.log(body);
     dispatch({
       type: params.id ? 'shop/editShop' : 'shop/addShop',
       payload: body,
