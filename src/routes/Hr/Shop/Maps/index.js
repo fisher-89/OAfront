@@ -14,7 +14,6 @@ export default class extends PureComponent {
         latitude: value.lat || 30,
       },
     };
-    console.log(this.state);
   }
 
   handlePosition = (position) => {
@@ -22,7 +21,7 @@ export default class extends PureComponent {
       address: position.address,
       position: { longitude: position.position.lng, latitude: position.position.lat },
     };
-    this.setState({ ...value });
+    this.setState({ ...value }, () => this.props.onChange(value));
   }
 
   dragPosition = (position) => {
@@ -39,7 +38,7 @@ export default class extends PureComponent {
       alignItems: 'center',
     };
     const Loading = <div style={loadingStyle}>Loading Map...</div>;
-    const { position } = this.state;
+    const { position, address } = this.state;
     return (
       <div style={{ width: '100%', height: '500px', position: 'relative' }} >
         <Map
@@ -51,7 +50,7 @@ export default class extends PureComponent {
           useAMapUI
         >
           <SP
-            value={this.state}
+            value={{ ...position, ...address }}
             handlePosition={this.handlePosition}
             dragPosition={this.dragPosition}
           />
