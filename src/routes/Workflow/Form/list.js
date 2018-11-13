@@ -23,10 +23,7 @@ export default class List extends PureComponent {
   }
 
   componentWillMount() {
-    const { formType } = this.props;
-    if (formType.length === 0) {
-      this.fetchFormType();
-    }
+    this.fetchFormType();
   }
 
   fetchForm = (params) => {
@@ -116,19 +113,19 @@ export default class List extends PureComponent {
         filters: formType.map((item) => {
           return { text: item.name, value: item.id };
         }),
-        render: val => formTypeIndexById[val].name,
+        render: val => (formTypeIndexById[val] || {}).name,
       },
       {
+        sorter: true,
         title: '更新时间',
         dataIndex: 'updated_at',
-        sorter: true,
-        render: val => (<span>{val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : ''}</span>),
+        render: val => (val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : ''),
       },
       {
         title: '操作',
         render: ({ id }) => (
           <Fragment>
-            <a onClick={this.searchHistory(id)}>查看记录</a>
+            <a onClick={this.searchHistory(id)}>查看</a>
             <Divider type="vertical" />
             <Link to={`/workflow/form/list/edit/${id}`}> 编辑 </Link>
             <Divider type="vertical" />
