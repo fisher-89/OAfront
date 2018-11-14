@@ -151,10 +151,10 @@ export default class extends React.PureComponent {
                 allowClear
                 value={id}
                 placeholder="筛选"
+                notFoundContent="(空)"
                 filterOption={this.handleSearch}
                 defaultActiveFirstOption={false}
                 onChange={this.handleChange('id')}
-                notFoundContent={<Spin spinning />}
                 style={{ width: 200, maxHeight: 400 }}
               >
                 {filterData.map(item => (
@@ -174,7 +174,7 @@ export default class extends React.PureComponent {
                 >
                   {formVersionData.map(item => (
                     <TagSelect.Option key={item.id} value={`${item.id}`}>
-                      {item.name} -- {item.created_at}
+                      {item.created_at}
                     </TagSelect.Option>)
                   )}
                 </TagSelect>

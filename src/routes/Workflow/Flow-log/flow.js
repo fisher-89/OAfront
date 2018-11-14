@@ -180,7 +180,7 @@ export default class extends React.PureComponent {
                 >
                   {formVersionData.map(item => (
                     <TagSelect.Option key={item.id} value={`${item.id}`}>
-                      {item.name} -- {item.created_at}
+                      {item.created_at}
                     </TagSelect.Option>)
                   )}
                 </TagSelect>

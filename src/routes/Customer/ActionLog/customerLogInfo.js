@@ -62,7 +62,6 @@ export default class extends React.PureComponent {
       onSuccess,
       initialValue,
       clientReduction,
-      // fetchDataSource,
       initialValue: { id },
     } = this.props;
     if (id && (
@@ -72,7 +71,6 @@ export default class extends React.PureComponent {
     )) {
       clientReduction(id, () => {
         const params = !type ? { page: 1, pageSize: 10, filters: '', sort: 'id-desc' } : undefined;
-        // fetchDataSource({ id });
         onSuccess(params);
         this.props.onClose();
       });

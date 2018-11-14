@@ -38,9 +38,10 @@ export default {
         yield put({
           type: 'update',
           payload: {
-            store,
             data: response,
             id: response.id,
+            store: 'customer',
+            message: '还原成功',
           },
         });
         onSuccess(response);

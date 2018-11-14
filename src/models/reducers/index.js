@@ -61,11 +61,10 @@ export default {
     });
     const originalStore = { ...state[`${store}Details`] };
     Object.keys(originalStore).forEach((key) => {
-      if (id === key) {
-        delete originalStore[key];
+      if (`${id}` === `${key}`) {
+        originalStore[key] = data;
       }
     });
-
     const dataSource = Array.isArray(state[store]) ? state[store] : (state[store].data || []);
 
     let updated = false;

@@ -197,6 +197,7 @@ export default class extends React.PureComponent {
     const customerInfo = details[this.id] || {};
     const customerInfoProps = { ...this.props };
     delete customerInfoProps.customer;
+
     return (
       <React.Fragment>
         <Row gutter={16}>
