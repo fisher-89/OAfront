@@ -2,7 +2,9 @@ import React, { PureComponent } from 'react';
 import { Map } from 'react-amap';
 import SP from './searchAndposition';
 
-/* 需要输入address lng lat */
+/* 需要输入address lng lat
+   输出 address lng lat
+*/
 
 export default class extends PureComponent {
   constructor(props) {
@@ -23,7 +25,12 @@ export default class extends PureComponent {
       address: position.address,
       position: { longitude: position.position.lng, latitude: position.position.lat },
     };
-    this.setState({ ...value }, () => this.props.onChange(value));
+    const completeValue = {
+      address: position.address,
+      lng: position.position.lng,
+      lat: position.position.lat,
+    };
+    this.setState({ ...value }, () => this.props.onChange(completeValue));
   }
 
   dragPosition = (position) => {
@@ -31,7 +38,12 @@ export default class extends PureComponent {
       address: position.address,
       position: { longitude: position.position.lng, latitude: position.position.lat },
     };
-    this.setState({ ...value }, () => this.props.onChange(value));
+    const completeValue = {
+      address: position.address,
+      lng: position.position.lng,
+      lat: position.position.lat,
+    };
+    this.setState({ ...value }, () => this.props.onChange(completeValue));
   }
 
   render() {

@@ -50,8 +50,8 @@ export default class extends PureComponent {
       ...params.manager_sn,
       ...params.assistant_sn,
       real_address: params.real_address.address,
-      lat: params.real_address.position.latitude,
-      lng: params.real_address.position.longitude,
+      lat: params.real_address.lat,
+      lng: params.real_address.lng,
       ...params.shop_address,
     };
     delete body.shop_address;
@@ -216,7 +216,7 @@ export default class extends PureComponent {
 
             <Row>
               <Col {...colSpan}>
-                <FormItem label="开业日期" {...formItemLayout} required>
+                <FormItem label="开业日期" {...formItemLayout} >
                   {getFieldDecorator('opening_at',
                     {
                       initialValue: initialValue.opening_at || undefined,
@@ -226,7 +226,7 @@ export default class extends PureComponent {
                 </FormItem>
               </Col>
               <Col {...colSpan}>
-                <FormItem label="结束日期" {...formItemLayout} required>
+                <FormItem label="结束日期" {...formItemLayout} >
                   {getFieldDecorator('end_at',
                     {
                       initialValue: initialValue.end_at || undefined,
