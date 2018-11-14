@@ -7,11 +7,6 @@ import XLSX from 'xlsx';
   loading: loading.effects['staffs/exportStaff'],
 }))
 export default class extends PureComponent {
-  state={
-    maxCols: ['员工编号', '姓名', '性别', '品牌', '费用品牌', '部门全称', '店铺代码', '职位', '员工状态', '入职时间', '手机号码', '身份证号', '银行卡号', '开户人', '开户行', '民族', '微信号', '学历', '政治面貌', '婚姻状况', '身高', '体重', '户口所在地址', '现居住地址', '籍贯', '紧急联系人', '联系人电话', '联系人关系类型', '备注'],
-    minCols: ['员工编号', '姓名', '性别', '品牌', '费用品牌', '店铺代码', '部门全称', '职位', '员工状态', '入职时间'],
-  }
-
   confirmExport = () => {
     const { total } = this.props;
     if (total > 2000) {
@@ -30,15 +25,10 @@ export default class extends PureComponent {
   }
 
   handleExport = () => {
-    const { maxCols, minCols } = this.state;
     const { dispatch, filters } = this.props;
     dispatch({
       type: 'staffs/exportStaff',
-      payload: {
-        ...filters,
-        maxCols,
-        minCols,
-      },
+      payload: filters,
       onError: this.handleError,
       onSuccess: (list) => {
         if (list.length <= 0) {
