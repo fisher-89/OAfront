@@ -2,14 +2,12 @@
  * Created by Administrator on 2018/4/11.
  */
 import React, { PureComponent } from 'react';
-import { Cascader, Col, Input } from 'antd';
+import { Input } from 'antd';
 import { mapValues, find } from 'lodash';
-import district, { treeDistrict } from '../../../assets/district';
+import district from '../../../assets/district';
 import { getInitSearchProps } from '../../../utils/utils';
-import OAForm, { SearchTable } from '../../../components/OAForm';
-import { formItemLayout } from '../../../components/OATable/MoreSearch';
+import OAForm, { SearchTable, Address } from '../../../components/OAForm';
 
-const districtData = treeDistrict;
 
 const FormItem = OAForm.Item;
 const valueKey = {
@@ -18,85 +16,99 @@ const valueKey = {
   },
 };
 
+const formItemLayout1 = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 4, pull: 1 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 20, pull: 1 },
+  },
+};
+
+
 export default class Search extends PureComponent {
-  cascaderChange = (name, title) => {
+  addressChange = (name, title) => {
     return (value) => {
-      const response = {
-        [`${name}_city_id`]: value[1],
-        [`${name}_county_id`]: value[2],
-        [`${name}_province_id`]: value[0],
-      };
       const { onChange } = this.props;
+      const response = { ...value };
       const filterText = mapValues(response, (filterValue) => {
-        const text = (find(district, ['id', filterValue]) || {}).name || '';
+        const text = (find(district, ['id', parseInt(filterValue, 10)]) || {}).name || '';
         return { text };
       });
       filterText[`${name}_province_id`].title = `${title}省`;
+      filterText[`${name}_province_id`].same = name;
+      filterText[`${name}_province_id`].number = 1;
       filterText[`${name}_city_id`].title = `${title}市`;
+      filterText[`${name}_city_id`].same = name;
+      filterText[`${name}_city_id`].number = 2;
       filterText[`${name}_county_id`].title = `${title}区`;
+      filterText[`${name}_county_id`].same = name;
+      filterText[`${name}_county_id`].number = 3;
       onChange(null, filterText)(response);
     };
   }
 
   render() {
-    const { onChange, initialValue, colSpan } = this.props;
+    const { onChange, initialValue } = this.props;
     const propsValue = getInitSearchProps(initialValue, onChange, valueKey);
-    const living = initialValue.living_province_id ? [
-      initialValue.living_province_id,
-      initialValue.living_city_id,
-      initialValue.living_county_id,
-    ] : [];
-    const household = initialValue.household_province_id ? [
-      initialValue.household_province_id,
-      initialValue.household_city_id,
-      initialValue.household_county_id,
-    ] : [];
+    const living = initialValue.living_province_id ? {
+      living_province_id: initialValue.living_province_id,
+      living_city_id: initialValue.living_city_id,
+      living_county_id: initialValue.living_county_id,
+    } : {};
+    const household = initialValue.household_province_id ? {
+      household_province_id: initialValue.household_province_id,
+      household_city_id: initialValue.household_city_id,
+      household_county_id: initialValue.household_county_id,
+    } : {};
     const shopValue = (initialValue.shop_sn || []).map(item => ({ shop_sn: item }));
     return (
       <React.Fragment>
-        <Col span={colSpan}>
-          <FormItem {...formItemLayout} label="店铺编号">
-            <SearchTable.Shop
-              multiple
-              value={shopValue}
-              showName="shop_sn"
-              name={{ shop_sn: 'shop_sn' }}
-              onChange={(value) => {
-                const changeValue = value.map(item => item.shop_sn);
-                onChange('shop_sn', { title: '店铺编号', text: changeValue })(changeValue);
-              }}
-            />
-          </FormItem>
-        </Col>
-        <Col span={colSpan}>
-          <FormItem {...formItemLayout} label="身份证">
-            <Input placeholder="请输入" {...propsValue.id_card_number} />
-          </FormItem>
-        </Col>
-        <Col span={colSpan}>
-          <FormItem {...formItemLayout} label="户口地址">
-            <Cascader
-              value={household}
-              options={districtData}
-              placeholder="请输入地区"
-              style={{ width: '100%' }}
-              getPopupContainer={trigger => trigger}
-              onChange={this.cascaderChange('household', '户口')}
-            />
-          </FormItem>
-        </Col>
-        <Col span={colSpan}>
-          <FormItem {...formItemLayout} label="现居地址">
-            <Cascader
-              value={living}
-              options={districtData}
-              placeholder="请输入地区"
-              style={{ width: '100%' }}
-              getPopupContainer={trigger => trigger}
-              onChange={this.cascaderChange('living', '现居')}
-            />
-          </FormItem>
-        </Col>
+
+        <FormItem {...formItemLayout1} label="户口地址">
+          <Address
+            name={{
+              household_city_id: 'city_id',
+              household_county_id: 'county_id',
+              household_province_id: 'province_id',
+            }}
+            value={household}
+            visibles={{ address: true }}
+            onChange={this.addressChange('household', '户口')}
+          />
+        </FormItem>
+
+        <FormItem {...formItemLayout1} label="现居地址">
+          <Address
+            name={{
+              living_city_id: 'city_id',
+              living_county_id: 'county_id',
+              living_province_id: 'province_id',
+            }}
+            value={living}
+            visibles={{ address: true }}
+            onChange={this.addressChange('living', '现居')}
+          />
+        </FormItem>
+
+        <FormItem {...formItemLayout1} label="身份证">
+          <Input placeholder="请输入" {...propsValue.id_card_number} />
+        </FormItem>
+
+        <FormItem {...formItemLayout1} label="店铺编号">
+          <SearchTable.Shop
+            multiple
+            value={shopValue}
+            showName="shop_sn"
+            name={{ shop_sn: 'shop_sn' }}
+            onChange={(value) => {
+              const changeValue = value.map(item => item.shop_sn);
+              onChange('shop_sn', { title: '店铺编号', text: changeValue })(changeValue);
+            }}
+          />
+        </FormItem>
       </React.Fragment>
     );
   }

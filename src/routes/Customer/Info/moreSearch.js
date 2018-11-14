@@ -91,7 +91,7 @@ export default class Search extends PureComponent {
         </FormItem>
         <FormItem label="现居地址" {...formItemLayout}>
           {getFieldDecorator('address')(
-            <Address disabled={{ address: true }} />
+            <Address visibles={{ address: true }} />
           )}
         </FormItem>
         <div className="ant-table-filter-dropdown-btns">

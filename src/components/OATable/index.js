@@ -586,29 +586,16 @@ class OATable extends PureComponent {
     const newFilterText = {};
     assign(newFilters, filters, value);
     assign(newFilterText, filtersText, valueText);
-
     forIn(newFilterText, (filter, key) => {
       if (
-        filter.text === [] ||
-        filter.text === '' ||
-        filter.text === null ||
-        filter.text === undefined
+        ((filter.text !== 0) && !filter.text) ||
+        ((newFilters[key] !== 0 || newFilters[key].length === 0) && !newFilters[key])
       ) {
         delete newFilterText[key];
+        delete newFilters[key];
       }
       if (!filter.title && this.columnsText[key]) {
         newFilterText[key].title = this.columnsText[key].title;
-      }
-    });
-
-    forIn(newFilters, (filter, key) => {
-      if (
-        filter === [] ||
-        filter === '' ||
-        filter === null ||
-        filter === undefined
-      ) {
-        delete newFilters[key];
       }
     });
 
@@ -714,11 +701,25 @@ class OATable extends PureComponent {
 
   resetFilter = (key) => {
     const { pagination, filters, sorter, filtered, filtersText } = this.state;
-    let newFilters = {};
-    let newFiltersText = {};
+    let newFilters = { ...filters };
+    let newFiltersText = { ...filtersText };
     if (filters[key] !== undefined) {
-      newFilters = omit(filters, [key]);
-      newFiltersText = omit(filtersText, [key]);
+      const deleteValue = filtersText[key];
+      if (deleteValue.same) {
+        const sameValue = deleteValue.same;
+        const sameKey = deleteValue.number;
+        forIn(filtersText, (filter, deleteKey) => {
+          if (sameValue === filter.same && sameKey < filter.number) {
+            newFilters = omit(newFilters, [deleteKey]);
+            newFiltersText = omit(newFiltersText, [deleteKey]);
+          }
+        });
+      }
+      newFilters = omit(newFilters, [key]);
+      newFiltersText = omit(newFiltersText, [key]);
+    } else {
+      newFilters = {};
+      newFiltersText = {};
     }
     let newFiltered = [];
     if (key) newFiltered = filtered.filter(item => item !== key);

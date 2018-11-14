@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import { Input, Button, Popover, Form, Select, Row, Col, Slider, DatePicker, TreeSelect } from 'antd';
-import { mapValues, isArray, isObject, isString, map, has, assign } from 'lodash';
+import { mapValues, isArray, isObject, isString, map, assign } from 'lodash';
 import InputRange from '../InputRange';
 import { markTreeData } from '../../utils/utils';
 
@@ -148,6 +148,7 @@ export default class MoreSearch extends React.Component {
         text: filterTextValue,
       })(value);
     };
+    selectProps.value = (selectProps.value || []).map(k => `${k}`);
     return (
       <FormItem {...this.makeFormItemProps(item)}>
         <Select {...selectProps} mode="multiple">
@@ -168,13 +169,12 @@ export default class MoreSearch extends React.Component {
         text: filterTextValue,
       })(value);
     };
-
     selectProps.treeData = markTreeData(data, {
       value: treeFilters.value,
       label: treeFilters.title,
       parentId: treeFilters.parentId,
     }, treeFilters.initParent || 0);
-
+    selectProps.value = (selectProps.value || []).map(k => `${k}`);
     return (
       <FormItem {...this.makeFormItemProps(item)}>
         <TreeSelect
@@ -250,44 +250,47 @@ export default class MoreSearch extends React.Component {
     }).filter(item => item);
   }
 
-  renderMoreSearch = () => {
+  renderColumns = (moreSearch) => {
+    if (moreSearch.length) {
+      return this.makeColumnsSearch(moreSearch);
+    }
+    return null;
+  }
+
+  renderMoreSearch = (moreSearch) => {
+    const { filters } = this.state;
+    return React.cloneElement(moreSearch, {
+      initialValue: filters,
+      onChange: this.handleSearchChange,
+    });
+  }
+
+  renderMoreSearchContent = (content) => {
+    if (isArray(content)) {
+      return this.makeColumnsSearch(content);
+    } else if (React.isValidElement(content)) {
+      return this.renderMoreSearch(content);
+    }
+    return null;
+  }
+
+  renderContent = () => {
     const { moreSearch } = this.props;
-    const { filters, colCountKey } = this.state;
+    const { colCountKey } = this.state;
     const colCount = this.colCounts[colCountKey].replace('列', '');
     const span = 24 / colCount;
-    let searchComponent = moreSearch;
-    if (React.isValidElement(moreSearch)) {
-      searchComponent = React.cloneElement(moreSearch, {
-        initialValue: filters,
-        onChange: this.handleSearchChange,
-      });
-    } else if (isArray(moreSearch)) {
-      searchComponent = this.makeColumnsSearch(moreSearch);
-    } else if (isObject(moreSearch)) {
-      const { content, columns } = moreSearch;
-      searchComponent = [];
-      if (isArray(content)) {
-        searchComponent = this.makeColumnsSearch(content);
-      } else if (React.isValidElement(content)) {
-        const element = React.cloneElement(content, {
-          colSpan: span,
-          key: 'content',
-          initialValue: filters,
-          onChange: this.handleSearchChange,
-        });
-        searchComponent.push({
-          col: false,
-          component: element,
-        });
-      } else {
-        searchComponent.push({
-          col: false,
-          component: content,
-        });
-      }
-      searchComponent = searchComponent.concat(this.makeColumnsSearch(columns));
-    }
-
+    const sliderCom = (
+      <div style={{ width: '100%', padding: '0 20px' }}>
+        <Slider
+          min={0}
+          step={null}
+          value={colCountKey}
+          marks={this.colCounts}
+          onChange={this.onColCountChange}
+          max={Object.keys(this.colCounts).length - 1}
+        />
+      </div>
+    );
     return (
       <React.Fragment>
         <div style={{
@@ -298,32 +301,41 @@ export default class MoreSearch extends React.Component {
           maxWidth: colCountKey === 2 ? 800 : 600,
         }}
         >
-          <div style={{ width: '400px', margin: '0 auto' }}>
-            <FormItem label="排版" {...formItemLayout}>
-              <Slider
-                min={0}
-                step={null}
-                value={colCountKey}
-                marks={this.colCounts}
-                onChange={this.onColCountChange}
-                max={Object.keys(this.colCounts).length - 1}
-              />
-            </FormItem>
-          </div>
-          {
-            isArray(searchComponent) ? (
-              <Row gutter={8}>
-                {
-                  map(searchComponent, (component, index) => {
-                    const key = index;
-                    return !has(component, 'component') ? (
-                      <Col key={key} span={span}>{component}</Col>
-                    ) : component.component;
-                  })
-                }
-              </Row>
-            ) : searchComponent
-          }
+          <Row>
+            {isArray(moreSearch) && (
+              <React.Fragment>
+                {sliderCom}
+                {this.renderColumns(moreSearch).map((item, index) => {
+                  const key = index;
+                  return (<Col key={key} span={span}>{item}</Col>);
+                })}
+              </React.Fragment>
+            )}
+            {React.isValidElement(moreSearch) && this.renderMoreSearch(moreSearch)}
+            {isObject(moreSearch) && (
+              <React.Fragment>
+                <div style={{ width: '100%' }}>
+                  {moreSearch.content && isArray(moreSearch.content) ? (
+                    this.renderMoreSearchContent(moreSearch.content).map((item, index) => {
+                      const key = index;
+                      return (<Col key={key} span={span}>{item}</Col>);
+                    })
+                  ) : (
+                      this.renderMoreSearchContent(moreSearch.content)
+                    )}
+                </div>
+                {moreSearch.columns.length > 0 && sliderCom}
+                <div style={{ width: '100%' }}>
+                  {(moreSearch.columns && moreSearch.columns.length > 0) &&
+                    this.renderColumns(moreSearch.columns).map((item, index) => {
+                      const key = index;
+                      return (<Col key={key} span={span}>{item}</Col>);
+                    })
+                  }
+                </div>
+              </React.Fragment>
+            )}
+          </Row>
         </div>
         <div className="ant-table-filter-dropdown-btns">
           <a className="ant-table-filter-dropdown-link clear" onClick={this.resetSearch}>重置</a>
@@ -340,7 +352,7 @@ export default class MoreSearch extends React.Component {
         trigger="click"
         visible={visible}
         placement="bottom"
-        content={this.renderMoreSearch()}
+        content={this.renderContent()}
       >
         <Button icon="filter" onClick={this.handleVisible}>更多筛选</Button>
       </Popover>
