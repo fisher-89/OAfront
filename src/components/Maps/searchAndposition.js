@@ -33,15 +33,16 @@ export default class extends PureComponent {
   /* 选择选项后定位 */
   onSelect = (value) => {
     if (this.state.dataSource[value].location) {
+      const completeAddress = `${this.state.dataSource[value].district}${this.state.dataSource[value].address}`;
       const position = {
-        address: this.state.dataSource[value].address,
+        address: completeAddress,
         position: {
           lng: this.state.dataSource[value].location.lng,
           lat: this.state.dataSource[value].location.lat,
         },
       };
       this.props.handlePosition(position);
-      this.setState({ value: { address: this.state.dataSource[value].address } });
+      this.setState({ value: { address: completeAddress } });
     }
   }
 
@@ -64,8 +65,10 @@ export default class extends PureComponent {
         const geocoder = new AMap.Geocoder(autoOptions);
         geocoder.getAddress([center.lng, center.lat], (status, result) => {
           if (status === 'complete' && result.info === 'OK') {
-            console.log(center);
-            this.props.dragPosition(center);
+            this.props.dragPosition({
+              address: result.regeocode.formattedAddress,
+              position: center,
+            });
             this.setState({
               value: {
                 address: result.regeocode.formattedAddress,

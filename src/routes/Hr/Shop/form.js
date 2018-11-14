@@ -7,7 +7,6 @@ import {
   Col,
   Row,
 } from 'antd';
-// import { Map } from 'react-amap';
 import { connect } from 'dva';
 import OAForm, {
   OAModal,
@@ -17,8 +16,6 @@ import OAForm, {
 } from '../../../components/OAForm';
 import { markTreeData } from '../../../utils/utils';
 import styles from './form.less';
-// import ACfun from './autocomplete';
-// import PTfun from './positionpicker';
 import SearchMap from '../../../components/Maps';
 
 const { TabPane } = Tabs;
@@ -48,19 +45,16 @@ export default class extends PureComponent {
 
   handleSubmit = (params) => {
     const { dispatch } = this.props;
-    console.log(params);
     const body = {
       ...params,
-      ...params.manager1_sn,
       ...params.manager_sn,
-      ...params.manager2_sn,
-      ...params.manager3_sn,
-      lat: params.address.position.latitude,
-      lng: params.address.position.longitude,
+      ...params.assistant_sn,
+      real_address: params.real_address.address,
+      lat: params.real_address.position.latitude,
+      lng: params.real_address.position.longitude,
       ...params.shop_address,
     };
     delete body.shop_address;
-    console.log(body);
     dispatch({
       type: params.id ? 'shop/editShop' : 'shop/addShop',
       payload: body,
@@ -118,12 +112,9 @@ export default class extends PureComponent {
     const mng = {};
     mng.manager_sn = initialValue.manager_sn;
     mng.manager_name = initialValue.manager_name;
-    mng.manager1_sn = initialValue.manager1_sn;
-    mng.manager1_name = initialValue.manager1_name;
-    mng.manager2_sn = initialValue.manager2_sn;
-    mng.manager2_name = initialValue.manager2_name;
-    mng.manager3_sn = initialValue.manager3_sn;
-    mng.manager3_name = initialValue.manager3_name;
+    const ast = {};
+    ast.assistant_sn = initialValue.assistant_sn;
+    ast.assistant_name = initialValue.assistant_name;
     return (
       <OAModal
         title={initialValue.id ? '编辑店铺' : '添加店铺'}
@@ -336,64 +327,23 @@ export default class extends PureComponent {
 
 
               <Col {...colSpan}>
-                <FormItem label="区域经理" {...formItemLayout}>
+                <FormItem label="驻店人员" {...formItemLayout}>
                   {
-                    getFieldDecorator('manager1_sn', {
-                      initialValue: mng || [],
+                    getFieldDecorator('assistant_sn', {
+                      initialValue: ast || [],
                     })(
                       <SearchTable.Staff
                         name={{
-                          manager1_sn: 'staff_sn',
-                          manager1_name: 'realname',
+                          assistant_sn: 'staff_sn',
+                          assistant_name: 'realname',
                         }}
-                        showName="manager1_name"
+                        showName="assistant_name"
                       />
                     )
                   }
                 </FormItem>
               </Col>
             </Row>
-
-
-            <Row>
-              <Col {...colSpan}>
-                <FormItem label="大区经理" {...formItemLayout}>
-                  {
-                    getFieldDecorator('manager2_sn', {
-                      initialValue: mng || [],
-                    })(
-                      <SearchTable.Staff
-                        name={{
-                          manager2_sn: 'staff_sn',
-                          manager2_name: 'realname',
-                        }}
-                        showName="manager2_name"
-                      />
-                    )
-                  }
-                </FormItem>
-              </Col>
-
-
-              <Col {...colSpan}>
-                <FormItem label="部长" {...formItemLayout}>
-                  {
-                    getFieldDecorator('manager3_sn', {
-                      initialValue: mng || [],
-                    })(
-                      <SearchTable.Staff
-                        name={{
-                          manager3_sn: 'staff_sn',
-                          manager3_name: 'realname',
-                        }}
-                        showName="manager3_name"
-                      />
-                    )
-                  }
-                </FormItem>
-              </Col>
-            </Row>
-
 
             <Row>
               <Col>
@@ -429,9 +379,9 @@ export default class extends PureComponent {
             })(<Input type="hidden" />)}
 
             <FormItem>
-              {getFieldDecorator('address', {
+              {getFieldDecorator('real_address', {
                 initialValue: {
-                  address: initialValue.address || '',
+                  address: initialValue.real_address || '',
                   lng: initialValue.lng || undefined,
                   lat: initialValue.lat || undefined,
               },

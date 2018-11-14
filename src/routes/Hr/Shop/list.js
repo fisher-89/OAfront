@@ -162,21 +162,7 @@ export default class extends PureComponent {
         title: '区域经理',
         hidden: true,
         searcher: true,
-        dataIndex: 'manager1_name',
-        width: 60,
-      },
-      {
-        title: '大区经理',
-        hidden: true,
-        searcher: true,
-        dataIndex: 'manager2_name',
-        width: 60,
-      },
-      {
-        title: '部长',
-        hidden: true,
-        searcher: true,
-        dataIndex: 'manager3_name',
+        dataIndex: 'assistant_name',
         width: 60,
       },
       {
