@@ -19,17 +19,11 @@ export default type => (Component) => {
   class NewCopmonent extends PureComponent {
     componentWillMount() {
       this.fetchTags();
-      this.fetchTypes();
     }
 
     fetchTags = (params) => {
       const { dispatch } = this.props;
-      dispatch({ type: 'stafftags/fetchStaffTags', payload: { ...params, type: 'staff' } });
-    }
-
-    fetchTypes = (params) => {
-      const { dispatch } = this.props;
-      dispatch({ type: 'stafftags/fetchStaffTagCategories', payload: { ...params, type: 'staff' } });
+      dispatch({ type: 'stafftags/fetchStaffTags', payload: { ...params, type: 'shops' } });
     }
 
     deleted = (id, onError, onSuccess) => {

@@ -12,7 +12,7 @@ export default {
       const { update } = payload || {};
       let response = yield select(model => model.stafftags[store]);
       if (!response.length || update) {
-        response = yield call(fetchStaffTagCategories);
+        response = yield call(fetchStaffTagCategories, payload);
         yield put({
           type: 'save',
           payload: {

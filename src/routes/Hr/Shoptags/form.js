@@ -40,13 +40,14 @@ export default class extends PureComponent {
         onCancel={() => onCancel(false)}
         onSubmit={validateFields(this.handleSubmit)}
       >
-        {getFieldDecorator('type', { initialValue: 'staff' })(<Input type="hidden" />)}
 
+        {getFieldDecorator('type', { initialValue: 'shops' })(<Input type="hidden" />)}
         <FormItem label="名称" {...formItemLayout} required>
           {getFieldDecorator('name', {
           initialValue: initialValue.name || '',
           })(<Input placeholder="请输入" />)}
         </FormItem>
+
 
         <FormItem label="分类" {...formItemLayout} required>
           {getFieldDecorator('tag_category_id', {
@@ -60,12 +61,12 @@ export default class extends PureComponent {
           )}
         </FormItem>
 
+
         <FormItem label="说明" {...formItemLayout} >
           {getFieldDecorator('description', {
             initialValue: initialValue.description || '',
           })(<Input.TextArea placeholder="请输入" />)}
         </FormItem>
-
       </OAModal>
     );
   }

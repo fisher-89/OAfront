@@ -7,12 +7,13 @@ import TagForm from './form';
 import store from './store/store';
 
 @store(['fetchTags', 'deleted'])
+
+/* shoptags是完全复制于stafftags 接口都是同一个 区别是上传时type 不同 shop/staff */
 export default class extends PureComponent {
   state = {
     visible: false,
     initialValue: {},
   }
-
   makeExtraOperator = () => {
     const extra = [];
     extra.push((

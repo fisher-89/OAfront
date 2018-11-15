@@ -217,20 +217,14 @@ export const getRouterData = (app) => {
     '/hr/staff/edit/:staff_sn': {
       component: dynamicWrapper(app, [], () => import('../routes/Hr/Staff/edit')),
     },
-    '/hr/violation/fine': {
-      component: dynamicWrapper(app, ['violation', 'department', 'brand', 'position', 'shop'], () => import('../routes/Hr/Violation/Fine')),
-    },
-    '/hr/violation/regime': {
-      component: dynamicWrapper(app, ['violation', 'department', 'brand', 'position', 'shop'], () => import('../routes/Hr/Violation/Regime')),
-    },
-    '/hr/violation/regime/add': {
-      component: dynamicWrapper(app, ['violation', 'department', 'brand', 'position'], () => import('../routes/Hr/Violation/Regime/form')),
-    },
-    '/hr/violation/regime/edit/:id': {
-      component: dynamicWrapper(app, ['violation', 'department', 'brand', 'position'], () => import('../routes/Hr/Violation/Regime/form')),
-    },
-    '/hr/stafftags': {
+    '/hr/tags/stafftags': {
       component: dynamicWrapper(app, ['stafftags'], () => import('../routes/Hr/Stafftags')),
+    },
+    '/hr/tags/shoptags': {
+      component: dynamicWrapper(app, ['stafftags'], () => import('../routes/Hr/Shoptags')),
+    },
+    '/hr/violation/log': {
+      component: dynamicWrapper(app, [], () => import('../routes/Hr/Violation/log')),
     },
 
     /**  系统 */

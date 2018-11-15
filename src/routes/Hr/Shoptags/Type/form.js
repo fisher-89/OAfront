@@ -46,13 +46,14 @@ export default class extends PureComponent {
         onCancel={() => onCancel(false)}
         onSubmit={validateFields(this.handleSubmit)}
       >
-        {getFieldDecorator('type', { initialValue: 'staff' })(<Input type="hidden" />)}
+        {getFieldDecorator('type', { initialValue: 'shops' })(<Input type="hidden" />)}
 
         <FormItem label="名称" {...formItemLayout} required>
           {getFieldDecorator('name', {
             initialValue: initialValue.name || '',
           })(<Input placeholder="请输入" />)}
         </FormItem>
+
 
         <FormItem label="颜色" {...formItemLayout} required>
           {getFieldDecorator('color', {

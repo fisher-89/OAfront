@@ -18,7 +18,7 @@ export default type => (Component) => {
   class NewComponent extends PureComponent {
     fetchTypes = (params) => {
       const { dispatch } = this.props;
-      dispatch({ type: 'stafftags/fetchStaffTagCategories', payload: params });
+      dispatch({ type: 'stafftags/fetchStaffTagCategories', payload: { ...params, type: 'staff' } });
     }
 
     deleted = (id, onError, onSuccess) => {

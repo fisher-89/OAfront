@@ -246,8 +246,18 @@ const menuData = [
         authority: '70',
       },
       {
-        name: '员工标签',
-        path: 'stafftags',
+        name: '标签管理',
+        path: 'tags',
+        children: [
+          {
+            name: '员工标签',
+            path: 'stafftags',
+          },
+          {
+            name: '店铺标签',
+            path: 'shoptags',
+          },
+        ],
       },
       {
         name: '大爱',
@@ -255,26 +265,16 @@ const menuData = [
         authority: '76',
         children: [
           {
-            name: '大爱查询',
-            path: 'fine',
+            name: '大爱记录',
+            path: 'log',
           },
           {
-            name: '制度列表',
+            name: '制度管理',
             path: 'regime',
           },
           {
-            name: '添加制度',
-            path: 'regime/add',
-            hideInMenu: true,
-          },
-          {
-            name: '添加制度',
-            path: 'regime/edit/:id',
-            hideInMenu: true,
-          },
-          {
-            name: '大爱统计',
-            path: 'count',
+            name: '员工统计',
+            path: 'staffcensus',
           },
         ],
       },

@@ -4,38 +4,31 @@ import { makeProps } from '../../../../utils/utils';
 
 export default type => (Component) => {
   @connect(({ stafftags, loading }) => ({
-    stafftags: stafftags.stafftags,
     stafftagtypes: stafftags.stafftagtypes,
+
     loading: {
-      deleted: loading.effects['stafftags/deleteStaffTags'],
-      fetchTags: loading.effects['stafftags/fetchStaffTags'],
-      fetchTagsType: loading.effects['stafftags/fetchStaffTagCategories'],
+      deleted: loading.effects['stafftags/deleteStaffTagCategories'],
+      fetchTagTypes: loading.effects['stafftags/fetchStaffTagCategories'],
       submit: (
-        loading.effects['stafftags/addStaffTags'] ||
-        loading.effects['stafftags/editStaffTags']
+        loading.effects['stafftags/addStaffTagCategories'] ||
+        loading.effects['stafftags/editStaffTagCategories']
       ),
     },
   }))
-  class NewCopmonent extends PureComponent {
+  class NewComponent extends PureComponent {
     componentWillMount() {
-      this.fetchTags();
       this.fetchTypes();
-    }
-
-    fetchTags = (params) => {
-      const { dispatch } = this.props;
-      dispatch({ type: 'stafftags/fetchStaffTags', payload: { ...params, type: 'staff' } });
     }
 
     fetchTypes = (params) => {
       const { dispatch } = this.props;
-      dispatch({ type: 'stafftags/fetchStaffTagCategories', payload: { ...params, type: 'staff' } });
+      dispatch({ type: 'stafftags/fetchStaffTagCategories', payload: { ...params, type: 'shops' } });
     }
 
     deleted = (id, onError, onSuccess) => {
       const { dispatch } = this.props;
       dispatch({
-        type: 'stafftags/deleteStaffTags',
+        type: 'stafftags/deleteStaffTagCategories',
         payload: { id },
         onSuccess,
         onError,
@@ -45,18 +38,18 @@ export default type => (Component) => {
     submit = (values, onError, onSuccess) => {
       const { dispatch } = this.props;
       dispatch({
-        type: values.id ? 'stafftags/editStaffTags' : 'stafftags/addStaffTags',
+        type: values.id ? 'stafftags/editStaffTagCategories' : 'stafftags/addStaffTagCategories',
         payload: values,
         onSuccess,
         onError,
       });
     }
-
     render() {
       return (
         <Component {...makeProps(this, type)} />
       );
     }
   }
-  return NewCopmonent;
+  return NewComponent;
 };
+
