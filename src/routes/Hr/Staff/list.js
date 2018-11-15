@@ -90,6 +90,7 @@ export default class extends PureComponent {
   fetchStaff = (params) => {
     const { dispatch } = this.props;
     dispatch({ type: 'staffs/fetchStaff', payload: params });
+    this.searchFilter = params;
   }
 
   fetchStaffInfo = (param) => {

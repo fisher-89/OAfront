@@ -28,7 +28,7 @@ export default class extends PureComponent {
     const { dispatch, filters } = this.props;
     dispatch({
       type: 'staffs/exportStaff',
-      payload: filters,
+      payload: { ...filters },
       onError: this.handleError,
       onSuccess: (list) => {
         if (list.length <= 0) {
