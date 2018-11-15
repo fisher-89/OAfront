@@ -223,9 +223,6 @@ export const getRouterData = (app) => {
     '/hr/tags/shoptags': {
       component: dynamicWrapper(app, ['stafftags'], () => import('../routes/Hr/Shoptags')),
     },
-    '/hr/violation/log': {
-      component: dynamicWrapper(app, [], () => import('../routes/Hr/Violation/log')),
-    },
 
     /**  系统 */
     '/system/authority': {
