@@ -12,6 +12,7 @@ import {
   process,
   transfer,
   leave,
+  leaving,
   fetchStaffLog,
   fetchBespokeStaff,
 } from '../../services/user';
@@ -337,6 +338,18 @@ export default {
             data: response,
           },
         });
+        onSuccess(response);
+      }
+    } catch (error) {
+      return error;
+    }
+  },
+  * leaving({ payload, onSuccess, onError }, { call }) {
+    try {
+      const response = yield call(leaving, payload);
+      if (!response.status && onError) {
+        onError(response);
+      } else {
         onSuccess(response);
       }
     } catch (error) {

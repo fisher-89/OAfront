@@ -21,6 +21,7 @@ import ImportStaff from './import';
 import ExportStaff from './export';
 import StaffInfo from './staffInfo';
 import EditLeave from './editLeave';
+import EditLeaving from './editLeaving';
 import EditProcess from './editProcess';
 import EditTransfer from './editTransfer';
 import OATable from '../../../components/OATable';
@@ -70,6 +71,7 @@ export default class extends PureComponent {
     editVisible: false,
     leaveVisible: false,
     processVisible: false,
+    leavingVisible: false,
     transferVisible: false,
     activeKey: 'staff_list',
   }
@@ -149,6 +151,10 @@ export default class extends PureComponent {
 
   showStaffProcess = (editStaff) => {
     this.setState({ editStaff }, () => this.setState({ processVisible: true }));
+  }
+
+  showStaffLeaving = (editStaff) => {
+    this.setState({ editStaff }, () => this.setState({ leavingVisible: true }));
   }
 
   deleteStaff = (staffsn) => {
@@ -248,7 +254,7 @@ export default class extends PureComponent {
       (
         <a
           dataauthid={57}
-          key="user-delete"
+          key="leave"
           onClick={() => {
             this.showStaffLeave(rowData);
           }}
@@ -268,7 +274,13 @@ export default class extends PureComponent {
         </a>
       ),
       (
-        <a key="leave" dataauthid={107}>
+        <a
+          dataauthid={107}
+          key="leaving"
+          onClick={() => {
+            this.showStaffLeaving(rowData);
+          }}
+        >
           离职交接
         </a>
       ),
@@ -391,7 +403,7 @@ export default class extends PureComponent {
         buttonKey.push(57);
       }
       if (statusId === 0 && oa.indexOf(107)) {
-        // buttonKey.push(107);
+        buttonKey.push(107);
       }
     }
     if (statusId < 0 && oa.indexOf(58)) {
@@ -638,6 +650,16 @@ export default class extends PureComponent {
           onCancel={() => {
             this.setState({
               leaveVisible: false,
+              editStaff: {},
+            });
+          }}
+        />
+        <EditLeaving
+          visible={this.state.leavingVisible}
+          editStaff={this.state.editStaff}
+          onCancel={() => {
+            this.setState({
+              leavingVisible: false,
               editStaff: {},
             });
           }}

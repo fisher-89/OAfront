@@ -2,15 +2,13 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import {
   Input,
-  Select,
-  Switch,
+  notification,
 } from 'antd';
 
 import NextForm from './nextForm';
-import OAForm, { OAModal } from '../../../components/OAForm';
+import OAForm, { OAModal, DatePicker } from '../../../components/OAForm';
 
 const FormItem = OAForm.Item;
-const { Option } = Select;
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -28,19 +26,27 @@ export default class extends PureComponent {
     this.setState({ visible: true });
   }
 
-  handleSubmit = (params, onError) => {
+  handleSubmit = (params) => {
     const { dispatch, onCancel } = this.props;
     dispatch({
-      type: 'staffs/leave',
+      type: 'staffs/leaving',
       payload: {
         ...params,
-        skip_leaving: params.skip_leaving ? 1 : 0,
       },
       onError: (errors) => {
-        this.setState({ visible: false }, onError(errors));
+        this.setState({ visible: false }, () => {
+          notification.error({
+            message: errors.message,
+          });
+        });
       },
-      onSuccess: () => {
-        this.setState({ visible: false }, onCancel());
+      onSuccess: (response) => {
+        this.setState({ visible: false }, () => {
+          onCancel();
+          notification.success({
+            message: response.message,
+          });
+        });
       },
     });
   }
@@ -66,7 +72,7 @@ export default class extends PureComponent {
         />
         <OAModal
           width={600}
-          title="离职"
+          title="离职交接"
           okText="下一步"
           loading={loading}
           visible={visible}
@@ -80,35 +86,15 @@ export default class extends PureComponent {
             <Input type="hidden" />
           )}
           {getFieldDecorator('operation_type', {
-            initialValue: 'leave',
+            initialValue: 'leaving',
           })(
             <Input type="hidden" />
           )}
-          <FormItem label="姓名" {...formItemLayout}>
-            {getFieldDecorator('realname', {
-              initialValue: editStaff.realname,
+          <FormItem label="离职时间" {...formItemLayout}>
+            {getFieldDecorator('left_at', {
+              initialValue: '',
             })(
-              <Input placeholder="请输入" name="realname" disabled />
-            )}
-          </FormItem>
-          <FormItem label="状态" required {...formItemLayout}>
-            {getFieldDecorator('status_id', {
-              initialValue: -1,
-            })(
-              <Select name="status_id" placeholer="请选择">
-                <Option value={-1}>离职</Option>
-                <Option value={-2}>自动离职</Option>
-                <Option value={-3}>开除</Option>
-                <Option value={-4}>劝退</Option>
-              </Select>
-            )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="跳过工作交接">
-            {getFieldDecorator('skip_leaving', {
-              initialValue: false,
-              valuePropName: 'checked',
-            })(
-              <Switch />
+              <DatePicker />
             )}
           </FormItem>
         </OAModal>

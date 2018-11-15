@@ -131,6 +131,14 @@ export async function leave(params) {
   });
 }
 
+// 离职交接
+export async function leaving(params) {
+  return request('/api/hr/staff/leaving', {
+    method: 'PATCH',
+    body: params,
+  });
+}
+
 // 再入职
 export async function againEntry(params) {
   return request('/api/hr/staff/again-entry', {
