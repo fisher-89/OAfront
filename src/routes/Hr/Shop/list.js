@@ -116,14 +116,10 @@ export default class extends PureComponent {
       },
       {
         title: '店铺标签',
-        dataIndex: 'tags',
+        dataIndex: 'ss',
         searcher: true,
         align: 'center',
         width: 200,
-        render: (_, record) => {
-          const name = record.tags.map(item => tags[item]); console.log(record.tags);
-          return name;
-        },
       },
       {
         title: '店铺状态',
