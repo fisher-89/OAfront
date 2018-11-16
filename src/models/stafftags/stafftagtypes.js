@@ -9,18 +9,15 @@ const store = 'stafftagtypes';
 export default {
   *fetchStaffTagCategories({ payload }, { call, put, select }) {
     try {
-      const { update } = payload || {};
       let response = yield select(model => model.stafftags[store]);
-      if (!response.length || update) {
-        response = yield call(fetchStaffTagCategories, payload);
-        yield put({
-          type: 'save',
-          payload: {
-            store,
-            data: response,
-          },
-        });
-      }
+      response = yield call(fetchStaffTagCategories, payload);
+      yield put({
+        type: 'save',
+        payload: {
+          store,
+          data: response,
+        },
+      });
     } catch (err) { return err; }
   },
 
