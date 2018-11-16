@@ -242,17 +242,6 @@ export default class extends PureComponent {
       ),
       (
         <a
-          key="unlock"
-          dataauthid={66}
-          onClick={() => {
-            this.unlockStaff(rowData.staff_sn);
-          }}
-        >
-          锁定
-        </a>
-      ),
-      (
-        <a
           dataauthid={57}
           key="leave"
           onClick={() => {
