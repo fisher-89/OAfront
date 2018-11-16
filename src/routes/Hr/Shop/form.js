@@ -111,6 +111,7 @@ export default class extends PureComponent {
       },
     };
     const colSpan = { xs: 24, lg: 12 };
+    const shoptags = (initialValue.tags || []).map(item => item.id.toString());
     const mng = {};
     mng.manager_sn = initialValue.manager_sn;
     mng.manager_name = initialValue.manager_name;
@@ -296,13 +297,13 @@ export default class extends PureComponent {
               <Col>
                 <FormItem label="店铺标签" {...longFormItemLayout}>
                   {getFieldDecorator('tags', {
-                    initialValue: initialValue.tags || [],
+                    initialValue: shoptags || [],
                   })(
                     <Select
                       mode="multiple"
                     >
                       {stafftags.map(item => (
-                        <Select.Option key={item.id} value={item.id}>
+                        <Select.Option key={`${item.id}`}>
                           {item.name}
                         </Select.Option>
                     )
