@@ -7,7 +7,7 @@ import OATable from '../../../../components/OATable';
 
 @connect(({ staffs, loading }) => ({
   list: staffs.staffBespokeDetails,
-  loading: loading.effects['staffs/fetchBespokeStaff'],
+  loading: loading.effects['staffs/fetchBespokeStaff'] || loading.effects['staffs/deleteBespokeStaff'],
 }))
 export default class extends PureComponent {
   constructor(props) {
@@ -18,29 +18,29 @@ export default class extends PureComponent {
   columns = [
     {
       title: '执行日期',
-      dataIndex: 'timer',
+      dataIndex: 'operate_at',
     },
     {
-      title: '类型',
-      dataIndex: 'type',
-    },
-    {
-      title: '变更前',
-      dataIndex: 'cheng1',
-    },
-    {
-      title: '变更后',
-      dataIndex: 'change2',
+      title: '变更',
+      dataIndex: 'changes',
+      render: key => Object.keys(key).map(k => `${k}：${key[k]}`),
     },
     {
       title: '操作时间',
-      dataIndex: 'actiontimer',
+      dataIndex: 'updated_at',
     },
     {
       title: '操作',
-      dataIndex: 'action',
+      render: (record) => {
+        return record.status === 1 ? <a onClick={() => this.handleCancel(record.id)}>撤消</a> : '';
+      },
     },
   ]
+
+  handleCancel = (id) => {
+    const { dispatch, staffSn } = this.props;
+    dispatch({ type: 'staffs/deleteBespokeStaff', payload: { id, staffSn } });
+  }
 
   fetch = () => {
     const { dispatch, staffSn } = this.props;

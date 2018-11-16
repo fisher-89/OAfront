@@ -37,5 +37,18 @@ export default {
         },
       };
     },
+    deleteBespoke(state, action) {
+      const { id } = action.payload;
+      const staffSn = action.payload.staff_sn;
+      const { staffBespokeDetails } = state;
+      const data = staffBespokeDetails[staffSn].filter(item => id === item.id);
+      return {
+        ...state,
+        staffBespokeDetails: {
+          ...staffBespokeDetails,
+          [staffSn]: data,
+        },
+      };
+    },
   },
 };

@@ -15,6 +15,7 @@ import {
   leaving,
   fetchStaffLog,
   fetchBespokeStaff,
+  deleteBespokeStaff,
 } from '../../services/user';
 
 const store = 'staff';
@@ -38,14 +39,14 @@ export default {
   },
   * deleteBespokeStaff({ payload }, { call, put }) {
     try {
-      const { id } = payload;
+      const { id, staffSn } = payload;
       const response = yield call(deleteBespokeStaff, id);
       yield put({
         type: 'deleteBespoke',
         payload: {
           id,
           data: response,
-          // staff_sn: staffSn,
+          staff_sn: staffSn,
           store: 'staffBespoke',
         },
       });
