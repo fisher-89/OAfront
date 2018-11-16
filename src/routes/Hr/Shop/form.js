@@ -22,7 +22,8 @@ const { TabPane } = Tabs;
 const FormItem = OAForm.Item;
 const { Option } = Select;
 @OAForm.create()
-@connect(({ brand, department, loading }) => ({
+@connect(({ brand, department, stafftags, loading }) => ({
+  stafftags: stafftags.stafftags,
   brand: brand.brand,
   department: department.department,
   loading: (
@@ -80,6 +81,7 @@ export default class extends PureComponent {
       brand,
       department,
       handleVisible,
+      stafftags,
       visible,
       initialValue,
       onCancel,
@@ -295,7 +297,18 @@ export default class extends PureComponent {
                 <FormItem label="店铺标签" {...longFormItemLayout}>
                   {getFieldDecorator('tags', {
                     initialValue: initialValue.tags || [],
-                  })(<Select />)}
+                  })(
+                    <Select
+                      mode="multiple"
+                    >
+                      {stafftags.map(item => (
+                        <Select.Option key={item.id} value={item.id}>
+                          {item.name}
+                        </Select.Option>
+                    )
+                    )}
+                    </Select>
+                  )}
                 </FormItem>
               </Col>
             </Row>
