@@ -127,13 +127,18 @@ export default class EditStaff extends PureComponent {
       staffLoading,
       validateFields,
       validatorRequired,
-      form: { getFieldDecorator } } = this.props;
+      form: { getFieldDecorator, getFieldValue } } = this.props;
     const newTreeData = markTreeData(department, { value: 'id', label: 'name', parentId: 'parent_id' }, 0);
     const style = { maxHeight: 600, overflowY: 'auto', overflowX: 'hidden' };
 
     const tabPaneTitleStyle = { width: 118, textAlign: 'center' };
     const renderTitle = title => <div style={tabPaneTitleStyle}>{title}</div>;
     const isEdit = editStaff.staff_sn !== undefined;
+    const brandId = getFieldValue('brand_id');
+    const costBrand = expense.filter((item) => {
+      const ids = item.brands.map(i => i.id);
+      return ids.indexOf(parseInt(brandId, 10)) !== -1;
+    });
     return (
       <React.Fragment>
         <NextForm
@@ -256,8 +261,8 @@ export default class EditStaff extends PureComponent {
                       initialValue: (editStaff.cost_brands || []).map(item => `${item.id}`),
                       rules: [validatorRequired],
                     })(
-                      <Select placeholer="请选择" mode="multiple">
-                        {expense.map((item) => {
+                      <Select placeholer="请选择" mode="multiple" notFoundContent="（空）">
+                        {costBrand.map((item) => {
                           return (
                             <Option key={`${item.id}`}>{item.name}</Option>
                           );
