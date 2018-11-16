@@ -11,7 +11,8 @@ import OATable from '../../../components/OATable';
 import Ellipsis from '../../../components/Ellipsis/index';
 import ShopForm from './form';
 import { customerAuthority, getFiltersData } from '../../../utils/utils';
-@connect(({ shop, loading, department, brand }) => ({
+@connect(({ shop, loading, stafftags, department, brand }) => ({
+  stafftags: stafftags.stafftags,
   brand: brand.brand,
   shop: shop.shop,
   department: department.department,
@@ -25,9 +26,18 @@ export default class extends PureComponent {
     options: [{ id: '0', name: '开业' }, { id: 1, name: '未开业' }], // 店铺状态
   }
 
+  componentDidMount() {
+    this.fetchTags();
+  }
+
   fetchShop = (params) => {
     const { dispatch } = this.props;
     dispatch({ type: 'shop/fetchShop', payload: params });
+  }
+
+  fetchTags = (params) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'stafftags/fetchStaffTags', payload: { ...params, type: 'shops' } });
   }
 
   handleModalVisible = (flag) => {
@@ -102,7 +112,6 @@ export default class extends PureComponent {
         title: '店铺地址',
         dataIndex: 'address',
         align: 'center',
-        searcher: true,
         width: 300,
       },
       {
@@ -111,6 +120,10 @@ export default class extends PureComponent {
         searcher: true,
         align: 'center',
         width: 200,
+        render: (_, record) => {
+          const name = record.tags.map(item => tags[item]); console.log(record.tags);
+          return name;
+        },
       },
       {
         title: '店铺状态',
