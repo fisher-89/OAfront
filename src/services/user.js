@@ -157,3 +157,7 @@ export async function fetchBespokeStaff(id) {
   return request(`/api/hr/staff/${id}/reserve`, { method: 'GET' });
 }
 
+// 取消预约操作
+export async function deleteBespokeStaff(id) {
+  return request(`/api/hr/staff/reserve/${id}`, { method: 'DELETE' });
+}

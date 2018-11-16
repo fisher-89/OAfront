@@ -36,6 +36,23 @@ export default {
       return err;
     }
   },
+  * deleteBespokeStaff({ payload }, { call, put }) {
+    try {
+      const { id } = payload;
+      const response = yield call(deleteBespokeStaff, id);
+      yield put({
+        type: 'deleteBespoke',
+        payload: {
+          id,
+          data: response,
+          // staff_sn: staffSn,
+          store: 'staffBespoke',
+        },
+      });
+    } catch (err) {
+      return err;
+    }
+  },
   * fetchBespokeStaff({ payload }, { call, put }) {
     try {
       const params = { ...payload };
