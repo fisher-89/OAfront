@@ -37,16 +37,22 @@ export default {
         },
       };
     },
-    deleteBespoke(state, action) {
-      const { id } = action.payload;
-      const staffSn = action.payload.staff_sn;
+    deleteBespoke(state, { payload }) {
+      const { id, data } = payload;
+      const staffSn = payload.staff_sn;
       const { staffBespokeDetails } = state;
-      const data = staffBespokeDetails[staffSn].filter(item => id === item.id);
+      const newData = staffBespokeDetails[staffSn].map((item) => {
+        if (item.id === id) {
+          return { ...item, ...data };
+        } else {
+          return item;
+        }
+      });
       return {
         ...state,
         staffBespokeDetails: {
           ...staffBespokeDetails,
-          [staffSn]: data,
+          [staffSn]: newData,
         },
       };
     },
