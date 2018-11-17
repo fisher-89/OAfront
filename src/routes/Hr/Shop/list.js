@@ -116,10 +116,16 @@ export default class extends PureComponent {
       },
       {
         title: '店铺标签',
-        dataIndex: 'ss',
+        dataIndex: 'tags',
         searcher: true,
         align: 'center',
         width: 200,
+        render: (_, record) => {
+          const { stafftags } = this.props;
+          const shoptags = (record.tags || []).map(item => item.id.toString());
+          const name = shoptags.map(item => OATable.findRenderKey(stafftags, item).name);
+          return name.join(',');
+        },
       },
       {
         title: '店铺状态',
