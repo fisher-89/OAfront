@@ -28,6 +28,7 @@ export default class extends PureComponent {
 
   componentDidMount() {
     this.fetchTags();
+    this.fetchTagsType();
   }
 
   fetchShop = (params) => {
@@ -38,6 +39,11 @@ export default class extends PureComponent {
   fetchTags = (params) => {
     const { dispatch } = this.props;
     dispatch({ type: 'stafftags/fetchStaffTags', payload: { ...params, type: 'shops' } });
+  }
+
+  fetchTagsType = (params) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'stafftags/fetchStaffTagCategories', payload: { ...params, type: 'shops' } });
   }
 
   handleModalVisible = (flag) => {

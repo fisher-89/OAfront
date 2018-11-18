@@ -20,9 +20,10 @@ import SearchMap from '../../../components/Maps';
 
 const { TabPane } = Tabs;
 const FormItem = OAForm.Item;
-const { Option } = Select;
+const { Option, OptGroup } = Select;
 @OAForm.create()
 @connect(({ brand, department, stafftags, loading }) => ({
+  stafftagtypes: stafftags.stafftagtypes,
   stafftags: stafftags.stafftags,
   brand: brand.brand,
   department: department.department,
@@ -82,6 +83,7 @@ export default class extends PureComponent {
       department,
       handleVisible,
       stafftags,
+      stafftagtypes,
       visible,
       initialValue,
       onCancel,
@@ -118,6 +120,22 @@ export default class extends PureComponent {
     const ast = {};
     ast.assistant_sn = initialValue.assistant_sn;
     ast.assistant_name = initialValue.assistant_name;
+
+    let tagsGroup = [];
+    const tagsTypeId = stafftagtypes.map(type => type.id);
+    const tagsGroupAble = stafftags.filter(tag => tagsTypeId.indexOf(tag.category.id) === -1);
+    stafftagtypes.forEach((type) => {
+      const temp = { ...type };
+      temp.children = [];
+      stafftags.forEach((tag) => {
+        if (tag.category.id === type.id) {
+          temp.children.push(tag);
+        }
+      });
+      if (temp.children.length) tagsGroup.push(temp);
+    });
+    tagsGroup = tagsGroup.concat(tagsGroupAble);
+
     return (
       <OAModal
         title={initialValue.id ? '编辑店铺' : '添加店铺'}
@@ -301,13 +319,19 @@ export default class extends PureComponent {
                   })(
                     <Select
                       mode="multiple"
+                      placeholder="请选择"
                     >
-                      {stafftags.map(item => (
-                        <Select.Option key={`${item.id}`}>
-                          {item.name}
-                        </Select.Option>
-                    )
-                    )}
+                      {tagsGroup.map((item) => {
+                      return item.children ? (
+                        <OptGroup key={`${item.id}`} label={item.name}>
+                          {item.children.map(tag => (<Option key={`${tag.id}`} value={`${tag.id}`}>{tag.name}</Option>))}
+                        </OptGroup>
+                      ) :
+                        (
+                          <Option key={`${item.id}`}>{item.name}</Option>
+                        );
+                    })
+                    }
                     </Select>
                   )}
                 </FormItem>

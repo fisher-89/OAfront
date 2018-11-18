@@ -22,7 +22,7 @@ const FormItem = OAForm.Item;
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 const { TextArea } = Input;
-const { Option } = Select;
+const { Option, OptGroup } = Select;
 const { TabPane } = Tabs;
 
 const formItemLayout = {
@@ -58,8 +58,10 @@ const formItemLayout3 = {
   },
 };
 @OAForm.create()
-@connect(({ brand, expense, position, department, staffs, loading }) => ({
+@connect(({ brand, expense, position, department, staffs, stafftags, loading }) => ({
   brand: brand.brand,
+  stafftagtypes: stafftags.stafftagtypes,
+  stafftags: stafftags.stafftags,
   expense: expense.expense,
   position: position.position,
   department: department.department,
@@ -120,6 +122,8 @@ export default class EditStaff extends PureComponent {
       brand,
       expense,
       visible,
+      stafftags,
+      stafftagtypes,
       onCancel,
       position,
       editStaff,
@@ -139,6 +143,23 @@ export default class EditStaff extends PureComponent {
       const ids = item.brands.map(i => i.id);
       return ids.indexOf(parseInt(brandId, 10)) !== -1;
     });
+
+    let tagsGroup = [];
+    const tagsTypeId = stafftagtypes.map(type => type.id);
+    const tagsGroupAble = stafftags.filter(tag => tagsTypeId.indexOf(tag.category.id) === -1);
+    stafftagtypes.forEach((type) => {
+      const temp = { ...type };
+      temp.children = [];
+      stafftags.forEach((tag) => {
+        if (tag.category.id === type.id) {
+          temp.children.push(tag);
+        }
+      });
+      if (temp.children.length) tagsGroup.push(temp);
+    });
+    tagsGroup = tagsGroup.concat(tagsGroupAble);
+
+
     return (
       <React.Fragment>
         <NextForm
@@ -342,15 +363,28 @@ export default class EditStaff extends PureComponent {
                   <SearchTable.Shop />
                 )}
               </FormItem>
-              {/* <FormItem label="员工标签" {...formItemLayout}>
-              {getFieldDecorator('tags', {
-                initialValue: [],
-              })(
-                <Select placeholer="请选择">
-                  <Option value="">请选择</Option>
-                </Select>
-              )}
-              </FormItem> */}
+              <FormItem label="员工标签" {...formItemLayout}>
+                {getFieldDecorator('tags', {
+                  initialValue: [],
+                     })(
+                       <Select
+                         mode="multiple"
+                         placeholder="请选择"
+                       >
+                         {tagsGroup.map((item) => {
+                      return item.children ? (
+                        <OptGroup key={`${item.id}`} label={item.name}>
+                          {item.children.map(tag => (<Option key={`${tag.id}`} value={`${tag.id}`}>{tag.name}</Option>))}
+                        </OptGroup>
+                      ) :
+                        (
+                          <Option key={`${item.id}`}>{item.name}</Option>
+                        );
+                    })
+                    }
+                       </Select>
+                        )}
+              </FormItem>
               <FormItem {...formItemLayout} label="员工备注" name="remark">
                 {getFieldDecorator('remark', {
                   initialValue: editStaff.remark || '',
