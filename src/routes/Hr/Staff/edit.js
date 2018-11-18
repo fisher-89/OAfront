@@ -11,7 +11,7 @@ import {
   message,
   TreeSelect,
 } from 'antd';
-import { omit } from 'lodash';
+import { omit, assign } from 'lodash';
 import OAForm, { SearchTable, Address, OAModal } from '../../../components/OAForm';
 import RelativeList from './relativeList';
 import NextForm from './nextForm';
@@ -88,14 +88,13 @@ export default class EditStaff extends PureComponent {
       is_active: params.is_active ? 1 : 0,
       account_active: params.account_active ? 1 : 0,
     };
-    omit(body, ['recruiter', 'household', 'living', 'shop']);
-    const relatives = (body.relatives || []).map(item =>
-      ({ ...item.relative, relative_type: item.relative_type })
-    );
-    body.relatives = relatives;
+    const newBody = omit(body, ['recruiter', 'household', 'living', 'shop']);
+    newBody.relatives = (body.relatives || []).map(item => assign(item.relative, {
+      relative_type: item.relative_type,
+    }));
     dispatch({
       type: params.staff_sn ? 'staffs/editStaff' : 'staffs/addStaff',
-      payload: body,
+      payload: newBody,
       onError: (errors) => {
         this.setState({ visible: false }, onError(errors, {
           household_address: 'household',
@@ -215,6 +214,31 @@ export default class EditStaff extends PureComponent {
               </Row>
               <Row>
                 <Col {...fieldsBoxLayout}>
+                  <FormItem {...formItemLayout2} label="用户名">
+                    {getFieldDecorator('username', {
+                      initialValue: editStaff.username || '',
+                    })(
+                      <Input placeholder="请输入用户名" />
+                    )}
+                  </FormItem>
+                </Col>
+                <Col {...fieldsBoxLayout}>
+                  <FormItem {...formItemLayout2} label="是否激活">
+                    {getFieldDecorator('is_active', {
+                      initialValue: editStaff.is_active === 1 || true,
+                      valuePropName: 'checked',
+                    })(
+                      <Switch
+                        onChange={(value) => {
+                          form.setFieldsValue({ is_active: value ? 1 : 0 });
+                        }}
+                      />
+                    )}
+                  </FormItem>
+                </Col>
+              </Row>
+              <Row>
+                <Col {...fieldsBoxLayout}>
                   <FormItem {...formItemLayout3} label="电话号码" required>
                     {getFieldDecorator('mobile', {
                       initialValue: editStaff.mobile || '',
@@ -277,12 +301,11 @@ export default class EditStaff extends PureComponent {
               </Row>
               <Row>
                 <Col>
-                  <FormItem label="费用品牌" {...formItemLayout} required>
+                  <FormItem label="费用品牌" {...formItemLayout}>
                     {getFieldDecorator('cost_brands', {
                       initialValue: (editStaff.cost_brands || []).map(item => `${item.id}`),
-                      rules: [validatorRequired],
                     })(
-                      <Select placeholer="请选择" mode="multiple" notFoundContent="（空）">
+                      <Select placeholer="请选择" mode="multiple" notFoundContent="（空）" disabled={isEdit}>
                         {costBrand.map((item) => {
                           return (
                             <Option key={`${item.id}`}>{item.name}</Option>
@@ -363,28 +386,6 @@ export default class EditStaff extends PureComponent {
                   <SearchTable.Shop />
                 )}
               </FormItem>
-              <FormItem label="员工标签" {...formItemLayout}>
-                {getFieldDecorator('tags', {
-                  initialValue: [],
-                     })(
-                       <Select
-                         mode="multiple"
-                         placeholder="请选择"
-                       >
-                         {tagsGroup.map((item) => {
-                      return item.children ? (
-                        <OptGroup key={`${item.id}`} label={item.name}>
-                          {item.children.map(tag => (<Option key={`${tag.id}`} value={`${tag.id}`}>{tag.name}</Option>))}
-                        </OptGroup>
-                      ) :
-                        (
-                          <Option key={`${item.id}`}>{item.name}</Option>
-                        );
-                    })
-                    }
-                       </Select>
-                        )}
-              </FormItem>
               <FormItem {...formItemLayout} label="员工备注" name="remark">
                 {getFieldDecorator('remark', {
                   initialValue: editStaff.remark || '',
@@ -434,7 +435,7 @@ export default class EditStaff extends PureComponent {
                 <Col {...fieldsBoxLayout}>
                   <FormItem {...formItemLayout3} label="使用工资卡" name="account_active">
                     {getFieldDecorator('account_active', {
-                      initialValue: editStaff.account_active === 1,
+                      initialValue: editStaff.account_active === 1 || true,
                       valuePropName: 'checked',
                     })(
                       <Switch
@@ -518,6 +519,26 @@ export default class EditStaff extends PureComponent {
 
             </TabPane>
             <TabPane forceRender tab={renderTitle('个人信息')} key="3" style={style}>
+              <FormItem label="员工标签" {...formItemLayout}>
+                {getFieldDecorator('tags', {
+                  initialValue: [],
+                })(
+                  <Select
+                    mode="multiple"
+                    placeholder="请选择"
+                  >
+                    {
+                      tagsGroup.map((item) => {
+                        return item.children ? (
+                          <OptGroup key={`${item.id}`} label={item.name}>
+                            {item.children.map(tag => (<Option key={`${tag.id}`} value={`${tag.id}`}>{tag.name}</Option>))}
+                          </OptGroup>
+                        ) : (<Option key={`${item.id}`}>{item.name}</Option>);
+                      })
+                    }
+                  </Select>
+                )}
+              </FormItem>
               <FormItem {...formItemLayout} label="户口所在地">
                 {
                   getFieldDecorator('household', {
