@@ -134,6 +134,7 @@ export default class EditStaff extends PureComponent {
     const newTreeData = markTreeData(department, { value: 'id', label: 'name', parentId: 'parent_id' }, 0);
     const style = { maxHeight: 600, overflowY: 'auto', overflowX: 'hidden' };
 
+    const tags = (editStaff.tags || []).map(item => item.id.toString());
     const tabPaneTitleStyle = { width: 118, textAlign: 'center' };
     const renderTitle = title => <div style={tabPaneTitleStyle}>{title}</div>;
     const isEdit = editStaff.staff_sn !== undefined;
@@ -521,7 +522,7 @@ export default class EditStaff extends PureComponent {
             <TabPane forceRender tab={renderTitle('个人信息')} key="3" style={style}>
               <FormItem label="员工标签" {...formItemLayout}>
                 {getFieldDecorator('tags', {
-                  initialValue: [],
+                  initialValue: tags || [],
                 })(
                   <Select
                     mode="multiple"
