@@ -10,6 +10,7 @@ import {
   Tabs,
   Avatar,
 } from 'antd';
+import { isEmpty } from 'lodash';
 import QueueAnim from 'rc-queue-anim';
 import styles from './index.less';
 import ChangeLog from './infoTabs/changeLog';
@@ -59,23 +60,48 @@ export default class StaffInfo extends PureComponent {
               }
               description={<span>员工编号：{ data.staff_sn }</span>}
             />
-            <FormItem label="手机号" {...formItemLayout}>
-              { data.mobile || '暂无' }
-            </FormItem>
-            <FormItem label="微信号" {...formItemLayout}>
-              { data.wechat_number || '暂无' }
-            </FormItem>
-            <FormItem label="标签" {...formItemLayout}>
-              { (data.tags || []).map(item => <Tag>{item.name}</Tag>) }
-            </FormItem>
-            <FormItem label="店铺" {...formItemLayout}>
-              { data.shop ? data.shop.name : '暂无' }
-            </FormItem>
+            <div style={{ margin: '20px 0 10px 20px' }}>
+              <p>
+                {data.mobile ? (
+                  <span className={styles.iconSpan} style={{ marginRight: 40 }}>
+                    <Icon type="mobile" />{data.mobile}
+                  </span>
+                ) : ''}
+                {data.wechat_number ? (
+                  <span className={styles.iconSpan}>
+                    <Icon type="wechat" />{data.wechat_number}
+                  </span>
+                ) : ''}
+              </p>
+              {data.living_province_name ? (
+                <span className={styles.iconSpan}><Icon type="home" />
+                  {`
+                    ${data.living_province_name || ''}
+                    ${data.living_city_name ? `-${data.living_city_name}` : ''}
+                    ${data.living_county_name ? `-${data.living_county_name}` : ''}
+                    ${`${data.living_address || ''}`}
+                  `}
+                </span>
+              ) : ''}
+            </div>
+            {!isEmpty(data.tags) ? (
+              <FormItem label="标签" {...formItemLayout}>
+                { (data.tags || []).map(item => <Tag>{item.name}</Tag>) }
+              </FormItem>
+            ) : ''}
+            {data.shop ? (
+              <FormItem label="店铺" {...formItemLayout}>
+                {data.shop.name}
+              </FormItem>
+            ) : ''}
           </Card>
           <Card key="userInfo1" bordered={false} loading={loading} bodyStyle={style} style={style}>
             <FormItem label="状态" {...formItemLayout}>{data.status.name}</FormItem>
-            <FormItem label="品牌职位" {...formItemLayout}>
-              {`${data.brand.name} - ${data.position.name}`}
+            <FormItem label="品牌" {...formItemLayout}>
+              {data.brand.name || ''}
+            </FormItem>
+            <FormItem label="职位" {...formItemLayout}>
+              {data.position.name || ''}
             </FormItem>
             <FormItem label="部门" {...formItemLayout}>
               {`${data.department.full_name}`}
