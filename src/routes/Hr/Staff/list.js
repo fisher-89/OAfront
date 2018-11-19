@@ -192,9 +192,9 @@ export default class extends PureComponent {
     });
   }
 
-  unlockStaff = (staffsn) => {
+  lockStaff = (staffsn, type) => {
     const { dispatch } = this.props;
-    dispatch({ type: 'staffs/unlock', payload: { staff_sn: staffsn } });
+    dispatch({ type: `staffs/${type}`, payload: { staff_sn: staffsn } });
   }
 
   makeActionElement = (data, rowData, divider = true) => {
@@ -300,6 +300,19 @@ export default class extends PureComponent {
         </a>
       ),
     ];
+    if (rowData.is_active === 1) {
+      moreAction.push(
+        <a
+          key="locked"
+          dataauthid={66}
+          onClick={() => {
+            this.lockStaff(rowData.staff_sn, 'locked');
+          }}
+        >
+          锁定
+        </a>
+      );
+    }
     const action = this.makeActionElement(moreAction, rowData, false);
     const menu = (
       <Menu>
@@ -353,7 +366,7 @@ export default class extends PureComponent {
             key="unlock"
             dataauthid={66}
             onClick={() => {
-              this.unlockStaff(rowData.staff_sn);
+              this.lockStaff(rowData.staff_sn, 'unlock');
             }}
           >
             激活

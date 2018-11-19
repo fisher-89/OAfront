@@ -107,6 +107,13 @@ export async function unlock(staffSn) {
   });
 }
 
+// 锁定
+export async function locked(staffSn) {
+  return request(`/api/hr/staff/${staffSn}/locked`, {
+    method: 'PATCH',
+  });
+}
+
 // 转正
 export async function process(params) {
   return request('/api/hr/staff/process', {

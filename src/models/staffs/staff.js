@@ -9,6 +9,7 @@ import {
   resetPassword,
   againEntry,
   unlock,
+  locked,
   process,
   transfer,
   leave,
@@ -287,6 +288,22 @@ export default {
     try {
       const staffSn = payload.staff_sn;
       const response = yield call(unlock, staffSn);
+      yield put({
+        type: 'merge',
+        payload: {
+          store,
+          staff_sn: staffSn,
+          data: response,
+        },
+      });
+    } catch (error) {
+      return error;
+    }
+  },
+  * locked({ payload }, { call, put }) {
+    try {
+      const staffSn = payload.staff_sn;
+      const response = yield call(locked, staffSn);
       yield put({
         type: 'merge',
         payload: {
