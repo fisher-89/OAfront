@@ -86,7 +86,7 @@ export default {
       newStore.push(data);
     }
     notification.success({
-      message: '编辑成功',
+      message: '操作成功',
     });
     return {
       ...state,

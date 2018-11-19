@@ -85,7 +85,6 @@ export default class EditStaff extends PureComponent {
       ...params.household,
       ...params.living,
       shop_sn: params.shop.shop_sn || '',
-      is_active: params.is_active ? 1 : 0,
       account_active: params.account_active ? 1 : 0,
     };
     const newBody = omit(body, ['recruiter', 'household', 'living', 'shop']);
@@ -209,31 +208,6 @@ export default class EditStaff extends PureComponent {
                       rules: [validatorRequired],
                     })(
                       <Input placeholder="请输入身份证号" />
-                    )}
-                  </FormItem>
-                </Col>
-              </Row>
-              <Row>
-                <Col {...fieldsBoxLayout}>
-                  <FormItem {...formItemLayout2} label="用户名">
-                    {getFieldDecorator('username', {
-                      initialValue: editStaff.username || '',
-                    })(
-                      <Input placeholder="请输入用户名" />
-                    )}
-                  </FormItem>
-                </Col>
-                <Col {...fieldsBoxLayout}>
-                  <FormItem {...formItemLayout2} label="是否激活">
-                    {getFieldDecorator('is_active', {
-                      initialValue: editStaff.is_active === 1 || true,
-                      valuePropName: 'checked',
-                    })(
-                      <Switch
-                        onChange={(value) => {
-                          form.setFieldsValue({ is_active: value ? 1 : 0 });
-                        }}
-                      />
                     )}
                   </FormItem>
                 </Col>

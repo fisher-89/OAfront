@@ -21,6 +21,7 @@ import ImportStaff from './import';
 import ExportStaff from './export';
 import StaffInfo from './staffInfo';
 import EditLeave from './editLeave';
+import AgainEntry from './againEntry';
 import EditLeaving from './editLeaving';
 import EditProcess from './editProcess';
 import EditTransfer from './editTransfer';
@@ -70,6 +71,7 @@ export default class extends PureComponent {
     editStaff: {},
     editVisible: false,
     leaveVisible: false,
+    entryVisible: false,
     processVisible: false,
     leavingVisible: false,
     transferVisible: false,
@@ -149,24 +151,8 @@ export default class extends PureComponent {
     this.setState({ panes: [...newPanes], activeKey });
   }
 
-  showStaffTransfer = (editStaff) => {
-    this.setState({ editStaff }, () => this.setState({ transferVisible: true }));
-  }
-
-  showStaffLeave = (editStaff) => {
-    this.setState({ editStaff }, () => this.setState({ leaveVisible: true }));
-  }
-
-  showEditStaff = (editStaff) => {
-    this.setState({ editStaff }, () => this.setState({ editVisible: true }));
-  }
-
-  showStaffProcess = (editStaff) => {
-    this.setState({ editStaff }, () => this.setState({ processVisible: true }));
-  }
-
-  showStaffLeaving = (editStaff) => {
-    this.setState({ editStaff }, () => this.setState({ leavingVisible: true }));
+  showModal = (editStaff, visibleName) => {
+    this.setState({ editStaff }, () => this.setState({ [visibleName]: true }));
   }
 
   deleteStaff = (staffsn) => {
@@ -246,7 +232,7 @@ export default class extends PureComponent {
           key="user-add"
           dataauthid={55}
           onClick={() => {
-            this.showStaffProcess(rowData);
+            this.showModal(rowData, 'processVisible');
           }}
         >
           转正
@@ -257,7 +243,7 @@ export default class extends PureComponent {
           dataauthid={57}
           key="leave"
           onClick={() => {
-            this.showStaffLeave(rowData);
+            this.showModal(rowData, 'leaveVisible');
           }}
         >
           离职
@@ -268,7 +254,7 @@ export default class extends PureComponent {
           dataauthid={58}
           key="again-entry"
           onClick={() => {
-            this.showEditStaff(rowData);
+            this.showModal(rowData, 'entryVisible');
           }}
         >
           再入职
@@ -279,7 +265,7 @@ export default class extends PureComponent {
           dataauthid={107}
           key="leaving"
           onClick={() => {
-            this.showStaffLeaving(rowData);
+            this.showModal(rowData, 'leavingVisible');
           }}
         >
           离职交接
@@ -290,7 +276,7 @@ export default class extends PureComponent {
           key="transfer"
           dataauthid={56}
           onClick={() => {
-            this.showStaffTransfer(rowData);
+            this.showModal(rowData, 'transferVisible');
           }}
         >
           人事变动
@@ -352,7 +338,7 @@ export default class extends PureComponent {
           key="edit"
           dataauthid={82}
           onClick={() => {
-            this.showEditStaff(rowData);
+            this.showModal(rowData, 'editVisible');
           }}
         >
           编辑
@@ -370,7 +356,7 @@ export default class extends PureComponent {
               this.unlockStaff(rowData.staff_sn);
             }}
           >
-            解除锁定
+            激活
           </a>
         ),
       ];
@@ -661,6 +647,16 @@ export default class extends PureComponent {
           onCancel={() => {
             this.setState({
               leavingVisible: false,
+              editStaff: {},
+            });
+          }}
+        />
+        <AgainEntry
+          visible={this.state.entryVisible}
+          editStaff={this.state.editStaff}
+          onCancel={() => {
+            this.setState({
+              entryVisible: false,
               editStaff: {},
             });
           }}
