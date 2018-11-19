@@ -127,7 +127,7 @@ export default class extends PureComponent {
                   <Select name="status_id" placeholer="请选择">
                     <Option key="-1" value={1}>试用期</Option>
                     <Option key="2" value={2}>在职</Option>
-                    <Option key="3" value={3}>离职</Option>
+                    <Option key="3" value={3}>停薪留职</Option>
                   </Select>
                 )}
               </FormItem>

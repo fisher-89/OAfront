@@ -5,27 +5,18 @@ import {
   notification,
 } from 'antd';
 
-import NextForm from './nextForm';
 import OAForm, { OAModal, DatePicker } from '../../../components/OAForm';
 
 const FormItem = OAForm.Item;
 
 const formItemLayout = {
   labelCol: { span: 6 },
-  wrapperCol: { span: 8 },
+  wrapperCol: { span: 12 },
 };
 
 @OAForm.create()
 @connect(({ loading }) => ({ loading: loading.staffs }))
 export default class extends PureComponent {
-  state = {
-    visible: false,
-  }
-
-  handleNextForm = () => {
-    this.setState({ visible: true });
-  }
-
   handleSubmit = (params) => {
     const { dispatch, onCancel } = this.props;
     dispatch({
@@ -34,18 +25,14 @@ export default class extends PureComponent {
         ...params,
       },
       onError: (errors) => {
-        this.setState({ visible: false }, () => {
-          notification.error({
-            message: errors.message,
-          });
+        notification.error({
+          message: errors.message,
         });
       },
       onSuccess: (response) => {
-        this.setState({ visible: false }, () => {
-          onCancel();
-          notification.success({
-            message: response.message,
-          });
+        onCancel();
+        notification.success({
+          message: response.message,
         });
       },
     });
@@ -53,7 +40,6 @@ export default class extends PureComponent {
 
   render() {
     const {
-      form,
       loading,
       visible,
       onCancel,
@@ -64,21 +50,14 @@ export default class extends PureComponent {
 
     return (
       <React.Fragment>
-        <NextForm
-          form={form}
-          visible={this.state.visible}
-          onSubmit={validateFields(this.handleSubmit)}
-          onCancel={() => { this.setState({ visible: false }); }}
-        />
         <OAModal
           width={600}
           title="离职交接"
-          okText="下一步"
           loading={loading}
           visible={visible}
           style={{ top: 30 }}
           onCancel={onCancel}
-          onSubmit={validateFields(this.handleNextForm)}
+          onSubmit={validateFields(this.handleSubmit)}
         >
           {getFieldDecorator('staff_sn', {
             initialValue: editStaff.staff_sn || '',
@@ -90,11 +69,24 @@ export default class extends PureComponent {
           })(
             <Input type="hidden" />
           )}
-          <FormItem label="离职时间" {...formItemLayout}>
-            {getFieldDecorator('left_at', {
+          <FormItem label="离职" {...formItemLayout} required>
+            {getFieldDecorator('operate_at', {
               initialValue: '',
             })(
               <DatePicker />
+            )}
+          </FormItem>
+          <FormItem label="备注" {...formItemLayout} >
+            {getFieldDecorator('operation_remark', {
+              initialValue: '',
+            })(
+              <Input.TextArea
+                placeholder="最大长度100个字符"
+                autosize={{
+                  minRows: 4,
+                  maxRows: 6,
+                }}
+              />
             )}
           </FormItem>
         </OAModal>

@@ -3,6 +3,7 @@
  */
 import React, { PureComponent } from 'react';
 import {
+  Tag,
   Card,
   Icon,
   Form,
@@ -22,11 +23,11 @@ const FormItem = Form.Item;
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
-    sm: { span: 6, pull: 2 },
+    sm: { span: 6 },
   },
   wrapperCol: {
     xs: { span: 24 },
-    sm: { span: 18, pull: 2 },
+    sm: { span: 18 },
   },
 };
 
@@ -40,11 +41,11 @@ export default class StaffInfo extends PureComponent {
     // }).join('') : '  ';
     const idNumber = data.id_card_number;
     const birthday = idNumber ? [idNumber.substr(6, 4), idNumber.substr(10, 2), idNumber.substr(12, 2)].join('-') : '';
-    const style = { paddingTop: 5, paddingBottom: 0 };
+    const style = { paddingTop: 5, paddingBottom: 0, padding: '0' };
     return (
       <QueueAnim style={{ display: 'flex' }} className={styles.userInfo}>
-        <div key="userInfo" style={{ flexGrow: 1, width: 200 }}>
-          <Card key="userInfo" bordered={false} loading={loading} style={{ borderBottom: '1px dashed #aaa' }}>
+        <div key="userInfo" style={{ flexGrow: 1, width: 200, wordBreak: 'break-all' }}>
+          <Card key="userInfo" bordered={false} loading={loading} bodyStyle={{ borderBottom: '1px dashed #aaa', padding: '24px 0' }}>
             <Meta
               avatar={<Avatar src="/default_avatar.png" size="large" style={{ width: 40, height: 40 }} />}
               title={
@@ -56,25 +57,19 @@ export default class StaffInfo extends PureComponent {
                   }
                 </React.Fragment>
               }
-              description={<span>员工编号：{data.staff_sn}</span>}
+              description={<span>员工编号：{ data.staff_sn }</span>}
             />
-            <div style={{ margin: '20px 0 10px 20px' }}>
-              <p>
-                <span className={styles.iconSpan} style={{ marginRight: 40 }}>
-                  <Icon type="mobile" />{data.mobile}
-                </span>
-                <span className={styles.iconSpan}><Icon type="wechat" />{data.wechat_number}</span>
-              </p>
-              <span className={styles.iconSpan}><Icon type="home" />{`
-              ${data.living_province_name || ''}
-              ${data.living_city_name ? `-${data.living_city_name}` : ''}
-              ${data.living_county_name ? `-${data.living_county_name}` : ''}
-              ${`${data.living_address || ''}`}
-              `}
-              </span>
-            </div>
+            <FormItem label="手机号" {...formItemLayout}>
+              { data.mobile || '暂无' }
+            </FormItem>
+            <FormItem label="微信号" {...formItemLayout}>
+              { data.wechat_number || '暂无' }
+            </FormItem>
             <FormItem label="标签" {...formItemLayout}>
-              test
+              { (data.tags || []).map(item => <Tag>{item.name}</Tag>) }
+            </FormItem>
+            <FormItem label="店铺" {...formItemLayout}>
+              { data.shop ? data.shop.name : '暂无' }
             </FormItem>
           </Card>
           <Card key="userInfo1" bordered={false} loading={loading} bodyStyle={style} style={style}>
@@ -126,12 +121,20 @@ export default class StaffInfo extends PureComponent {
               {data.id_card_number}
             </FormItem>
             <FormItem label="户口所在地" {...formItemLayout}>
-              {
-                `${data.household_province_name || ''}
-                  ${data.household_city_name ? `-${data.household_city_name}` : ''}
-                  ${data.household_county_name ? `-${data.household_county_name}` : ''}
-                  ${`${data.household_address || ''}`}`
-              }
+              {`
+                ${data.household_province_name || ''}
+                ${data.household_city_name ? `-${data.household_city_name}` : ''}
+                ${data.household_county_name ? `-${data.household_county_name}` : ''}
+                ${`${data.household_address || ''}`}
+              `}
+            </FormItem>
+            <FormItem label="现居地址" {...formItemLayout}>
+              {`
+                ${data.living_province_name || ''}
+                ${data.living_city_name ? `-${data.living_city_name}` : ''}
+                ${data.living_county_name ? `-${data.living_county_name}` : ''}
+                ${`${data.living_address || ''}`}
+              `}
             </FormItem>
             <FormItem label="银行账户" {...formItemLayout}>
               {` ${data.account_name}    ${data.account_bank}   ${data.account_number}  `}
