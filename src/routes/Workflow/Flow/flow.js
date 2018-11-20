@@ -11,12 +11,12 @@ import {
   InputNumber,
   Form,
   Select,
-  Radio,
   Modal,
   TreeSelect,
   notification,
 } from 'antd';
 import FlowChart from '../../../components/FlowChart';
+import Switch from '../../../components/CustomSwitch';
 import SearchTable from '../../../components/OAForm/SearchTable';
 import { markTreeData } from '../../../utils/utils';
 import StepForm from './StepForm';
@@ -25,8 +25,6 @@ const { TabPane } = Tabs;
 
 const FormItem = Form.Item;
 const { Option } = Select;
-const RadioButton = Radio.Button;
-const RadioGroup = Radio.Group;
 
 
 @connect(({ workflow, staffs, department, roles, loading }) => ({
@@ -65,7 +63,7 @@ export default class Flow extends React.PureComponent {
       description: '',
       flow_type_id: null,
       form_id: null,
-      is_active: 1,
+      is_active: '1',
       start_callback_uri: '',
       end_callback_uri: '',
       flows_has_staff: [],
@@ -73,6 +71,7 @@ export default class Flow extends React.PureComponent {
       flows_has_departments: [],
       steps: [],
       send_message: '1',
+      is_client: '1',
       accept_end_callback: '0',
       accept_start_callback: '0',
     };
@@ -393,7 +392,9 @@ export default class Flow extends React.PureComponent {
   handleSteps = (data) => {
     const { formData, formData: { steps } } = this.state;
     const nameData = filter(steps, ['name', data.name]);
-    if (nameData.length > 1) { return false; }
+    if (nameData.length > 1) {
+      return false;
+    }
     const oldStep = find(steps, ['step_key', data.step_key]);
     let newSteps = [...steps];
     if (oldStep) {
@@ -489,7 +490,11 @@ export default class Flow extends React.PureComponent {
 
   flowChartForm = () => {
     const { formData, formData: { steps } } = this.state;
-    const departmentTree = markTreeData(this.props.department, { parentId: 'parent_id', value: 'id', label: 'full_name' }, 0);
+    const departmentTree = markTreeData(this.props.department, {
+      parentId: 'parent_id',
+      value: 'id',
+      label: 'full_name',
+    }, 0);
     const {
       form: { getFieldDecorator },
       formsList,
@@ -630,6 +635,48 @@ export default class Flow extends React.PureComponent {
 
         <FormItem
           {...formItemLayout}
+          label="是否启用"
+        >
+          {getFieldDecorator('is_active', {
+            rules: [{
+              required: true, message: '必选选项',
+            }],
+            initialValue: formData.is_active,
+          })(
+            <Switch defaultChecked disabled={this.state.formAble} />
+          )}
+        </FormItem>
+
+        <FormItem
+          {...formItemLayout}
+          label="发送通知"
+        >
+          {getFieldDecorator('send_message', {
+            rules: [{
+              required: true, message: '必选选项',
+            }],
+            initialValue: formData.send_message,
+          })(
+            <Switch defaultChecked disabled={this.state.formAble} />
+          )}
+        </FormItem>
+
+        <FormItem
+          {...formItemLayout}
+          label="客户端可见"
+        >
+          {getFieldDecorator('is_client', {
+            rules: [{
+              required: true, message: '必选选项',
+            }],
+            initialValue: formData.is_client,
+          })(
+            <Switch defaultChecked disabled={this.state.formAble} />
+          )}
+        </FormItem>
+
+        <FormItem
+          {...formItemLayout}
           label="发起人"
         >
           {getFieldDecorator('flows_has_staff', {
@@ -741,10 +788,7 @@ export default class Flow extends React.PureComponent {
             ],
             initialValue: formData.accept_end_callback || '0',
           })(
-            <RadioGroup name="radiogroup3" disabled={this.state.formAble}>
-              <RadioButton value="0">停用</RadioButton>
-              <RadioButton value="1">启用</RadioButton>
-            </RadioGroup>
+            <Switch disabled={this.state.formAble} />
           )}
         </FormItem>
         <FormItem
@@ -770,45 +814,10 @@ export default class Flow extends React.PureComponent {
             ],
             initialValue: formData.accept_end_callback || '0',
           })(
-            <RadioGroup name="radiogroup3" disabled={this.state.formAble}>
-              <RadioButton value="0">停用</RadioButton>
-              <RadioButton value="1">启用</RadioButton>
-            </RadioGroup>
-          )}
-        </FormItem>
-        <FormItem
-          {...formItemLayout}
-          label="是否启用"
-        >
-          {getFieldDecorator('is_active', {
-            rules: [{
-              required: true, message: '必选选项',
-            }],
-            initialValue: formData.is_active,
-          })(
-            <RadioGroup name="radiogroup3" disabled={this.state.formAble}>
-              <RadioButton value={0}>停用</RadioButton>
-              <RadioButton value={1}>启用</RadioButton>
-            </RadioGroup>
+            <Switch disabled={this.state.formAble} />
           )}
         </FormItem>
 
-        <FormItem
-          {...formItemLayout}
-          label="是否通知"
-        >
-          {getFieldDecorator('send_message', {
-            rules: [{
-              required: true, message: '必选选项',
-            }],
-            initialValue: formData.send_message,
-          })(
-            <RadioGroup disabled={this.state.formAble}>
-              <RadioButton value="0">停用</RadioButton>
-              <RadioButton value="1">启用</RadioButton>
-            </RadioGroup>
-          )}
-        </FormItem>
 
         <FormItem
           {...formItemLayout}
@@ -876,6 +885,7 @@ export default class Flow extends React.PureComponent {
   };
 
   render() {
+    console.log('render');
     const {
       activeKey,
       isEdit,
