@@ -111,8 +111,8 @@ export default class extends PureComponent {
             {customerAuthority(40) &&
               (
                 <Icon
-                  className="icon-form"
-                  type="form"
+                  className="icon-edit"
+                  type="edit"
                   style={{ marginLeft: '10px' }}
                   onClick={e => this.handleEidtEvent(e, item)}
                 />
