@@ -16,6 +16,7 @@ import {
 import { connect } from 'dva';
 
 import Search from './search';
+import AddStaff from './create';
 import EditStaff from './edit';
 import ImportStaff from './import';
 import ExportStaff from './export';
@@ -61,14 +62,10 @@ const status = [
 
 export default class extends PureComponent {
   state = {
-    panes: [
-      // {
-      //   title: '陈贤喜',
-      //   key: '100001',
-      // },
-    ],
+    panes: [],
     filters: {},
     editStaff: {},
+    addVisible: false,
     editVisible: false,
     leaveVisible: false,
     entryVisible: false,
@@ -86,7 +83,6 @@ export default class extends PureComponent {
     dispatch({ type: 'department/fetchDepartment', payload: { withTrashed: true } });
     this.fetchTags();
     this.fetchTagsType();
-    // this.fetchStaffInfo({ staff_sn: '100001' });
   }
 
   onEdit = (targetKey, action) => {
@@ -554,7 +550,7 @@ export default class extends PureComponent {
           key="plus"
           type="primary"
           onClick={() => {
-            this.setState({ editVisible: true });
+            this.setState({ addVisible: true });
           }}
         >
           添加员工
@@ -627,6 +623,13 @@ export default class extends PureComponent {
             );
           })}
         </Tabs>
+        <AddStaff
+          visible={this.state.addVisible}
+          editStaff={this.state.editStaff}
+          onCancel={() => {
+            this.setState({ addVisible: false, editStaff: {} });
+          }}
+        />
         <EditStaff
           visible={this.state.editVisible}
           editStaff={this.state.editStaff}
