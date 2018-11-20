@@ -11,7 +11,7 @@ import {
   message,
   TreeSelect,
 } from 'antd';
-import { omit, assign } from 'lodash';
+import { omit, assign, isEmpty } from 'lodash';
 import OAForm, { SearchTable, Address, OAModal } from '../../../components/OAForm';
 import RelativeList from './relativeList';
 import NextForm from './nextForm';
@@ -114,6 +114,16 @@ export default class EditStaff extends PureComponent {
     return (option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0);
   }
 
+  handleSelectChange = () => {
+    const { form } = this.props;
+    const brands = form.getFieldValue('cost_brands');
+    if (!isEmpty(brands)) {
+      form.setFieldsValue({
+        cost_brands: [],
+      });
+    }
+  }
+
   render() {
     const {
       form,
@@ -157,7 +167,6 @@ export default class EditStaff extends PureComponent {
       if (temp.children.length) tagsGroup.push(temp);
     });
     tagsGroup = tagsGroup.concat(tagsGroupAble);
-
 
     return (
       <React.Fragment>
@@ -246,7 +255,7 @@ export default class EditStaff extends PureComponent {
                       initialValue: editStaff.brand_id || undefined,
                       rules: [validatorRequired],
                     })(
-                      <Select placeholer="请选择" disabled={isEdit}>
+                      <Select placeholer="请选择" disabled={isEdit} onChange={this.handleSelectChange}>
                         {brand && brand.map((item) => {
                           return (
                             <Option key={item.id} value={item.id}>{item.name}</Option>
