@@ -178,14 +178,13 @@ export default class EditStaff extends PureComponent {
         />
         <OAModal
           width={800}
-          title="员工"
+          title="入职"
           okText="下一步"
           visible={visible}
           style={{ top: 30 }}
           onCancel={onCancel}
           loading={staffLoading}
           onSubmit={validateFields(this.handleNextForm)}
-          actionType={editStaff.staff_sn !== undefined}
         >
           <Tabs defaultActiveKey="1">
             <TabPane forceRender tab={renderTitle('基础资料')} key="1" style={style}>
@@ -716,6 +715,26 @@ export default class EditStaff extends PureComponent {
               </Row>
               <Row>
                 <Col {...fieldsBoxLayout}>
+                  <FormItem {...formItemLayout2} label="身高(cm)">
+                    {getFieldDecorator('height', {
+                      initialValue: editStaff.height || '',
+                    })(
+                      <Input placeholder="请输入身高" />
+                    )}
+                  </FormItem>
+                </Col>
+                <Col {...fieldsBoxLayout}>
+                  <FormItem {...formItemLayout3} label="体重(kg)">
+                    {getFieldDecorator('weight', {
+                      initialValue: editStaff.weight || '',
+                    })(
+                      <Input placeholder="请输入体重(kg)" />
+                    )}
+                  </FormItem>
+                </Col>
+              </Row>
+              <Row>
+                <Col {...fieldsBoxLayout}>
                   <FormItem {...formItemLayout2} label="婚姻状况" >
                     {getFieldDecorator('marital_status', {
                       initialValue: editStaff.marital_status || '未知',
@@ -733,29 +752,6 @@ export default class EditStaff extends PureComponent {
                         <Option value="再婚">再婚</Option>
                         <Option value="丧偶">丧偶</Option>
                       </Select>
-                    )}
-                  </FormItem>
-                </Col>
-
-
-              </Row>
-
-              <Row>
-                <Col {...fieldsBoxLayout}>
-                  <FormItem {...formItemLayout2} label="身高(cm)">
-                    {getFieldDecorator('height', {
-                      initialValue: editStaff.height || '',
-                    })(
-                      <Input placeholder="请输入身高" />
-                    )}
-                  </FormItem>
-                </Col>
-                <Col {...fieldsBoxLayout}>
-                  <FormItem {...formItemLayout3} label="体重(kg)">
-                    {getFieldDecorator('weight', {
-                      initialValue: editStaff.weight || '',
-                    })(
-                      <Input placeholder="请输入体重(kg)" />
                     )}
                   </FormItem>
                 </Col>

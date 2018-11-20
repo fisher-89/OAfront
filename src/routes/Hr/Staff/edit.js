@@ -157,7 +157,7 @@ export default class EditStaff extends PureComponent {
       <React.Fragment>
         <OAModal
           width={800}
-          title="编辑员工"
+          title="编辑"
           visible={visible}
           style={{ top: 30 }}
           onCancel={onCancel}
@@ -334,6 +334,7 @@ export default class EditStaff extends PureComponent {
                     })(
                       <Select
                         showSearch
+                        disabled={isEdit}
                         placeholder="请选择员工属性"
                         OptionFilterProp="children"
                         filterOption={this.handleSelectFilter}
@@ -356,7 +357,7 @@ export default class EditStaff extends PureComponent {
                     shop_sn: editStaff.shop_sn,
                   } : {},
                 })(
-                  <SearchTable.Shop />
+                  <SearchTable.Shop disabled={isEdit} />
                 )}
               </FormItem>
               <FormItem {...formItemLayout} label="员工备注" name="remark">
