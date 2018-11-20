@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import { isEmpty } from 'lodash';
 import { Input, Select, Row, Col, TreeSelect } from 'antd';
 import NextForm from './nextForm';
 
@@ -63,6 +64,16 @@ export default class extends PureComponent {
     this.setState({ visible: true });
   }
 
+  handleSelectChange = () => {
+    const { form } = this.props;
+    const brands = form.getFieldValue('cost_brands');
+    if (!isEmpty(brands)) {
+      form.setFieldsValue({
+        cost_brands: [],
+      });
+    }
+  }
+
   render() {
     const {
       form,
@@ -75,9 +86,14 @@ export default class extends PureComponent {
       editStaff,
       department,
       validateFields,
-      form: { getFieldDecorator, setFieldsValue },
+      form: { getFieldDecorator, setFieldsValue, getFieldValue },
     } = this.props;
 
+    const brandId = getFieldValue('brand_id');
+    const costBrand = expense.filter((item) => {
+      const ids = item.brands.map(i => i.id);
+      return ids.indexOf(parseInt(brandId, 10)) !== -1;
+    });
     const newTreeData = markTreeData(department, { value: 'id', label: 'name', parentId: 'parent_id' }, 0);
 
     return (
@@ -132,6 +148,19 @@ export default class extends PureComponent {
                 )}
               </FormItem>
             </Col>
+            <Col span={24} >
+              <FormItem label="所属部门" {...formItemLayout1} required>
+                {getFieldDecorator('department_id', {
+                  initialValue: `${editStaff.department_id}`,
+                })(
+                  <TreeSelect
+                    treeDefaultExpandAll
+                    treeData={newTreeData}
+                    dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                  />
+                )}
+              </FormItem>
+            </Col>
           </Row>
           <Row>
             <Col {...fieldsBoxLayout}>
@@ -139,7 +168,7 @@ export default class extends PureComponent {
                 {getFieldDecorator('brand_id', {
                   initialValue: editStaff.brand_id,
                 })(
-                  <Select name="brand_id" placeholer="请选择">
+                  <Select name="brand_id" placeholer="请选择" onChange={this.handleSelectChange}>
                     {brand && brand.map((item) => {
                       return (
                         <Option key={item.id} value={item.id}>{item.name}</Option>
@@ -168,12 +197,12 @@ export default class extends PureComponent {
           </Row>
           <Row>
             <Col span={24} >
-              <FormItem label="费用品牌" {...formItemLayout1} required>
+              <FormItem label="费用品牌" {...formItemLayout1}>
                 {getFieldDecorator('cost_brands', {
                   initialValue: (editStaff.cost_brands || []).map(item => `${item.id}`),
                 })(
                   <Select mode="multiple" placeholer="请选择">
-                    {expense.map((item) => {
+                    {costBrand.map((item) => {
                       return (
                         <Option key={`${item.id}`}>{item.name}</Option>
                       );
@@ -181,20 +210,6 @@ export default class extends PureComponent {
                   </Select>
                 )}
               </FormItem>
-            </Col>
-            <Col span={24} >
-              <FormItem label="所属部门" {...formItemLayout1} required>
-                {getFieldDecorator('department_id', {
-                  initialValue: `${editStaff.department_id}`,
-                })(
-                  <TreeSelect
-                    treeDefaultExpandAll
-                    treeData={newTreeData}
-                    dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                  />
-                )}
-              </FormItem>
-
             </Col>
             <Col span={24} >
               <FormItem label="店铺编号" {...formItemLayout1}>

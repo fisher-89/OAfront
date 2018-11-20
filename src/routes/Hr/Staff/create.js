@@ -8,12 +8,13 @@ import {
   Radio,
   Select,
   Switch,
+  message,
   TreeSelect,
 } from 'antd';
-import moment from 'moment';
 import { omit, assign, isEmpty } from 'lodash';
 import OAForm, { SearchTable, Address, OAModal } from '../../../components/OAForm';
 import RelativeList from './relativeList';
+import NextForm from './nextForm';
 import { markTreeData } from '../../../utils/utils';
 
 
@@ -68,8 +69,16 @@ const formItemLayout3 = {
   staffLoading: loading.models.staffs,
 }))
 export default class EditStaff extends PureComponent {
+  state = {
+    visible: false,
+  }
+
   handleSubmit = (params) => {
     const { dispatch, onError, onCancel } = this.props;
+    if (!params.operate_at) {
+      message.error('请选择执行日期！！');
+      return;
+    }
     const body = {
       ...params,
       ...params.recruiter,
@@ -83,16 +92,22 @@ export default class EditStaff extends PureComponent {
       relative_type: item.relative_type,
     }));
     dispatch({
-      type: 'staffs/editStaff',
+      type: 'staffs/addStaff',
       payload: newBody,
-      onSuccess: () => onCancel(),
       onError: (errors) => {
-        onError(errors, {
+        this.setState({ visible: false }, onError(errors, {
           household_address: 'household',
           living_address: 'living',
-        });
+        }));
+      },
+      onSuccess: () => {
+        this.setState({ visible: false }, onCancel());
       },
     });
+  }
+
+  handleNextForm = () => {
+    this.setState({ visible: true });
   }
 
   handleSelectFilter = (input, option) => {
@@ -155,14 +170,21 @@ export default class EditStaff extends PureComponent {
 
     return (
       <React.Fragment>
+        <NextForm
+          form={form}
+          visible={this.state.visible}
+          onSubmit={validateFields(this.handleSubmit)}
+          onCancel={() => { this.setState({ visible: false }); }}
+        />
         <OAModal
           width={800}
-          title="编辑"
+          title="入职"
+          okText="下一步"
           visible={visible}
           style={{ top: 30 }}
           onCancel={onCancel}
           loading={staffLoading}
-          onSubmit={validateFields(this.handleSubmit)}
+          onSubmit={validateFields(this.handleNextForm)}
         >
           <Tabs defaultActiveKey="1">
             <TabPane forceRender tab={renderTitle('基础资料')} key="1" style={style}>
@@ -174,12 +196,7 @@ export default class EditStaff extends PureComponent {
                     })(<Input type="hidden" />)
                     : null}
                   {getFieldDecorator('operation_type', {
-                    initialValue: 'edit',
-                  })(
-                    <Input type="hidden" />
-                  )}
-                  {getFieldDecorator('operate_at', {
-                    initialValue: moment().format('YYYY-MM-DD'),
+                    initialValue: 'entry',
                   })(
                     <Input type="hidden" />
                   )}
@@ -334,7 +351,6 @@ export default class EditStaff extends PureComponent {
                     })(
                       <Select
                         showSearch
-                        disabled={isEdit}
                         placeholder="请选择员工属性"
                         OptionFilterProp="children"
                         filterOption={this.handleSelectFilter}
@@ -357,7 +373,7 @@ export default class EditStaff extends PureComponent {
                     shop_sn: editStaff.shop_sn,
                   } : {},
                 })(
-                  <SearchTable.Shop disabled={isEdit} />
+                  <SearchTable.Shop />
                 )}
               </FormItem>
               <FormItem {...formItemLayout} label="员工备注" name="remark">
@@ -370,19 +386,6 @@ export default class EditStaff extends PureComponent {
                       maxRows: 6,
                     }}
                     placeholder="最大长度100字符"
-                  />
-                )}
-              </FormItem>
-              <FormItem label="操作说明" {...formItemLayout} >
-                {getFieldDecorator('operation_remark', {
-                  initialValue: '',
-                })(
-                  <Input.TextArea
-                    placeholder="最大长度100个字符"
-                    autosize={{
-                      minRows: 2,
-                      maxRows: 6,
-                    }}
                   />
                 )}
               </FormItem>
@@ -712,6 +715,26 @@ export default class EditStaff extends PureComponent {
               </Row>
               <Row>
                 <Col {...fieldsBoxLayout}>
+                  <FormItem {...formItemLayout2} label="身高(cm)">
+                    {getFieldDecorator('height', {
+                      initialValue: editStaff.height || '',
+                    })(
+                      <Input placeholder="请输入身高" />
+                    )}
+                  </FormItem>
+                </Col>
+                <Col {...fieldsBoxLayout}>
+                  <FormItem {...formItemLayout3} label="体重(kg)">
+                    {getFieldDecorator('weight', {
+                      initialValue: editStaff.weight || '',
+                    })(
+                      <Input placeholder="请输入体重(kg)" />
+                    )}
+                  </FormItem>
+                </Col>
+              </Row>
+              <Row>
+                <Col {...fieldsBoxLayout}>
                   <FormItem {...formItemLayout2} label="婚姻状况" >
                     {getFieldDecorator('marital_status', {
                       initialValue: editStaff.marital_status || '未知',
@@ -729,29 +752,6 @@ export default class EditStaff extends PureComponent {
                         <Option value="再婚">再婚</Option>
                         <Option value="丧偶">丧偶</Option>
                       </Select>
-                    )}
-                  </FormItem>
-                </Col>
-
-
-              </Row>
-
-              <Row>
-                <Col {...fieldsBoxLayout}>
-                  <FormItem {...formItemLayout2} label="身高(cm)">
-                    {getFieldDecorator('height', {
-                      initialValue: editStaff.height || '',
-                    })(
-                      <Input placeholder="请输入身高" />
-                    )}
-                  </FormItem>
-                </Col>
-                <Col {...fieldsBoxLayout}>
-                  <FormItem {...formItemLayout3} label="体重(kg)">
-                    {getFieldDecorator('weight', {
-                      initialValue: editStaff.weight || '',
-                    })(
-                      <Input placeholder="请输入体重(kg)" />
                     )}
                   </FormItem>
                 </Col>
