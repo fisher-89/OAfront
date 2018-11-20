@@ -71,7 +71,15 @@ export default class Flow extends PureComponent {
     const columns = [
       {
         title: '流程编号',
+        dataIndex: 'number',
+        sorter: true,
+        defaultSortOrder: 'ascend',
+        searcher: true,
+      },
+      {
+        title: 'ID',
         dataIndex: 'id',
+        sorter: true,
         searcher: true,
       },
       {
