@@ -204,7 +204,7 @@ export default class extends PureComponent {
               <Col {...colSpan}>
                 <FormItem label="所属部门" {...formItemLayout} required>
                   {getFieldDecorator('department_id', {
-                    initialValue: initialValue.department_id ? initialValue.department_id.toString() : '',
+                    initialValue: initialValue.department_id ? initialValue.department_id.toString() : '1',
                   })(
                     <TreeSelect
                       placeholder="请选择部门"
@@ -220,7 +220,7 @@ export default class extends PureComponent {
               <Col {...colSpan}>
                 <FormItem label="所属品牌" {...formItemLayout} required>
                   {getFieldDecorator('brand_id', {
-                    initialValue: initialValue.brand_id ? initialValue.brand_id.toString() : '',
+                    initialValue: initialValue.brand_id ? initialValue.brand_id.toString() : '1',
                   })(
                     <Select showSearch placeholder="请选择">
                       {brand && brand.map((item) => {
