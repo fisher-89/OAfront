@@ -211,7 +211,7 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['expense', 'brand'], () => import('../routes/Hr/Expense')),
     },
     '/hr/shop': {
-      component: dynamicWrapper(app, ['department', 'shop', 'brand'], () => import('../routes/Hr/Shop')),
+      component: dynamicWrapper(app, ['department', 'shop', 'stafftags', 'brand'], () => import('../routes/Hr/Shop')),
       authority: '70',
     },
     '/hr/staff/edit/:staff_sn': {
@@ -222,6 +222,14 @@ export const getRouterData = (app) => {
     },
     '/hr/tags/shoptags': {
       component: dynamicWrapper(app, ['stafftags'], () => import('../routes/Hr/Shoptags')),
+    },
+
+    /* 大爱 */
+    '/violation/log': {
+      component: dynamicWrapper(app, ['violation'], () => import('../routes/Violation/Log')),
+    },
+    '/violation/regime': {
+      component: dynamicWrapper(app, ['violation'], () => import('../routes/Violation/Regime')),
     },
 
     /**  系统 */

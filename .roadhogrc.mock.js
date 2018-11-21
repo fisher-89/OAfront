@@ -8,6 +8,7 @@ const pms_port = `${TEST_URI}:8009`;
 const api_port = `${TEST_URI}:8002`;
 const workflow_port = `${TEST_URI}:8006`;
 const reimburse_port = `${TEST_URI}:8001`;
+const violation_port = `${TEST_URI}:8004`;
 
 export default !noProxy ? {
   /**
@@ -99,6 +100,16 @@ export default !noProxy ? {
     'DELETE /api/admin/(.*)': `${pms_port}/admin/`,
 
     /**
+     * 唐娇  ： 大爱
+     */
+
+    'GET /api/violation/(.*)': `${violation_port}/admin/`,
+    'POST /api/violation/(.*)': `${violation_port}/admin/`,
+    'PUT /api/violation/(.*)': `${violation_port}/admin/`,
+    'DELETE /api/violation/(.*)': `${violation_port}/admin/`,
+    
+
+    /**
      * 测试服  ： 登录
      */
     'GET /api/(.*)': `${api_port}/api/`,
@@ -107,10 +118,8 @@ export default !noProxy ? {
     'PATCH /api/(.*)': `${api_port}/api/`,
     'DELETE /api/(.*)': `${api_port}/api/`,
     'POST /oauth/(.*)': `${api_port}/oauth/`,
-    /**
-     * 唐娇  ： 大爱
-     */
-    // 'POST /api/violation/(.*)': 'http://192.168.20.144:8001/api/',
+
+
 
 
   };

@@ -259,24 +259,25 @@ const menuData = [
           },
         ],
       },
+    ],
+  },
+  {
+    name: '大爱',
+    icon: 'heart',
+    path: 'violation',
+    authority: '76',
+    children: [
       {
-        name: '大爱',
-        path: 'violation',
-        authority: '76',
-        children: [
-          {
-            name: '大爱记录',
-            path: 'log',
-          },
-          {
-            name: '制度管理',
-            path: 'regime',
-          },
-          {
-            name: '员工统计',
-            path: 'staffcensus',
-          },
-        ],
+        name: '大爱记录',
+        path: 'log',
+      },
+      {
+        name: '制度管理',
+        path: 'regime',
+      },
+      {
+        name: '员工统计',
+        path: 'staffcensus',
       },
     ],
   },
