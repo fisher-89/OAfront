@@ -123,7 +123,9 @@ export default class Validator extends PureComponent {
   handleSubmit = (params) => {
     const { dispatch, onError } = this.props;
     const newParams = { ...params };
-    newParams.params = newParams.params.join(',');
+    if (typeof newParams.params === 'object') {
+      newParams.params = newParams.params.join(',');
+    }
     dispatch({
       type: newParams.id ? 'workflow/editValidator' : 'workflow/addValidator',
       payload: newParams,
@@ -190,7 +192,9 @@ export default class Validator extends PureComponent {
           title="验证规则"
           loading={loading}
           onCancel={() => this.handleModalVisible(false)}
-          afterClose={() => { this.setState({ editInfo: {} }); }}
+          afterClose={() => {
+            this.setState({ editInfo: {} });
+          }}
           onSubmit={validateFields(this.handleSubmit)}
         >
           {getFieldDecorator('id', {
