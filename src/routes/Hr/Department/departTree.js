@@ -107,28 +107,31 @@ export default class extends PureComponent {
       const content = (
         <React.Fragment>
           <a className="title-content" onClick={() => fetchDataSource(item.id)}>{item.name}</a>
-          <div className="selected-Icon">
-            {customerAuthority(40) &&
-              (
-                <Icon
-                  className="icon-edit"
-                  type="edit"
-                  style={{ marginLeft: '10px' }}
-                  onClick={e => this.handleEidtEvent(e, item)}
-                />
-              )
-            }
-            {customerAuthority(41) &&
-              (
-                <Icon
-                  className="icon-delete"
-                  type="delete"
-                  style={{ marginLeft: '10px' }}
-                  onClick={e => this.handleDelete(e, item.id)}
-                />
-              )
-            }
-          </div>
+          {
+            !item.is_locked ? (
+              <div className="selected-Icon">
+                {customerAuthority(40) &&
+                  (
+                    <Icon
+                      className="icon-edit"
+                      type="edit"
+                      style={{ marginLeft: '10px' }}
+                      onClick={e => this.handleEidtEvent(e, item)}
+                    />
+                  )
+                }
+                {customerAuthority(41) &&
+                  (
+                    <Icon
+                      className="icon-delete"
+                      type="delete"
+                      style={{ marginLeft: '10px' }}
+                      onClick={e => this.handleDelete(e, item.id)}
+                    />
+                  )
+                }
+              </div>
+          ) : null}
         </React.Fragment>
       );
       if (item.children && item.children.length) {
