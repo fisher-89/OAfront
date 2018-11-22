@@ -436,18 +436,20 @@ export default class EditStaff extends PureComponent {
               </Row>
               <Row>
                 <Col {...fieldsBoxLayout}>
-                  <FormItem {...formItemLayout2} label="紧急联系人" >
+                  <FormItem {...formItemLayout2} label="紧急联系人" required>
                     {getFieldDecorator('concat_name', {
                       initialValue: editStaff.concat_name || '',
+                      rules: [validatorRequired],
                     })(
                       <Input placeholder="请输入紧急联系人" />
                     )}
                   </FormItem>
                 </Col>
                 <Col {...fieldsBoxLayout}>
-                  <FormItem {...formItemLayout3} label="联系人电话" >
+                  <FormItem {...formItemLayout3} label="联系人电话" required>
                     {getFieldDecorator('concat_tel', {
                       initialValue: editStaff.concat_tel || '',
+                      rules: [validatorRequired],
                     })(
                       <Input placeholder="请输入联系人电话" />
                     )}
@@ -456,9 +458,10 @@ export default class EditStaff extends PureComponent {
               </Row>
               <Row>
                 <Col {...fieldsBoxLayout}>
-                  <FormItem {...formItemLayout2} label="联系人类型" >
+                  <FormItem {...formItemLayout2} label="联系人类型" required>
                     {getFieldDecorator('concat_type', {
                       initialValue: editStaff.concat_type || '',
+                      rules: [validatorRequired],
                     })(
                       <Input placeholder="请输入联系人类型" />
                     )}
@@ -502,30 +505,30 @@ export default class EditStaff extends PureComponent {
                     )}
                   </FormItem>
                 </Col>
+                <FormItem label="员工标签" {...formItemLayout}>
+                  {getFieldDecorator('tags', {
+                    initialValue: tags || [],
+                  })(
+                    <Select
+                      mode="multiple"
+                      placeholder="请选择"
+                    >
+                      {
+                        tagsGroup.map((item) => {
+                          return item.children ? (
+                            <OptGroup key={`${item.id}`} label={item.name}>
+                              {item.children.map(tag => (<Option key={`${tag.id}`} value={`${tag.id}`}>{tag.name}</Option>))}
+                            </OptGroup>
+                          ) : (<Option key={`${item.id}`}>{item.name}</Option>);
+                        })
+                      }
+                    </Select>
+                  )}
+                </FormItem>
               </Row>
 
             </TabPane>
             <TabPane forceRender tab={renderTitle('个人信息')} key="3" style={style}>
-              <FormItem label="员工标签" {...formItemLayout}>
-                {getFieldDecorator('tags', {
-                  initialValue: tags || [],
-                })(
-                  <Select
-                    mode="multiple"
-                    placeholder="请选择"
-                  >
-                    {
-                      tagsGroup.map((item) => {
-                        return item.children ? (
-                          <OptGroup key={`${item.id}`} label={item.name}>
-                            {item.children.map(tag => (<Option key={`${tag.id}`} value={`${tag.id}`}>{tag.name}</Option>))}
-                          </OptGroup>
-                        ) : (<Option key={`${item.id}`}>{item.name}</Option>);
-                      })
-                    }
-                  </Select>
-                )}
-              </FormItem>
               <FormItem {...formItemLayout} label="户口所在地">
                 {
                   getFieldDecorator('household', {
