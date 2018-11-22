@@ -89,11 +89,6 @@ export default class StaffInfo extends PureComponent {
                 { (data.tags || []).map(item => <Tag>{item.name}</Tag>) }
               </FormItem>
             ) : ''}
-            {data.shop ? (
-              <FormItem label="店铺" {...formItemLayout}>
-                {data.shop.name}
-              </FormItem>
-            ) : ''}
           </Card>
           <Card key="userInfo1" bordered={false} loading={loading} bodyStyle={style} style={style}>
             <FormItem label="状态" {...formItemLayout}>{data.status.name}</FormItem>
@@ -106,6 +101,11 @@ export default class StaffInfo extends PureComponent {
             <FormItem label="部门" {...formItemLayout}>
               {`${data.department.full_name}`}
             </FormItem>
+            {data.shop ? (
+              <FormItem label="店铺" {...formItemLayout}>
+                {data.shop.name}
+              </FormItem>
+            ) : ''}
             <FormItem label="员工属性" {...formItemLayout}>
               {`${staffProperty[data.property]}`}
             </FormItem>
