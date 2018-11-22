@@ -61,6 +61,15 @@ export default type => (Component) => {
       });
     }
 
+    payFine =(values, onError, onSuccess) => {
+      const { dispatch } = this.props;
+      dispatch({
+        type: 'violation/editPayState',
+        payload: values,
+        onSuccess,
+        onError,
+      });
+    }
 
     render() {
       return (

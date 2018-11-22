@@ -3,6 +3,7 @@ import {
   editFineLog,
   addFineLog,
   deleteFineLog,
+  editPayState,
   downloadExcelFinLog,
 } from '../../services/violation';
 
@@ -62,6 +63,25 @@ export default {
     } catch (err) { return err; }
   },
 
+  *editPayState({ payload, onError, onSuccess }, { call, put }) {
+    try {
+      const response = yield call(editPayState, payload);
+      if (response.errors && onError) {
+        onError(response.errors);
+      } else {
+        yield put({
+          type: 'update',
+          payload: {
+            store,
+            data: response,
+          },
+        });
+
+        onSuccess(response);
+      }
+    } catch (err) { console.log(err); return err; }
+  },
+
   *deleteFineLog({ payload }, { call, put }) {
     try {
       const { id } = payload;
@@ -88,6 +108,6 @@ export default {
       }
 
       onSuccess(response);
-    } catch (err) { console.log(err); return err; }
+    } catch (err) { return err; }
   },
 };

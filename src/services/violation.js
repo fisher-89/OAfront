@@ -27,6 +27,10 @@ export async function editFineLog(params, id) {
   return request(`/api/violation/punish/${id}`, { method: 'PUT', body: params });
 }
 
+export async function editPayState(params) {
+  return request('/api/violation/punish/pay', { method: 'POST', body: params });
+}
+
 /**
  * 大爱删除
  */

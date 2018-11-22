@@ -148,6 +148,15 @@ export default class extends PureComponent {
     );
     return extra;
   }
+
+  sendPay = (payload, onError) => {
+    const { payFine } = this.props;
+    let selectId = [];
+    selectId = payload.map(item => item.id);
+
+    payFine(selectId, onError);
+  }
+
   render() {
     const { finelog, fetchFineLog, loading } = this.props;
     const { visible, initialValue } = this.state;
@@ -182,16 +191,17 @@ export default class extends PureComponent {
       {
         text: '设置已支付',
         action: (selectedRows) => {
-          return selectedRows;
-        },
-      },
-      {
-        text: '删除',
-        action: (selectedRows) => {
-          return selectedRows;
+          this.sendPay(selectedRows);
         },
       },
     ];
+
+    const rowSelection = {
+      getCheckboxProps: record => ({
+        disabled: record.has_paid === 1,
+      }),
+    };
+
     return (
       <Fragment>
         <Tabs
@@ -205,6 +215,7 @@ export default class extends PureComponent {
               data={finelog}
               extraOperator={extra}
               scroll={{ x: 1750 }}
+              rowSelection={rowSelection}
               multiOperator={multiOperator}
               excelInto={excelInto}
               excelExport={excelExport}
