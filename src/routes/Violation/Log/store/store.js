@@ -43,6 +43,9 @@ export default type => (Component) => {
 
     deleted = (id, onError, onSuccess) => {
       const { dispatch } = this.props;
+      console.log(1);
+      console.log(onSuccess);
+      console.log(1);
       dispatch({
         type: 'violation/deleteFineLog',
         payload: { id },
@@ -52,6 +55,9 @@ export default type => (Component) => {
     }
 
     submit =(values, onError, onSuccess) => {
+      console.log(1);
+      console.log(onSuccess);
+      console.log(1);
       const { dispatch } = this.props;
       dispatch({
         type: values.id ? 'violation/editFineLog' : 'violation/addFineLog',
@@ -63,6 +69,9 @@ export default type => (Component) => {
 
     payFine =(values, onError, onSuccess) => {
       const { dispatch } = this.props;
+      console.log(1);
+      console.log(onSuccess);
+      console.log(1);
       dispatch({
         type: 'violation/editPayState',
         payload: values,

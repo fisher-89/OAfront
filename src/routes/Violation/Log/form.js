@@ -228,7 +228,7 @@ export default class extends PureComponent {
           </Col>
 
           <Col {...colSpan}>
-            <FormItem label="开单日期" {...formItemLayout}>
+            <FormItem label="开单日期" {...formItemLayout} required>
               {getFieldDecorator('billing_at', {
                    initialValue: initialValue.billing_at || undefined,
                  })(<DatePicker />)}

@@ -69,14 +69,16 @@ export default {
       if (response.errors && onError) {
         onError(response.errors);
       } else {
-        yield put({
-          type: 'update',
-          payload: {
-            store,
-            data: response,
-          },
+        Object.keys(response).forEach((key) => {
+          put({
+            type: 'update',
+            payload: {
+              store,
+              data: response[key],
+            },
+          });
+          console.log(response[key]);
         });
-
         onSuccess(response);
       }
     } catch (err) { console.log(err); return err; }
