@@ -1,4 +1,5 @@
 import request from '../utils/request';
+import upload from '../utils/upload';
 
 /* flow */
 export async function fetchFlow(params, id) {
@@ -66,6 +67,10 @@ export async function flowClone(id) {
     method: 'POST',
     body: { flow_id: id },
   });
+}
+
+export async function uploadIcon(params) {
+  return upload('/api/workflow/flow-icon', { body: params });
 }
 
 

@@ -18,6 +18,7 @@ import {
 import FlowChart from '../../../components/FlowChart';
 import Switch from '../../../components/CustomSwitch';
 import SearchTable from '../../../components/OAForm/SearchTable';
+import UploadCropper from '../../../components/UploadCropper';
 import { markTreeData } from '../../../utils/utils';
 import StepForm from './StepForm';
 
@@ -496,7 +497,7 @@ export default class Flow extends React.PureComponent {
       label: 'full_name',
     }, 0);
     const {
-      form: { getFieldDecorator },
+      form: { getFieldDecorator, setFieldsValue },
       formsList,
       flowType,
       roles,
@@ -549,6 +550,25 @@ export default class Flow extends React.PureComponent {
       <Form
         onSubmit={this.affirmFlow}
       >
+        <FormItem label="流程图标" {...formItemLayout}>
+          {getFieldDecorator('icon', {
+            initialValue: formData.icon,
+          })(
+            <Input type="hidden" disabled={this.state.formAble} />
+          )}
+          <UploadCropper
+            name="icon"
+            cropperProps={{
+              aspectRatio: 1,
+            }}
+            value={formData.icon ? [formData.icon] : []}
+            actionType="workflow/uploadIcon"
+            disabled={this.state.formAble}
+            onChange={(values) => {
+              setFieldsValue({ icon: values[0] });
+            }}
+          />
+        </FormItem>
         <FormItem
           {...formItemLayout}
           label="名称"
@@ -885,7 +905,6 @@ export default class Flow extends React.PureComponent {
   };
 
   render() {
-    console.log('render');
     const {
       activeKey,
       isEdit,

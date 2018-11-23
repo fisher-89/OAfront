@@ -1,10 +1,20 @@
 import { notification } from 'antd';
-import { flowRunFormVersion, flowClone, flowRunLogExport, fetchFlow, addFlow, editFlow, deleteFlow, flowRunLog } from '../../services/workflow';
+import {
+  flowRunFormVersion,
+  flowClone,
+  flowRunLogExport,
+  fetchFlow,
+  addFlow,
+  editFlow,
+  deleteFlow,
+  flowRunLog,
+  uploadIcon,
+} from '../../services/workflow';
 
 const store = 'flow';
 
 export default {
-  *flowRunFormVersion({ payload, onError }, { call, put, select }) {
+  * flowRunFormVersion({ payload, onError }, { call, put, select }) {
     try {
       const params = { ...payload };
       let response = yield select(models => models.workflow.formVersionDetails[params.id]);
@@ -22,9 +32,11 @@ export default {
           store: 'formVersion',
         },
       });
-    } catch (err) { return err; }
+    } catch (err) {
+      return err;
+    }
   },
-  *flowClone({ payload, onError, onSuccess }, { call, put }) {
+  * flowClone({ payload, onError, onSuccess }, { call, put }) {
     try {
       const params = { ...payload };
       const response = yield call(flowClone, params.id || '');
@@ -41,9 +53,11 @@ export default {
         },
       });
       onSuccess(response);
-    } catch (err) { return err; }
+    } catch (err) {
+      return err;
+    }
   },
-  *flowRunLogExport({ payload }, { call, put }) {
+  * flowRunLogExport({ payload }, { call, put }) {
     try {
       const params = { ...payload };
       const response = yield call(flowRunLogExport, params);
@@ -54,7 +68,9 @@ export default {
           filename: '流程运行记录.xls',
         },
       });
-    } catch (err) { return err; }
+    } catch (err) {
+      return err;
+    }
   },
   * flowRunLog({ payload }, { call, put }) {
     try {
@@ -67,7 +83,9 @@ export default {
           store: 'flowRunLog',
         },
       });
-    } catch (err) { return err; }
+    } catch (err) {
+      return err;
+    }
   },
   * fetchFlow({ payload }, { call, put }) {
     try {
@@ -85,7 +103,9 @@ export default {
           data: response,
         },
       });
-    } catch (err) { return err; }
+    } catch (err) {
+      return err;
+    }
   },
   * addFlows({ payload, onSuccess, onError }, { call, put }) {
     try {
@@ -103,7 +123,9 @@ export default {
         });
         onSuccess(response);
       }
-    } catch (err) { return err; }
+    } catch (err) {
+      return err;
+    }
   },
   * editFlow({ payload, onSuccess, onError }, { call, put }) {
     try {
@@ -126,7 +148,9 @@ export default {
         });
         onSuccess(response);
       }
-    } catch (err) { return err; }
+    } catch (err) {
+      return err;
+    }
   },
   * deleteFlow({ payload }, { call, put }) {
     try {
@@ -146,6 +170,20 @@ export default {
           },
         });
       }
-    } catch (err) { return err; }
+    } catch (err) {
+      return err;
+    }
+  },
+  * uploadIcon({ payload, onSuccess, onError }, { call }) {
+    try {
+      const response = yield call(uploadIcon, payload);
+      if (typeof response === 'object' && response.errors) {
+        onError(response.errors);
+        return;
+      }
+      if (onSuccess) onSuccess(response.url);
+    } catch (err) {
+      return err;
+    }
   },
 };
