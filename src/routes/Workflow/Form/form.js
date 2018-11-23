@@ -204,7 +204,8 @@ class addForm extends PureComponent {
         getFieldsError,
       },
       validatorRequired,
-      formType, validateFields, validator, formVal } = this.props;
+      formType, validateFields, validator, formVal,
+    } = this.props;
 
     const { formId, isEdit, activeKey, panes, listError } = this.state;
     let initialFieldsValue = {};
@@ -293,7 +294,7 @@ class addForm extends PureComponent {
                 initialValue: initialFieldsValue.form_type_id,
                 rules: [validatorRequired],
               } : {}))(
-                <Select placeholder="请选择" >
+                <Select placeholder="请选择">
                   {formType.map(item => <Option key={item.id}>{item.name}</Option>)}
                 </Select>
               )}
@@ -343,6 +344,11 @@ class addForm extends PureComponent {
                 forceRender
                 key={pane.key}
               >
+                {getFieldDecorator(`grids.${index}.id`, {
+                  initialValue: grids && grids[index] ? grids[index].id : '',
+                })(
+                  <Input hidden />
+                )}
                 <FormItem label="名称" {...formItemLayout} required>
                   {getFieldDecorator(`grids.${index}.name`, {
                     initialValue: grids && grids[index] ? grids[index].name : '',
@@ -382,4 +388,5 @@ class addForm extends PureComponent {
     );
   }
 }
+
 export default addForm;
