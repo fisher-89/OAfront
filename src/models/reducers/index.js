@@ -48,8 +48,12 @@ export default {
       [store]: dataState,
     };
   },
-  update(state, action) {
-    const { store, id, data, message } = action.payload;
+  multiupdate(state, action) {
+    const { store, data, message } = action.payload;
+    // console.log(state, 'state');
+    // console.log(action, 'action');
+    // console.log(data, 'data');
+    // console.log(store, 'store');
     if (data.message) {
       notification.error({
         message: data.message,
@@ -59,14 +63,68 @@ export default {
     notification.success({
       message: message || '编辑成功',
     });
-    const originalStore = { ...state[`${store}Details`] };
+    const updata = { ...data };
+    const dataSource = Array.isArray(state[store]) ? state[store] : (state[store].data || []);
+    const midStore = dataSource;
+    let index;
+    Object.keys(updata).forEach((key) => {
+      console.log(updata[key], 'updata');
+      index = 0;
+      midStore.map((item) => {
+        if (parseInt(item.id, 0) === parseInt(updata[key].id, 0)) {
+          midStore.splice(index, 1);
+          index += 1;
+          midStore.push(updata[key]);
+          return null;
+        } else {
+          index += 1;
+          return null;
+        }
+      });
+    });
+    console.log(midStore);
+    let dataState;
+    if (Array.isArray(state[store])) {
+      dataState = state[store] ? [...midStore] : [];
+    } else {
+      dataState = state[store].data ? {
+        ...state[store],
+        data: midStore,
+      } : {};
+    }
+    console.log(dataState, 'dataState');
+    return {
+      ...state,
+      [store]: dataState,
+    };
+  },
+  update(state, action) {
+    const { store, id, data, message } = action.payload;
+    console.log(state, 'state');
+    console.log(action, 'action');
+    console.log(store, 'store');
+    console.log(id, 'id');
+    console.log(data, 'data');
+    console.log(message, 'message');
+    console.log(data.message, 'data.message');
+    if (data.message) {
+      notification.error({
+        message: data.message,
+      });
+      return { ...state };
+    }
+    notification.success({
+      message: message || '编辑成功',
+    });
+    const originalStore = { ...state[`${store}Details`] }; console.log(originalStore, 'originalStore');
     Object.keys(originalStore).forEach((key) => {
       if (`${id}` === `${key}`) {
         originalStore[key] = data;
       }
     });
-    const dataSource = Array.isArray(state[store]) ? state[store] : (state[store].data || []);
 
+    const dataSource = Array.isArray(state[store]) ? state[store] : (state[store].data || []);
+    console.log(dataSource, 'dataSource');
     let updated = false;
     const newStore = dataSource.map((item) => {
       if (parseInt(item.id, 0) === parseInt(id, 0)) {
@@ -76,6 +134,7 @@ export default {
         return item;
       }
     });
+    console.log(newStore, 'newStore');
     if (!updated) {
       newStore.push(data);
     }
@@ -88,6 +147,7 @@ export default {
         data: newStore,
       } : {};
     }
+    console.log(dataState, 'dataState');
     return {
       ...state,
       [store]: dataState,

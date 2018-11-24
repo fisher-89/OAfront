@@ -47,6 +47,7 @@ export default {
       const { id } = payload;
       delete params.id;
       const response = yield call(editFineLog, params, id);
+      console.log(response, 123);
       if (response.errors && onError) {
         onError(response.errors);
       } else {
@@ -66,22 +67,20 @@ export default {
   *editPayState({ payload, onError, onSuccess }, { call, put }) {
     try {
       const response = yield call(editPayState, payload);
+      console.log(response, 123);
       if (response.errors && onError) {
         onError(response.errors);
       } else {
-        Object.keys(response).forEach((key) => {
-          put({
-            type: 'update',
-            payload: {
-              store,
-              data: response[key],
-            },
-          });
-          console.log(response[key]);
+        yield put({
+          type: 'multiupdate',
+          payload: {
+            store,
+            data: response,
+          },
         });
         onSuccess(response);
       }
-    } catch (err) { console.log(err); return err; }
+    } catch (err) { return err; }
   },
 
   *deleteFineLog({ payload }, { call, put }) {
