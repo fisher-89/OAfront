@@ -11,7 +11,7 @@ import { connect } from 'dva';
 import OATable from '../../../components/OATable';
 import AuthForm from './form';
 import AuthTree from './authTree';
-import { customerAuthority } from '../../../utils/utils';
+import { checkAuthority } from '../../../utils/utils';
 @connect(({ authority, loading }) => ({
   authority: authority.authority,
   fLoading: loading.effects['authority/fetchAuth'],
@@ -96,18 +96,18 @@ export default class extends PureComponent {
       },
     ];
 
-    if (customerAuthority(63) || customerAuthority(64)) {
+    if (checkAuthority(63) || checkAuthority(64)) {
       columns.push(
         {
           title: '操作',
           render: (rowData) => {
             return (
               <Fragment>
-                {customerAuthority(63) && (
+                {checkAuthority(63) && (
                   <a onClick={() => this.handleEdit(rowData)}>编辑</a>
                 )}
                 <Divider type="vertical" />
-                {customerAuthority(64) && (
+                {checkAuthority(64) && (
                   <a onClick={() => this.handleDelete(rowData.id)}>删除</a>
                 )}
               </Fragment>
@@ -122,7 +122,7 @@ export default class extends PureComponent {
 
   makeExtraOperator = () => {
     const extra = [];
-    if (customerAuthority(62)) {
+    if (checkAuthority(62)) {
       extra.push((
         <Button
           icon="plus"
@@ -148,7 +148,7 @@ export default class extends PureComponent {
         </Col>
         <Col span={20}>
           {
-            (customerAuthority(63) || customerAuthority(64)) &&
+            (checkAuthority(63) || checkAuthority(64)) &&
             (
               <AuthForm
                 treeData={authority}

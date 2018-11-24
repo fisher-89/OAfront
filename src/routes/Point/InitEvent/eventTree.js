@@ -9,7 +9,7 @@ import { connect } from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import TypeForm from './typeForm';
 import TreeSort from '../../../components/TreeSort';
-import { customerAuthority } from '../../../utils/utils';
+import { checkAuthority } from '../../../utils/utils';
 import './event.less';
 
 const { TreeNode } = Tree;
@@ -108,7 +108,7 @@ export default class extends PureComponent {
         <React.Fragment>
           <a className="title-content" onClick={() => fetchDataSource(item.id)}>{item.name}</a>
           <div className="selected-Icon">
-            {customerAuthority(151) &&
+            {checkAuthority(151) &&
               (
                 <Icon
                   className="icon-form"
@@ -118,7 +118,7 @@ export default class extends PureComponent {
                 />
               )
             }
-            {customerAuthority(152) &&
+            {checkAuthority(152) &&
               (
                 <Icon
                   className="icon-delete"
@@ -150,7 +150,7 @@ export default class extends PureComponent {
     return (
       <QueueAnim type="left">
         {
-          customerAuthority(138) &&
+          checkAuthority(138) &&
           (
             <div
               key="add"
@@ -175,7 +175,7 @@ export default class extends PureComponent {
           全部
         </Button>
         <TreeSort
-          sorter={customerAuthority(151)}
+          sorter={checkAuthority(151)}
           key="treeSort"
           showLine
           loading={loading || sortLoading}
@@ -183,7 +183,7 @@ export default class extends PureComponent {
           dataSource={dataSource}
           onChange={this.handleOnchange}
         />
-        {(customerAuthority(151) || customerAuthority(138)) &&
+        {(checkAuthority(151) || checkAuthority(138)) &&
           (
             <TypeForm
               visible={visible}

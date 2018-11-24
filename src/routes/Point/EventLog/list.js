@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Divider } from 'antd';
 import RevokeForm from './revokeForm';
-import { customerAuthority } from '../../../utils/utils';
+import { checkAuthority } from '../../../utils/utils';
 import EventLogInfo from './Info/info';
 import OATable from '../../../components/OATable';
 import Ellipsis from '../../../components/Ellipsis';
@@ -101,7 +101,7 @@ export default class extends PureComponent {
               查看
             </a>,
           ];
-          if (customerAuthority(173) && rowData.status_id === 2) {
+          if (checkAuthority(173) && rowData.status_id === 2) {
             action.push(<Divider key="vertical" type="vertical" />);
             action.push(<a key="cancel" onClick={() => this.showRevokeForm(rowData)}>删除</a>);
           }

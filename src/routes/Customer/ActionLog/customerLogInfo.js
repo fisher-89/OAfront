@@ -4,7 +4,7 @@ import { Drawer, Button } from 'antd';
 import store from './store/store';
 import district from '../../../assets/district';
 import OATable from '../../../components/OATable';
-import { customerAuthority } from '../../../utils/utils';
+import { checkAuthority } from '../../../utils/utils';
 
 const columns = [{
   width: 100,
@@ -66,7 +66,7 @@ export default class extends React.PureComponent {
     } = this.props;
     if (id && (
       initialValue.status === 1 || (
-        customerAuthority(191) && initialValue.status === -1
+        checkAuthority(191) && initialValue.status === -1
       )
     )) {
       clientReduction(id, () => {
@@ -127,7 +127,7 @@ export default class extends React.PureComponent {
     });
     let disabled = true;
     if (initialValue.status === 1 || (
-      customerAuthority(191) && initialValue.status === -1
+      checkAuthority(191) && initialValue.status === -1
     )) {
       disabled = false;
     }

@@ -8,7 +8,7 @@ import { connect } from 'dva';
 
 import OATable from '../../../components/OATable';
 import BrandForm from './form';
-import { customerAuthority } from '../../../utils/utils';
+import { checkAuthority } from '../../../utils/utils';
 @connect(({ brand, loading }) => ({
   brand: brand.brand,
   fLoading: loading.effects['brand/fetchBrand'],
@@ -77,18 +77,18 @@ export default class extends PureComponent {
       },
     ];
 
-    if (customerAuthority(63) || customerAuthority(64)) {
+    if (checkAuthority(63) || checkAuthority(64)) {
       columns.push(
         {
           title: '操作',
           render: (rowData) => {
             return (
               <Fragment>
-                {customerAuthority(63) && (
+                {checkAuthority(63) && (
                   <a onClick={() => this.handleEdit(rowData)}>编辑</a>
                 )}
                 <Divider type="vertical" />
-                {customerAuthority(64) && (
+                {checkAuthority(64) && (
                   <a onClick={() => this.handleDelete(rowData.id)}>删除</a>
                 )}
               </Fragment>
@@ -103,7 +103,7 @@ export default class extends PureComponent {
 
   makeExtraOperator = () => {
     const extra = [];
-    if (customerAuthority(62)) {
+    if (checkAuthority(62)) {
       extra.push((
         <Button
           icon="plus"
@@ -125,7 +125,7 @@ export default class extends PureComponent {
     return (
       <React.Fragment>
         {
-          (customerAuthority(63) || customerAuthority(64)) &&
+          (checkAuthority(63) || checkAuthority(64)) &&
           (
             <BrandForm
               initialValue={editInfo}

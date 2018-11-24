@@ -10,7 +10,7 @@ import { connect } from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import DepartForm from './departForm';
 import TreeSort from '../../../components/TreeSort';
-import { customerAuthority } from '../../../utils/utils';
+import { checkAuthority } from '../../../utils/utils';
 import './department.less';
 
 const { TreeNode } = Tree;
@@ -110,7 +110,7 @@ export default class extends PureComponent {
           {
             !item.is_locked ? (
               <div className="selected-Icon">
-                {customerAuthority(40) &&
+                {checkAuthority(40) &&
                   (
                     <Icon
                       className="icon-edit"
@@ -120,7 +120,7 @@ export default class extends PureComponent {
                     />
                   )
                 }
-                {customerAuthority(41) &&
+                {checkAuthority(41) &&
                   (
                     <Icon
                       className="icon-delete"
@@ -153,7 +153,7 @@ export default class extends PureComponent {
     return (
       <QueueAnim type="left">
         {
-          customerAuthority(39) &&
+          checkAuthority(39) &&
           (
             <div
               key="add"
@@ -172,7 +172,7 @@ export default class extends PureComponent {
         }
         <TreeSort
           rootPid={0}
-          sorter={customerAuthority(65)}
+          sorter={checkAuthority(65)}
           key="treeSort"
           showLine
           loading={loading || sortLoading}
@@ -180,7 +180,7 @@ export default class extends PureComponent {
           dataSource={department}
           onChange={this.handleOnchange}
         />
-        {(customerAuthority(39) || customerAuthority(40)) &&
+        {(checkAuthority(39) || checkAuthority(40)) &&
           (
             <DepartForm
               visible={visible}

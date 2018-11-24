@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { Input, InputNumber } from 'antd';
 
 import OATable from '../../../components/OATable';
-import { customerAuthority } from '../../../utils/utils';
+import { checkAuthority } from '../../../utils/utils';
 
 import OAForm, { OAModal, DatePicker } from '../../../components/OAForm';
 
@@ -117,13 +117,13 @@ export default class extends PureComponent {
         render: val => (val / 60).toFixed(2),
       },
     ];
-    if (customerAuthority(143)) {
+    if (checkAuthority(143)) {
       columns.push({
         title: '操作',
         render: (rowData) => {
           return (
             <React.Fragment>
-              {customerAuthority(143) && (
+              {checkAuthority(143) && (
                 <a onClick={() => this.handleEdit(rowData)}>编辑</a>
               )}
             </React.Fragment>
@@ -155,7 +155,7 @@ export default class extends PureComponent {
           fetchDataSource={this.fetchAttendance}
           scroll={{ x: 300 }}
         />
-        {customerAuthority(143) && (
+        {checkAuthority(143) && (
           <OAModal
             width={600}
             title="考勤表单"

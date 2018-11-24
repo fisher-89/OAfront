@@ -30,7 +30,7 @@ import OATable from '../../../components/OATable';
 import {
   findRenderKey,
   getFiltersData,
-  customerAuthority,
+  checkAuthority,
   getBrandAuthority,
   getDepartmentAuthority,
 } from '../../../utils/utils';
@@ -544,7 +544,7 @@ export default class extends PureComponent {
     const extra = [];
     const { staff: { total } } = this.props;
     extra.push(
-      (customerAuthority(62)) && (
+      (checkAuthority(62)) && (
         <Button
           icon="plus"
           key="plus"
@@ -556,10 +556,10 @@ export default class extends PureComponent {
           添加员工
         </Button>
       ),
-      (customerAuthority(62)) && (
+      (checkAuthority(62)) && (
         <ImportStaff key="importPop" />
       ),
-      (customerAuthority(84) && (
+      (checkAuthority(84) && (
         <ExportStaff key="exportBtn" filters={this.searchFilter} total={total} />
       ))
     );
