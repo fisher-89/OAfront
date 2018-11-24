@@ -1,10 +1,7 @@
 import React from 'react';
-// import RcViewer from 'rc-viewer';
 import { Drawer } from 'antd';
 import { forIn, isArray } from 'lodash';
-// import district from '../../../assets/district';
 import OATable from '../../../../components/OATable';
-// import { customerAuthority } from '../../../../utils/utils';
 
 const columns = [{
   width: 100,
@@ -24,38 +21,6 @@ const columns = [{
   dataIndex: 'original',
   tooltip: true,
 }];
-
-
-// const rcViewerOptions = {
-//   navbar: true,
-//   toolbar: {
-//     zoomIn: 0,
-//     zoomOut: 0,
-//     oneToOne: 0,
-//     reset: 0,
-//     prev: {
-//       show: 2,
-//       size: 'large',
-//     },
-//     play: 0,
-
-//     rotateLeft: {
-//       show: 2,
-//       size: 'large',
-//     },
-//     rotateRight: {
-//       show: 2,
-//       size: 'large',
-//     },
-//     next: {
-//       show: 2,
-//       size: 'large',
-//     },
-//     flipHorizontal: 0,
-//     flipVertical: 0,
-//   },
-// };
-
 export default class extends React.PureComponent {
   render() {
     const restProps = { ...this.props };
@@ -63,7 +28,6 @@ export default class extends React.PureComponent {
     delete restProps.initialValue;
     const changes = initialValue.changes || {};
     const data = [];
-    // const style = { cursor: 'pointer' };
     forIn(changes, (value, name) => {
       let dirty;
       let original;
