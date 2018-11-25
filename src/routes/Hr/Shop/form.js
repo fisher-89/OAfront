@@ -46,7 +46,7 @@ export default class extends PureComponent {
   }
 
   handleSubmit = (params) => {
-    const { dispatch } = this.props;
+    const { dispatch, onCancel, onError } = this.props;
     const { address } = params.real_address;
     const body = omit({
       ...params,
@@ -60,20 +60,12 @@ export default class extends PureComponent {
     dispatch({
       type: params.id ? 'shop/editShop' : 'shop/addShop',
       payload: body,
-      onError: this.handleError,
-      onSuccess: () => this.props.handleVisible(false),
-    });
-  }
-
-  makeDecoratorValue = (info) => {
-    const { form: { getFieldDecorator } } = this.props;
-    [
-      'city_id',
-      'province_id',
-      'county_id',
-      'address',
-    ].forEach((item) => {
-      getFieldDecorator(item, { initialValue: info[item] });
+      onSuccess: () => onCancel(),
+      onError: errors => onError(errors, {
+        city_id: 'shop_address',
+        county_id: 'shop_address',
+        province_id: 'shop_address',
+      }),
     });
   }
 
@@ -81,7 +73,6 @@ export default class extends PureComponent {
     const {
       brand,
       department,
-      handleVisible,
       stafftags,
       stafftagtypes,
       visible,
@@ -90,7 +81,6 @@ export default class extends PureComponent {
       validateFields,
       form: { getFieldDecorator },
     } = this.props;
-    this.makeDecoratorValue(initialValue);
     const newTreeData = markTreeData(department, { value: 'id', label: 'name', parentId: 'parent_id' }, 0);
     const longFormItemLayout = {
       labelCol: {
@@ -136,8 +126,7 @@ export default class extends PureComponent {
         visible={visible}
         loading={this.props.loading}
         onSubmit={validateFields(this.handleSubmit)}
-        onCancel={() => handleVisible(false)}
-        afterClose={onCancel}
+        onCancel={onCancel}
       >
         {initialValue.id ? (getFieldDecorator('id', {
           initialValue: initialValue.id,
