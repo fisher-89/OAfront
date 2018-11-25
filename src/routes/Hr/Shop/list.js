@@ -7,10 +7,18 @@ import {
 } from 'antd';
 import { connect } from 'dva';
 import Search from './search';
+import ShopForm from './form';
 import OATable from '../../../components/OATable';
 import Ellipsis from '../../../components/Ellipsis/index';
-import ShopForm from './form';
 import { checkAuthority, getFiltersData } from '../../../utils/utils';
+
+const status = [
+  { id: 1, name: '未营业' },
+  { id: 2, name: '营业中' },
+  { id: 3, name: '闭店' },
+  { id: 4, name: '结束' },
+];
+
 @connect(({ shop, loading, stafftags, department, brand }) => ({
   stafftags: stafftags.stafftags,
   brand: brand.brand,
@@ -23,7 +31,6 @@ export default class extends PureComponent {
   state = {
     visible: false,
     editInfo: {},
-    options: [{ id: '0', name: '开业' }, { id: 1, name: '未开业' }], // 店铺状态
   }
 
   componentDidMount() {
@@ -137,7 +144,7 @@ export default class extends PureComponent {
         title: '店铺状态',
         dataIndex: 'status_id',
         align: 'center',
-        filters: this.statusSelect(this.state.options),
+        filters: this.statusSelect(status),
         width: 100,
         render: (key) => {
           if (key === 1) {
@@ -254,8 +261,9 @@ export default class extends PureComponent {
               <ShopForm
                 initialValue={editInfo}
                 visible={visible}
-                onCancel={() => { this.setState({ editInfo: {} }); }}
-                handleVisible={this.handleModalVisible}
+                onCancel={() => {
+                  this.setState({ visible: false, editInfo: {} });
+                }}
               />
             </React.Fragment>
           )
