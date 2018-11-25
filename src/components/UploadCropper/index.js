@@ -32,6 +32,9 @@ export default class UploadCropper extends React.Component {
     if (JSON.stringify(nextState) !== JSON.stringify(this.state)) {
       return true;
     }
+    if (JSON.stringify(nextProps.disabled) !== JSON.stringify(this.props.disabled)) {
+      return true;
+    }
     if (JSON.stringify(nextProps.value) === JSON.stringify(this.props.value)) {
       return false;
     }
@@ -176,18 +179,28 @@ export default class UploadCropper extends React.Component {
 
   render() {
     const { fileList, visible, cropperSrc, previewVisible, previewImage } = this.state;
-    const { cropperProps, max, placeholder, cropper } = this.props;
+    const { cropperProps, max, placeholder, cropper, disabled } = this.props;
     const uploadButton = (
       <div>
         <Icon type="plus" />
         <div className="ant-upload-text">{placeholder || '上传图片'}</div>
       </div>
     );
+    const disableUploadStyle = {
+      width: '104px',
+      height: '104px',
+      position: 'absolute',
+      top: 0,
+      cursor: 'not-allowed',
+      backgroundColor: 'rgba(100,100,100,0.1)',
+      zIndex: 1000,
+    };
     return (
       <React.Fragment>
         <Upload
           fileList={fileList}
           listType="picture-card"
+          disabled={disabled}
           customRequest={(file) => {
             if (!cropper) this.customRequest(file);
           }}
@@ -197,6 +210,7 @@ export default class UploadCropper extends React.Component {
         >
           {fileList.length >= max ? null : uploadButton}
         </Upload>
+        {disabled && <div style={disableUploadStyle} />}
         <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
           <img alt="example" style={{ width: '100%' }} src={previewImage} />
         </Modal>
@@ -219,5 +233,7 @@ UploadCropper.defaultProps = {
   cropper: true,
   actionType: '',
   cropperProps: {},
-  onChange: () => { },
+  disabled: false,
+  onChange: () => {
+  },
 };

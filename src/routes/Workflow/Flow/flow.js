@@ -565,6 +565,7 @@ export default class Flow extends React.PureComponent {
             actionType="workflow/uploadIcon"
             disabled={this.state.formAble}
             onChange={(values) => {
+              formData.icon = values[0] || null;
               setFieldsValue({ icon: values[0] });
             }}
           />
@@ -846,7 +847,7 @@ export default class Flow extends React.PureComponent {
           {getFieldDecorator('sort', {
             initialValue: formData.sort,
           })(
-            <InputNumber placeholder="请输入" />
+            <InputNumber placeholder="请输入" disabled={this.state.formAble} />
           )}
         </FormItem>
 
