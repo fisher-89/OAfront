@@ -10,7 +10,7 @@ import Search from './search';
 import OATable from '../../../components/OATable';
 import Ellipsis from '../../../components/Ellipsis/index';
 import ShopForm from './form';
-import { customerAuthority, getFiltersData } from '../../../utils/utils';
+import { checkAuthority, getFiltersData } from '../../../utils/utils';
 @connect(({ shop, loading, stafftags, department, brand }) => ({
   stafftags: stafftags.stafftags,
   brand: brand.brand,
@@ -198,7 +198,7 @@ export default class extends PureComponent {
       },
     ];
 
-    if (customerAuthority(72) || customerAuthority(73)) {
+    if (checkAuthority(72) || checkAuthority(73)) {
       columns.push(
         {
           title: '操作',
@@ -207,11 +207,11 @@ export default class extends PureComponent {
           render: (rowData) => {
             return (
               <Fragment>
-                {customerAuthority(72) && (
+                {checkAuthority(72) && (
                   <a onClick={() => this.handleEdit(rowData)}>编辑</a>
                 )}
                 <Divider type="vertical" />
-                {customerAuthority(73) && (
+                {checkAuthority(73) && (
                   <a onClick={() => this.handleDelete(rowData.id)}>删除</a>
                 )}
               </Fragment>
@@ -226,7 +226,7 @@ export default class extends PureComponent {
 
   makeExtraOperator = () => {
     const extra = [];
-    if (customerAuthority(71)) {
+    if (checkAuthority(71)) {
       extra.push((
         <Button
           icon="plus"
@@ -248,7 +248,7 @@ export default class extends PureComponent {
     return (
       <React.Fragment>
         {
-          (customerAuthority(72) || customerAuthority(73)) &&
+          (checkAuthority(72) || checkAuthority(73)) &&
           (
             <React.Fragment>
               <ShopForm

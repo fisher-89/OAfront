@@ -3,7 +3,7 @@ import { Card, Badge, Tooltip, Icon } from 'antd';
 import store from './store/store';
 import CustomerLogInfo from './customerLogInfo';
 import OATable from '../../../components/OATable';
-import { getFiltersData, customerAuthority } from '../../../utils/utils';
+import { getFiltersData, checkAuthority } from '../../../utils/utils';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 
 const statusFilters = [
@@ -99,7 +99,7 @@ export default class extends PureComponent {
           } else if (key === 1) {
             status = <Badge status="success" text="可还原" />;
           } else if (key === -1) {
-            const title = !customerAuthority(191) ? '可还原' : '删除数据不可还原，请联系管理员！';
+            const title = !checkAuthority(191) ? '可还原' : '删除数据不可还原，请联系管理员！';
             status = (
               <Tooltip title={title} placement="topLeft" arrowPointAtCenter>
                 <Badge status="error" text="删除" />&nbsp;<Icon type="question-circle" />

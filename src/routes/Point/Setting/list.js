@@ -8,7 +8,7 @@ import {
   Certificate,
   Seniority,
 } from './Tables';
-import { customerAuthority } from '../../../utils/utils';
+import { checkAuthority } from '../../../utils/utils';
 
 const { TabPane } = Tabs;
 
@@ -19,7 +19,7 @@ export default class extends PureComponent {
       <Tabs style={{ overflow: 'visible' }} defaultActiveKey="4">
         <TabPane tab="学历" key="1" forceRender style={style}>
           {
-            customerAuthority(158) ?
+            checkAuthority(158) ?
               (
                 <Educational />
               ) : '暂无权限'
@@ -27,7 +27,7 @@ export default class extends PureComponent {
         </TabPane>
         <TabPane tab="职位" key="2" forceRender style={style}>
           {
-            customerAuthority(158) ?
+            checkAuthority(158) ?
               (
                 <Position />
               ) : '暂无权限'
@@ -36,7 +36,7 @@ export default class extends PureComponent {
         </TabPane>
         <TabPane tab="工龄" key="3" forceRender style={style}>
           {
-            customerAuthority(158) ?
+            checkAuthority(158) ?
               (
                 <Seniority />
               ) : '暂无权限'
@@ -44,7 +44,7 @@ export default class extends PureComponent {
         </TabPane>
         <TabPane tab="证书" key="4" forceRender style={style}>
           {
-            customerAuthority(159) ?
+            checkAuthority(159) ?
               (
                 <Certificate />
               ) : '暂无权限'

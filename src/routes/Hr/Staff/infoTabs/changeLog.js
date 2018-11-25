@@ -45,7 +45,7 @@ export default class extends PureComponent {
     },
     {
       title: '操作',
-      render: record => record.operation_type === '编辑' && <a onClick={this.lookUpDetails(record)}>查看</a>,
+      render: record => <a onClick={this.lookUpDetails(record)}>查看</a>,
     },
   ]
 

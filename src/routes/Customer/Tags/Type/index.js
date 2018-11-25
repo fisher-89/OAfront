@@ -4,7 +4,7 @@ import store from '../store/type';
 import TagTypeForm from './form';
 import styles from './index.less';
 import Ellipsis from '../../../../components/Ellipsis';
-import { customerAuthority } from '../../../../utils/utils';
+import { checkAuthority } from '../../../../utils/utils';
 
 @store(['fetchTagsType', 'deleted'])
 export default class extends React.PureComponent {
@@ -34,13 +34,13 @@ export default class extends React.PureComponent {
       <React.Fragment>
         <Button
           onClick={() => {
-            if (!customerAuthority(180)) return;
+            if (!checkAuthority(180)) return;
             this.setState({ visible: true });
           }}
           icon="plus"
           size="small"
           type="dashed"
-          disabled={!customerAuthority(180)}
+          disabled={!checkAuthority(180)}
           style={{ color: '#888', width: 200, marginBottom: 10 }}
         >
           标签类型
@@ -55,7 +55,7 @@ export default class extends React.PureComponent {
                 <div className={styles.tags}>
                   <span className={styles.icon} style={{ backgroundColor: item.color }} />
                   <Ellipsis tooltip length={6} style={{ display: 'inline' }}>{item.name}</Ellipsis>
-                  {customerAuthority(180) && (
+                  {checkAuthority(180) && (
                     <div style={{ float: 'right' }}>
                       <Icon
                         type="edit"

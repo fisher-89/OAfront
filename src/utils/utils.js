@@ -139,7 +139,7 @@ export function getRoutes(path, routerData) {
  * 验证用户操作权限
  * @param {权限Id} authId
  */
-export function customerAuthority(authId) {
+export function checkAuthority(authId) {
   let authAble = false;
   if (window.user && Object.keys(window.user).length) {
     const { authorities: { oa } } = window.user;

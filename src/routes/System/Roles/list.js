@@ -11,7 +11,7 @@ import Ellipsis from '../../../components/Ellipsis/index';
 import BrandForm from './form';
 import AuthForm from './authForm';
 import StaffForm from './staffForm';
-import { customerAuthority } from '../../../utils/utils';
+import { checkAuthority } from '../../../utils/utils';
 @connect(({ roles, loading }) => ({
   roles: roles.roles,
   fLoading: loading.effects['roles/fetchRoles'],
@@ -128,7 +128,7 @@ export default class extends PureComponent {
       },
     ];
 
-    if (customerAuthority(31)) {
+    if (checkAuthority(31)) {
       columns.push(
         {
           title: '操作',
@@ -159,7 +159,7 @@ export default class extends PureComponent {
 
   makeExtraOperator = () => {
     const extra = [];
-    if (customerAuthority(31)) {
+    if (checkAuthority(31)) {
       extra.push((
         <Button
           icon="plus"
@@ -181,7 +181,7 @@ export default class extends PureComponent {
     return (
       <Fragment>
         {
-          (customerAuthority(31)) &&
+          (checkAuthority(31)) &&
           (
             <Fragment>
               <BrandForm

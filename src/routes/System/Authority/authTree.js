@@ -10,7 +10,7 @@ import { connect } from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import AuthForm from './form';
 import TreeSort from '../../../components/TreeSort';
-import { customerAuthority } from '../../../utils/utils';
+import { checkAuthority } from '../../../utils/utils';
 import './authority.less';
 
 const { TreeNode } = Tree;
@@ -106,7 +106,7 @@ export default class extends PureComponent {
             <a className="title-content">{item.auth_name}</a>
           </Tooltip>
           <div className="selected-Icon">
-            {customerAuthority(151) &&
+            {checkAuthority(151) &&
               (
                 <Icon
                   className="icon-form"
@@ -116,7 +116,7 @@ export default class extends PureComponent {
                 />
               )
             }
-            {customerAuthority(152) &&
+            {checkAuthority(152) &&
               (
                 <Icon
                   className="icon-delete"
@@ -148,7 +148,7 @@ export default class extends PureComponent {
     return (
       <QueueAnim type="left">
         {
-          customerAuthority(138) &&
+          checkAuthority(138) &&
           (
             <div
               key="add"
@@ -171,11 +171,11 @@ export default class extends PureComponent {
           key="treeSort"
           loading={loading}
           dataSource={dataSource}
-          sorter={customerAuthority(151)}
+          sorter={checkAuthority(151)}
           renderTreeNodes={this.renderTreeNodes}
           onChange={this.handleOnchange}
         />
-        {(customerAuthority(151) || customerAuthority(138)) &&
+        {(checkAuthority(151) || checkAuthority(138)) &&
           (
             <AuthForm
               visible={visible}

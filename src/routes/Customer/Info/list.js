@@ -16,7 +16,7 @@ import { nation } from '../../../assets/nation';
 import OATable from '../../../components/OATable';
 import { province } from '../../../assets/province';
 import { customerStatus } from '../../../assets/customer';
-import { getFiltersData, customerAuthority, analysisData } from '../../../utils/utils';
+import { getFiltersData, checkAuthority, analysisData } from '../../../utils/utils';
 
 
 @connect(({ customer }) => ({ customer: customer.customer }))
@@ -144,7 +144,7 @@ export default class extends PureComponent {
                 }}
               >查看
               </a>
-              {customerAuthority(187) && (
+              {checkAuthority(187) && (
                 <React.Fragment>
                   <Divider type="vertical" />
                   {editAble ? (
@@ -155,7 +155,7 @@ export default class extends PureComponent {
                     )}
                 </React.Fragment>
               )}
-              {customerAuthority(178) && (
+              {checkAuthority(178) && (
                 <React.Fragment>
                   <Divider type="vertical" />
                   {editAble ? (
@@ -271,7 +271,7 @@ export default class extends PureComponent {
         </Button>
       </Popover>
     ));
-    if (customerAuthority(188)) {
+    if (checkAuthority(188)) {
       extraOperator.push((
         <Button
           type="primary"
@@ -286,7 +286,7 @@ export default class extends PureComponent {
       ));
     }
     let excelExport = null;
-    if (customerAuthority(192)) {
+    if (checkAuthority(192)) {
       extraOperator.push((
         <Button
           key="download-temp"
@@ -297,7 +297,7 @@ export default class extends PureComponent {
       ));
       excelExport = { actionType: 'customer/downloadExcelCustomer', fileName: '客户资料.xlsx' };
     }
-    const excelInto = customerAuthority(192) ? '/api/crm/clients/import' : false;
+    const excelInto = checkAuthority(192) ? '/api/crm/clients/import' : false;
     const { loading, customer, fetchDataSource } = this.props;
     return (
       <React.Fragment>

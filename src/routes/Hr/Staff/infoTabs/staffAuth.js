@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Tree, Spin } from 'antd';
+import { Tree, Spin, Icon } from 'antd';
 import { connect } from 'dva';
 import { markTreeData } from '../../../../utils/utils';
 
@@ -18,15 +18,18 @@ export default class extends PureComponent {
   }
 
   renderTreeNodes = (data) => {
+    const { data: { oa } } = this.props;
     return data.map((item) => {
+      const hasAuth = oa.indexOf(parseInt(item.key, 10)) !== -1;
+      const round = <div style={{ width: 14, height: 14, borderRadius: '50%', border: '1px solid #ccc', verticalAlign: 'middle', display: 'inline-block' }} />;
       if (item.children) {
         return (
-          <TreeNode title={item.title} key={item.key} dataRef={item} disabled={item.disabled}>
+          <TreeNode title={item.title} key={item.key} icon={hasAuth ? <Icon type="check-circle" /> : round}>
             {this.renderTreeNodes(item.children)}
           </TreeNode>
         );
       }
-      return <TreeNode {...item} disabled={item.disabled} />;
+      return <TreeNode {...item} key={item.key} icon={hasAuth ? <Icon type="check-circle" /> : round} />;
     });
   }
 
@@ -37,8 +40,8 @@ export default class extends PureComponent {
     return (
       <Spin spinning={loading || false}>
         <Tree
+          showIcon
           showLine
-          checkable
           checkedKeys={checkedKeys}
         >
           {this.renderTreeNodes(treeData)}
