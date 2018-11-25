@@ -52,8 +52,7 @@ export default class extends PureComponent {
       ...params,
       ...params.manager_sn,
       ...params.assistant_sn,
-      lat: params.real_address.lat,
-      lng: params.real_address.lng,
+      ...params.real_address,
       ...params.shop_address,
       real_address: address,
     }, ['shop_address']);
