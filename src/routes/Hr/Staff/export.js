@@ -14,7 +14,7 @@ export default class extends PureComponent {
       Modal.confirm({
         title: '导出超过2000条。',
         content: '这会需要较长的时间，如果不需要全部内容，请筛选后再次尝试。',
-        okText: '好',
+        okText: '取消',
         cancelText: '继续导出',
         onCancel: () => {
           this.handleExport();

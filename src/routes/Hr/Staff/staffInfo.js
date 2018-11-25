@@ -48,7 +48,7 @@ export default class StaffInfo extends PureComponent {
     return (
       <QueueAnim style={{ display: 'flex' }} className={styles.userInfo}>
         <Row gutter={16} style={{ width: '100%' }}>
-          <Col span={8}>
+          <Col span={10}>
             <Card>
               <div key="userInfo" style={{ flexGrow: 1, wordBreak: 'break-all' }}>
                 <Card key="userInfo" bordered={false} loading={loading} bodyStyle={{ borderBottom: '1px dashed #aaa', padding: '24px 0' }}>
@@ -188,7 +188,7 @@ export default class StaffInfo extends PureComponent {
               </div>
             </Card>
           </Col>
-          <Col span={16}>
+          <Col span={14}>
             <Card>
               {/* <div style={{ width: 200, flexShrink: 0 }} /> */}
               <div key="userLog">
