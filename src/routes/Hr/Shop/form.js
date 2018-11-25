@@ -8,6 +8,7 @@ import {
   Row,
 } from 'antd';
 import { connect } from 'dva';
+import { omit } from 'lodash';
 import OAForm, {
   OAModal,
   Address,
@@ -44,19 +45,19 @@ export default class extends PureComponent {
     onError(error);
   }
 
-
   handleSubmit = (params) => {
     const { dispatch } = this.props;
-    const body = {
+    const { address } = params.real_address;
+    const body = omit({
       ...params,
       ...params.manager_sn,
       ...params.assistant_sn,
-      real_address: params.real_address.address,
       lat: params.real_address.lat,
       lng: params.real_address.lng,
       ...params.shop_address,
-    };
-    delete body.shop_address;
+      real_address: address,
+    }, ['shop_address']);
+
     dispatch({
       type: params.id ? 'shop/editShop' : 'shop/addShop',
       payload: body,
@@ -114,12 +115,6 @@ export default class extends PureComponent {
     };
     const colSpan = { xs: 24, lg: 12 };
     const shoptags = (initialValue.tags || []).map(item => item.id.toString());
-    const mng = {};
-    mng.manager_sn = initialValue.manager_sn;
-    mng.manager_name = initialValue.manager_name;
-    const ast = {};
-    ast.assistant_sn = initialValue.assistant_sn;
-    ast.assistant_name = initialValue.assistant_name;
 
     let tagsGroup = [];
     const tagsTypeId = stafftagtypes.map(type => type.id);
@@ -349,7 +344,10 @@ export default class extends PureComponent {
                 <FormItem label="店长" {...formItemLayout}>
                   {
                     getFieldDecorator('manager_sn', {
-                      initialValue: mng || null,
+                      initialValue: {
+                        manager_sn: initialValue.manager_sn || '',
+                        manager_name: initialValue.manager_name || '',
+                      },
                     })(
                       <SearchTable.Staff
                         name={{
@@ -368,7 +366,10 @@ export default class extends PureComponent {
                 <FormItem label="驻店人员" {...formItemLayout}>
                   {
                     getFieldDecorator('assistant_sn', {
-                      initialValue: ast || [],
+                      initialValue: {
+                        assistant_sn: initialValue.assistant_sn || '',
+                        assistant_name: initialValue.assistant_name || '',
+                      },
                     })(
                       <SearchTable.Staff
                         name={{
