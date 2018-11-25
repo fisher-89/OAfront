@@ -82,7 +82,7 @@ export default class extends PureComponent {
         const headCol = headMaps.map((map) => {
           return map[Object.keys(map)[0]];
         });
-        const staff = [];
+        const staff = [headCol];
         list.forEach((item) => {
           const newItem = headMaps.map((map) => {
             const key = Object.keys(map)[0];
@@ -90,7 +90,6 @@ export default class extends PureComponent {
           });
           staff.push(newItem);
         });
-        staff.unshift(headCol);
         const workbook = XLSX.utils.book_new();
         const staffSheet = XLSX.utils.aoa_to_sheet(staff);
         XLSX.utils.book_append_sheet(workbook, staffSheet, 'SheetJS');
