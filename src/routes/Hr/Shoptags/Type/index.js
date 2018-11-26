@@ -34,19 +34,17 @@ export default class extends PureComponent {
           icon="plus"
           type="dashed"
           size="small"
-          style={{ color: '#888', width: 200, marginBottom: 10 }}
+          style={{ color: '#888', width: '100%', marginBottom: 10 }}
           onClick={() => {
             this.handleModalVisible(true);
             this.setState({ initialValue: {} });
           }}
-        >
-      标签类型
+        >标签类型
         </Button>
         <List
           dataSource={stafftagtypes}
           bordered
           size="small"
-          style={{ width: 200 }}
           renderItem={(item) => {
             return (
               <List.Item >

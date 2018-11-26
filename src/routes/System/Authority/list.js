@@ -116,11 +116,19 @@ export default class extends PureComponent {
             return (
               <Fragment>
                 {checkAuthority(63) && (
-                  <a onClick={() => this.handleEdit(rowData)}>编辑</a>
+                  <a
+                    onClick={() => this.handleEdit(rowData)}
+                    disabled={rowData.is_lock === 1}
+                  > 编辑
+                  </a>
                 )}
                 <Divider type="vertical" />
                 {checkAuthority(64) && (
-                  <a onClick={() => this.handleDelete(rowData.id)}>删除</a>
+                  <a
+                    onClick={() => this.handleDelete(rowData.id)}
+                    disabled={rowData.is_lock === 1}
+                  >删除
+                  </a>
                 )}
               </Fragment>
             );

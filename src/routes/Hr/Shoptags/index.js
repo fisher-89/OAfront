@@ -88,9 +88,9 @@ export default class extends PureComponent {
     return (
       <PageHeaderLayout>
         <Card bordered={false}>
-          <Row>
-            <Col span={4} pull={0}><div><StaffTagType /></div></Col>
-            <Col span={20} push={0}>
+          <Row gutter={16}>
+            <Col span={6}><StaffTagType /></Col>
+            <Col span={18}>
               <Fragment>
                 <OATable
                   data={stafftags}
