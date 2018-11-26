@@ -5,6 +5,7 @@ import {
   Divider,
 
 } from 'antd';
+import moment from 'moment';
 import { connect } from 'dva';
 import Search from './search';
 import ShopForm from './form';
@@ -157,7 +158,8 @@ export default class extends PureComponent {
         dataIndex: 'opening_at',
         dateFilters: true,
         align: 'center',
-        width: 100,
+        width: 120,
+        render: time => (time ? moment(time).format('YYYY-MM-DD') : ''),
       },
       {
         title: '闭店日期',
@@ -165,7 +167,8 @@ export default class extends PureComponent {
         dataIndex: 'end_at',
         dateFilters: true,
         align: 'center',
-        width: 100,
+        width: 120,
+        render: time => (time ? moment(time).format('YYYY-MM-DD') : ''),
       },
       {
         title: '上班时间',
@@ -187,7 +190,7 @@ export default class extends PureComponent {
         width: 60,
       },
       {
-        title: '区域经理',
+        title: '驻店人',
         hidden: true,
         searcher: true,
         dataIndex: 'assistant_name',
