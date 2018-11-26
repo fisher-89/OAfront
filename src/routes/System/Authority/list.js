@@ -87,7 +87,7 @@ export default class extends PureComponent {
       },
       {
         title: '关联 URI',
-        dataIndex: 'full_url',
+        dataIndex: 'full_url_tmp',
       },
       {
         title: '是否为菜单',

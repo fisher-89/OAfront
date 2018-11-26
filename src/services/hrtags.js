@@ -17,17 +17,17 @@ export async function deleteStaffTags(id) {
 }
 
 export async function fetchStaffTagCategories(params) {
-  return request('/api/hr/tags/categories', { method: 'GET', body: params });
+  return request('/api/hr/tag/categories', { method: 'GET', body: params });
 }
 
 export async function addStaffTagCategories(params) {
-  return request('/api/hr/tags/categories', { method: 'POST', body: params });
+  return request('/api/hr/tag/categories', { method: 'POST', body: params });
 }
 
 export async function editStaffTagCategories(params, id) {
-  return request(`/api/hr/tags/categories/${id}`, { method: 'PATCH', body: params });
+  return request(`/api/hr/tag/categories/${id}`, { method: 'PATCH', body: params });
 }
 
 export async function deleteStaffTagCategories(id) {
-  return request(`/api/hr/tags/categories/${id}`, { method: 'DELETE' });
+  return request(`/api/hr/tag/categories/${id}`, { method: 'DELETE' });
 }
