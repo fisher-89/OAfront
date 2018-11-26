@@ -46,16 +46,8 @@ export default class extends PureComponent {
     this.setState({ staffVisible: !!flag });
   }
 
-  handleEdit = (data) => {
-    this.setState({ editRole: data }, () => this.handleModalVisible(true));
-  }
-
-  handleAuth = (data) => {
-    this.setState({ editRole: data }, () => this.handleAuthVisible(true));
-  }
-
-  handleStaff = (data) => {
-    this.setState({ editRole: data }, () => this.handleStaffVisible(true));
+  showModal = (editRole, visibleName) => {
+    this.setState({ editRole }, () => this.setState({ [visibleName]: true }));
   }
 
   handleDelete = (id) => {
@@ -93,7 +85,7 @@ export default class extends PureComponent {
         width: 160,
         render: (staff) => {
           const staffStr = staff.map(item => item.realname).join(',');
-          return (<Ellipsis tooltip lines={2} style={{ width: 155 }}>{staffStr}</Ellipsis>);
+          return (<Ellipsis tooltip lines={2}>{staffStr}</Ellipsis>);
         },
         onFilter: (value, record) => {
           const staffStr = record.staff.map(item => item.realname);
@@ -104,9 +96,10 @@ export default class extends PureComponent {
         title: '配属品牌',
         dataIndex: 'brand',
         searcher: true,
+        width: 160,
         render: (brand) => {
           const brandStr = brand.map(item => item.name).join(',');
-          return (<Ellipsis tooltip lines={2} style={{ width: 155 }}>{brandStr}</Ellipsis>);
+          return (<Ellipsis tooltip lines={2}>{brandStr}</Ellipsis>);
         },
         onFilter: (value, record) => {
           const brandStr = record.brand.map(item => item.name);
@@ -119,7 +112,7 @@ export default class extends PureComponent {
         searcher: true,
         render: (department) => {
           const departmentStr = department.map(item => item.name).join(',');
-          return (<Ellipsis tooltip lines={2} style={{ width: 155 }}>{departmentStr}</Ellipsis>);
+          return (<Ellipsis tooltip lines={2}>{departmentStr}</Ellipsis>);
         },
         onFilter: (value, record) => {
           const departmentStr = record.department.map(item => item.name);
@@ -138,12 +131,12 @@ export default class extends PureComponent {
             return (
               <Fragment>
                 <div>
-                  <a onClick={() => this.handleEdit(rowData)}>编辑</a>
+                  <a onClick={() => this.showModal(rowData, 'visible')}>编辑</a>
                   <Divider type="vertical" />
-                  <a onClick={() => this.handleAuth(rowData)}>权限管理</a>
+                  <a onClick={() => this.showModal(rowData, 'authVisible')}>权限管理</a>
                 </div>
                 <div>
-                  <a onClick={() => this.handleStaff(rowData)}>关联员工</a>
+                  <a onClick={() => this.showModal(rowData, 'staffVisible')}>关联员工</a>
                   <Divider type="vertical" />
                   <a onClick={() => this.handleDelete(rowData.id)}>删除</a>
                 </div>
