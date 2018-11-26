@@ -6,12 +6,13 @@ import {
 } from 'antd';
 import { connect } from 'dva';
 
-import OATable from '../../../components/OATable';
-import Ellipsis from '../../../components/Ellipsis/index';
 import BrandForm from './form';
 import AuthForm from './authForm';
 import StaffForm from './staffForm';
+import OATable from '../../../components/OATable';
+import Ellipsis from '../../../components/Ellipsis/index';
 import { checkAuthority } from '../../../utils/utils';
+
 @connect(({ roles, loading }) => ({
   roles: roles.roles,
   fLoading: loading.effects['roles/fetchRoles'],

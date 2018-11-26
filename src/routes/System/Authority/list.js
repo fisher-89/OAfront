@@ -24,11 +24,19 @@ export default class extends PureComponent {
   state = {
     visible: false,
     editInfo: {},
+    filters: {},
   }
 
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({ type: 'authority/fetchAuth' });
+  }
+
+  setAuthId = (id) => {
+    const ids = this.props.authority.filter((item) => {
+      return `${item.id}` === `${id}` || `${item.parent_id}` === `${id}`;
+    }).map(item => `${item.id}`);
+    this.setState({ filters: { id: ids } });
   }
 
   fetchAuth = (params) => {
@@ -67,6 +75,10 @@ export default class extends PureComponent {
         title: '编号',
         dataIndex: 'id',
         searcher: true,
+        onFilter: (value, record) => {
+          const { filters: { id } } = this.state;
+          return id.indexOf(`${record.id}`) !== -1;
+        },
       },
       {
         title: '权限名称',
@@ -140,11 +152,11 @@ export default class extends PureComponent {
 
   render() {
     const { authority, fLoading, loading } = this.props;
-    const { visible, editInfo } = this.state;
+    const { visible, editInfo, filters } = this.state;
     return (
       <Row gutter={16}>
         <Col span={4} style={{ borderRight: '1px solid #e8e8e8' }}>
-          <AuthTree dataSource={authority} />
+          <AuthTree dataSource={authority} fetchDataSource={this.setAuthId} />
         </Col>
         <Col span={20}>
           {
@@ -161,6 +173,7 @@ export default class extends PureComponent {
             )
           }
           <OATable
+            filters={filters}
             serverSide={false}
             loading={fLoading || false}
             extraOperator={this.makeExtraOperator()}

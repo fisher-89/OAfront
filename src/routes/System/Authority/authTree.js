@@ -99,34 +99,38 @@ export default class extends PureComponent {
   }
 
   renderTreeNodes = (data) => {
+    const { fetchDataSource } = this.props;
     return data.map((item) => {
       const content = (
         <React.Fragment>
-          <Tooltip placement="top" title={this.showTitle(item)}>
+          <Tooltip placement="top" title={this.showTitle(item)} onClick={() => fetchDataSource(item.id)}>
             <a className="title-content">{item.auth_name}</a>
           </Tooltip>
-          <div className="selected-Icon">
-            {checkAuthority(151) &&
-              (
-                <Icon
-                  className="icon-form"
-                  type="form"
-                  style={{ marginLeft: '10px' }}
-                  onClick={e => this.handleEidtEvent(e, item)}
-                />
-              )
-            }
-            {checkAuthority(152) &&
-              (
-                <Icon
-                  className="icon-delete"
-                  type="delete"
-                  style={{ marginLeft: '10px' }}
-                  onClick={e => this.handleDelete(e, item.id)}
-                />
-              )
-            }
-          </div>
+          {
+            !item.is_lock ? (
+              <div className="selected-Icon">
+                {checkAuthority(151) &&
+                  (
+                    <Icon
+                      className="icon-form"
+                      type="form"
+                      style={{ marginLeft: '10px' }}
+                      onClick={e => this.handleEidtEvent(e, item)}
+                    />
+                  )
+                }
+                {checkAuthority(152) &&
+                  (
+                    <Icon
+                      className="icon-delete"
+                      type="delete"
+                      style={{ marginLeft: '10px' }}
+                      onClick={e => this.handleDelete(e, item.id)}
+                    />
+                  )
+                }
+              </div>
+          ) : null}
         </React.Fragment>
       );
       if (item.children && item.children.length) {
