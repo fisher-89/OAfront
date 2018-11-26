@@ -62,7 +62,7 @@ export default class extends PureComponent {
     this.setState({ editInfo: data }, () => this.handleModalVisible(true));
   }
 
-  handleDelete = (id) => {
+  handleDelete = (shopSn) => {
     Modal.confirm({
       title: '确认删除?',
       cancelText: '取消',
@@ -71,7 +71,7 @@ export default class extends PureComponent {
         const { dispatch } = this.props;
         dispatch({
           type: 'shop/deleteShop',
-          payload: { id },
+          payload: { shop_sn: shopSn },
         });
       },
       onCancel: () => {},
@@ -222,7 +222,7 @@ export default class extends PureComponent {
                 )}
                 <Divider type="vertical" />
                 {checkAuthority(73) && (
-                  <a onClick={() => this.handleDelete(rowData.id)}>删除</a>
+                  <a onClick={() => this.handleDelete(rowData.shop_sn)}>删除</a>
                 )}
               </Fragment>
             );

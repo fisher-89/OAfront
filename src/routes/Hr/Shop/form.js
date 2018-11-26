@@ -104,8 +104,8 @@ export default class extends PureComponent {
       },
     };
     const colSpan = { xs: 24, lg: 12 };
+    const isEdit = initialValue.shop_sn !== undefined;
     const shoptags = (initialValue.tags || []).map(item => item.id.toString());
-
     let tagsGroup = [];
     const tagsTypeId = stafftagtypes.map(type => type.id);
     const tagsGroupAble = stafftags.filter(tag => tagsTypeId.indexOf(tag.category.id) === -1);
@@ -162,7 +162,7 @@ export default class extends PureComponent {
                       initialValue: initialValue.shop_sn || '',
                       rules: [validatorRequired],
                     })(
-                      <Input placeholder="请输入" style={{ width: '100%' }} />
+                      <Input placeholder="请输入" style={{ width: '100%' }} disabled={isEdit} />
                     )
                   }
                 </FormItem>
@@ -172,7 +172,7 @@ export default class extends PureComponent {
               <Col {...colSpan}>
                 <FormItem label="店铺状态" {...formItemLayout} required>
                   {getFieldDecorator('status_id', {
-                    initialValue: initialValue.status_id || '1',
+                    initialValue: initialValue.status_id ? initialValue.status_id.toString() : '1',
                     rules: [validatorRequired],
                   })(
                     <Select>
