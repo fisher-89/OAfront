@@ -79,6 +79,7 @@ export default class extends PureComponent {
       initialValue,
       onCancel,
       validateFields,
+      validatorRequired,
       form: { getFieldDecorator },
     } = this.props;
     const newTreeData = markTreeData(department, { value: 'id', label: 'name', parentId: 'parent_id' }, 0);
@@ -143,6 +144,7 @@ export default class extends PureComponent {
                 <FormItem label="店铺名称" {...longFormItemLayout} required>
                   {getFieldDecorator('name', {
                     initialValue: initialValue.name,
+                    rules: [validatorRequired],
                   })(
                     <Input placeholder="请输入" style={{ width: '100%' }} />
                   )
@@ -158,6 +160,7 @@ export default class extends PureComponent {
                   {
                     getFieldDecorator('shop_sn', {
                       initialValue: initialValue.shop_sn || '',
+                      rules: [validatorRequired],
                     })(
                       <Input placeholder="请输入" style={{ width: '100%' }} />
                     )
@@ -169,7 +172,8 @@ export default class extends PureComponent {
               <Col {...colSpan}>
                 <FormItem label="店铺状态" {...formItemLayout} required>
                   {getFieldDecorator('status_id', {
-                    initialValue: initialValue.status_id !== undefined ? initialValue.status_id.toString() : '1',
+                    initialValue: initialValue.status_id || '1',
+                    rules: [validatorRequired],
                   })(
                     <Select>
                       <Option value="1">未营业</Option>
@@ -188,6 +192,7 @@ export default class extends PureComponent {
                 <FormItem label="所属部门" {...formItemLayout} required>
                   {getFieldDecorator('department_id', {
                     initialValue: initialValue.department_id ? initialValue.department_id.toString() : '1',
+                    rules: [validatorRequired],
                   })(
                     <TreeSelect
                       placeholder="请选择部门"
@@ -204,6 +209,7 @@ export default class extends PureComponent {
                 <FormItem label="所属品牌" {...formItemLayout} required>
                   {getFieldDecorator('brand_id', {
                     initialValue: initialValue.brand_id ? initialValue.brand_id.toString() : '1',
+                    rules: [validatorRequired],
                   })(
                     <Select showSearch placeholder="请选择">
                       {brand && brand.map((item) => {
