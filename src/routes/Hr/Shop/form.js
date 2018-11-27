@@ -40,11 +40,6 @@ export default class extends PureComponent {
     dispatch({ type: 'department/fetchDepartment' });
   }
 
-  handleError = (error) => {
-    const { onError } = this.props;
-    onError(error);
-  }
-
   handleSubmit = (params) => {
     const { dispatch, onCancel, onError } = this.props;
     const { address } = params.real_address;
@@ -80,7 +75,7 @@ export default class extends PureComponent {
       onCancel,
       validateFields,
       validatorRequired,
-      form: { getFieldDecorator },
+      form: { getFieldDecorator, setFieldsValue },
     } = this.props;
     const newTreeData = markTreeData(department, { value: 'id', label: 'name', parentId: 'parent_id' }, 0);
     const longFormItemLayout = {
@@ -277,6 +272,9 @@ export default class extends PureComponent {
                       format="HH:mm:ss"
                       showTime={{ format: 'HH:mm:ss' }}
                       style={{ width: '100%' }}
+                      onChange={(time) => {
+                        setFieldsValue({ clock_in: time });
+                      }}
                     />
                   )}
                 </FormItem>
@@ -293,6 +291,9 @@ export default class extends PureComponent {
                       format="HH:mm:ss"
                       showTime={{ format: 'HH:mm:ss' }}
                       style={{ width: '100%' }}
+                      onChange={(time) => {
+                        setFieldsValue({ clock_out: time });
+                      }}
                     />
                   )}
                 </FormItem>
