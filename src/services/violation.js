@@ -1,7 +1,7 @@
 import request from '../utils/request';
 
-export async function fetchFineLog() {
-  return request('/api/violation/punish', { method: 'GET' });
+export async function fetchFineLog(params) {
+  return request('/api/violation/punish', { method: 'GET', body: params });
 }
 
 export async function downloadExcelTemp() {

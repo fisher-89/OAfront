@@ -97,8 +97,10 @@ class OATable extends PureComponent {
       filtered: [],
       filtersText: {},
       selectedRows: [],
+      midSelectedRows: [],
       eyeVisible: false,
       selectedRowKeys: [],
+      selectedRowsReal: [],
       pagination: {
         pageSize: 10,
         current: 1,
@@ -735,14 +737,41 @@ class OATable extends PureComponent {
   handleRowSelectChange = (selectedRowKeys, selectedRows) => {
     this.setState({ selectedRowKeys, selectedRows }, () => {
       const { rowSelection } = this.props;
+      const { midSelectedRows } = this.state;
+      const midArray = [];
+      for (let i = 0; i < midSelectedRows.length; i += 1) {
+        midArray.push(midSelectedRows[i]);
+      }
+      for (let i = 0; i < selectedRows.length; i += 1) {
+        let flag = true;
+        for (let j = 0; j < midSelectedRows.length; j += 1) {
+          if (selectedRows[i] === midSelectedRows[j]) {
+            flag = false;
+            break;
+          }
+        }
+        if (flag) {
+          midArray.push(selectedRows[i]);
+        }
+      }
+      this.state.midSelectedRows = midArray;
+      this.setState({
+        selectedRowsReal: selectedRowKeys.map((item) => {
+          const mid = midArray.filter(midkey => midkey.id === item);
+          return mid;
+        }
+        ),
+      });
       if (rowSelection && rowSelection.onChange) {
-        rowSelection.onChange(selectedRowKeys, selectedRows);
+        rowSelection.onChange(selectedRowKeys, this.state.selectedRowsReal);
       }
     });
   }
 
   clearSelectedRows = () => {
+    this.setState({ selectedRowsReal: [], midSelectedRows: [] });
     this.handleRowSelectChange([], []);
+    console.log(123);
   }
 
   makeTableProps = () => {
@@ -1076,6 +1105,7 @@ class OATable extends PureComponent {
             sync={sync}
             filters={filters}
             moreSearch={searchObj}
+            selectedRowsReal={this.state.selectedRowsReal}
             selectedRows={selectedRows}
             filtersText={newFiltersText}
             multiOperator={multiOperator}

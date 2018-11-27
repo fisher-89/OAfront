@@ -12,11 +12,14 @@ export default {
   * fetchFineLog({ payload }, { call, put }) {
     try {
       const params = { ...payload };
-      const response = yield call(fetchFineLog, params || '');
+      const { id } = params;
+      delete params.id;
+      const response = yield call(fetchFineLog, params, id || '');
       if (response.message) { return; }
       yield put({
         type: 'save',
         payload: {
+          id,
           store,
           data: response,
         },
@@ -47,7 +50,6 @@ export default {
       const { id } = payload;
       delete params.id;
       const response = yield call(editFineLog, params, id);
-      console.log(response, 123);
       if (response.errors && onError) {
         onError(response.errors);
       } else {
@@ -67,7 +69,6 @@ export default {
   *editPayState({ payload, onError, onSuccess }, { call, put }) {
     try {
       const response = yield call(editPayState, payload);
-      console.log(response, 123);
       if (response.errors && onError) {
         onError(response.errors);
       } else {

@@ -18,11 +18,11 @@ class Operator extends PureComponent {
   }
 
   makeMultiOperator = () => {
-    const { multiOperator, selectedRows } = this.props;
+    const { multiOperator, selectedRowsReal } = this.props;
     return (
       <Menu onClick={({ key }) => {
         const [_thisClick] = multiOperator.filter((_, index) => index.toString() === key);
-        _thisClick.action(selectedRows);
+        _thisClick.action(selectedRowsReal);
       }}
       >
         {
@@ -69,14 +69,13 @@ class Operator extends PureComponent {
       moreSearch,
       resetFilter,
       filtersText,
-      selectedRows,
+      selectedRowsReal,
       multiOperator,
       extraOperator,
       extraOperatorRight,
       fetchTableDataSource,
       filterDropdownVisible,
     } = this.props;
-
     const hasFilter = keys(filtersText).length > 0;
     const style = extraOperator.length ? { marginRight: 20 } : {};
     return (
@@ -127,13 +126,17 @@ class Operator extends PureComponent {
             )
           }
           {
-            selectedRows.length > 0 && multiOperator && (
+            selectedRowsReal.length > 0 && multiOperator && (
               <React.Fragment>
                 <Dropdown overlay={this.makeMultiOperator()} trigger={['click']}>
-                  <Button icon="menu-fold" style={{ fontSize: '12px' }}>
+                  <Button
+                    icon="menu-fold"
+                    style={{ fontSize: '12px' }}
+                  >
                     批量操作
                   </Button>
                 </Dropdown>
+                <span>{`已选择${selectedRowsReal.length}条`}</span>
               </React.Fragment>
             )
           }
