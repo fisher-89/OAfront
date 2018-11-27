@@ -44,8 +44,9 @@ export default class extends PureComponent {
 
 
   selectRule = (value) => {
-    const { rule } = this.props;
+    const { rule, initialValue } = this.props;
     this.setState({ selectrule: value ? rule.filter(item => `${item.type_id}` === `${value}`) : [] });
+    initialValue.rule_id = undefined;
   }
   render() {
     const longFormItemLayout = {
@@ -97,16 +98,16 @@ export default class extends PureComponent {
           <Col {...colSpan}>
             <FormItem label="员工姓名" {...formItemLayout} required>
               {getFieldDecorator('staff_sn', {
-              initialValue: staff || [],
-            })(
-              <SearchTable.Staff
-                name={{
-                  staff_sn: 'staff_sn',
-                  staff_name: 'realname',
-              }}
-                showName="staff_name"
-                placeholder="请选择员工"
-              />)}
+                initialValue: staff || [],
+              })(
+                <SearchTable.Staff
+                  name={{
+                    staff_sn: 'staff_sn',
+                    staff_name: 'realname',
+                  }}
+                  showName="staff_name"
+                  placeholder="请选择员工"
+                />)}
             </FormItem>
           </Col>
         </Row>
@@ -115,26 +116,26 @@ export default class extends PureComponent {
           <Col {...colSpan}>
             <FormItem label="违纪日期" {...formItemLayout} required>
               {getFieldDecorator('violate_at', {
-              initialValue: initialValue.violate_at || undefined,
-            })(<DatePicker />)}
+                initialValue: initialValue.violate_at || undefined,
+              })(<DatePicker />)}
             </FormItem>
           </Col>
 
           <Col {...colSpan}>
             <FormItem label="大爱类型" {...formItemLayout} required>
               {getFieldDecorator('type_id', {
-                   initialValue: { ...initialValue.rules }.type_id || undefined,
-                 })(
-                   <Select
-                     onChange={this.selectRule}
-                   >
-                     {ruleType.map(item => (
-                       <Option key={item.id} value={item.id}>
-                         {item.name}
-                       </Option>
+                initialValue: { ...initialValue.rules }.type_id || undefined,
+              })(
+                <Select
+                  onChange={this.selectRule}
+                >
+                  {ruleType.map(item => (
+                    <Option key={item.id} value={item.id}>
+                      {item.name}
+                    </Option>
                   ))}
-                   </Select>
-                    )}
+                </Select>
+              )}
             </FormItem>
           </Col>
         </Row>
@@ -143,34 +144,36 @@ export default class extends PureComponent {
           <Col>
             <FormItem label="大爱原因" {...longFormItemLayout} required>
               {getFieldDecorator('rule_id', {
-                   initialValue: { ...initialValue }.rule_id || undefined,
-                 })(
-                   <Select>
-                     {(selectrule || []).map(item => (
-                       <Option key={item.id} value={item.id}>
-                         {item.name}
-                       </Option>
+                initialValue: { ...initialValue }.rule_id || undefined,
+              })(
+                <Select>
+                  {(selectrule || []).map(item => (
+                    <Option key={item.id} value={item.id}>
+                      {item.name}
+                    </Option>
                   ))}
-                   </Select>
-                   )}
+                </Select>
+              )}
             </FormItem>
           </Col>
         </Row>
 
         <Row>
           <Col {...colSpan}>
-            <FormItem label="大爱金额" {...formItemLayout} required>
+            <FormItem label="大爱金额" {...formItemLayout}>
               {getFieldDecorator('money', {
-                   initialValue: initialValue.money || null,
-                 })(<Input />)}
+              })(<Input
+                disabled
+              />)}
             </FormItem>
           </Col>
 
           <Col {...colSpan}>
-            <FormItem label="分值" {...formItemLayout} required>
+            <FormItem label="分值" {...formItemLayout} >
               {getFieldDecorator('score', {
-                   initialValue: initialValue.score || null,
-                 })(<Input />)}
+              })(<Input
+                disabled
+              />)}
             </FormItem>
           </Col>
         </Row>
@@ -179,18 +182,18 @@ export default class extends PureComponent {
           <Col {...colSpan}>
             <FormItem label="是否付款" {...formItemLayout}>
               {getFieldDecorator('has_paid', {
-                   initialValue: initialValue.has_paid,
-                 })(<Switch
-                   defaultChecked={!!initialValue.has_paid}
-                 />)}
+                initialValue: initialValue.has_paid,
+              })(<Switch
+                defaultChecked={!!initialValue.has_paid}
+              />)}
             </FormItem>
           </Col>
 
           <Col {...colSpan}>
             <FormItem label="付款时间" {...formItemLayout}>
               {getFieldDecorator('paid_at', {
-                   initialValue: initialValue.paid_at || undefined,
-                 })(<DatePicker />)}
+                initialValue: initialValue.paid_at || undefined,
+              })(<DatePicker />)}
             </FormItem>
           </Col>
         </Row>
@@ -199,12 +202,12 @@ export default class extends PureComponent {
           <Col {...colSpan}>
             <FormItem label="是否同步积分制" {...formItemLayout}>
               {getFieldDecorator('sync_point', {
-                   initialValue: !!initialValue.sync_point,
-                 })(
-                   <Switch
-                     defaultChecked={!!initialValue.sync_point}
-                   />
-                   )}
+                initialValue: !!initialValue.sync_point,
+              })(
+                <Switch
+                  defaultChecked={!!initialValue.sync_point}
+                />
+              )}
             </FormItem>
           </Col>
         </Row>
@@ -213,25 +216,25 @@ export default class extends PureComponent {
           <Col {...colSpan}>
             <FormItem label="开单人" {...formItemLayout} required>
               {getFieldDecorator('billing_sn', {
-                   initialValue: billing || [],
-                 })(
-                   <SearchTable.Staff
-                     name={{
-                      billing_sn: 'staff_sn',
-                      billing_name: 'realname',
+                initialValue: billing || [],
+              })(
+                <SearchTable.Staff
+                  name={{
+                    billing_sn: 'staff_sn',
+                    billing_name: 'realname',
                   }}
-                     showName="billing_name"
-                     placeholder="请选择员工"
-                   />
-                   )}
+                  showName="billing_name"
+                  placeholder="请选择员工"
+                />
+              )}
             </FormItem>
           </Col>
 
           <Col {...colSpan}>
             <FormItem label="开单日期" {...formItemLayout} required>
               {getFieldDecorator('billing_at', {
-                   initialValue: initialValue.billing_at || undefined,
-                 })(<DatePicker />)}
+                initialValue: initialValue.billing_at || undefined,
+              })(<DatePicker />)}
             </FormItem>
           </Col>
         </Row>
@@ -240,10 +243,10 @@ export default class extends PureComponent {
           <Col>
             <FormItem label="备注" {...longFormItemLayout}>
               {getFieldDecorator('remark', {
-                   initialValue: initialValue.remark || [],
-                 })(
-                   <TextArea />
-                   )}
+                initialValue: initialValue.remark || [],
+              })(
+                <TextArea />
+              )}
             </FormItem>
           </Col>
         </Row>

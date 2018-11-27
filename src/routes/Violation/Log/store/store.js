@@ -21,7 +21,6 @@ export default type => (Component) => {
   }))
   class NewCopmonent extends PureComponent {
     componentWillMount() {
-      this.fetchFineLog();
       this.fetchRule();
       this.fetchRuleType();
     }

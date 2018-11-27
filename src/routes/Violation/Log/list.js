@@ -2,6 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import { Tabs, Button, Divider } from 'antd';
 import OATable from '../../../components/OATable';
 import BigLove from './form';
+import Details from './details';
 import store from './store/store';
 
 
@@ -9,11 +10,24 @@ const { TabPane } = Tabs;
 @store()
 export default class extends PureComponent {
   state = {
+    detailsVisible: false,
     visible: false,
     initialValue: {},
+    selectedRows: [],
+    selectedRowKeys: [],
   }
+
+  onSelectChange = (selectedRowKeys, selectedRows) => {
+    console.log('selectedRowKeys changed: ', selectedRows, selectedRowKeys);
+    this.setState({ selectedRows, selectedRowKeys });
+  }
+
   handleModalVisible = (flag) => {
     this.setState({ visible: !!flag });
+  }
+
+  handleDetailsVisible = (flag) => {
+    this.setState({ detailsVisible: !!flag });
   }
 
   makeColumns = () => {
@@ -58,7 +72,7 @@ export default class extends PureComponent {
         loading,
         width: 120,
         render: (_, record) => {
-          const type = { ...record.rules }.type_id;
+          const type = OATable.findRenderKey(rule, record.rule_id).type_id;
           return OATable.findRenderKey(ruleType, type).name;
         },
       },
@@ -106,11 +120,17 @@ export default class extends PureComponent {
       },
       {
         title: '操作',
-        width: 120,
+        width: 150,
         fixed: 'right',
         render: (rowData) => {
           return (
             <Fragment>
+              <a onClick={() => this.setState({
+                detailsVisible: true, initialValue: rowData,
+              })}
+              >查看
+              </a>
+              <Divider type="vertical" />
               <a onClick={() => this.setState({ visible: true, initialValue: rowData })}>编辑</a>
               <Divider type="vertical" />
               <a onClick={() => deleted(rowData.id)}>删除</a>
@@ -130,11 +150,11 @@ export default class extends PureComponent {
         type="primary"
         style={{ marginLeft: '10px' }}
         onClick={() => {
-            this.handleModalVisible(true);
-            this.setState({ initialValue: {} });
-}}
+          this.handleModalVisible(true);
+          this.setState({ initialValue: {} });
+        }}
       >
-      新建大爱
+        新建大爱
       </Button>),
       (
         <Button
@@ -149,17 +169,18 @@ export default class extends PureComponent {
     return extra;
   }
 
+
   sendPay = (payload, onError) => {
     const { payFine } = this.props;
     let selectId = [];
     selectId = payload.map(item => item.id);
-
     payFine(selectId, onError);
+    this.onSelectChange([], []);
   }
 
   render() {
     const { finelog, fetchFineLog, loading } = this.props;
-    const { visible, initialValue } = this.state;
+    const { detailsVisible, visible, initialValue, selectedRowKeys, selectedRows } = this.state;
     let excelExport = null;
     const extra = [];
     extra.push((
@@ -169,11 +190,11 @@ export default class extends PureComponent {
         type="primary"
         style={{ marginLeft: '10px' }}
         onClick={() => {
-            this.handleModalVisible(true);
-            this.setState({ initialValue: {} });
-          }}
+          this.handleModalVisible(true);
+          this.setState({ initialValue: {} });
+        }}
       >
-      新建大爱
+        新建大爱
       </Button>),
       (
         <Button
@@ -190,13 +211,16 @@ export default class extends PureComponent {
     const multiOperator = [
       {
         text: '设置已支付',
-        action: (selectedRows) => {
-          this.sendPay(selectedRows);
+        action: (selectedRowsReal) => {
+          this.sendPay(selectedRowsReal);
         },
       },
     ];
 
     const rowSelection = {
+      selectedRows,
+      selectedRowKeys,
+      onChange: this.onSelectChange,
       getCheckboxProps: record => ({
         disabled: record.has_paid === 1,
       }),
@@ -212,9 +236,11 @@ export default class extends PureComponent {
               loading={loading}
               columns={this.makeColumns()}
               fetchDataSource={fetchFineLog}
-              data={finelog}
+              data={finelog.data}
+              serverSide
               extraOperator={extra}
-              scroll={{ x: 1750 }}
+              total={finelog.total}
+              scroll={{ x: 1785 }}
               rowSelection={rowSelection}
               multiOperator={multiOperator}
               excelInto={excelInto}
@@ -226,6 +252,11 @@ export default class extends PureComponent {
           visible={visible}
           initialValue={initialValue}
           onCancel={this.handleModalVisible}
+        />
+        <Details
+          visible={detailsVisible}
+          initialValue={initialValue}
+          onCancel={this.handleDetailsVisible}
         />
       </Fragment>
     );
