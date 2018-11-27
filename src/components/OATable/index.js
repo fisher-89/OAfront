@@ -757,7 +757,7 @@ class OATable extends PureComponent {
       this.state.midSelectedRows = midArray;
       this.setState({
         selectedRowsReal: selectedRowKeys.map((item) => {
-          const mid = midArray.filter(midkey => midkey.id === item);
+          const [mid] = midArray.filter(midkey => midkey.id === item);
           return mid;
         }
         ),
@@ -768,11 +768,6 @@ class OATable extends PureComponent {
     });
   }
 
-  clearSelectedRows = () => {
-    this.setState({ selectedRowsReal: [], midSelectedRows: [] });
-    this.handleRowSelectChange([], []);
-    console.log(123);
-  }
 
   makeTableProps = () => {
     const { pagination, selectedRowKeys } = this.state;
