@@ -16,6 +16,7 @@ export default class extends PureComponent {
   columns = [
     { title: '编号', dataIndex: 'id' },
     { title: '标题', dataIndex: 'title' },
+    { title: '接收人', dataIndex: 'todo_name' },
     {
       title: '发起人', dataIndex: 'create_realname', align: 'center',
     },

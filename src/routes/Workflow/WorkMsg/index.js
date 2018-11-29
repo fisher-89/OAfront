@@ -15,6 +15,8 @@ const status = [
 export default class extends PureComponent {
   columns = [
     { title: '编号', dataIndex: 'id' },
+    { title: '内容', dataIndex: 'data.msg.oa.body.title' },
+    { title: '接收人', dataIndex: 'to_realname' },
     {
       title: '发起人', dataIndex: 'create_realname', align: 'center',
     },
