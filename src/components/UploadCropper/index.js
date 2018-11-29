@@ -197,6 +197,7 @@ export default class UploadCropper extends React.Component {
     };
     return (
       <React.Fragment>
+        {disabled && <div style={disableUploadStyle} />}
         <Upload
           fileList={fileList}
           listType="picture-card"
@@ -210,7 +211,6 @@ export default class UploadCropper extends React.Component {
         >
           {fileList.length >= max ? null : uploadButton}
         </Upload>
-        {disabled && <div style={disableUploadStyle} />}
         <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
           <img alt="example" style={{ width: '100%' }} src={previewImage} />
         </Modal>
