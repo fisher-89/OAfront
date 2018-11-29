@@ -39,7 +39,7 @@ export default {
             data: response,
           },
         });
-        onSuccess(response);
+        onSuccess(true);
       }
     } catch (e) {
       return e;
@@ -64,7 +64,7 @@ export default {
             data: response,
           },
         });
-        onSuccess(response);
+        onSuccess(true);
       }
     } catch (e) {
       return e;
