@@ -35,6 +35,7 @@ export default {
     formVDetails: {},
     waitMsg: {},
     workMsg: {},
+    exportProgress: null,
   },
   effects: {
     ...formEffects,

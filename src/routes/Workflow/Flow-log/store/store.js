@@ -27,6 +27,7 @@ export default type => (Component) => {
     flowRunLog: workflow.flowRunLog,
     formVersion: workflow.formVersionDetails,
     formVData: workflow.formVDetails,
+    exportProgress: workflow.exportProgress,
     loading: makeLoading(loading),
   }))
   class NewComponent extends React.PureComponent {
@@ -53,10 +54,12 @@ export default type => (Component) => {
       dispatch({ type: 'workflow/formVersion', payload: { id } });
     }
 
-    exportExcel = (formId) => {
+    exportExcel = (formId, flowId = null) => {
       const { dispatch } = this.props;
       if (!formId.length) return message.error('请选择导出的表单!');
-      dispatch({ type: 'workflow/flowRunLogExport', payload: { form_id: formId } });
+      const payload = { form_id: formId };
+      if (flowId) payload.flow_id = flowId;
+      dispatch({ type: 'workflow/flowRunLogExport', payload });
     }
 
     render() {
@@ -65,5 +68,6 @@ export default type => (Component) => {
       );
     }
   }
+
   return NewComponent;
 };

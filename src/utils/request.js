@@ -135,7 +135,11 @@ export default async function request(url, options) {
       if (response.status === 204) {
         return response.text();
       }
-      return response.json();
+      if (cntType.indexOf('application/json') === -1) {
+        return response.text();
+      } else {
+        return response.json();
+      }
     });
   return result;
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import XLSX from 'xlsx';
 import { find } from 'lodash';
-import { Row, Col, Select, Input, message, Spin, Form, Button } from 'antd';
+import { Row, Col, Select, Input, message, Spin, Form, Button, Progress } from 'antd';
 import store from './store/store';
 import OATable from '../../../components/OATable';
 import TagSelect from '../../../components/TagSelect';
@@ -108,6 +108,22 @@ export default class extends React.PureComponent {
     XLSX.writeFile(workbook, '流程运行记录.xlsx');
   }
 
+  makeExportButton = () => {
+    const { id, formId } = this.state;
+    const { exportExcel, exportProgress } = this.props;
+    const view = [<Button key="exportButton" icon="download" onClick={() => exportExcel(formId, id)}>导出</Button>];
+    if (exportProgress !== null && exportProgress >= 0) {
+      view.push(<div key="exportProgress" style={{ width: 150 }}><Progress percent={exportProgress} /></div>);
+    } else if (exportProgress === -1) {
+      view.push(
+        <div key="exportProgress" style={{ width: 150 }}>
+          <Progress percent={exportProgress} status="exception" />
+        </div>
+      );
+    }
+    return view;
+  }
+
   render() {
     const { category, id, formId } = this.state;
     const {
@@ -115,22 +131,19 @@ export default class extends React.PureComponent {
       loading,
       flowType,
       flowRunLog,
-      exportExcel,
       formVersion,
       fetchDataSource,
     } = this.props;
     const cateData = flowType;
-    let filterData = [];
     const filters = {
       form_id: formId,
-      // flow_id: undefined,
+      flow_id: id,
     };
-    // filters.flow_id = [id];
-    filterData = (category && flow.filter(item => category === `${item.flow_type_id}`)) || flow;
+    const filterData = (category && flow.filter(item => category === `${item.flow_type_id}`)) || flow;
     const formVersionData = id ? (formVersion[id] || []) : [];
-    const extraOperator = [(
-      <Button key="download" icon="download" onClick={() => exportExcel(formId)}>导出</Button>
-    )];
+    const extraOperator = [
+      this.makeExportButton(),
+    ];
     return (
       <React.Fragment>
         <Row style={{ marginTop: 10, marginBottom: 10 }}>

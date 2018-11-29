@@ -49,18 +49,27 @@ export async function formVersion(id) {
   return request(`/api/workflow/flow-run/form/${id}`, { method: 'GET' });
 }
 
-export async function flowRunLogExport(params) {
-  return request('/api/workflow/flow-run/get-export', {
+export async function startFlowRunLogExport(params) {
+  return request('/api/workflow/flow-run/export/start', {
     method: 'GET',
     body: {
       ...params,
     },
-    headers: {
-      Accept: 'application/octet-stream',
-    },
   });
 }
 
+export function delay(timeout) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, timeout);
+  });
+}
+
+export async function checkFlowRunLogExport(code) {
+  return request('/api/workflow/flow-run/export/get', {
+    method: 'GET',
+    body: { code },
+  });
+}
 
 export async function flowClone(id) {
   return request('/api/workflow/flow-clone', {

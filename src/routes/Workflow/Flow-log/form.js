@@ -1,6 +1,6 @@
 import React from 'react';
 import XLSX from 'xlsx';
-import { Row, Col, Select, Input, message, Spin, Form, Button } from 'antd';
+import { Row, Col, Select, Input, message, Spin, Form, Button, Progress } from 'antd';
 import store from './store/store';
 import OATable from '../../../components/OATable';
 import TagSelect from '../../../components/TagSelect';
@@ -106,6 +106,22 @@ export default class extends React.PureComponent {
     XLSX.writeFile(workbook, '流程运行记录.xlsx');
   }
 
+  makeExportButton = () => {
+    const { id, formId } = this.state;
+    const { exportExcel, exportProgress } = this.props;
+    const view = [<Button key="exportButton" icon="download" onClick={() => exportExcel(formId, id)}>导出</Button>];
+    if (exportProgress !== null && exportProgress >= 0) {
+      view.push(<div key="exportProgress" style={{ width: 150 }}><Progress percent={exportProgress} /></div>);
+    } else if (exportProgress === -1) {
+      view.push(
+        <div key="exportProgress" style={{ width: 150 }}>
+          <Progress percent={exportProgress} status="exception" />
+        </div>
+      );
+    }
+    return view;
+  }
+
   render() {
     const { category, id, formId } = this.state;
     const {
@@ -114,16 +130,14 @@ export default class extends React.PureComponent {
       formType,
       formVData,
       flowRunLog,
-      exportExcel,
       fetchDataSource,
     } = this.props;
     const cateData = formType;
-    let filterData = [];
     const filters = { form_id: formId };
-    filterData = (category && form.filter(item => category === `${item.form_type_id}`)) || form;
-    const extraOperator = [(
-      <Button key="download" icon="download" onClick={() => exportExcel(formId)}>导出</Button>
-    )];
+    const filterData = (category && form.filter(item => category === `${item.form_type_id}`)) || form;
+    const extraOperator = [
+      this.makeExportButton(),
+    ];
     const formVersionData = id ? (formVData[id] || []) : [];
     return (
       <React.Fragment>
