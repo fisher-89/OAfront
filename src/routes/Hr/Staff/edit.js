@@ -506,28 +506,27 @@ export default class EditStaff extends PureComponent {
                     )}
                   </FormItem>
                 </Col>
-                <FormItem label="员工标签" {...formItemLayout}>
-                  {getFieldDecorator('tags', {
-                    initialValue: tags || [],
-                  })(
-                    <Select
-                      mode="multiple"
-                      placeholder="请选择"
-                    >
-                      {
-                        tagsGroup.map((item) => {
-                          return item.children ? (
-                            <OptGroup key={`${item.id}`} label={item.name}>
-                              {item.children.map(tag => (<Option key={`${tag.id}`} value={`${tag.id}`}>{tag.name}</Option>))}
-                            </OptGroup>
-                          ) : (<Option key={`${item.id}`}>{item.name}</Option>);
-                        })
-                      }
-                    </Select>
-                  )}
-                </FormItem>
               </Row>
-
+              <FormItem label="员工标签" {...formItemLayout}>
+                {getFieldDecorator('tags', {
+                  initialValue: tags || [],
+                })(
+                  <Select
+                    mode="multiple"
+                    placeholder="请选择"
+                  >
+                    {
+                      tagsGroup.map((item) => {
+                        return item.children ? (
+                          <OptGroup key={`${item.id}`} label={item.name}>
+                            {item.children.map(tag => (<Option key={`${tag.id}`} value={`${tag.id}`}>{tag.name}</Option>))}
+                          </OptGroup>
+                        ) : (<Option key={`${item.id}`}>{item.name}</Option>);
+                      })
+                    }
+                  </Select>
+                )}
+              </FormItem>
             </TabPane>
             <TabPane forceRender tab={renderTitle('个人信息')} key="3" style={style}>
               <FormItem {...formItemLayout} label="户口所在地">
