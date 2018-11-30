@@ -129,11 +129,7 @@ export default class extends PureComponent {
                 <Input type="hidden" />
               )}
               <FormItem label="员工姓名" {...formItemLayout}>
-                {getFieldDecorator('realname', {
-                  initialValue: editStaff.realname,
-                })(
-                  <Input placeholder="请输入" disabled />
-                )}
+                <span>{editStaff.realname}</span>
               </FormItem>
             </Col>
             <Col {...fieldsBoxLayout}>
