@@ -284,9 +284,10 @@ export default class EditStaff extends PureComponent {
               </Row>
               <Row>
                 <Col>
-                  <FormItem label="费用品牌" {...formItemLayout}>
+                  <FormItem label="费用品牌" {...formItemLayout} required>
                     {getFieldDecorator('cost_brands', {
                       initialValue: (editStaff.cost_brands || []).map(item => `${item.id}`),
+                      rules: [validatorRequired],
                     })(
                       <Select placeholer="请选择" mode="multiple" notFoundContent="（空）" disabled={isEdit}>
                         {costBrand.map((item) => {
