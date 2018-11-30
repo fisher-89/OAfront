@@ -84,12 +84,8 @@ export default class extends PureComponent {
           })(
             <Input type="hidden" />
           )}
-          <FormItem label="姓名" {...formItemLayout}>
-            {getFieldDecorator('realname', {
-              initialValue: editStaff.realname,
-            })(
-              <Input placeholder="请输入" name="realname" disabled />
-            )}
+          <FormItem label="员工姓名" {...formItemLayout}>
+            <span>{editStaff.realname}</span>
           </FormItem>
           <FormItem label="状态" required {...formItemLayout}>
             {getFieldDecorator('status_id', {

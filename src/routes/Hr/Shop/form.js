@@ -416,8 +416,8 @@ export default class extends PureComponent {
               {getFieldDecorator('real_address', {
                 initialValue: {
                   address: initialValue.real_address || '',
-                  lng: initialValue.lng || undefined,
-                  lat: initialValue.lat || undefined,
+                  lng: initialValue.lng || 104.066,
+                  lat: initialValue.lat || 30.65,
               },
               })(<SearchMap />)}
             </FormItem>

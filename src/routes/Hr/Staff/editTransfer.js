@@ -86,6 +86,7 @@ export default class extends PureComponent {
       editStaff,
       department,
       validateFields,
+      validatorRequired,
       form: { getFieldDecorator, setFieldsValue, getFieldValue },
     } = this.props;
 
@@ -128,17 +129,14 @@ export default class extends PureComponent {
                 <Input type="hidden" />
               )}
               <FormItem label="员工姓名" {...formItemLayout}>
-                {getFieldDecorator('realname', {
-                  initialValue: editStaff.realname,
-                })(
-                  <Input placeholder="请输入" disabled />
-                )}
+                <span>{editStaff.realname}</span>
               </FormItem>
             </Col>
             <Col {...fieldsBoxLayout}>
-              <FormItem label="员工状态" required {...formItemLayout}>
+              <FormItem label="员工状态" {...formItemLayout} required>
                 {getFieldDecorator('status_id', {
                   initialValue: editStaff.status_id,
+                  rules: [validatorRequired],
                 })(
                   <Select name="status_id" placeholer="请选择">
                     <Option key="-1" value={1}>试用期</Option>
@@ -152,6 +150,7 @@ export default class extends PureComponent {
               <FormItem label="所属部门" {...formItemLayout1} required>
                 {getFieldDecorator('department_id', {
                   initialValue: `${editStaff.department_id}`,
+                  rules: [validatorRequired],
                 })(
                   <TreeSelect
                     treeDefaultExpandAll
@@ -164,9 +163,10 @@ export default class extends PureComponent {
           </Row>
           <Row>
             <Col {...fieldsBoxLayout}>
-              <FormItem label="所属品牌" required {...formItemLayout}>
+              <FormItem label="所属品牌" {...formItemLayout} required>
                 {getFieldDecorator('brand_id', {
                   initialValue: editStaff.brand_id,
+                  rules: [validatorRequired],
                 })(
                   <Select name="brand_id" placeholer="请选择" onChange={this.handleSelectChange}>
                     {brand && brand.map((item) => {
@@ -179,9 +179,10 @@ export default class extends PureComponent {
               </FormItem>
             </Col>
             <Col {...fieldsBoxLayout}>
-              <FormItem label="职位" required {...formItemLayout}>
+              <FormItem label="职位" {...formItemLayout} required>
                 {getFieldDecorator('position_id', {
                   initialValue: editStaff.position_id,
+                  rules: [validatorRequired],
                 })(
                   <Select name="position_id" placeholer="请选择">
                     <Option key="-1" value="">--请选择--</Option>
@@ -197,9 +198,10 @@ export default class extends PureComponent {
           </Row>
           <Row>
             <Col span={24} >
-              <FormItem label="费用品牌" {...formItemLayout1}>
+              <FormItem label="费用品牌" {...formItemLayout1} required>
                 {getFieldDecorator('cost_brands', {
                   initialValue: (editStaff.cost_brands || []).map(item => `${item.id}`),
+                  rules: [validatorRequired],
                 })(
                   <Select mode="multiple" placeholer="请选择">
                     {costBrand.map((item) => {
