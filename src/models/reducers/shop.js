@@ -95,23 +95,10 @@ export default {
     };
   },
   delete(state, action) {
-    const { store, shopSn, data = [], message } = action.payload;
-    if (data.message) {
-      notification.error({
-        message: data.message,
-      });
-      return { ...state };
-    }
+    const { store, shopSn } = action.payload;
     notification.success({
-      message: message || '删除成功',
+      message: '删除成功',
     });
-    const originalStore = { ...state[`${store}Details`] };
-    Object.keys(originalStore).forEach((key) => {
-      if (shopSn === key) {
-        delete originalStore[key];
-      }
-    });
-
     const dataState = Array.isArray(state[store]) ? (
       state[store] ? state[store].filter(item => item.shop_sn !== shopSn) : []
     ) :
@@ -125,7 +112,6 @@ export default {
     return {
       ...state,
       [store]: dataState,
-      [`${store}Details`]: originalStore,
     };
   },
 };

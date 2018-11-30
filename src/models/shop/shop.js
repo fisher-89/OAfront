@@ -67,21 +67,14 @@ export default {
   * deleteShop({ payload }, { call, put }) {
     try {
       const shopSn = payload.shop_sn;
-      const response = yield call(deleteShop, shopSn);
-      if (response.error) {
-        notification({
-          message: '删除失败',
-          description: response.error,
-        });
-      } else {
-        yield put({
-          type: 'delete',
-          payload: {
-            store,
-            shopSn,
-          },
-        });
-      }
+      yield call(deleteShop, shopSn);
+      yield put({
+        type: 'delete',
+        payload: {
+          store,
+          shopSn,
+        },
+      });
     } catch (error) { return error; }
   },
   * positionShop({ payload, onSuccess, onError }, { call }) {
