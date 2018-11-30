@@ -10,6 +10,7 @@ const FormItem = OAForm.Item;
 export default class extends PureComponent {
   render() {
     const {
+      isEdit,
       loading,
       visible,
       onCancel,
@@ -35,13 +36,15 @@ export default class extends PureComponent {
         onCancel={onCancel}
         onSubmit={onSubmit}
       >
-        <FormItem label="执行日期" {...formItemLayout} required>
-          {getFieldDecorator('operate_at', {
-            initialValue: '',
-          })(
-            <DatePicker />
-          )}
-        </FormItem>
+        {isEdit !== 1 ? (
+          <FormItem label="执行日期" {...formItemLayout} required>
+            {getFieldDecorator('operate_at', {
+              initialValue: '',
+            })(
+              <DatePicker />
+            )}
+          </FormItem>
+        ) : null}
         <FormItem label="操作说明" {...formItemLayout1} >
           {getFieldDecorator('operation_remark', {
             initialValue: '',

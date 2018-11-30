@@ -15,6 +15,7 @@ import { omit, assign, isEmpty } from 'lodash';
 import OAForm, { SearchTable, Address, OAModal } from '../../../components/OAForm';
 import RelativeList from './relativeList';
 import { markTreeData } from '../../../utils/utils';
+import NextForm from './nextForm';
 
 
 const FormItem = OAForm.Item;
@@ -68,6 +69,10 @@ const formItemLayout3 = {
   staffLoading: loading.models.staffs,
 }))
 export default class EditStaff extends PureComponent {
+  state = {
+    visible: false,
+  }
+
   handleSubmit = (params) => {
     const { dispatch, onError, onCancel } = this.props;
     const body = {
@@ -85,14 +90,20 @@ export default class EditStaff extends PureComponent {
     dispatch({
       type: 'staffs/editStaff',
       payload: newBody,
-      onSuccess: () => onCancel(),
+      onSuccess: () => {
+        this.setState({ visible: false }, onCancel());
+      },
       onError: (errors) => {
-        onError(errors, {
+        this.setState({ visible: false }, onError(errors, {
           household_address: 'household',
           living_address: 'living',
-        });
+        }));
       },
     });
+  }
+
+  handleNextForm = () => {
+    this.setState({ visible: true });
   }
 
   handleSelectFilter = (input, option) => {
@@ -155,14 +166,22 @@ export default class EditStaff extends PureComponent {
 
     return (
       <React.Fragment>
+        <NextForm
+          isEdit={1}
+          form={form}
+          visible={this.state.visible}
+          onSubmit={validateFields(this.handleSubmit)}
+          onCancel={() => { this.setState({ visible: false }); }}
+        />
         <OAModal
           width={800}
           title="编辑"
+          okText="下一步"
           visible={visible}
           style={{ top: 30 }}
           onCancel={onCancel}
           loading={staffLoading}
-          onSubmit={validateFields(this.handleSubmit)}
+          onSubmit={validateFields(this.handleNextForm)}
         >
           <Tabs defaultActiveKey="1">
             <TabPane forceRender tab={renderTitle('基础资料')} key="1" style={style}>
@@ -371,19 +390,6 @@ export default class EditStaff extends PureComponent {
                       maxRows: 6,
                     }}
                     placeholder="最大长度100字符"
-                  />
-                )}
-              </FormItem>
-              <FormItem label="操作说明" {...formItemLayout} >
-                {getFieldDecorator('operation_remark', {
-                  initialValue: '',
-                })(
-                  <Input.TextArea
-                    placeholder="最大长度100个字符"
-                    autosize={{
-                      minRows: 2,
-                      maxRows: 6,
-                    }}
                   />
                 )}
               </FormItem>
