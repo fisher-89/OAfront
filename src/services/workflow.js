@@ -250,7 +250,9 @@ export async function addApiConfig(params) {
 
 
 export async function editApiConfig(params, id) {
-  return request(`/api/workflow/field-api-configuration/${id}`, {
+  let url = `/api/workflow/field-api-configuration/${id}`;
+  if (params.confirm) url += '?confirm=1';
+  return request(url, {
     method: 'PUT',
     body: params,
   });

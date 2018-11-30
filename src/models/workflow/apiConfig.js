@@ -10,12 +10,14 @@ import {
 const store = 'apiConfig';
 
 export default {
-  *testApiConfig({ payload, onSuccess }, { call }) {
+  * testApiConfig({ payload, onSuccess }, { call }) {
     try {
       const params = { ...payload };
       const response = yield call(testApiConfig, params);
       onSuccess(response);
-    } catch (e) { return e; }
+    } catch (e) {
+      return e;
+    }
   },
   * fetchApiConfig({ payload }, { call, put, select }) {
     try {
@@ -31,9 +33,11 @@ export default {
           },
         });
       }
-    } catch (e) { return e; }
+    } catch (e) {
+      return e;
+    }
   },
-  *getApiConfig({ payload }, { call, put, select }) {
+  * getApiConfig({ payload }, { call, put, select }) {
     try {
       const { id } = payload;
       let response = yield select(model => model.workflow.apiConfigDetails[id]);
@@ -49,7 +53,9 @@ export default {
           },
         });
       }
-    } catch (e) { return e; }
+    } catch (e) {
+      return e;
+    }
   },
   * addApiConfig({ payload, onSuccess, onError }, { call, put }) {
     try {
@@ -69,7 +75,9 @@ export default {
         });
         onSuccess(response);
       }
-    } catch (e) { return e; }
+    } catch (e) {
+      return e;
+    }
   },
   * editApiConfig({ payload, onSuccess, onError }, { call, put }) {
     try {
@@ -81,6 +89,8 @@ export default {
       const response = yield call(editApiConfig, params, id);
       if (response.errors && onError) {
         onError(response.errors);
+      } else if (response.message && response.message.indexOf('该接口配置已被表单') !== -1) {
+        onError(response.message);
       } else {
         yield put({
           type: 'update',
@@ -92,13 +102,17 @@ export default {
         });
         onSuccess(response);
       }
-    } catch (e) { return e; }
+    } catch (e) {
+      return e;
+    }
   },
   * deleteApiConfig({ payload, onError, onSuccess }, { call, put }) {
     try {
       const { id } = payload;
       const response = yield call(deleteApiConfig, id);
-      if (response.errors) { onError(response.errors); }
+      if (response.errors) {
+        onError(response.errors);
+      }
       yield put({
         type: 'delete',
         payload: {
@@ -107,6 +121,8 @@ export default {
         },
       });
       onSuccess(response);
-    } catch (e) { return e; }
+    } catch (e) {
+      return e;
+    }
   },
 };

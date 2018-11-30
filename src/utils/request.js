@@ -128,17 +128,14 @@ export default async function request(url, options) {
         return response;
       }
 
-      if (response.status === 400 || (newOptions.method === 'GET' && response.status === 401)) {
-        const promise = response.json();
-        notificateErrorMessage(promise, response);
-      }
-      if (response.status === 204) {
-        return response.text();
-      }
-      if (cntType.indexOf('application/json') === -1) {
+      if (cntType.indexOf('application/json') === -1 || response.status === 204) {
         return response.text();
       } else {
-        return response.json();
+        const promise = response.json();
+        if (response.status === 400 || (newOptions.method === 'GET' && response.status === 401)) {
+          notificateErrorMessage(promise, response);
+        }
+        return promise;
       }
     });
   return result;
