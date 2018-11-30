@@ -128,7 +128,7 @@ export default async function request(url, options) {
         return response;
       }
 
-      if (cntType.indexOf('application/json') === -1 || response.status === 204) {
+      if (response.status === 204 || cntType.indexOf('application/json') === -1) {
         return response.text();
       } else {
         const promise = response.json();
