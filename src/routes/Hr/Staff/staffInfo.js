@@ -26,11 +26,11 @@ const FormItem = Form.Item;
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
-    sm: { span: 6 },
+    sm: { span: 4 },
   },
   wrapperCol: {
     xs: { span: 24 },
-    sm: { span: 18 },
+    sm: { span: 20 },
   },
 };
 
@@ -48,7 +48,7 @@ export default class StaffInfo extends PureComponent {
     return (
       <QueueAnim style={{ display: 'flex' }} className={styles.userInfo}>
         <Row gutter={16} style={{ width: '100%' }}>
-          <Col span={10}>
+          <Col span={9}>
             <Card>
               <div key="userInfo" style={{ flexGrow: 1, wordBreak: 'break-all' }}>
                 <Card key="userInfo" bordered={false} loading={loading} bodyStyle={{ borderBottom: '1px dashed #aaa', padding: '24px 0' }}>
@@ -188,7 +188,7 @@ export default class StaffInfo extends PureComponent {
               </div>
             </Card>
           </Col>
-          <Col span={14}>
+          <Col span={15}>
             <Card>
               {/* <div style={{ width: 200, flexShrink: 0 }} /> */}
               <div key="userLog">

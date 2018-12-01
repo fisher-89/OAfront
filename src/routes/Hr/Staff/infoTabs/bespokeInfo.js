@@ -11,6 +11,7 @@ export default class extends React.PureComponent {
         title="变更信息"
         mask
         closable
+        width={440}
         maskClosable
         placement="right"
         onClose={this.props.onClose}

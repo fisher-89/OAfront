@@ -43,7 +43,7 @@ export default class extends PureComponent {
       dataIndex: 'changes',
       render: (key) => {
         const title = Object.keys(key).map(k => <p key={k}>{k}：{key[k]}</p>);
-        return <Popover content={title}>{Object.keys(key).map(k => `${k}：${key[k]}\n`)}</Popover>;
+        return <Popover content={title}><span style={{ cursor: 'pointer' }}>查看预约变动</span></Popover>;
       },
     },
     {
