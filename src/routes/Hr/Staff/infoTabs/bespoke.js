@@ -3,7 +3,7 @@
  */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Badge, Tooltip, Icon, Divider, Popover } from 'antd';
+import { Badge, Tooltip, Icon, Popover } from 'antd';
 import OATable from '../../../../components/OATable';
 import BespokeInfo from './bespokeInfo';
 
@@ -43,7 +43,21 @@ export default class extends PureComponent {
       dataIndex: 'changes',
       render: (key) => {
         const title = Object.keys(key).map(k => <p key={k}>{k}：{key[k]}</p>);
-        return <Popover content={title}><span style={{ cursor: 'pointer' }}>查看预约变动</span></Popover>;
+        return (
+          <Popover content={title}>
+            <a
+              style={{ cursor: 'pointer' }}
+              onClick={() => {
+                this.setState({
+                  initialValue: key,
+                  visible: true,
+                });
+              }}
+            >
+              查看预约变动
+            </a>
+          </Popover>
+        );
       },
     },
     {
@@ -57,15 +71,15 @@ export default class extends PureComponent {
       render: (key) => {
         let status = '';
         if (key === 2) {
-          status = <Badge status="default" text="已还原" />;
+          status = <Badge status="default" text="已撤销" />;
         } else if (key === 0) {
           status = (
-            <Tooltip title="请先还原上一条数据" placement="topLeft" arrowPointAtCenter>
+            <Tooltip title="请先撤销上一条数据" placement="topLeft" arrowPointAtCenter>
               <Badge status="warning" text="锁定" />&nbsp;<Icon type="question-circle" />
             </Tooltip>
           );
         } else if (key === 1) {
-          status = <Badge status="success" text="可还原" />;
+          status = <Badge status="success" text="可撤销" />;
         }
         return status;
       },
@@ -78,18 +92,8 @@ export default class extends PureComponent {
             {
               record.status === 1 ? (
                 <a onClick={() => this.handleCancel(record.id)}>撤消</a>
-              ) : null
+              ) : '无'
             }
-            <Divider type="vertical" />
-            <a onClick={() => {
-              this.setState({
-                initialValue: record,
-                visible: true,
-              });
-            }}
-            >
-              查看
-            </a>
           </React.Fragment>
         );
       },
@@ -121,7 +125,7 @@ export default class extends PureComponent {
         />
         <BespokeInfo
           visible={visible}
-          initialValue={initialValue}
+          changes={initialValue}
           onClose={() => {
             this.setState({
               initialValue: {},
