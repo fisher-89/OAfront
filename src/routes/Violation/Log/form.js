@@ -17,7 +17,7 @@ const { Option } = Select;
 @OAForm.create({
   onValuesChange(props, changedValues, allValues) {
     const { fetchMoneyAndScore } = props;
-    if (allValues.staff_sn && allValues.rule_id && allValues.violate_at) {
+    if ((allValues.staff_sn || {}).staff_sn && allValues.rule_id && allValues.violate_at) {
       const params = {
         staff_sn: allValues.staff_sn,
         rule_id: allValues.rule_id,
@@ -37,7 +37,6 @@ export default class extends PureComponent {
 
   componentWillReceiveProps(nextProps) {
     const { rule } = this.props;
-    console.log(nextProps);
     if (this.props.initialValue !== nextProps.initialValue) {
       const midkey = { ...nextProps.initialValue.rules }.type_id;
       this.setState({ selectrule: midkey ? rule.filter(item => `${item.type_id}` === `${midkey}`) : [] });
@@ -52,11 +51,14 @@ export default class extends PureComponent {
 
   handleSubmit = (values, onError) => {
     const { submit, onCancel, initialValue } = this.props;
+    const { money, score } = this.state;
     submit({
       ...initialValue,
       ...values,
       ...values.billing_sn,
       ...values.staff_sn,
+      money,
+      score,
       has_paid: values.has_paid ? 1 : 0,
       sync_point: values.sync_point ? 1 : 0,
     }, onError, () => {
@@ -194,13 +196,13 @@ export default class extends PureComponent {
 
         <Row>
           <Col {...colSpan}>
-            <FormItem label="大爱金额" {...formItemLayout} required>
+            <FormItem label="大爱金额" {...formItemLayout}>
               {money}
             </FormItem>
           </Col>
 
           <Col {...colSpan}>
-            <FormItem label="分值" {...formItemLayout} required>
+            <FormItem label="分值" {...formItemLayout}>
               {score}
             </FormItem>
           </Col>
