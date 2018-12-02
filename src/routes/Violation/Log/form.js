@@ -9,27 +9,49 @@ import {
 import OAForm, { OAModal, SearchTable, DatePicker } from '../../../components/OAForm';
 import store from './store/store';
 
+
 const { TextArea } = Input;
 const FormItem = OAForm.Item;
 const { Option } = Select;
-@OAForm.create()
-@store('submit')
+@store()
+@OAForm.create({
+  onValuesChange(props, changedValues, allValues) {
+    const { fetchMoneyAndScore } = props;
+    if (allValues.staff_sn && allValues.rule_id && allValues.violate_at) {
+      const params = {
+        staff_sn: allValues.staff_sn,
+        rule_id: allValues.rule_id,
+        violate_at: allValues.violate_at,
+      };
+      fetchMoneyAndScore(params);
+    }
+  },
+})
+
 export default class extends PureComponent {
   state = {
     selectrule: undefined,
+    money: null,
+    score: null,
   }
 
   componentWillReceiveProps(nextProps) {
     const { rule } = this.props;
+    console.log(nextProps);
     if (this.props.initialValue !== nextProps.initialValue) {
       const midkey = { ...nextProps.initialValue.rules }.type_id;
       this.setState({ selectrule: midkey ? rule.filter(item => `${item.type_id}` === `${midkey}`) : [] });
     }
+    if (this.props.money !== nextProps.money || this.props.score !== nextProps.score) {
+      this.setState({ money: nextProps.money.money, score: nextProps.score.score });
+    } else {
+      this.setState({ money: nextProps.initialValue.money, score: nextProps.initialValue.score });
+    }
   }
+
 
   handleSubmit = (values, onError) => {
     const { submit, onCancel, initialValue } = this.props;
-
     submit({
       ...initialValue,
       ...values,
@@ -42,11 +64,22 @@ export default class extends PureComponent {
     });
   }
 
-
-  selectRule = (value) => {
-    const { rule, initialValue } = this.props;
+  selectRuleType = (value) => {
+    const { rule } = this.props;
+    const { setFieldsValue } = this.props.form;
+    setFieldsValue({ rule_id: undefined });
     this.setState({ selectrule: value ? rule.filter(item => `${item.type_id}` === `${value}`) : [] });
-    initialValue.rule_id = undefined;
+  }
+
+  clear = () => {
+    const { rule, initialValue } = this.props;
+    const midkey = { ...initialValue.rules }.type_id || null;
+    this.setState({ money: null, score: null });
+    if (initialValue) {
+      this.setState({ selectrule: rule.filter(item => `${item.type_id}` === `${midkey}`) });
+    } else {
+      this.setState({ selectrule: undefined });
+    }
   }
   render() {
     const longFormItemLayout = {
@@ -74,12 +107,12 @@ export default class extends PureComponent {
     const {
       initialValue,
       visible,
+      onCancel,
       loading,
       ruleType,
-      onCancel,
       validateFields,
     } = this.props;
-    const { selectrule } = this.state;
+    const { selectrule, money, score } = this.state;
     const { getFieldDecorator } = this.props.form;
     const staff = {};
     staff.staff_sn = initialValue.staff_sn;
@@ -93,6 +126,7 @@ export default class extends PureComponent {
         loading={loading}
         onCancel={() => onCancel(false)}
         onSubmit={validateFields(this.handleSubmit)}
+        afterClose={this.clear}
       >
         <Row>
           <Col {...colSpan}>
@@ -127,7 +161,7 @@ export default class extends PureComponent {
                 initialValue: { ...initialValue.rules }.type_id || undefined,
               })(
                 <Select
-                  onChange={this.selectRule}
+                  onSelect={this.selectRuleType}
                 >
                   {ruleType.map(item => (
                     <Option key={item.id} value={item.id}>
@@ -146,7 +180,7 @@ export default class extends PureComponent {
               {getFieldDecorator('rule_id', {
                 initialValue: { ...initialValue }.rule_id || undefined,
               })(
-                <Select>
+                <Select >
                   {(selectrule || []).map(item => (
                     <Option key={item.id} value={item.id}>
                       {item.name}
@@ -160,20 +194,14 @@ export default class extends PureComponent {
 
         <Row>
           <Col {...colSpan}>
-            <FormItem label="大爱金额" {...formItemLayout}>
-              {getFieldDecorator('money', {
-              })(<Input
-                disabled
-              />)}
+            <FormItem label="大爱金额" {...formItemLayout} required>
+              {money}
             </FormItem>
           </Col>
 
           <Col {...colSpan}>
-            <FormItem label="分值" {...formItemLayout} >
-              {getFieldDecorator('score', {
-              })(<Input
-                disabled
-              />)}
+            <FormItem label="分值" {...formItemLayout} required>
+              {score}
             </FormItem>
           </Col>
         </Row>

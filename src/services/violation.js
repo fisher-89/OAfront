@@ -4,6 +4,14 @@ export async function fetchFineLog(params) {
   return request('/api/violation/punish', { method: 'GET', body: params });
 }
 
+export async function fetchFineMoney(params) {
+  return request('/api/violation/punish/money', { method: 'POST', body: params });
+}
+
+export async function fetchFineScore(params) {
+  return request('/api/violation/punish/score', { method: 'POST', body: params });
+}
+
 export async function downloadExcelTemp() {
   return request('/api/violation/punish/example', { method: 'GET' });
 }

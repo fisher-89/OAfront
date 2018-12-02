@@ -46,7 +46,9 @@ export default formCreate => option => (Componet) => {
       }
     },
     onValuesChange(props, _, allValues) {
+      const { onValuesChange } = option;
       props.onChange(allValues, props.index);
+      if (onValuesChange) onValuesChange(props, _, allValues);
     },
   };
   const { localBackUpKey, modal } = option || {};

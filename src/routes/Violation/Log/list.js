@@ -18,7 +18,6 @@ export default class extends PureComponent {
   }
 
   onSelectChange = (selectedRowKeys, selectedRows) => {
-    console.log('selectedRowKeys changed: ', selectedRows, selectedRowKeys);
     this.setState({ selectedRows, selectedRowKeys });
   }
 
@@ -68,7 +67,7 @@ export default class extends PureComponent {
       },
       {
         title: '大爱类型',
-        dataIndex: 'type_id',
+        dataIndex: 'rules',
         loading,
         width: 120,
         render: (_, record) => {
@@ -210,10 +209,14 @@ export default class extends PureComponent {
     excelExport = { actionType: 'violation/downloadExcelFinLog', fileName: '大爱记录.xlsx' };
     const multiOperator = [
       {
-        text: '设置已支付',
+        text: '已支付',
         action: (selectedRowsReal) => {
           this.sendPay(selectedRowsReal);
         },
+      },
+      {
+        text: '清空选择',
+        action: () => { this.onSelectChange([], []); },
       },
     ];
 

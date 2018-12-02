@@ -4,6 +4,8 @@ import { makeProps } from '../../../../utils/utils';
 
 export default type => (Component) => {
   @connect(({ violation, loading }) => ({
+    score: violation.score,
+    money: violation.money,
     finelog: violation.finelog,
     rule: violation.rule,
     ruleType: violation.ruletype,
@@ -25,19 +27,25 @@ export default type => (Component) => {
       this.fetchRuleType();
     }
 
-    fetchFineLog=(params) => {
+    fetchFineLog = (params) => {
       const { dispatch } = this.props;
       dispatch({ type: 'violation/fetchFineLog', payload: params });
     }
 
-    fetchRule=(params) => {
+    fetchRule = (params) => {
       const { dispatch } = this.props;
       dispatch({ type: 'violation/fetchRule', payload: params });
     }
 
-    fetchRuleType=(params) => {
+    fetchRuleType = (params) => {
       const { dispatch } = this.props;
       dispatch({ type: 'violation/fetchRuleType', payload: params });
+    }
+
+    fetchMoneyAndScore = (params) => {
+      const { dispatch } = this.props;
+      dispatch({ type: 'violation/fetchFineMoney', payload: params });
+      dispatch({ type: 'violation/fetchFineScore', payload: params });
     }
 
     deleted = (id, onError, onSuccess) => {
@@ -50,7 +58,7 @@ export default type => (Component) => {
       });
     }
 
-    submit =(values, onError, onSuccess) => {
+    submit = (values, onError, onSuccess) => {
       const { dispatch } = this.props;
       dispatch({
         type: values.id ? 'violation/editFineLog' : 'violation/addFineLog',
@@ -60,7 +68,7 @@ export default type => (Component) => {
       });
     }
 
-    payFine =(values, onError, onSuccess) => {
+    payFine = (values, onError, onSuccess) => {
       const { dispatch } = this.props;
       dispatch({
         type: 'violation/editPayState',

@@ -5,6 +5,7 @@ import {
   deleteFineLog,
   editPayState,
   downloadExcelFinLog,
+
 } from '../../services/violation';
 
 const store = 'finelog';
@@ -108,7 +109,6 @@ export default {
       if (response.errors) {
         return onError();
       }
-
       onSuccess(response);
     } catch (err) { return err; }
   },
