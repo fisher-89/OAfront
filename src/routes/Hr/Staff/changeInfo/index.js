@@ -20,11 +20,6 @@ const columns = [{
   title: '变更后',
   dataIndex: 'original',
   tooltip: true,
-}, {
-  width: 100,
-  title: '变动备注',
-  dataIndex: 'remark',
-  tooltip: true,
 }];
 export default class extends React.PureComponent {
   render() {
@@ -43,7 +38,6 @@ export default class extends React.PureComponent {
           key: name,
           dirty: dirty || '(空)',
           original: original || '(空)',
-          remark: initialValue.operation_remark || '(空)',
         });
       } else {
         forIn(value, (v, n) => {
@@ -53,7 +47,6 @@ export default class extends React.PureComponent {
             name: `${name}-${n}`,
             dirty: dirty || '(空)',
             original: original || '(空)',
-            remark: initialValue.operation_remark || '(空)',
           });
         });
       }
@@ -66,6 +59,7 @@ export default class extends React.PureComponent {
         title="操作信息"
       >
         <div style={{ marginBottom: 40 }}>
+          <p>操作备注：{initialValue.operation_remark || '(空)'}</p>
           <OATable
             sync={false}
             columns={columns}
