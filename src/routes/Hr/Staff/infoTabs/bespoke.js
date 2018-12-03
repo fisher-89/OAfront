@@ -8,8 +8,8 @@ import OATable from '../../../../components/OATable';
 import BespokeInfo from './bespokeInfo';
 
 const statusFilters = [
-  { value: 1, text: '可还原' },
-  { value: 2, text: '已还原' },
+  { value: 1, text: '可撤销' },
+  { value: 2, text: '已撤销' },
   { value: 0, text: '锁定' },
 ];
 
@@ -69,10 +69,12 @@ export default class extends PureComponent {
           <React.Fragment>
             {
               record.status === 1 ? (
-                <a onClick={() => this.handleCancel(record.id)}>撤消</a>
-              ) : '无'
+                <React.Fragment>
+                  <a onClick={() => this.handleCancel(record.id)}>撤消</a>
+                  <Divider type="vertical" />
+                </React.Fragment>
+              ) : ''
             }
-            <Divider type="vertical" />
             <a onClick={() => this.showChanges(record)}>查看</a>
           </React.Fragment>
         );
