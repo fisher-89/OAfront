@@ -119,7 +119,7 @@ export default class extends PureComponent {
           icon="cloud-download"
           onClick={this.confirmExport}
         >
-          批量导出
+          Excel导出
         </Button>
       </Fragment>
     );

@@ -170,7 +170,7 @@ export default class extends PureComponent {
             </Fragment>
           )}
         >
-          <Button icon="cloud-download">下载导入模版</Button>
+          <Button icon="cloud-download">下载模版</Button>
         </Popover>
         <Popover
           visible={this.state.visible}
@@ -189,7 +189,7 @@ export default class extends PureComponent {
             </Fragment>
           )}
         >
-          <Button icon="cloud">批量导入</Button>
+          <Button icon="cloud-upload">批量导入</Button>
         </Popover>
       </Fragment>
     );
