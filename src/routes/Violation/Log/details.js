@@ -53,7 +53,7 @@ export default class extends PureComponent {
               本月第{initialValue.quantity}次违纪
             </font>
           </p>
-          <p>大爱金额：{initialValue.money}</p>
+          <p>大爱金额：{initialValue.money}元</p>
           <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;分值：{initialValue.score}</p>
         </div>
         <div className={style.details}>
