@@ -20,6 +20,11 @@ const columns = [{
   title: '变更后',
   dataIndex: 'original',
   tooltip: true,
+}, {
+  width: 100,
+  title: '变动备注',
+  dataIndex: 'remark',
+  tooltip: true,
 }];
 export default class extends React.PureComponent {
   render() {
@@ -38,6 +43,7 @@ export default class extends React.PureComponent {
           key: name,
           dirty: dirty || '(空)',
           original: original || '(空)',
+          remark: initialValue.operation_remark || '(空)',
         });
       } else {
         forIn(value, (v, n) => {
@@ -47,6 +53,7 @@ export default class extends React.PureComponent {
             name: `${name}-${n}`,
             dirty: dirty || '(空)',
             original: original || '(空)',
+            remark: initialValue.operation_remark || '(空)',
           });
         });
       }
