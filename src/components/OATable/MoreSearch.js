@@ -1,6 +1,6 @@
 import React from 'react';
 import moment from 'moment';
-import { Input, Button, Popover, Form, Select, Row, Col, Slider, DatePicker, TreeSelect } from 'antd';
+import { Input, Button, Popover, Form, Select, Row, Col, DatePicker, TreeSelect } from 'antd';
 import { mapValues, isArray, isObject, isString, map, assign } from 'lodash';
 import InputRange from '../InputRange';
 import { markTreeData } from '../../utils/utils';
@@ -279,7 +279,7 @@ export default class MoreSearch extends React.Component {
     const { colCountKey } = this.state;
     const colCount = this.colCounts[colCountKey].replace('列', '');
     const span = 24 / colCount;
-    const sliderCom = (
+    /* const sliderCom = (
       <div style={{ width: '100%', padding: '0 20px' }}>
         <Slider
           min={0}
@@ -290,12 +290,11 @@ export default class MoreSearch extends React.Component {
           max={Object.keys(this.colCounts).length - 1}
         />
       </div>
-    );
+    ); */
     return (
       <React.Fragment>
         <div style={{
           maxHeight: 300,
-          marginBottom: 20,
           overflowY: 'auto',
           overflowX: 'hidden',
           maxWidth: colCountKey === 2 ? 800 : 600,
@@ -304,7 +303,6 @@ export default class MoreSearch extends React.Component {
           <Row>
             {isArray(moreSearch) && (
               <React.Fragment>
-                {sliderCom}
                 {this.renderColumns(moreSearch).map((item, index) => {
                   const key = index;
                   return (<Col key={key} span={span}>{item}</Col>);
@@ -324,7 +322,6 @@ export default class MoreSearch extends React.Component {
                       this.renderMoreSearchContent(moreSearch.content)
                     )}
                 </div>
-                {moreSearch.columns.length > 0 && sliderCom}
                 <div style={{ width: '100%' }}>
                   {(moreSearch.columns && moreSearch.columns.length > 0) &&
                     this.renderColumns(moreSearch.columns).map((item, index) => {
