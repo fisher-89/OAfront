@@ -3,7 +3,9 @@ import { Drawer } from 'antd';
 
 export default class extends React.PureComponent {
   render() {
-    const { changes, visible } = this.props;
+    const { initialValue, visible } = this.props;
+    const { changes } = initialValue;
+    const remark = initialValue.opration_remark || '(空)';
     const list = Object.keys(changes || {}).map(k => <p key={k}>{k}：{changes[k]}</p>);
     return (
       <Drawer
@@ -17,6 +19,7 @@ export default class extends React.PureComponent {
         visible={visible}
       >
         {list}
+        <p>操作备注：{remark}</p>
       </Drawer>
     );
   }

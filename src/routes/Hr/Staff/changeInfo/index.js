@@ -59,6 +59,7 @@ export default class extends React.PureComponent {
         title="操作信息"
       >
         <div style={{ marginBottom: 40 }}>
+          <p>操作备注：{initialValue.operation_remark || '(空)'}</p>
           <OATable
             sync={false}
             columns={columns}

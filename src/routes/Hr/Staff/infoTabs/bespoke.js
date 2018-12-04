@@ -3,13 +3,13 @@
  */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Badge, Tooltip, Icon, Popover } from 'antd';
+import { Badge, Tooltip, Icon, Divider } from 'antd';
 import OATable from '../../../../components/OATable';
 import BespokeInfo from './bespokeInfo';
 
 const statusFilters = [
-  { value: 1, text: '可还原' },
-  { value: 2, text: '已还原' },
+  { value: 1, text: '可撤销' },
+  { value: 2, text: '已撤销' },
   { value: 0, text: '锁定' },
 ];
 
@@ -37,28 +37,6 @@ export default class extends PureComponent {
       searcher: true,
       title: '操作人',
       dataIndex: 'admin.realname',
-    },
-    {
-      title: '变更',
-      dataIndex: 'changes',
-      render: (key) => {
-        const title = Object.keys(key).map(k => <p key={k}>{k}：{key[k]}</p>);
-        return (
-          <Popover content={title}>
-            <a
-              style={{ cursor: 'pointer' }}
-              onClick={() => {
-                this.setState({
-                  initialValue: key,
-                  visible: true,
-                });
-              }}
-            >
-              查看预约变动
-            </a>
-          </Popover>
-        );
-      },
     },
     {
       title: '操作时间',
@@ -91,14 +69,22 @@ export default class extends PureComponent {
           <React.Fragment>
             {
               record.status === 1 ? (
-                <a onClick={() => this.handleCancel(record.id)}>撤消</a>
-              ) : '无'
+                <React.Fragment>
+                  <a onClick={() => this.handleCancel(record.id)}>撤消</a>
+                  <Divider type="vertical" />
+                </React.Fragment>
+              ) : ''
             }
+            <a onClick={() => this.showChanges(record)}>查看</a>
           </React.Fragment>
         );
       },
     },
   ]
+
+  showChanges = (record) => {
+    this.setState({ visible: true, initialValue: record });
+  }
 
   handleCancel = (id) => {
     const { dispatch, staffSn } = this.props;
@@ -125,7 +111,7 @@ export default class extends PureComponent {
         />
         <BespokeInfo
           visible={visible}
-          changes={initialValue}
+          initialValue={initialValue}
           onClose={() => {
             this.setState({
               initialValue: {},

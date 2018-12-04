@@ -19,11 +19,11 @@ const valueKey = {
 const formItemLayout1 = {
   labelCol: {
     xs: { span: 24 },
-    sm: { span: 4, pull: 1 },
+    sm: { span: 4 },
   },
   wrapperCol: {
     xs: { span: 24 },
-    sm: { span: 20, pull: 1 },
+    sm: { span: 20 },
   },
 };
 
