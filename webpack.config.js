@@ -7,6 +7,7 @@ export default (webpackConfig) => {
         components: 'src/components',
         utils: 'src/utils',
         routes: 'src/routes',
+        layouts: 'src/layouts',
       },
     },
   };

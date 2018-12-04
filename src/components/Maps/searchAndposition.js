@@ -1,20 +1,22 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Input, AutoComplete, Tooltip } from 'antd';
+import { Icon, Input, AutoComplete, Tooltip } from 'antd';
 import { debounce } from 'lodash';
 import './style.less';
+import SendIcon from './send.png';
 
 const divStyle = {
   position: 'absolute',
-  top: '0',
-  width: 300,
-};
-const lowStyle = {
-  position: 'absolute',
-  bottom: 15,
-  width: 300,
+  display: 'flex',
+  padding: 5,
+  top: 0,
+  width: 400,
 };
 const fontStyle = {
   fontSize: 6,
+};
+const poiIcon = {
+  width: 40,
+  height: 40,
 };
 const { Option } = AutoComplete;
 export default class extends PureComponent {
@@ -54,6 +56,11 @@ export default class extends PureComponent {
       const positionPicker = new PositionPicker({
         mode: 'dragMap',
         map: __map__,
+        iconStyle: {
+          url: 'http://webapi.amap.com/theme/v1.3/markers/b/mark_r.png',
+          size: [25, 35],
+          ancher: [10, 10],
+        },
       });
       positionPicker.start();
       __map__.panBy(0, 1);
@@ -122,22 +129,18 @@ export default class extends PureComponent {
     return (
       <Fragment>
         <div style={divStyle}>
+          <img alt="send" style={poiIcon} src={SendIcon} />
           <AutoComplete
+            size="large"
             defaultValue={value.address}
             dataSource={options}
             onSelect={this.onSelect}
             onSearch={this.sendInput}
             placeholder="请输入"
             optionLabelProp="text"
-          />
-        </div>
-        <div style={lowStyle}>
-          <label>当前标签位置，仅供参考</label>
-          <Input
-            className="poiStyle"
-            value={value.address}
-            readOnly
-          />
+          >
+            <Input suffix={<Icon type="search" className="certain-category-icon" style={{ fontSize: 20 }} />} />
+          </AutoComplete>
         </div>
       </Fragment>
     );

@@ -1,11 +1,12 @@
 import React, { PureComponent } from 'react';
 import { Map } from 'react-amap';
+import { Input } from 'antd';
 import SP from './searchAndposition';
 
 /* 需要输入address lng lat
    输出 address lng lat
 */
-
+const { TextArea } = Input;
 export default class extends PureComponent {
   constructor(props) {
     super(props);
@@ -58,22 +59,26 @@ export default class extends PureComponent {
     const Loading = <div style={loadingStyle}>Loading Map...</div>;
     const { position, address } = this.state;
     return (
-      <div style={{ width: '100%', height: '500px', position: 'relative' }} >
-        <Map
-          amapkey="9a54ee2044c8fdd03b3d953d4ace2b4d"
-          zoom={15}
-          loading={Loading}
-          center={position}
-          plugins={this.mapPlugins}
-          useAMapUI
-        >
-          <SP
-            value={{ ...position, address }}
-            handlePosition={this.handlePosition}
-            dragPosition={this.dragPosition}
-          />
-        </Map>
-      </div>
+      <React.Fragment>
+        <div style={{ width: '100%', height: '500px', position: 'relative' }} >
+          <Map
+            amapkey="9a54ee2044c8fdd03b3d953d4ace2b4d"
+            zoom={15}
+            loading={Loading}
+            center={position}
+            plugins={this.mapPlugins}
+            useAMapUI
+          >
+            <SP
+              value={{ ...position, address }}
+              handlePosition={this.handlePosition}
+              dragPosition={this.dragPosition}
+            />
+          </Map>
+        </div>
+        <div style={{ height: 20 }} />
+        定位地址：<TextArea autosize={{ minRows: 2, maxRows: 6 }} value={this.state.address} />
+      </React.Fragment>
     );
   }
 }
