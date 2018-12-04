@@ -164,7 +164,7 @@ export default class extends PureComponent {
           onVisibleChange={this.handleTempVisible}
           content={(
             <Fragment>
-              <p><a onClick={this.dowloadTemplet.bind(this, 1)}>入职模版.xlsx</a></p>
+              <p><a onClick={this.dowloadTemplet.bind(this, 1)}>员工入职模版.xlsx</a></p>
               <p><a onClick={this.dowloadTemplet.bind(this, 2)}>员工信息模版.xlsx</a></p>
               <div><a onClick={this.dowloadTemplet.bind(this, 3)}>人事变动模版.xlsx</a></div>
             </Fragment>
