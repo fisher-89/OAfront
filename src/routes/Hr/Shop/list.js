@@ -148,10 +148,10 @@ export default class extends PureComponent {
         filters: this.statusSelect(status),
         width: 100,
         render: (key) => {
-          if (key === 1) {
-            return '未开业';
-          } else { return '开业'; }
-        } },
+          const current = status.filter(item => item.id === key);
+          return current ? current[0].name : '';
+        },
+      },
       {
         title: '开业日期',
         hidden: true,

@@ -164,9 +164,9 @@ export default class extends PureComponent {
           onVisibleChange={this.handleTempVisible}
           content={(
             <Fragment>
-              <p><a onClick={this.dowloadTemplet.bind(this, 1)}>员工入职导入模版.xlsx</a></p>
-              <p><a onClick={this.dowloadTemplet.bind(this, 2)}>编辑员工导入模版.xlsx</a></p>
-              <div><a onClick={this.dowloadTemplet.bind(this, 3)}>人事变动导入模版.xlsx</a></div>
+              <p><a onClick={this.dowloadTemplet.bind(this, 1)}>入职模版.xlsx</a></p>
+              <p><a onClick={this.dowloadTemplet.bind(this, 2)}>员工信息模版.xlsx</a></p>
+              <div><a onClick={this.dowloadTemplet.bind(this, 3)}>人事变动模版.xlsx</a></div>
             </Fragment>
           )}
         >
@@ -180,11 +180,11 @@ export default class extends PureComponent {
           content={(
             <Fragment>
               <Spin spinning={this.state.spinning} tip="导入中请稍后...">
-                <Button type="dashed" style={{ margin: 5 }} onClick={this.handleImport.bind(null, 'add')}>批量入职导入</Button>
+                <Button type="dashed" style={{ margin: 5 }} onClick={this.handleImport.bind(null, 'add')}>员工入职</Button>
                 <br />
-                <Button type="dashed" style={{ margin: 5 }} onClick={this.handleImport.bind(null, 'edit')}>批量编辑导入</Button>
+                <Button type="dashed" style={{ margin: 5 }} onClick={this.handleImport.bind(null, 'edit')}>个人信息</Button>
                 <br />
-                <Button type="dashed" style={{ margin: 5 }} onClick={this.handleImport.bind(null, 'transfer')}>批量变动导入</Button>
+                <Button type="dashed" style={{ margin: 5 }} onClick={this.handleImport.bind(null, 'transfer')}>人事变动</Button>
               </Spin>
             </Fragment>
           )}

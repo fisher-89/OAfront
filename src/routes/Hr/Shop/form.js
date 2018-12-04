@@ -400,27 +400,25 @@ export default class extends PureComponent {
               </Col>
             </Row>
           </TabPane>
-
-
           <TabPane
             tab={<div className={styles.tabpane}>店铺定位</div>}
             key="3"
-          > {getFieldDecorator('lng', {
-            initialValue: initialValue.lng || null,
-          })(<Input type="hidden" />)}
+          >
+            {getFieldDecorator('lng', {
+              initialValue: initialValue.lng || null,
+            })(<Input type="hidden" />)}
+
             {getFieldDecorator('lat', {
               initialValue: initialValue.lat || null,
             })(<Input type="hidden" />)}
 
-            <FormItem>
-              {getFieldDecorator('real_address', {
-                initialValue: {
-                  address: initialValue.real_address || '',
-                  lng: initialValue.lng || 104.066,
-                  lat: initialValue.lat || 30.65,
-              },
-              })(<SearchMap />)}
-            </FormItem>
+            {getFieldDecorator('real_address', {
+              initialValue: {
+                address: initialValue.real_address || '',
+                lng: initialValue.lng || 104.066,
+                lat: initialValue.lat || 30.65,
+            },
+            })(<SearchMap />)}
           </TabPane>
         </Tabs>
       </OAModal>
