@@ -1,58 +1,58 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Icon, Input, AutoComplete, Tooltip } from 'antd';
-import { debounce } from 'lodash';
-import './style.less';
+import { Icon } from 'antd';
+import styles from './style.less';
 import SendIcon from './send.png';
 
 const divStyle = {
   position: 'absolute',
   display: 'flex',
   padding: 5,
-  top: 0,
-  width: 400,
-};
-const fontStyle = {
-  fontSize: 6,
+  top: 5,
+  left: 5,
+  width: 360,
+  background: 'white',
 };
 const poiIcon = {
-  width: 40,
-  height: 40,
+  width: 36,
+  height: 36,
 };
-const { Option } = AutoComplete;
+
 export default class extends PureComponent {
   constructor(props) {
     super(props);
-    this.handleSearch = debounce((info) => {
-      this.autoComplete(info);
-    }, 800);
     this.loadUI();
-  }
-  state = {
-    value: this.props.value,
-    dataSource: [],
-  }
-
-  /* 选择选项后定位 */
-  onSelect = (value) => {
-    if (this.state.dataSource[value].location) {
-      const completeAddress = `${this.state.dataSource[value].district}${this.state.dataSource[value].address}`;
-      const position = {
-        address: completeAddress,
-        position: {
-          lng: this.state.dataSource[value].location.lng,
-          lat: this.state.dataSource[value].location.lat,
-        },
-      };
-      this.props.handlePosition(position);
-      this.setState({ value: { address: completeAddress } });
-    }
   }
 
   /* 拖拽 */
   loadUI = () => {
     const { __map__ } = this.props;
     const { AMap } = window;
-    window.AMapUI.loadUI(['misc/PositionPicker'], (PositionPicker) => {
+    window.AMapUI.loadUI(['misc/PositionPicker', 'misc/PoiPicker'], (PositionPicker, PoiPicker) => {
+      /* 搜索定位 */
+      const poiPicker = new PoiPicker({
+        input: 'address',
+        placeSearchOptions: {
+          map: __map__,
+          pageSize: 6,
+        },
+      });
+      poiPicker.on('poiPicked', (result) => {
+        let poiAddress;
+        const { item, source } = result;
+        if (source === 'suggest') {
+          poiAddress = item.district + item.address;
+        } else if (source === 'search') {
+          poiAddress = `${item.pname}${item.cityname}${item.adname}${item.address}`;
+        }
+        this.props.dragPosition({
+          address: poiAddress,
+          position: item.location,
+        });
+        document.getElementById('address').value = item.name;
+        __map__.panTo([item.location.lng, item.location.lat]);
+      });
+
+      /* 拖拽定位 */
       const positionPicker = new PositionPicker({
         mode: 'dragMap',
         map: __map__,
@@ -76,71 +76,20 @@ export default class extends PureComponent {
               address: result.regeocode.formattedAddress,
               position: center,
             });
-            this.setState({
-              value: {
-                address: result.regeocode.formattedAddress,
-                position: {
-                  lng: center.lng,
-                  lat: center.lat,
-                },
-              },
-            },
-            );
+            document.getElementById('address').value = result.regeocode.formattedAddress;
           }
         });
       });
     });
   }
 
-  /* 搜索 */
-  sendInput = (info) => {
-    this.handleSearch(info);
-  }
-
-  autoComplete = (keywords) => {
-    const { AMap } = window;
-    AMap.plugin('AMap.Autocomplete', () => {
-      // 实例化Autocomplete
-      const autoOptions = { city: '全国' };
-      const autoComplete = new AMap.Autocomplete(autoOptions);
-      autoComplete.search(keywords, (status, result) => {
-        // 搜索成功时，result即是对应的匹配数据
-        if (status === 'complete' && result.count) {
-          this.setState({ dataSource: Array.from(result.tips) });
-        }
-      });
-    });
-  }
-
-
   render() {
-    const { dataSource, value } = this.state;
-    const options = dataSource.map((item, index) => {
-      const key = `${index}`;
-      return (
-        <Option key={key} text={`${item.district}${item.address}`}>
-          <Tooltip title={`${item.district}${item.address}`} placement="right">
-            <span>{item.name}</span>
-            <span style={fontStyle}>&nbsp;&nbsp;&nbsp;{item.district}{item.address}</span>
-          </Tooltip>
-        </Option>
-      );
-    });
     return (
       <Fragment>
         <div style={divStyle}>
           <img alt="send" style={poiIcon} src={SendIcon} />
-          <AutoComplete
-            size="large"
-            defaultValue={value.address}
-            dataSource={options}
-            onSelect={this.onSelect}
-            onSearch={this.sendInput}
-            placeholder="请输入"
-            optionLabelProp="text"
-          >
-            <Input suffix={<Icon type="search" className="certain-category-icon" style={{ fontSize: 20 }} />} />
-          </AutoComplete>
+          <input id="address" className={styles.poiSearch} placeholder="搜索位置" />
+          <Icon type="search" className={styles.searchIcon} />
         </div>
       </Fragment>
     );
