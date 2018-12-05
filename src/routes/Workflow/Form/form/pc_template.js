@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Tag } from 'antd';
+import { Row } from 'antd';
 import styles from './pc_template.less';
 import FieldTag from './field_tag';
 
@@ -30,15 +30,15 @@ class PCTemplate extends Component {
       return (
         <div
           key={key}
+          onMouseDown={() => {
+            this.setState({ selectedTag: selectedTag === key ? null : key });
+          }}
         >
-          <Tag
+          <FieldTag
             color={selected ? '#1890ff' : 'blue'}
-            onClick={() => {
-              this.setState({ selectedTag: selectedTag === key ? null : key });
-            }}
           >
             {name}
-          </Tag>
+          </FieldTag>
           {selected && (
             <React.Fragment>
               <div className={styles.horizontalLine} />
@@ -48,7 +48,7 @@ class PCTemplate extends Component {
                   return (
                     <div key={field.id}>
                       <div className={styles.horizontalLine} />
-                      <Tag color="blue">{field.name}</Tag>
+                      <FieldTag>{field.name}</FieldTag>
                     </div>
                   );
                 })}

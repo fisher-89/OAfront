@@ -1,9 +1,13 @@
 :global {
-  .drag-shadow, .drag-shadow:hover {
+  .drag-shadow {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
     position: fixed;
     opacity: 0.5;
-    cursor: move;
-    margin: 0;
+    .ant-tag, .ant-tag:hover {
+      margin: 0;
+    }
   }
 }
 

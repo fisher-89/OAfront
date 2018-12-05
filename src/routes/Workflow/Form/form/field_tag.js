@@ -3,42 +3,50 @@ import { Tag } from 'antd';
 
 class FieldTag extends Component {
   mouseDown = (e) => {
+    e.preventDefault();
     const { top, left } = e.target.getBoundingClientRect();
     this.clientX = e.clientX;
     this.clientY = e.clientY;
-    this.shadowStartX = left;
-    this.shadowStartY = top;
+    if (e.type === 'touchstart') {
+      this.clientX = e.touches[0].clientX;
+      this.clientY = e.touches[0].clientY;
+    }
     const shadowTag = e.target.cloneNode(true);
-    shadowTag.className += ' drag-shadow';
-    shadowTag.style.left = `${left}px`;
-    shadowTag.style.top = `${top}px`;
-    shadowTag.setAttribute('id', 'fieldShadow');
-    document.body.appendChild(shadowTag);
-    this.shadowTag = shadowTag;
+    const dragBox = document.createElement('div');
+    dragBox.appendChild(shadowTag);
+    dragBox.className += ' drag-shadow';
+    dragBox.style.left = `${left}px`;
+    dragBox.style.top = `${top}px`;
+    document.body.appendChild(dragBox);
+    this.shadowTag = dragBox;
     document.addEventListener('mousemove', this.dragField);
     document.addEventListener('mouseup', this.loosenDrag);
-    return false;
+    document.addEventListener('touchmove', this.dragField);
+    document.addEventListener('touchend', this.loosenDrag);
   }
   dragField = (e) => {
-    const { clientX, clientY } = e;
+    e.preventDefault();
+    const { clientX, clientY } = event.type === 'touchmove' ? e.touches[0] : e;
     const offsetX = clientX - this.clientX;
     const offsetY = clientY - this.clientY;
-    this.shadowTag.style.left = `${this.shadowStartX + offsetX}px`;
-    this.shadowTag.style.top = `${this.shadowStartY + offsetY}px`;
-    return false;
+    this.shadowTag.style.transform = `translate(${offsetX}px,${offsetY}px)`;
   }
-  loosenDrag = () => {
-    document.removeEventListener('mousemove', dragField);
+  loosenDrag = (e) => {
+    e.preventDefault();
+    document.removeEventListener('mousemove', this.dragField);
     document.removeEventListener('mouseup', this.loosenDrag);
+    document.removeEventListener('touchmove', this.dragField);
+    document.removeEventListener('touchend', this.loosenDrag);
     this.shadowTag.remove();
   }
 
   render() {
     return (
       <Tag
-        {...this.props}
         color="blue"
+        {...this.props}
         onMouseDown={this.mouseDown}
+        onTouchStart={this.mouseDown}
       >
         {this.props.children}
       </Tag>
