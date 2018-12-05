@@ -75,11 +75,11 @@ export default class extends PureComponent {
         dataIndex: 'cost_brands',
         searcher: true,
         render: (brand) => {
-          const brandStr = brand.map(item => item.name).join(',');
+          const brandStr = (brand || []).map(item => item.name).join(',');
           return (<Ellipsis tooltip lines={2}>{brandStr}</Ellipsis>);
         },
         onFilter: (value, brand) => {
-          const brandStr = brand.cost_brands.map(item => item.name);
+          const brandStr = (brand.cost_brands || []).map(item => item.name);
           return brandStr.indexOf(value) !== -1;
         },
       },
