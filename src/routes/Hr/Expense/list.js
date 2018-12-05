@@ -15,10 +15,6 @@ export default class extends PureComponent {
     visible: false,
     editInfo: {},
   }
-  componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch({ type: 'brand/fetchExpense' });
-  }
 
   fetchExpense = (params) => {
     const { dispatch } = this.props;

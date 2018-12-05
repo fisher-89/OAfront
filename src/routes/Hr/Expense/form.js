@@ -43,11 +43,12 @@ export default class extends PureComponent {
     const {
       visible,
       brands,
-      form: { getFieldDecorator },
       onCancel,
       handleVisible,
       initialValue,
       validateFields,
+      validatorRequired,
+      form: { getFieldDecorator },
     } = this.props;
     const info = { ...initialValue };
     const brandId = (info.brands || []).map(item => item.id.toString());
@@ -62,32 +63,31 @@ export default class extends PureComponent {
         afterClose={onCancel}
       >
         {info.id ? (getFieldDecorator('id', {
-        initialValue: info.id,
-           }))(
-             <Input type="hidden" placeholder="请输入" />
-              ) : null}
+          initialValue: info.id,
+        }))(
+          <Input type="hidden" placeholder="请输入" />
+        ) : null}
         <FormItem label="名称" {...formItemLayout} required>
           {getFieldDecorator('name', {
             initialValue: info.name || [],
+            rules: [validatorRequired],
           })(
             <Input placeholder="请输入" />
             )}
         </FormItem>
-        <FormItem label="品牌" {...formItemLayout} >
+        <FormItem label="品牌" {...formItemLayout} required>
           {getFieldDecorator('brands', {
             initialValue: brandId || [],
+            rules: [validatorRequired],
           })(
-            <Select
-              mode="multiple"
-              placeholder="请选择"
-            >
+            <Select mode="multiple" placeholder="请选择" >
               {brands.map(item => (
                 <Select.Option key={`${item.id}`}>
                   {item.name}
                 </Select.Option>
             ))}
             </Select>
-            )}
+          )}
         </FormItem>
       </OAModal>
     );
