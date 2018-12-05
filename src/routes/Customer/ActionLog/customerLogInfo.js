@@ -4,7 +4,7 @@ import { Drawer, Button } from 'antd';
 import store from './store/store';
 import district from '../../../assets/district';
 import OATable from '../../../components/OATable';
-import { customerAuthority } from '../../../utils/utils';
+import { checkAuthority } from '../../../utils/utils';
 
 const columns = [{
   width: 100,
@@ -54,14 +54,19 @@ const rcViewerOptions = {
     flipVertical: 0,
   },
 };
-
 @store('clientReduction')
 export default class extends React.PureComponent {
   handleClick = () => {
-    const { onSuccess, initialValue, initialValue: { id }, clientReduction, type } = this.props;
+    const {
+      type,
+      onSuccess,
+      initialValue,
+      clientReduction,
+      initialValue: { id },
+    } = this.props;
     if (id && (
       initialValue.status === 1 || (
-        customerAuthority(191) && initialValue.status === -1
+        checkAuthority(191) && initialValue.status === -1
       )
     )) {
       clientReduction(id, () => {
@@ -82,8 +87,8 @@ export default class extends React.PureComponent {
     Object.keys(changes).forEach((key, index) => {
       let [dirty, original] = changes[key];
       if (['县级', '市级', '省级'].indexOf(key) !== -1) {
-        dirty = district.find(item => `${item.id}` === dirty).name;
-        original = district.find(item => `${item.id}` === original).name;
+        dirty = (district.find(item => `${item.id}` === dirty) || {}).name;
+        original = (district.find(item => `${item.id}` === original) || {}).name;
       }
 
       if (['头像照片'].indexOf(key) !== -1) {
@@ -122,7 +127,7 @@ export default class extends React.PureComponent {
     });
     let disabled = true;
     if (initialValue.status === 1 || (
-      customerAuthority(191) && initialValue.status === -1
+      checkAuthority(191) && initialValue.status === -1
     )) {
       disabled = false;
     }

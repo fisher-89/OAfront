@@ -1,4 +1,6 @@
 import moment from 'moment';
+import { mapKeys } from 'lodash';
+
 
 export function fixedZero(val) {
   return val * 1 < 10 ? `0${val}` : val;
@@ -137,7 +139,7 @@ export function getRoutes(path, routerData) {
  * 验证用户操作权限
  * @param {权限Id} authId
  */
-export function customerAuthority(authId) {
+export function checkAuthority(authId) {
   let authAble = false;
   if (window.user && Object.keys(window.user).length) {
     const { authorities: { oa } } = window.user;
@@ -292,16 +294,17 @@ export function makerFilters(params) {
 
 /* selectTree */
 
-export function markTreeData(data = [], { value, lable, parentId }, pid = null) {
+export function markTreeData(data = [], { value = 'id', label = 'name', parentId = 'parent_id' }, pid = null) {
   const tree = [];
   data.forEach((item) => {
     if (item[parentId] === pid) {
       const temp = {
-        value: item[value].toString(),
-        title: item[lable],
+        title: item[label],
         key: `${item[value]}`,
+        disabled: item.disabled,
+        value: `${item[value] || ''}`,
       };
-      const children = markTreeData(data, { value, lable, parentId }, item[value]);
+      const children = markTreeData(data, { value, label, parentId }, item[value]);
       if (children.length > 0) {
         temp.children = children;
       }
@@ -546,17 +549,16 @@ export function unicodeFieldsError(temp, isUnicode = true, values) {
 export function makeProps(_this, type) {
   const response = { ..._this.props };
   const { loading } = _this.props;
+  response.loading = false;
   if (typeof type === 'string') {
     response.loading = loading[type];
     if (_this[type]) response[type] = _this[type];
   } else if (Array.isArray(type)) {
-    response.loading = false;
     type.forEach((item) => {
       if (loading[item]) response.loading = true;
       if (_this[item]) response[item] = _this[item];
     });
   } else {
-    response.loading = false;
     Object.keys(_this).forEach((item) => {
       const func = _this[item];
       if (typeof func === 'function') response[item] = func;
@@ -609,7 +611,7 @@ export function findRenderKey(dataSource, key = '', index = 'id') {
  * @param {替换数据源} dataSource
  * @param {替换的数组} key
  * @param {替换数组的键默认id，可以是对象或者一维数组} index
- * @param {返回对象的key}   name
+ * @param {返回对象的key}   amen
  * @param {数据源的下标和替换数组作对比默认id} dataSourceIndex
  */
 export function analysisData(dataSource, key, keyIndex, name, dataSourceIndex) {
@@ -718,3 +720,27 @@ export function getStatusImg(status) {
     default:
   }
 }
+
+export function getInitSearchProps(initialValue, cb, filterText = {}) {
+  let response = {};
+  mapKeys(filterText, (_, key) => { response[key] = undefined; });
+  response = { ...response, ...initialValue };
+  const newInitialValue = {};
+  Object.keys(response).forEach((key) => {
+    newInitialValue[key] = {
+      onChange: (e) => {
+        const value = e.target ? e.target.value : e;
+        const filterTextValue = { title: filterText[key].title, text: value };
+        if (filterText[key].filters) {
+          filterTextValue[key].text = filterText[key].filters.filter((item) => {
+            return value.indexOf(item.value) !== -1;
+          }).map(item => item.text).join('，');
+        }
+        cb(key, filterTextValue)(value);
+      },
+      value: response[key],
+    };
+  });
+  return newInitialValue;
+}
+

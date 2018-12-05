@@ -2,8 +2,22 @@ import React, { PureComponent } from 'react';
 import classNames from 'classnames';
 import moment from 'moment';
 import XLSX from 'xlsx';
-import { Table, Input, Icon, Button, Tooltip, message } from 'antd';
+import {
+  Row,
+  Col,
+  Icon,
+  Table,
+  Input,
+  Switch,
+  Button,
+  Tooltip,
+  message,
+  Popover,
+  Checkbox,
+} from 'antd';
 import { connect } from 'dva';
+import { assign, isArray, forIn, omit, mapKeys, isBoolean } from 'lodash';
+import Filter from './filters';
 import Operator from './operator';
 import styles from './index.less';
 import TableUpload from './upload';
@@ -66,9 +80,27 @@ function analysisColumn(dataSource, key, index = 'id', name = 'name', dataSource
 class OATable extends PureComponent {
   constructor(props) {
     super(props);
+    const columns = props.columns.map(item => ({ ...item }));
+    this.columnsText = {};
+    this.columnsDataIndex = columns.filter((item) => {
+      if (item.dataIndex) this.columnsText[item.dataIndex] = item;
+      return item.dataIndex;
+    }).map(item => item.dataIndex);
+    this.lockColumnsDataIndex = columns.filter(item => item.dataIndex)
+      .filter(item => item.fixed)
+      .map(item => item.dataIndex);
+
     this.state = {
-      selectedRowKeys: [],
+      columns,
+      sorter: {},
+      filters: {},
+      filtered: [],
+      filtersText: {},
       selectedRows: [],
+      midSelectedRows: [],
+      eyeVisible: false,
+      selectedRowKeys: [],
+      selectedRowsReal: [],
       pagination: {
         pageSize: 10,
         current: 1,
@@ -76,12 +108,10 @@ class OATable extends PureComponent {
         showSizeChanger: true,
         showTotal: this.showTotal,
       },
+      columnsMenuVisible: false,
       filterDropdownVisible: false,
-      filtered: [],
-      filters: {},
-      sorter: {},
-      loading: false,
-
+      columnsMenuValue: columns.filter(item => !item.hidden && item.dataIndex)
+        .map(item => item.dataIndex),
     };
   }
 
@@ -106,28 +136,58 @@ class OATable extends PureComponent {
     if (JSON.stringify(filters) !== JSON.stringify(this.props.filters)) {
       this.onPropsFiltersChange(filters);
     }
+    if ('columns' in nextProps) {
+      this.getPropsColumnsValue(nextProps);
+    }
   }
 
   onPropsFiltersChange = (data, key = 'filters') => {
     const thisFiltersKey = { ...this.state[key] };
     Object.keys(data).forEach((filter) => {
-      if (!data[filter]) {
+      if (
+        data[filter] === '' ||
+        data[filter] === [] ||
+        data[filter] === null ||
+        data[filter] === undefined
+      ) {
         delete thisFiltersKey[filter];
       } else {
         thisFiltersKey[filter] = data[filter];
       }
     });
     if (JSON.stringify(thisFiltersKey) !== JSON.stringify(this.state[key])) {
-      this.setState({ [key]: thisFiltersKey }, () => {
+      let filtersText = {};
+      mapKeys(thisFiltersKey, (value, filterKey) => {
+        filtersText = {
+          ...filtersText,
+          ...this.makerFiltersText(filterKey, value),
+        };
+      });
+      this.setState({ [key]: thisFiltersKey, filtersText }, () => {
         const { filters, sorter, pagination } = this.state;
         this.handleTableChange(pagination, filters, sorter);
       });
     }
   }
 
-  onEnd = (e) => {
-    const dom = e.target;
-    dom.style.height = 'auto';
+  getPropsColumnsValue = (nextProps) => {
+    const nextColumns = nextProps.columns.map(item => ({
+      filters: item.filters || [],
+      treeFilters: item.treeFilters || {},
+      loading: item.loading || false,
+    }));
+    const thisColumns = this.props.columns.map(item => ({
+      filters: item.filters || [],
+      treeFilters: item.treeFilters || {},
+      loading: item.loading || false,
+    }));
+    if (JSON.stringify(nextColumns) !== JSON.stringify(thisColumns)) {
+      const columns = nextProps.columns.map((item) => {
+        if (item.dataIndex) this.columnsText[item.dataIndex] = item;
+        return { ...item };
+      });
+      this.setState({ columns });
+    }
   }
 
   showTotal = (total, range) => {
@@ -135,8 +195,8 @@ class OATable extends PureComponent {
   }
 
   fetchTableDataSource = (fetch, update = false) => {
-    const { fetchDataSource, columns, serverSide } = this.props;
-    const { filters, pagination, sorter } = this.state;
+    const { fetchDataSource, serverSide } = this.props;
+    const { filters, pagination, sorter, columns } = this.state;
     let params = {};
     let urlPath = {};
     if (serverSide) {
@@ -144,6 +204,7 @@ class OATable extends PureComponent {
       const columnDataIndex = columns.map(column => column.dataIndex);
       Object.keys(filters).forEach((key) => {
         const filter = filters[key];
+        if (!filter) return;
         if (columnDataIndex.indexOf(key) === -1) {
           if (typeof filter === 'string') {
             filterParam[key] = filter;
@@ -189,11 +250,16 @@ class OATable extends PureComponent {
 
   mapColumns = () => {
     const columns = [];
-    this.props.columns.forEach((column, index) => {
-      const { filters, sorter } = this.state;
-      const { serverSide } = this.props;
+    const { filters, sorter } = this.state;
+    const { serverSide } = this.props;
+    this.state.columns.forEach((column, index) => {
       const key = column.dataIndex || index;
       const response = { ...column };
+      if (column.hidden) {
+        response.width = 0;
+        response.colSpan = 0;
+        response.onCell = () => ({ style: { display: 'none' } });
+      }
       if (!serverSide) {
         response.sorter = column.sorter === true ? this.makeDefaultSorter(key) : column.sorter;
       }
@@ -210,19 +276,11 @@ class OATable extends PureComponent {
         Object.assign(response, this.makeTreeFilterOption(key, column));
       } else if (column.filters) {
         response.onFilter = column.onFilter || this.makeDefaultOnFilter(key);
+        Object.assign(response, this.makeFilterOption(key, column));
       } else if (column.dateFilters) {
         Object.assign(response, this.makeDateFilterOption(key, column));
       } else if (column.rangeFilters) {
         Object.assign(response, this.makeRangeFilterOption(key, column));
-      }
-      if (column.hidden) {
-        response.colSpan = 0;
-        // response.className = 'colHidden';
-        response.onCell = () => {
-          return {
-            style: { display: 'none' },
-          };
-        };
       }
       if (column.dataIndex !== undefined && !column.render) {
         const { tooltip } = column;
@@ -273,6 +331,29 @@ class OATable extends PureComponent {
       searchFilterOption.onFilter = this.makeDefaultOnSearch(key);
     }
     return searchFilterOption;
+  }
+
+  makeFilterOption = (key, column) => {
+    const { filterDropdownVisible } = this.state;
+    const { serverSide } = this.props;
+    const filterOption = {
+      filterDropdown: (
+        <Filter
+          filters={column.filters}
+          handleConfirm={this.handleTreeFilter(key)}
+        />
+      ),
+      filterDropdownVisible: filterDropdownVisible === key,
+      onFilterDropdownVisibleChange: (visible) => {
+        this.setState({
+          filterDropdownVisible: visible ? key : false,
+        });
+      },
+    };
+    if (!serverSide && !column.onFilter) {
+      filterOption.onFilter = this.makeDefaultOnFilter(key);
+    }
+    return filterOption;
   }
 
   makeTreeFilterOption = (key, column) => {
@@ -358,21 +439,60 @@ class OATable extends PureComponent {
     return rangeFilterOption;
   }
 
+  makerFiltersText = (key, value) => {
+    if (!this.columnsText[key]) return {};
+    if (value === '' || value === undefined) return { [key]: null };
+    if (isArray(value) && !value.length) return { [key]: null };
+    const { title, filters, treeFilters, dateFilters, rangeFilters } = this.columnsText[key];
+    const filtersText = {};
+    if (value.length === 0 || !value) return filtersText;
+    if (filters) {
+      const newValue = value.join(',').split(',');
+      filtersText[key] = { title };
+      filtersText[key].text = filters.filter(item => newValue.indexOf(`${item.value}`) !== -1)
+        .map(item => item.text).join('，');
+    } else if (treeFilters) {
+      const { data } = treeFilters;
+      const text = treeFilters.title;
+      const dataIndex = treeFilters.value;
+      filtersText[key] = { title };
+      const newValue = value.join(',').split(',');
+      filtersText[key].text = data.filter(item => newValue.indexOf(`${item[dataIndex]}`) !== -1)
+        .map(item => item[text]).join('，');
+    } else if (dateFilters || rangeFilters) {
+      filtersText[key] = { title };
+      filtersText[key].text = `${value[0].min} ~ ${value[0].max}`;
+    } else {
+      filtersText[key] = { title };
+      filtersText[key].text = value;
+    }
+    return `${filtersText[key].text}` ? filtersText : {};
+  }
+
   handleSearch = (key) => {
     return (value) => {
       const { pagination, filters, sorter, filtered } = this.state;
       const searchFilter = value ? [value] : [];
       const filteredState = filtered.filter(item => item !== key);
+      const filtersText = {
+        ...this.state.filtersText,
+        ...this.makerFiltersText(key, value),
+      };
       if (value) {
         filteredState.push(key);
+      } else {
+        delete filtersText[key];
       }
+
       const newFilters = {
         ...filters,
         [key]: searchFilter,
       };
+
       this.setState({
-        filterDropdownVisible: false,
+        filtersText,
         filtered: filteredState,
+        filterDropdownVisible: false,
       }, () => {
         this.handleTableChange(pagination, newFilters, sorter);
       });
@@ -386,7 +506,13 @@ class OATable extends PureComponent {
         ...filters,
         [key]: checkedKeys,
       };
+      const filtersText = {
+        ...this.state.filtersText,
+        ...this.makerFiltersText(key, checkedKeys),
+      };
+      if (!checkedKeys.length) delete filtersText[key];
       this.setState({
+        filtersText,
         filterDropdownVisible: false,
       }, () => {
         this.handleTableChange(pagination, newFilters, sorter);
@@ -398,16 +524,29 @@ class OATable extends PureComponent {
     return (timeValue) => {
       const { pagination, filters, sorter, filtered } = this.state;
       const filteredState = filtered.filter(item => item !== key);
-      if (timeValue.length > 0) {
-        filteredState.push(key);
-      }
+
+      const filtersText = {
+        ...this.state.filtersText,
+        ...this.makerFiltersText(key, timeValue),
+      };
+
       const newFilters = {
         ...filters,
         [key]: timeValue,
       };
+
+      if (timeValue.length > 0) {
+        filteredState.push(key);
+      } else {
+        delete newFilters[key];
+        delete filtersText[key];
+      }
+
+
       this.setState({
-        filterDropdownVisible: false,
+        filtersText,
         filtered: filteredState,
+        filterDropdownVisible: false,
       }, () => {
         this.handleTableChange(pagination, newFilters, sorter);
       });
@@ -420,19 +559,51 @@ class OATable extends PureComponent {
       const filteredState = filtered.filter(item => item !== key);
       const newFilters = { ...filters };
       const { min, max } = rangeValue[0];
+      const filtersText = {
+        ...this.state.filtersText,
+        ...this.makerFiltersText(key, rangeValue),
+      };
       if (min || max) {
         filteredState.push(key);
         newFilters[key] = rangeValue;
       } else {
         delete newFilters[key];
+        delete filtersText[key];
       }
+
       this.setState({
-        filterDropdownVisible: false,
+        filtersText,
         filtered: filteredState,
+        filterDropdownVisible: false,
       }, () => {
         this.handleTableChange(pagination, newFilters, sorter);
       });
     };
+  }
+
+
+  handleMoreFilter = (value, valueText) => {
+    const { filters, sorter, pagination, filtersText } = this.state;
+    const newFilters = {};
+    const newFilterText = {};
+    assign(newFilters, filters, value);
+    assign(newFilterText, filtersText, valueText);
+    forIn(newFilterText, (filter, key) => {
+      if (
+        ((filter.text !== 0) && !filter.text) ||
+        ((newFilters[key] !== 0 || newFilters[key].length === 0) && !newFilters[key])
+      ) {
+        delete newFilterText[key];
+        delete newFilters[key];
+      }
+      if (!filter.title && this.columnsText[key]) {
+        newFilterText[key].title = this.columnsText[key].title;
+      }
+    });
+
+    this.setState({ filtersText: newFilterText },
+      this.handleTableChange(pagination, newFilters, sorter)
+    );
   }
 
   handleTableChange = (pagination, newFilters, sorter) => {
@@ -531,18 +702,33 @@ class OATable extends PureComponent {
   }
 
   resetFilter = (key) => {
-    const { pagination, filters, sorter, filtered } = this.state;
-    if (key && filters[key]) {
-      delete filters[key];
+    const { pagination, filters, sorter, filtered, filtersText } = this.state;
+    let newFilters = { ...filters };
+    let newFiltersText = { ...filtersText };
+    if (filters[key] !== undefined) {
+      const deleteValue = filtersText[key];
+      if (deleteValue.same) {
+        const sameValue = deleteValue.same;
+        const sameKey = deleteValue.number;
+        forIn(filtersText, (filter, deleteKey) => {
+          if (sameValue === filter.same && sameKey < filter.number) {
+            newFilters = omit(newFilters, [deleteKey]);
+            newFiltersText = omit(newFiltersText, [deleteKey]);
+          }
+        });
+      }
+      newFilters = omit(newFilters, [key]);
+      newFiltersText = omit(newFiltersText, [key]);
+    } else {
+      newFilters = {};
+      newFiltersText = {};
     }
     let newFiltered = [];
-    if (key) {
-      newFiltered = filtered.filter(item => item !== key);
-    }
-    const newFilters = key ? filters : {};
+    if (key) newFiltered = filtered.filter(item => item !== key);
     this.setState({
-      filters: key ? filters : {},
+      filters: newFilters,
       filtered: newFiltered,
+      filtersText: newFiltersText,
     }, () => {
       this.handleTableChange(pagination, newFilters, sorter);
     });
@@ -551,25 +737,48 @@ class OATable extends PureComponent {
   handleRowSelectChange = (selectedRowKeys, selectedRows) => {
     this.setState({ selectedRowKeys, selectedRows }, () => {
       const { rowSelection } = this.props;
+      const { midSelectedRows } = this.state;
+      const midArray = [];
+      for (let i = 0; i < midSelectedRows.length; i += 1) {
+        midArray.push(midSelectedRows[i]);
+      }
+      for (let i = 0; i < selectedRows.length; i += 1) {
+        let flag = true;
+        for (let j = 0; j < midSelectedRows.length; j += 1) {
+          if (selectedRows[i] === midSelectedRows[j]) {
+            flag = false;
+            break;
+          }
+        }
+        if (flag) {
+          midArray.push(selectedRows[i]);
+        }
+      }
+      this.state.midSelectedRows = midArray;
+      this.setState({
+        selectedRowsReal: selectedRowKeys.map((item) => {
+          const [mid] = midArray.filter(midkey => midkey.id === item);
+          return mid;
+        }
+        ),
+      });
       if (rowSelection && rowSelection.onChange) {
-        rowSelection.onChange(selectedRowKeys, selectedRows);
+        rowSelection.onChange(selectedRowKeys, this.state.selectedRowsReal);
       }
     });
   }
 
-  clearSelectedRows = () => {
-    this.handleRowSelectChange([], []);
-  }
 
   makeTableProps = () => {
     const { pagination, selectedRowKeys } = this.state;
     const {
-      multiOperator,
       data,
-      serverSide,
       total,
+      scroll,
+      serverSide,
       rowSelection,
-      loading,
+      extraColumns,
+      multiOperator,
     } = this.props;
 
     if (serverSide) {
@@ -580,28 +789,40 @@ class OATable extends PureComponent {
       selectedRowKeys,
       onChange: this.handleRowSelectChange,
     } : rowSelection;
+    let columns = this.mapColumns();
+    if (serverSide) columns = columns.filter(item => !item.hidden);
+    const newScroll = { ...scroll };
+    if (extraColumns) {
+      columns = this.makeInitColumns(columns);
+      let x = 200;
+      columns.forEach((item) => {
+        if (item.width) {
+          x += item.width;
+        }
+      });
+      newScroll.x = x;
+    }
+    const rowKey = (record, index) => record.id || record.staff_sn || record.shop_sn || index;
     const response = {
-      rowKey: (record, index) => record.id || record.staff_sn || record.shop_sn || index,
-      dataSource: data,
-      size: 'middle',
-      bordered: false,
-      scroll: {},
+      rowKey,
       pagination,
+      size: 'middle',
+      bordered: true,
+      dataSource: data,
       ...this.props,
+      columns,
+      scroll: newScroll,
+      rowSelection: newRowSelection,
       onChange: (paginationChange, filters, sorter) => {
-        const newFilters = {};
-        Object.keys(filters).forEach((key) => {
-          if (filters[key] !== null) {
+        const newFilters = { ...this.state.filters };
+        forIn(filters, (value, key) => {
+          if (value !== null) {
             newFilters[key] = filters[key];
           }
         });
         this.handleTableChange(paginationChange, newFilters, sorter);
       },
-      loading: loading || this.state.loading,
-      rowSelection: newRowSelection,
-      columns: this.mapColumns(),
     };
-
     if (this.props.pagination && typeof this.props.pagination === 'object') {
       response.pagination = {
         ...pagination,
@@ -616,40 +837,46 @@ class OATable extends PureComponent {
   }
 
   makeExcelFieldsData = (data) => {
-    const { extraExportFields, columns, excelExport: { fileName } } = this.props;
+    const { extraExportFields, excelExport: { fileName } } = this.props;
+    const { columns } = this.state;
     let exportFields = extraExportFields.concat(columns);
     exportFields = exportFields.filter(item => item.dataIndex !== undefined);
     const newData = [];
     data.forEach((item) => {
       let temp = {};
-      const fieldsKey = Object.keys(item);
+
       Object.keys(exportFields).forEach((column) => {
         const columnValue = exportFields[column];
-        let renderValue;
-        if (columnValue.render) {
-          renderValue = columnValue.render(item[columnValue.dataIndex], item);
-        }
-        if (fieldsKey.indexOf(columnValue.dataIndex) !== -1 && !columnValue.render) {
-          temp[columnValue.dataIndex] = item[columnValue.dataIndex];
-        } else if (columnValue.exportRender) {
+        if (item[columnValue.dataIndex] === undefined) return;
+        if (columnValue.exportRender) {
           temp[columnValue.dataIndex] = columnValue.exportRender(item);
-        } else if (
-          fieldsKey.indexOf(columnValue.dataIndex) !== -1
-          && columnValue.render
-          && typeof renderValue === 'string'
-        ) {
-          temp[columnValue.dataIndex] = renderValue;
+        } else if (columnValue.render) {
+          const renderValue = columnValue.render(item[columnValue.dataIndex], item);
+          if (typeof renderValue === 'string') {
+            temp[columnValue.dataIndex] = renderValue;
+          } else if (React.isValidElement(renderValue)) {
+            temp[columnValue.dataIndex] = renderValue.props.children;
+          } else {
+            temp[columnValue.dataIndex] = item[columnValue.dataIndex] || '';
+          }
+        } else if (!columnValue.render) {
+          temp[columnValue.dataIndex] = item[columnValue.dataIndex] || '';
         }
       });
       temp = Object.values(temp);
       newData.push(temp);
     });
     const header = Object.keys(exportFields).map(key => exportFields[key].title);
+    const sheetHeader = [];
+    header.forEach((item) => {
+      if (sheetHeader.indexOf(item) === -1) {
+        sheetHeader.push(item);
+      }
+    });
     const datas = {
+      sheetHeader,
       sheetData: newData,
-      sheetHeader: header,
     };
-    console.log(datas);
     const workbook = XLSX.utils.book_new();
     const dataExcel = [...datas.sheetData];
     dataExcel.unshift(datas.sheetHeader);
@@ -692,9 +919,102 @@ class OATable extends PureComponent {
     location.href = excelTemplate;
   }
 
+
+  handleVisibleColumnsChange = (columnsMenuValue) => {
+    const { columns } = this.state;
+    const propsColumns = {};
+    this.props.columns.forEach((item) => {
+      if (item.dataIndex) propsColumns[item.dataIndex] = item;
+    });
+    const newColumns = columns.map((item) => {
+      if (!item.dataIndex) return item;
+      const temp = propsColumns[item.dataIndex];
+      if (!item.dataIndex || columnsMenuValue.indexOf(item.dataIndex) !== -1) {
+        delete temp.hidden;
+      } else {
+        temp.hidden = true;
+        delete temp.fixed;
+      }
+      return temp;
+    });
+    this.setState({ columnsMenuValue, columns: newColumns });
+  }
+
+  makeInitColumns = (columns) => {
+    let widthAble = false;
+    let fixed = true;
+    const newColumns = columns.map((item) => {
+      if (!item.width) widthAble = true;
+      if (!item.fixed) fixed = false;
+      return item;
+    });
+    if (!widthAble) {
+      let widthIndex = 0;
+      newColumns.forEach((item, index) => {
+        if (item.width && (!item.fixed || fixed) && !item.hidden && item.dataIndex) {
+          widthIndex = index;
+        }
+      });
+      delete newColumns[widthIndex].width;
+    }
+    return newColumns;
+  }
+
+  columnsCheckAll = (checked) => {
+    this.handleVisibleColumnsChange(checked ? this.columnsDataIndex : this.lockColumnsDataIndex);
+  }
+
+
+  makeVisibleColumnsList = () => {
+    const { columns, columnsMenuValue } = this.state;
+    const columnsData = columns.filter(item => item.dataIndex);
+    return (
+      <div className={styles.columnsMenu}>
+        <div>
+          全选：
+          <Switch
+            size="small"
+            onChange={this.columnsCheckAll}
+            defaultChecked={columnsMenuValue.length === this.columnsDataIndex.length}
+          />
+        </div>
+        <div style={{ marginTop: 10 }}>
+          <Checkbox.Group
+            value={columnsMenuValue}
+            onChange={this.handleVisibleColumnsChange}
+          >
+            {columnsData.map(item =>
+              (
+                <Row key={item.dataIndex}>
+                  <Col>
+                    <Checkbox disabled={item.fixed !== undefined} value={item.dataIndex}>
+                      {item.title}
+                    </Checkbox>
+                  </Col>
+                </Row>
+              ))
+            }
+          </Checkbox.Group>
+        </div>
+      </div>
+    );
+  }
+
   makeExtraOperator = () => {
-    const { extraOperator, excelInto, excelExport, excelTemplate, fileExportChange } = this.props;
-    const operator = extraOperator || [];
+    const {
+      excelInto,
+      excelExport,
+      extraColumns,
+      extraOperator,
+      excelTemplate,
+      fileExportChange,
+    } = this.props;
+    let operator = [];
+    if (isArray(extraOperator)) {
+      operator = [...extraOperator];
+    } else if (extraOperator) {
+      operator = [React.cloneElement(extraOperator, { key: 'firstOne' })];
+    }
     if (excelInto) {
       operator.push(
         <Tooltip key="upload" title="导入数据">
@@ -702,8 +1022,8 @@ class OATable extends PureComponent {
             uri={excelInto}
             {...fileExportChange}
             onSuccess={(response) => {
-              this.fetchTableDataSource();
-              fileExportChange.onSuccess(response);
+              this.fetchTableDataSource(null, true);
+              if (fileExportChange.onSuccess) fileExportChange.onSuccess(response);
             }}
           >
             EXCEL导入
@@ -727,52 +1047,75 @@ class OATable extends PureComponent {
         </Tooltip>
       );
     }
+
+    if (extraColumns) {
+      operator.push(
+        <Popover
+          key="eye"
+          trigger="click"
+          placement="bottom"
+          content={this.makeVisibleColumnsList()}
+          onVisibleChange={(eyeVisible) => { this.setState({ eyeVisible }); }}
+        >
+          <Button icon="eye">可见信息</Button>
+        </Popover>
+      );
+    }
+
     return operator;
   }
 
   render() {
     const {
-      multiOperator,
-      tableVisible,
-      extraOperatorRight,
       sync,
-      columns,
+      moreSearch,
+      autoComplete,
+      tableVisible,
+      multiOperator,
       operatorVisble,
+      extraOperatorRight,
     } = this.props;
-    const filterColumns = columns.map((item) => {
-      const temp = { title: item.title, dataIndex: item.dataIndex };
-      if (item.filters) {
-        temp.filterData = item.filters;
-      }
-      if (item.treeFilters) {
-        temp.filterData = item.treeFilters;
-      }
-      return temp;
+
+    const { filters, filtersText, selectedRows, filterDropdownVisible, eyeVisible } = this.state;
+    const tableProps = this.makeTableProps();
+    let searchObj = {};
+    if (isBoolean(moreSearch) && moreSearch) {
+      searchObj = this.state.columns.filter(item => item.hidden && item.dataIndex);
+    } else if (autoComplete) {
+      searchObj = {
+        content: moreSearch,
+        columns: this.state.columns.filter(item => item.hidden && item.dataIndex),
+      };
+    } else {
+      searchObj = moreSearch;
+    }
+    const newFiltersText = {};
+    forIn(filtersText, (value, key) => {
+      if (value) newFiltersText[key] = value;
     });
     return (
-      <div
-        className={styles.filterTable}
-      >
+      <div className={styles.filterTable}>
         {operatorVisble && (
           <Operator
             sync={sync}
-            key="Operator"
-            {...this.state}
-            filterColumns={filterColumns || []}
+            filters={filters}
+            moreSearch={searchObj}
+            selectedRowsReal={this.state.selectedRowsReal}
+            selectedRows={selectedRows}
+            filtersText={newFiltersText}
             multiOperator={multiOperator}
-            extraOperator={this.makeExtraOperator()}
+            resetFilter={this.resetFilter}
+            onChange={this.handleMoreFilter}
             extraOperatorRight={extraOperatorRight}
+            extraOperator={this.makeExtraOperator()}
             fetchTableDataSource={() => {
               this.fetchTableDataSource(null, true);
             }}
-            resetFilter={this.resetFilter}
+            filterDropdownVisible={filterDropdownVisible || eyeVisible}
           />
         )}
         {(tableVisible === true) && (
-          <Table
-            {...this.makeTableProps()}
-            key="table"
-          />
+          <Table {...tableProps} className={styles.filterTableContent} />
         )}
       </div>
     );

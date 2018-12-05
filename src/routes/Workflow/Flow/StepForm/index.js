@@ -12,6 +12,7 @@ import {
   Steps,
 } from 'antd';
 import { connect } from 'dva';
+import { filter, forEach, isArray } from 'lodash';
 import OAForm, { InputTags, SearchTable } from '../../../../components/OAForm';
 
 const FormItem = OAForm.Item;
@@ -22,27 +23,39 @@ const { Step } = Steps;
 
 const stepDefaultValue = {
   name: '',
-  description: '',
-  allow_condition: '',
-  skip_condition: '',
-  hidden_fields: [],
-  editable_fields: [],
-  required_fields: [],
-  approver_type: 0,
-  step_approver_id: null,
-  approvers: { staff: [], roles: [], departments: [], manager: '' },
-  reject_type: 0,
-  concurrent_type: 0,
+  is_cc: '0',
   merge_type: 0,
-  start_callback_uri: '',
-  check_callback_uri: '',
-  approve_callback_uri: '',
-  rejec_callback_uri: '',
-  transfer_callback_uri: '',
-  end_callback_uri: '',
-  withdraw_callback_uri: '',
+  cc_person: [],
+  send_todo: '1',
+  reject_type: 0,
+  send_start: '0',
+  description: '',
+  approver_type: 0,
+  hidden_fields: [],
   next_step_key: [],
   prev_step_key: [],
+  skip_condition: '',
+  concurrent_type: 0,
+  editable_fields: [],
+  required_fields: [],
+  allow_condition: '',
+  end_callback_uri: '',
+  available_fields: [],
+  start_callback_uri: '',
+  check_callback_uri: '',
+  rejec_callback_uri: '',
+  step_approver_id: null,
+  approve_callback_uri: '',
+  transfer_callback_uri: '',
+  withdraw_callback_uri: '',
+  accept_end_callback: '0',
+  accept_start_callback: '0',
+  accept_check_callback: '0',
+  accept_approve_callback: '0',
+  accept_reject_callback: '0',
+  accept_transfer_callback: '0',
+  accept_withdraw_callback: '0',
+  approvers: { staff: [], roles: [], departments: [], manager: '' },
 };
 
 const stepsTitle = ['基础信息', '步骤条件', '表单字段', '操作类型', '回调地址'];
@@ -62,24 +75,36 @@ export default class StepForm extends React.PureComponent {
   constructor(props) {
     super(props);
     const { data, hiddenData } = this.props;
-    const editData = hiddenData;
-    const requireData = [];
-    if (data) {
-      if (data.editable_fields) {
-        editData.forEach((item) => {
-          if (data.editable_fields.indexOf(item.key) !== -1) {
-            requireData.push(item);
-          }
-        });
-      }
-    }
-    const defaultValue = data || stepDefaultValue;
+
+    const defaultValue = { ...stepDefaultValue, ...data };
+    defaultValue.available_fields = isArray(defaultValue.available_fields) ?
+      defaultValue.available_fields : [];
+    defaultValue.hidden_fields = isArray(defaultValue.hidden_fields) ?
+      defaultValue.hidden_fields : [];
+    defaultValue.editable_fields = isArray(defaultValue.editable_fields) ?
+      defaultValue.editable_fields : [];
+    defaultValue.required_fields = isArray(defaultValue.required_fields) ?
+      defaultValue.required_fields : [];
+
+    const hiddenFieldsData = filter(hiddenData, obj =>
+      defaultValue.available_fields.indexOf(obj.key) !== -1);
+
+    const editFieldsData = filter(hiddenFieldsData, obj =>
+      defaultValue.editable_fields.indexOf(obj.key) !== -1);
+
+    const requireData = filter(editFieldsData, obj =>
+      defaultValue.editable_fields.indexOf(obj.key) !== -1);
     this.state = {
       current: 0,
+      availableFields: {
+        selectedKeys: [],
+        targetKeys: defaultValue.available_fields || [],
+        data: hiddenFieldsData || [],
+      },
       hiddenFields: {
         selectedKeys: [],
         targetKeys: defaultValue.hidden_fields || [],
-        data: [],
+        data: hiddenFieldsData || [],
       },
       editFields: {
         selectedKeys: [],
@@ -91,7 +116,6 @@ export default class StepForm extends React.PureComponent {
         targetKeys: defaultValue.required_fields || [],
         data: [],
       },
-      editData: editData || [],
       dataCommit: data || { ...stepDefaultValue },
     };
   }
@@ -123,77 +147,44 @@ export default class StepForm extends React.PureComponent {
     });
   };
 
-
-  handleHiddenChange = (nextTargetKeys) => {
-    const { hiddenFields } = this.state;
-    const { hiddenData } = this.props;
-
-    const data = hiddenData.forEach((item) => {
-      if (nextTargetKeys.indexOf(item.key) !== -1) {
-        return item;
+  handleCommChange = (key, fields = []) => {
+    return (nextTargetKeys) => {
+      const { hiddenData } = this.props;
+      const dataSouce = { ...this.state[key] };
+      if (key === 'hiddenFields') {
+        dataSouce.data = filter(hiddenData, obj => (nextTargetKeys.indexOf(obj.key) === -1));
+      } else {
+        dataSouce.data = filter(hiddenData, obj => (nextTargetKeys.indexOf(obj.key) !== -1));
       }
-    });
-
-    this.setState({ hiddenFields: { ...hiddenFields, targetKeys: nextTargetKeys, data } });
-  };
-
-  handleHiddenSelectChange = (sourceSelectedKeys, targetSelectedKeys) => {
-    const data = [...sourceSelectedKeys, ...targetSelectedKeys];
-    const { hiddenFields } = this.state;
-    this.setState({
-      hiddenFields: {
-        ...hiddenFields,
-        selectedKeys: data,
-      },
-    });
-  };
-
-  handleEditChange = (nextTargetKeys) => {
-    const { editFields, editData } = this.state;
-    const data = [];
-    editData.forEach((item) => {
-      if (nextTargetKeys.indexOf(item.key) !== -1) {
-        data.push(item);
+      const stateFields = { [key]: dataSouce };
+      if (fields.length) {
+        forEach(fields, (item) => {
+          stateFields[item] = {
+            selectedKeys: [],
+            targetKeys: [],
+            data: [],
+          };
+        });
       }
-    });
-    this.setState({
-      editFields: { ...editFields, targetKeys: nextTargetKeys, data },
-      requireFields: {
-        selectedKeys: [],
-        targetKeys: [],
-        data: [],
-      },
-    });
+      dataSouce.targetKeys = nextTargetKeys;
+      this.setState({ ...stateFields });
+    };
   };
 
-  handleEditSelectChange = (sourceSelectedKeys, targetSelectedKeys) => {
-    const data = [...sourceSelectedKeys, ...targetSelectedKeys];
-    const { editFields } = this.state;
-    this.setState({ editFields: { ...editFields, selectedKeys: data } });
-  };
-
-  handleRequireChange = (nextTargetKeys) => {
-    const { requireFields, editFields } = this.state;
-    const data = [];
-    editFields.data.forEach((item) => {
-      if (nextTargetKeys.indexOf(item.key) === 0) {
-        data.push(item);
-      }
-    });
-    this.setState({ requireFields: { ...requireFields, targetKeys: nextTargetKeys, data } });
-  };
-
-  handleRequireSelectChange = (sourceSelectedKeys, targetSelectedKeys) => {
-    const data = [...sourceSelectedKeys, ...targetSelectedKeys];
-    const { requireFields } = this.state;
-    this.setState({ requireFields: { ...requireFields, selectedKeys: data } });
-  };
+  handleCommSelectChange = (key) => {
+    return (sourceSelectedKeys, targetSelectedKeys) => {
+      const selectedKeys = [...sourceSelectedKeys, ...targetSelectedKeys];
+      const newObj = { ...this.state[key] };
+      newObj.selectedKeys = selectedKeys;
+      this.setState({ [key]: newObj });
+    };
+  }
 
   handleSubmit = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        const { hiddenFields, editFields, requireFields, dataCommit } = this.state;
+        const { availableFields, hiddenFields, editFields, requireFields, dataCommit } = this.state;
         const { handleSteps, callbackRemoveTabs, onlyKey } = this.props;
         const commitSource = {
           ...dataCommit,
@@ -202,12 +193,13 @@ export default class StepForm extends React.PureComponent {
           hidden_fields: hiddenFields.targetKeys,
           editable_fields: editFields.targetKeys,
           required_fields: requireFields.targetKeys,
+          available_fields: availableFields.targetKeys,
         };
         const isEdit = typeof this.props.data === 'object';
         const result = handleSteps(commitSource, isEdit);
         if (result) {
           callbackRemoveTabs(`newTabs${onlyKey}`);
-          message.info('生成流程成功！');
+          message.info('生成步骤成功！');
         } else {
           message.error('存在相同步骤名，请重新输入步骤！');
         }
@@ -270,22 +262,20 @@ export default class StepForm extends React.PureComponent {
       },
     };
     const {
-      submitting,
-      hiddenData,
       roles,
       fields,
+      submitting,
+      hiddenData,
       department,
     } = this.props;
     const {
-      hiddenFields,
-      editFields,
-      editData,
-      requireFields,
-      dataCommit,
       current,
+      dataCommit,
+      editFields,
+      hiddenFields,
+      requireFields,
+      availableFields,
     } = this.state;
-    const disVisible = editFields.data.length === 0 ? 'none' : 'block';
-    const editVisible = editData.length === 0 ? 'none' : 'block';
     const { getFieldDecorator, getFieldValue } = this.props.form;
     const departmentTree = [];
     this.markDepartmentTree(department, departmentTree);
@@ -327,6 +317,40 @@ export default class StepForm extends React.PureComponent {
               initialValue: dataCommit.name,
             })(
               <Input placeholder="请输入" />
+            )}
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="通知"
+          >
+            {getFieldDecorator('send_todo', {
+              rules: [{
+                required: true, message: '必选选项',
+              }],
+              initialValue: dataCommit.send_todo,
+            })(
+              <RadioGroup>
+                <RadioButton value="1">启用</RadioButton>
+                <RadioButton value="0">停用</RadioButton>
+              </RadioGroup>
+            )}
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="通知发起人"
+          >
+            {getFieldDecorator('send_start', {
+              rules: [{
+                required: true, message: '必选选项',
+              }],
+              initialValue: dataCommit.send_start,
+            })(
+              <RadioGroup>
+                <RadioButton value="1">启用</RadioButton>
+                <RadioButton value="0">停用</RadioButton>
+              </RadioGroup>
             )}
           </FormItem>
           <FormItem
@@ -449,6 +473,35 @@ export default class StepForm extends React.PureComponent {
           </div>
           <FormItem
             labelCol={{ span: 5 }}
+            wrappercol={{ span: 15 }}
+            label="是否抄送"
+          >
+            {getFieldDecorator('is_cc', {
+              initialValue: dataCommit.is_cc,
+            })(
+              <RadioGroup>
+                <Radio value="1">是</Radio>
+                <Radio value="0">否</Radio>
+              </RadioGroup>
+            )}
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="抄送人"
+          >
+            {getFieldDecorator('cc_person', {
+              initialValue: dataCommit.cc_person,
+            })(
+              <SearchTable.Staff
+                multiple
+                disabled={getFieldValue('is_cc') === '0'}
+                filters={{ content: 'status_id>=0;', status: [1, 2, 3] }}
+              />
+            )}
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 5 }}
             wrapperCol={{ span: 15 }}
             label="描述"
             name="description"
@@ -493,16 +546,38 @@ export default class StepForm extends React.PureComponent {
           <FormItem
             labelCol={{ span: 5 }}
             wrappercol={{ span: 15 }}
-            label="隐藏字段"
+            label="可用字段"
           >
             <Transfer
               lazy={false}
               dataSource={hiddenData}
               titles={['待选', '选中列表']}
+              targetKeys={availableFields.targetKeys}
+              selectedKeys={availableFields.selectedKeys}
+              onSelectChange={this.handleCommSelectChange('availableFields')}
+              onChange={this.handleCommChange('availableFields', ['hiddenFields', 'editFields', 'requireFields'])}
+              render={(item) => {
+                return item.grids ? (
+                  <React.Fragment>
+                    {item.title} <Icon type="profile" theme="outlined" />
+                  </React.Fragment>
+                ) : item.title;
+              }}
+            />
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrappercol={{ span: 15 }}
+            label="隐藏字段"
+          >
+            <Transfer
+              lazy={false}
+              titles={['待选', '选中列表']}
+              dataSource={availableFields.data}
               targetKeys={hiddenFields.targetKeys}
               selectedKeys={hiddenFields.selectedKeys}
-              onChange={this.handleHiddenChange}
-              onSelectChange={this.handleHiddenSelectChange}
+              onChange={this.handleCommChange('hiddenFields')}
+              onSelectChange={this.handleCommSelectChange('hiddenFields')}
               render={(item) => {
                 return item.grids ? (
                   <React.Fragment>
@@ -514,19 +589,18 @@ export default class StepForm extends React.PureComponent {
           </FormItem>
 
           <FormItem
-            style={{ display: editVisible }}
             labelCol={{ span: 5 }}
             wrappercol={{ span: 15 }}
             label="可编辑字段"
           >
             <Transfer
               lazy={false}
-              dataSource={editData}
               titles={['待选', '选中列表']}
+              dataSource={availableFields.data}
               targetKeys={editFields.targetKeys}
               selectedKeys={editFields.selectedKeys}
-              onChange={this.handleEditChange}
-              onSelectChange={this.handleEditSelectChange}
+              onSelectChange={this.handleCommSelectChange('editFields')}
+              onChange={this.handleCommChange('editFields', ['requireFields'])}
               render={(item) => {
                 return item.grids ? (
                   <React.Fragment>
@@ -537,7 +611,6 @@ export default class StepForm extends React.PureComponent {
             />
           </FormItem>
           <FormItem
-            style={{ display: disVisible }}
             labelCol={{ span: 5 }}
             wrappercol={{ span: 15 }}
             label="必填字段"
@@ -548,9 +621,10 @@ export default class StepForm extends React.PureComponent {
               titles={['待选', '选中列表']}
               targetKeys={requireFields.targetKeys}
               selectedKeys={requireFields.selectedKeys}
-              onChange={this.handleRequireChange}
-              onSelectChange={this.handleRequireSelectChange}
+              onChange={this.handleCommChange('requireFields')}
+              onSelectChange={this.handleCommSelectChange('requireFields')}
               render={(item) => {
+                if (!item) return '';
                 return item.grids ? (
                   <React.Fragment>
                     {item.title} <Icon type="profile" theme="outlined" />
@@ -642,6 +716,22 @@ export default class StepForm extends React.PureComponent {
           <FormItem
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 15 }}
+            label="接收开始回调值"
+          >
+            {getFieldDecorator('accept_start_callback', {
+              initialValue: dataCommit.accept_start_callback,
+            })(
+              <RadioGroup name="radiogroup3" >
+                <RadioButton value="0">停用</RadioButton>
+                <RadioButton value="1">启用</RadioButton>
+              </RadioGroup>
+            )}
+          </FormItem>
+
+
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
             label="查看回调地址"
             name="check_callback_uri"
           >
@@ -652,6 +742,21 @@ export default class StepForm extends React.PureComponent {
               initialValue: dataCommit.check_callback_uri,
             })(
               <Input placeholder="请输入" />
+            )}
+          </FormItem>
+
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="接收查看回调值"
+          >
+            {getFieldDecorator('accept_check_callback', {
+              initialValue: dataCommit.accept_check_callback,
+            })(
+              <RadioGroup name="radiogroup3" >
+                <RadioButton value="0">停用</RadioButton>
+                <RadioButton value="1">启用</RadioButton>
+              </RadioGroup>
             )}
           </FormItem>
 
@@ -675,6 +780,21 @@ export default class StepForm extends React.PureComponent {
           <FormItem
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 15 }}
+            label="接收通过回调值"
+          >
+            {getFieldDecorator('accept_approve_callback', {
+              initialValue: dataCommit.accept_approve_callback,
+            })(
+              <RadioGroup name="radiogroup3" >
+                <RadioButton value="0">停用</RadioButton>
+                <RadioButton value="1">启用</RadioButton>
+              </RadioGroup>
+            )}
+          </FormItem>
+
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
             label="驳回回调地址"
             name="rejec_callback_uri"
           >
@@ -685,6 +805,21 @@ export default class StepForm extends React.PureComponent {
               initialValue: dataCommit.rejec_callback_uri,
             })(
               <Input placeholder="请输入" />
+            )}
+          </FormItem>
+
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="接收驳回回调值"
+          >
+            {getFieldDecorator('accept_reject_callback', {
+              initialValue: dataCommit.accept_reject_callback,
+            })(
+              <RadioGroup name="radiogroup3" >
+                <RadioButton value="0">停用</RadioButton>
+                <RadioButton value="1">启用</RadioButton>
+              </RadioGroup>
             )}
           </FormItem>
 
@@ -707,6 +842,21 @@ export default class StepForm extends React.PureComponent {
           <FormItem
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 15 }}
+            label="接收转交回调值"
+          >
+            {getFieldDecorator('accept_transfer_callback', {
+              initialValue: dataCommit.accept_transfer_callback,
+            })(
+              <RadioGroup name="radiogroup3" >
+                <RadioButton value="0">停用</RadioButton>
+                <RadioButton value="1">启用</RadioButton>
+              </RadioGroup>
+            )}
+          </FormItem>
+
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
             label="结束回调地址"
             name="end_callback_uri"
           >
@@ -718,8 +868,24 @@ export default class StepForm extends React.PureComponent {
             })(
               <Input placeholder="请输入" />
             )}
-
           </FormItem>
+
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="接收结束回调值"
+          >
+            {getFieldDecorator('accept_end_callback', {
+              initialValue: dataCommit.accept_end_callback,
+            })(
+              <RadioGroup name="radiogroup3" >
+                <RadioButton value="0">停用</RadioButton>
+                <RadioButton value="1">启用</RadioButton>
+              </RadioGroup>
+            )}
+          </FormItem>
+
+
           <FormItem
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 15 }}
@@ -735,6 +901,22 @@ export default class StepForm extends React.PureComponent {
               <Input placeholder="请输入" />
             )}
           </FormItem>
+
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="接收撤回回调值"
+          >
+            {getFieldDecorator('accept_withdraw_callback', {
+              initialValue: dataCommit.accept_withdraw_callback,
+            })(
+              <RadioGroup name="radiogroup3" >
+                <RadioButton value="0">停用</RadioButton>
+                <RadioButton value="1">启用</RadioButton>
+              </RadioGroup>
+            )}
+          </FormItem>
+
         </div>
 
         <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
@@ -756,7 +938,7 @@ export default class StepForm extends React.PureComponent {
             >下一步
             </Button>
           )}
-          <Button type="primary" htmlType="submit" loading={submitting}>生成流程</Button>
+          <Button type="primary" htmlType="submit" loading={submitting}>生成步骤</Button>
           <Button
             type="danger"
             ghost

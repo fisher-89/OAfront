@@ -1,21 +1,28 @@
-import fineEffects from './fine';
-import regimeEffects from './regime';
-import countEffects from './count';
-import defaultReducers from '../reducers/default';
+import fineLogEffects from './fineLog';
+import ruleEffects from './rule';
+import ruleTypeEffects from './rule-type';
+import scoreEffects from './score';
+import moneyEffects from './money';
+import defaultReducers from '../reducers';
 
 export default {
   namespace: 'violation',
   state: {
-    fine: [],
-    regime: [],
-    count: [],
+    finelog: [],
+    rule: [],
+    ruletype: [],
+    money: {},
+    score: {},
   },
   effects: {
-    ...fineEffects,
-    ...regimeEffects,
-    ...countEffects,
+    ...fineLogEffects,
+    ...ruleEffects,
+    ...ruleTypeEffects,
+    ...moneyEffects,
+    ...scoreEffects,
   },
   reducers: {
     ...defaultReducers,
   },
 };
+

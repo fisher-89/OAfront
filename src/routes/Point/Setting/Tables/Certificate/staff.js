@@ -2,7 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 
 import OATable from '../../../../../components/OATable';
-import { customerAuthority } from '../../../../../utils/utils';
+import { checkAuthority } from '../../../../../utils/utils';
 
 @connect(({ point, department, brand, loading }) => ({
   certificate: point.certificate,
@@ -109,7 +109,7 @@ export default class extends PureComponent {
         },
       },
     ];
-    if (customerAuthority(166)) {
+    if (checkAuthority(166)) {
       columns.push(
         {
           title: '操作',
@@ -129,7 +129,7 @@ export default class extends PureComponent {
 
   makeMultiOperator = () => {
     const multiOperator = [];
-    if (customerAuthority(166)) {
+    if (checkAuthority(166)) {
       multiOperator.push({ text: '批量删除', action: selectedRows => this.handleDelete(selectedRows) });
     }
     return multiOperator;

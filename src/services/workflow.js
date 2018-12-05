@@ -1,4 +1,5 @@
 import request from '../utils/request';
+import upload from '../utils/upload';
 
 /* flow */
 export async function fetchFlow(params, id) {
@@ -40,14 +41,47 @@ export async function flowRunLog(params) {
   });
 }
 
-export async function flowRunLogExport(params) {
-  return request('/api/workflow/flow-run/get-export', {
+export async function flowRunFormVersion(id) {
+  return request(`/api/workflow/flow-run/form/flow/${id}`, { method: 'GET' });
+}
+
+export async function formVersion(id) {
+  return request(`/api/workflow/flow-run/form/${id}`, { method: 'GET' });
+}
+
+export async function startFlowRunLogExport(params) {
+  return request('/api/workflow/flow-run/export/start', {
     method: 'GET',
     body: {
       ...params,
     },
   });
 }
+
+export function delay(timeout) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, timeout);
+  });
+}
+
+export async function checkFlowRunLogExport(code) {
+  return request('/api/workflow/flow-run/export/get', {
+    method: 'GET',
+    body: { code },
+  });
+}
+
+export async function flowClone(id) {
+  return request('/api/workflow/flow-clone', {
+    method: 'POST',
+    body: { flow_id: id },
+  });
+}
+
+export async function uploadIcon(params) {
+  return upload('/api/workflow/flow-icon', { body: params });
+}
+
 
 /** flowType */
 
@@ -86,6 +120,12 @@ export async function deleteFlowType(id) {
 
 
 /* form */
+export async function fetchOldForm(id) {
+  return request(`/api/workflow/form-old/${id}`, {
+    method: 'GET',
+  });
+}
+
 export async function fetchForm(params, id) {
   return request(`/api/workflow/form/${id}`, {
     method: 'GET',
@@ -210,7 +250,9 @@ export async function addApiConfig(params) {
 
 
 export async function editApiConfig(params, id) {
-  return request(`/api/workflow/field-api-configuration/${id}`, {
+  let url = `/api/workflow/field-api-configuration/${id}`;
+  if (params.confirm) url += '?confirm=1';
+  return request(url, {
     method: 'PUT',
     body: params,
   });
@@ -289,6 +331,33 @@ export async function editStepDepartment(params, id) {
 export async function deleteStepDepartment(id) {
   return request(`/api/workflow/step-department-approver/${id}`, {
     method: 'DELETE',
+  });
+}
+
+
+export async function fetchWaitMsg(params) {
+  return request('/api/workflow/todo', {
+    method: 'GET',
+    body: params,
+  });
+}
+
+export async function resendWaitMsg(id) {
+  return request(`/api/workflow/todo/${id}`, {
+    method: 'PATCH',
+  });
+}
+
+export async function fetchWorkMsg(params) {
+  return request('/api/workflow/job', {
+    method: 'GET',
+    body: params,
+  });
+}
+
+export async function resendWorkMsg(id) {
+  return request(`/api/workflow/job/${id}`, {
+    method: 'PATCH',
   });
 }
 

@@ -85,14 +85,14 @@ export default (CustomerFrom) => {
     countNumber = (params, index) => {
       const { countNumber, onChange } = this.props;
       if (countNumber) countNumber(this.state.dataSource.length);
-      onChange(params, index);
+      if (onChange) onChange(params, index);
     }
 
     makeRmoveIcon = (k, index) => {
       return (
         <Icon
-          className="dynamic-delete-button"
           type="close"
+          className="dynamic-delete-button"
           onClick={() => this.showDeleteConfirm(k, index)}
         />
       );
@@ -121,11 +121,11 @@ export default (CustomerFrom) => {
         const key = `${item.key}`;
         const newName = `${name}[${i}]`;
         const content = (
-          <div key={key} className={styles.container} style={style}>
+          <div key={key} className={styles.container} style={{ ...style, marginBottom: 10 }}>
             <div className={styles.header}>
               {this.makeRmoveIcon(item.key, i)}
             </div>
-            <div className={styles.content}>
+            <div className={styles.content} style={{ paddingBottom: 20 }}>
               <CustomerFrom
                 {...this.props}
                 index={i}

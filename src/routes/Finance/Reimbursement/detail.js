@@ -15,7 +15,7 @@ import RcViewer from 'rc-viewer';
 import CountUp from 'react-countup';
 import Ellipsis from '../../../components/Ellipsis';
 import OATable from '../../../components/OATable';
-import { customerAuthority } from '../../../utils/utils';
+import { checkAuthority } from '../../../utils/utils';
 import styles from './detail.less';
 
 const { TextArea } = Input;
@@ -304,15 +304,15 @@ export default class extends Component {
 
   renderStamp = () => {
     const { info } = this.state;
-    if (info.status_id === 6 && customerAuthority(135)) {
+    if (info.status_id === 6 && checkAuthority(135)) {
       return <img alt="未转账" style={{ position: 'absolute', top: 9, marginLeft: 10 }} src="/images/未转账.png" />;
-    } else if (info.status_id === 7 && customerAuthority(135)) {
+    } else if (info.status_id === 7 && checkAuthority(135)) {
       return <img alt="已转账" style={{ position: 'absolute', top: 9, marginLeft: 10 }} src="/images/已转账.png" />;
     } else if (info.status_id === -1) {
       return <img alt="驳回" style={{ position: 'absolute', top: 9, marginLeft: 10 }} src="/images/驳回.png" />;
-    } else if (info.audit_time !== null && customerAuthority(34)) {
+    } else if (info.audit_time !== null && checkAuthority(34)) {
       return <img alt="通过" style={{ position: 'absolute', top: 9, marginLeft: 10 }} src="/images/通过.png" />;
-    } else if (info.second_rejected_at !== null && customerAuthority(135)) {
+    } else if (info.second_rejected_at !== null && checkAuthority(135)) {
       return <img alt="被驳回" style={{ position: 'absolute', top: 9, marginLeft: 10 }} src="/images/被驳回.png" />;
     }
   }
@@ -407,7 +407,7 @@ export default class extends Component {
               </Col>
             </Row>
             <Row>
-              {customerAuthority(34) && info.status_id === 3 && (
+              {checkAuthority(34) && info.status_id === 3 && (
                 <React.Fragment>
                   <Col span={2}>
                     <Popconfirm
@@ -443,7 +443,7 @@ export default class extends Component {
                   </Col>
                 </React.Fragment>
               )}
-              {customerAuthority(135) && info.status_id === 6 && (
+              {checkAuthority(135) && info.status_id === 6 && (
                 <React.Fragment>
                   <Col span={2}>
                     <Popconfirm

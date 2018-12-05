@@ -11,7 +11,7 @@ import OATable from '../../../../../components/OATable';
 import CertificateForm from './form';
 import StaffCertificateForm from './staffForm';
 import StaffCertificateTable from './staff';
-import { customerAuthority } from '../../../../../utils/utils';
+import { checkAuthority } from '../../../../../utils/utils';
 
 const { Content, Sider } = Layout;
 @connect(({ point, loading }) => ({
@@ -78,18 +78,18 @@ export default class extends PureComponent {
         // rangeFilters: true,
       },
     ];
-    if (customerAuthority(162) || customerAuthority(161)) {
+    if (checkAuthority(162) || checkAuthority(161)) {
       columns.push(
         {
           title: '操作',
           render: (rowData) => {
             return (
               <Fragment>
-                {customerAuthority(161) && (
+                {checkAuthority(161) && (
                   <a onClick={() => this.handleEdit(rowData)}>编辑</a>
                 )}
                 <Divider type="vertical" />
-                {customerAuthority(162) && (
+                {checkAuthority(162) && (
                   <a onClick={() => this.handleDelete(rowData.id)}>删除</a>
                 )}
               </Fragment>
@@ -103,7 +103,7 @@ export default class extends PureComponent {
 
   makeExtraOperator = () => {
     const extra = [];
-    if (customerAuthority(160)) {
+    if (checkAuthority(160)) {
       extra.push((
         <Button
           icon="plus"
@@ -120,7 +120,7 @@ export default class extends PureComponent {
 
   makeStaffExtraOperator = () => {
     const extra = [];
-    if (customerAuthority(164)) {
+    if (checkAuthority(164)) {
       extra.push((
         <Button
           icon="plus"
@@ -182,7 +182,7 @@ export default class extends PureComponent {
           </Layout>
         </Layout>
         {
-          (customerAuthority(160) || customerAuthority(161)) &&
+          (checkAuthority(160) || checkAuthority(161)) &&
           (
             <CertificateForm
               initialValue={editInfo}
@@ -193,7 +193,7 @@ export default class extends PureComponent {
           )
         }
         {
-          (customerAuthority(164) || customerAuthority(165)) &&
+          (checkAuthority(164) || checkAuthority(165)) &&
           (
             <StaffCertificateForm
               visible={addStaffVisible}

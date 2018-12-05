@@ -7,7 +7,7 @@ import { connect } from 'dva';
 
 import OATable from '../../../../components/OATable';
 import TaskAuthForm from './form';
-import { customerAuthority } from '../../../../utils/utils';
+import { checkAuthority } from '../../../../utils/utils';
 @connect(({ point, loading }) => ({
   taskAuth: point.taskAuth,
   authLoading: loading.effects['point/fetchTaskAuth'],
@@ -68,18 +68,18 @@ export default class extends PureComponent {
         },
       },
     ];
-    if (customerAuthority([171, 170])) {
+    if (checkAuthority([171, 170])) {
       columns.push(
         {
           title: '操作',
           render: (rowData) => {
             return (
               <Fragment>
-                {customerAuthority(171) && (
+                {checkAuthority(171) && (
                   <a onClick={() => this.handleEdit(rowData)}>编辑</a>
                 )}
                 <Divider type="vertical" />
-                {customerAuthority(170) && (
+                {checkAuthority(170) && (
                   <a onClick={() => this.handleDelete(rowData.admin_sn)}>删除</a>
                 )}
               </Fragment>
@@ -93,7 +93,7 @@ export default class extends PureComponent {
 
   makeExtraOperator = () => {
     const extra = [];
-    if (customerAuthority(169)) {
+    if (checkAuthority(169)) {
       extra.push((
         <Button
           icon="plus"
@@ -115,7 +115,7 @@ export default class extends PureComponent {
     return (
       <React.Fragment>
         {
-          (customerAuthority([169, 171])) &&
+          (checkAuthority([169, 171])) &&
           (
             <TaskAuthForm
               initialValue={editInfo}

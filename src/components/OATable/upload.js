@@ -24,14 +24,19 @@ export default class UploadExcel extends Upload {
         response,
       };
     } else {
-      onSuccess(response);
       result = {
         visible: true,
         error: false,
         response,
       };
     }
-    this.setState({ importResult: { ...result } });
+    this.setState({ importResult: { ...result } }, () => {
+      if (!result.error) {
+        onSuccess(response);
+      } else {
+        onError(response);
+      }
+    });
   }
 
   handleChange = (info) => {

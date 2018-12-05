@@ -29,20 +29,21 @@ export default {
       }
     } catch (err) { return err; }
   },
-  * clientReduction({ payload, onSuccess, onError }, { call }) {
+  * clientReduction({ payload, onSuccess, onError }, { call, put }) {
     try {
       const { id } = { ...payload };
       if (id) {
         const response = yield call(clientReduction, id);
         if (response.error) { onError(response.error); return; }
-        // yield put({
-        //   type: 'update',
-        //   payload: {
-        //     id,
-        //     store,
-        //     data: response,
-        //   },
-        // });
+        yield put({
+          type: 'update',
+          payload: {
+            data: response,
+            id: response.id,
+            store: 'customer',
+            message: '还原成功',
+          },
+        });
         onSuccess(response);
       }
     } catch (err) { return err; }

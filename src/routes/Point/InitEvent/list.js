@@ -17,7 +17,7 @@ import OAForm, {
 import OATable from '../../../components/OATable';
 import InputRange from '../../../components/InputRange';
 import EventTree from './eventTree';
-import { markTreeData, customerAuthority } from '../../../utils/utils';
+import { markTreeData, checkAuthority } from '../../../utils/utils';
 
 const FormItem = OAForm.Item;
 
@@ -204,18 +204,18 @@ export default class extends PureComponent {
         render: isActive => (isActive ? '激活' : '未激活'),
       },
     ];
-    if (customerAuthority(143) || customerAuthority(144)) {
+    if (checkAuthority(143) || checkAuthority(144)) {
       columns.push(
         {
           title: '操作',
           render: (rowData) => {
             return (
               <Fragment>
-                {customerAuthority(143) && (
+                {checkAuthority(143) && (
                   <a onClick={() => this.handleEdit(rowData)}>编辑</a>
                 )}
                 <Divider type="vertical" />
-                {customerAuthority(144) && (
+                {checkAuthority(144) && (
                   <a onClick={() => this.handleDelete(rowData.id)}>删除</a>
                 )}
               </Fragment>
@@ -229,7 +229,7 @@ export default class extends PureComponent {
 
   makeExtraOperator = () => {
     const extra = [];
-    if (customerAuthority(139)) {
+    if (checkAuthority(139)) {
       extra.push((
         <Button
           icon="plus"
@@ -322,21 +322,21 @@ export default class extends PureComponent {
       labelCol: { span: 6 },
       wrapperCol: { span: 14 },
     };
-    const treeData = markTreeData(typeList, { parentId: 'parent_id', value: 'id', lable: 'name' });
+    const treeData = markTreeData(typeList, { parentId: 'parent_id', value: 'id', label: 'name' });
     const isEdit = Object.keys(editInfo).length !== 0;
     const excelAction = {};
-    if (customerAuthority(140)) {
+    if (checkAuthority(140)) {
       excelAction.excelInto = 'http://192.168.20.144:8003/admin/events/import';
     }
 
-    if (customerAuthority(141)) {
+    if (checkAuthority(141)) {
       excelAction.excelExport = {
         actionType: 'point/exportEvent',
         fileName: '事件列表.xlsx',
       };
     }
 
-    if (customerAuthority(141)) {
+    if (checkAuthority(141)) {
       excelAction.excelTemplate = '/api/pms/events/example';
     }
 
@@ -359,7 +359,7 @@ export default class extends PureComponent {
             extraOperator={this.makeExtraOperator()}
           />
         </Col>
-        {(customerAuthority(139) || customerAuthority(143))
+        {(checkAuthority(139) || checkAuthority(143))
           && (
             <OAModal
               width={600}

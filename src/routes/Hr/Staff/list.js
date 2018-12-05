@@ -2,37 +2,53 @@
  * Created by Administrator on 2018/4/11.
  */
 import React, { PureComponent, Fragment } from 'react';
-
 import {
-  Divider,
-  Popover,
-  Button,
   Icon,
-  Tooltip,
   Tabs,
+  Menu,
   Modal,
+  Button,
+  Divider,
+  Dropdown,
   notification,
 } from 'antd';
 
 import { connect } from 'dva';
-import { Link } from 'dva/router';
-import StaffInfo from './staffInfo';
-import MoreSearch from './moreSearch';
-import EditTransfer from './editTransfer';
-import EditLeave from './editLeave';
-import OATable from '../../../components/OATable';
-import EditStaff from './edit';
-// import ImportStaff from './import';
-import ExportStaff from './export';
-import EditProcess from './editProcess';
 
+import Search from './search';
+import AddStaff from './create';
+import EditStaff from './edit';
+import ImportStaff from './import';
+import ExportStaff from './export';
+import StaffInfo from './staffInfo';
+import EditLeave from './editLeave';
+import AgainEntry from './againEntry';
+import EditLeaving from './editLeaving';
+import EditProcess from './editProcess';
+import EditTransfer from './editTransfer';
+import OATable from '../../../components/OATable';
 import {
-  customerAuthority,
-  // getBrandAuthority,
-  // getDepartmentAuthority,
+  findRenderKey,
+  getFiltersData,
+  checkAuthority,
+  getBrandAuthority,
+  getDepartmentAuthority,
 } from '../../../utils/utils';
 
 const { TabPane } = Tabs;
+
+const staffProperty = ['无', '108将', '36天罡', '24金刚', '18罗汉'];
+const gender = [{ value: '男', text: '男' }, { value: '女', text: '女' }];
+const status = [
+  { value: 0, text: '离职中' },
+  { value: 1, text: '试用期' },
+  { value: 2, text: '在职' },
+  { value: 3, text: '停薪留职' },
+  { value: -1, text: '离职' },
+  { value: -2, text: '自动离职' },
+  { value: -3, text: '开除' },
+  { value: -4, text: '劝退' },
+];
 
 @connect(({ staffs, brand, department, position, loading }) => ({
   staff: staffs.staff,
@@ -41,54 +57,57 @@ const { TabPane } = Tabs;
   department: department.department,
   staffInfo: staffs.staffDetails,
   staffLoading: loading.models.staffs,
+  staffInfoLoading: loading.effects['staffs/fetchStaff'],
 }))
 
 export default class extends PureComponent {
   state = {
-    moreInfo: null,
-    visible: false,
     panes: [],
-    activeKey: 'staff_list',
-    editVisible: false,
-    transferVisible: false,
-    leaveVisible: false,
-    processVisible: false,
+    filters: {},
     editStaff: {},
+    addVisible: false,
+    editVisible: false,
+    leaveVisible: false,
+    entryVisible: false,
+    processVisible: false,
+    leavingVisible: false,
+    transferVisible: false,
+    activeKey: 'staff_list',
   }
 
   componentWillMount() {
     const { dispatch } = this.props;
     dispatch({ type: 'brand/fetchBrand' });
+    dispatch({ type: 'expense/fetchExpense' });
     dispatch({ type: 'position/fetchPosition' });
     dispatch({ type: 'department/fetchDepartment', payload: { withTrashed: true } });
+    this.fetchTags();
+    this.fetchTagsType();
   }
 
   onEdit = (targetKey, action) => {
     this[action](targetKey);
   }
 
-  fetchStaff = (param) => {
-    this.searchFilter = param;
+  fetchStaff = (params) => {
     const { dispatch } = this.props;
-    if (this.moreSearch) {
-      this.searchFilter = {
-        ...param,
-        ...this.moreSearch.state.formFilter,
-      };
-    }
-    dispatch({ type: 'staffs/fetchStaff', payload: this.searchFilter });
-  }
-
-  handleVisibleChange = (visible) => {
-    if (this.modalVisible) {
-      return;
-    }
-    this.setState({ visible });
+    dispatch({ type: 'staffs/fetchStaff', payload: params });
+    this.searchFilter = params;
   }
 
   fetchStaffInfo = (param) => {
     const { dispatch } = this.props;
     dispatch({ type: 'staffs/fetchStaffInfo', payload: param });
+  }
+
+  fetchTags = (params) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'stafftags/fetchStaffTags', payload: { ...params, type: 'staff' } });
+  }
+
+  fetchTagsType = (params) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'stafftags/fetchStaffTagCategories', payload: { ...params, type: 'staff' } });
   }
 
   showUserInfo = (info) => {
@@ -128,20 +147,8 @@ export default class extends PureComponent {
     this.setState({ panes: [...newPanes], activeKey });
   }
 
-  showStaffTransfer = (editStaff) => {
-    this.setState({ editStaff }, () => this.setState({ transferVisible: true }));
-  }
-
-  showStaffLeave = (editStaff) => {
-    this.setState({ editStaff }, () => this.setState({ leaveVisible: true }));
-  }
-
-  showEditStaff = (editStaff) => {
-    this.setState({ editStaff }, () => this.setState({ editVisible: true }));
-  }
-
-  showStaffProcess = (editStaff) => {
-    this.setState({ editStaff }, () => this.setState({ processVisible: true }));
+  showModal = (editStaff, visibleName) => {
+    this.setState({ editStaff }, () => this.setState({ [visibleName]: true }));
   }
 
   deleteStaff = (staffsn) => {
@@ -156,8 +163,7 @@ export default class extends PureComponent {
           payload: { staff_sn: staffsn },
         });
       },
-      onCancel: () => {
-      },
+      onCancel: () => { },
     });
   }
 
@@ -178,131 +184,208 @@ export default class extends PureComponent {
           },
         });
       },
-      onCancel: () => {
-      },
+      onCancel: () => { },
     });
   }
 
-  makeAction = (rowData) => {
-    const handleButton = {
-      66: (
-        <Link to="/" key="unlock">
-          <Tooltip title="激活" mouseLeaveDelay={0}>
-            <Icon type="unlock" style={{ fontSize: '18px' }} />
-          </Tooltip>
-        </Link>
-      ),
-      55: (
-        <Tooltip title="转正" key="user-add" mouseLeaveDelay={0}>
-          <a
-            onClick={() => {
-              this.showStaffProcess(rowData);
-            }}
-          >
-            <Icon type="user-add" style={{ fontSize: '18px' }} />
-          </a>
-        </Tooltip>
-      ),
-      56: (
-        <Tooltip title="人事变动" key="transfer" mouseLeaveDelay={0}>
-          <a
-            onClick={() => {
-              this.showStaffTransfer(rowData);
-            }}
-          >
-            <Icon type="retweet" style={{ fontSize: '18px' }} />
-          </a>
-        </Tooltip>
-      ),
-      57: (
-        <Tooltip title="离职" key="user-delete" mouseLeaveDelay={0}>
-          <a
-            onClick={() => {
-              this.showStaffLeave(rowData);
-            }}
-          >
-            <Icon type="user-delete" style={{ fontSize: '18px' }} />
-          </a>
-        </Tooltip>
-      ),
-      107: (
-        <Link to="/" key="107">
-          <Tooltip title="离职交接" mouseLeaveDelay={0}>
-            <Icon type="user-delete" style={{ fontSize: '18px' }} />
-          </Tooltip>
-        </Link>
-      ),
-      58: (
-        <Tooltip title="再入职" key="again-entry" mouseLeaveDelay={0}>
-          <a
-            onClick={() => {
-              this.showEditStaff(rowData);
-            }}
-          >
-            <Icon type="user-add" style={{ fontSize: '18px' }} />
-          </a>
-        </Tooltip>
-      ),
-      82: (
-        <Tooltip title="编辑" mouseLeaveDelay={0} key="edit">
-          <a
-            onClick={() => {
-              this.showEditStaff(rowData);
-            }}
-          >
-            <Icon type="form" style={{ fontSize: '18px' }} />
-          </a>
-        </Tooltip>
-      ),
-      59: (
-        <Tooltip title="删除" key="delete" mouseLeaveDelay={0}>
-          <a
-            style={{ color: 'red' }}
-            onClick={() => {
-              this.deleteStaff(rowData.staff_sn);
-            }}
-          >
-            <Icon type="delete" style={{ fontSize: '18px' }} />
-          </a>
-        </Tooltip>
-      ),
-      175: (
-        <Tooltip title="重置密码" key="reset" mouseLeaveDelay={0}>
-          <a onClick={() => this.resetPassword(rowData.staff_sn)}>
-            <Icon type="sync" theme="outlined" style={{ fontSize: '18px' }} />
-          </a>
-        </Tooltip>
-      ),
-    };
-    const action = [
-      <Tooltip title="个人信息" key="solution" mouseLeaveDelay={0}>
-        <a
-          style={{ color: '#08979c' }}
-          onClick={() => {
-            this.showUserInfo(rowData);
-          }}
-        >
-          <Icon type="solution" style={{ fontSize: '18px' }} />
-        </a>
-      </Tooltip>,
-    ];
-    const buttonKey = this.makeStaffActionKey(rowData.status_id);
-    buttonKey.forEach((key, i) => {
-      const dividerKey = `${i}d`;
-      action.push(<Divider key={dividerKey} type="vertical" />);
-      action.push(handleButton[key]);
+  lockStaff = (staffsn, type) => {
+    const { dispatch } = this.props;
+    dispatch({ type: `staffs/${type}`, payload: { staff_sn: staffsn } });
+  }
+
+  makeActionElement = (data, rowData, divider = true) => {
+    const buttonKey = this.makeStaffActionKey(rowData);
+    const action = [];
+    data.forEach((item, index) => {
+      const id = item.props.dataauthid;
+      const authAble = buttonKey.indexOf(id) === -1;
+      const style = item.props.style || { color: '#1890ff' };
+      if (!divider && authAble) return;
+      const element = React.cloneElement(item,
+        (
+          authAble ? {
+            key: index,
+            onClick: () => { },
+            style: { color: '#8E8E8E' },
+          } :
+            {
+              style,
+              key: index,
+            }
+        )
+      );
+      const key = `cc-${index}`;
+      if (divider) action.push(<Divider key={key} type="vertical" />);
+      action.push(element);
     });
     return action;
   }
 
-  makeStaffActionKey = (statusId) => {
+  makeMoreAction = (rowData) => {
+    const moreAction = [
+      (
+        <a
+          key="user-add"
+          dataauthid={55}
+          onClick={() => {
+            this.showModal(rowData, 'processVisible');
+          }}
+        >
+          转正
+        </a>
+      ),
+      (
+        <a
+          dataauthid={57}
+          key="leave"
+          onClick={() => {
+            this.showModal(rowData, 'leaveVisible');
+          }}
+        >
+          离职
+        </a>
+      ),
+      (
+        <a
+          dataauthid={58}
+          key="again-entry"
+          onClick={() => {
+            this.showModal(rowData, 'entryVisible');
+          }}
+        >
+          再入职
+        </a>
+      ),
+      (
+        <a
+          dataauthid={107}
+          key="leaving"
+          onClick={() => {
+            this.showModal(rowData, 'leavingVisible');
+          }}
+        >
+          离职交接
+        </a>
+      ),
+      (
+        <a
+          key="transfer"
+          dataauthid={56}
+          onClick={() => {
+            this.showModal(rowData, 'transferVisible');
+          }}
+        >
+          人事变动
+        </a>
+      ),
+      (
+        <a key="reset" dataauthid={175} onClick={() => this.resetPassword(rowData.staff_sn)}>
+          重置密码
+        </a>
+      ),
+      (
+        <a
+          key="delete"
+          dataauthid={59}
+          style={{ color: 'red' }}
+          onClick={() => {
+            this.deleteStaff(rowData.staff_sn);
+          }}
+        >
+          删除
+        </a>
+      ),
+    ];
+    if (rowData.is_active === 1) {
+      moreAction.push(
+        <a
+          key="locked"
+          dataauthid={66}
+          onClick={() => {
+            this.lockStaff(rowData.staff_sn, 'locked');
+          }}
+        >
+          锁定
+        </a>
+      );
+    }
+    const action = this.makeActionElement(moreAction, rowData, false);
+    const menu = (
+      <Menu>
+        {action.map((item, index) => {
+          const key = `dd${index}`;
+          return (
+            <Menu.Item key={key}>
+              {item}
+            </Menu.Item>
+          );
+        })}
+      </Menu>
+    );
+
+    return (
+      <Dropdown overlay={menu} trigger={['click']}>
+        <a className="ant-dropdown-link">
+          更多操作 <Icon type="down" />
+        </a>
+      </Dropdown>
+    );
+  }
+
+  makeAction = (rowData) => {
+    const action = [
+      <a
+        key="userInfo"
+        onClick={() => { this.showUserInfo(rowData); }}
+      >
+        查看
+      </a>,
+    ];
+    let actionList = [
+      (
+        <a
+          key="edit"
+          dataauthid={82}
+          onClick={() => {
+            this.showModal(rowData, 'editVisible');
+          }}
+        >
+          编辑
+        </a>
+      ),
+
+    ];
+    if (rowData.is_active === 0) {
+      actionList = [
+        (
+          <a
+            key="unlock"
+            dataauthid={66}
+            onClick={() => {
+              this.lockStaff(rowData.staff_sn, 'unlock');
+            }}
+          >
+            激活
+          </a>
+        ),
+      ];
+    }
+    const newAction = this.makeActionElement(actionList, rowData);
+    return action.concat(newAction);
+  }
+
+  makeStaffActionKey = (rowData) => {
     const buttonKey = [];
-    const { user, user: { authorities: { oa } } } = window;
-    if (user.is_active === 0) {
+    const statusId = rowData.status_id;
+    const { user: { authorities: { oa } } } = window;
+    if (rowData.is_active === 0) {
       if (oa.indexOf(66)) {
         buttonKey.push(66);
       }
-    } else if (user.is_active === 1) {
+    } else if (rowData.is_active === 1) {
+      if (oa.indexOf(66)) {
+        buttonKey.push(66);
+      }
       if (statusId === 1 && oa.indexOf(55)) {
         buttonKey.push(55);
       }
@@ -316,10 +399,10 @@ export default class extends PureComponent {
         buttonKey.push(57);
       }
       if (statusId === 0 && oa.indexOf(107)) {
-        // buttonKey.push(107);
+        buttonKey.push(107);
       }
     }
-    if (statusId <= 0 && oa.indexOf(58)) {
+    if (statusId < 0 && oa.indexOf(58)) {
       buttonKey.push(58);
     }
     if (oa.indexOf(82)) {
@@ -333,222 +416,153 @@ export default class extends PureComponent {
 
   makeColumns = () => {
     const { brand, department, position } = this.props;
-    const genderArr = ['未知', '男', '女'];
-    const gender = [{ value: 1, text: '男' }, { value: 2, text: '女' }];
-    const staffProperty = ['无', '108将', '36天罡', '24金刚', '18罗汉'];
-    const status = [
-      { value: 0, text: '离职中' },
-      { value: 1, text: '试用期' },
-      { value: 2, text: '在职' },
-      { value: 3, text: '停薪留职' },
-      { value: -1, text: '离职' },
-      { value: -2, text: '自动离职' },
-      { value: -3, text: '开除' },
-      { value: -4, text: '劝退' },
-    ];
-
     return [
       {
+        width: 90,
+        sorter: true,
         title: '编号',
         fixed: 'left',
-        width: 70,
+        searcher: true,
         dataIndex: 'staff_sn',
-        sorter: true,
       }, {
+        width: 70,
         title: '姓名',
         fixed: 'left',
-        align: 'center',
-        width: 70,
+        searcher: true,
         dataIndex: 'realname',
-        searcher: true,
       }, {
+        width: 100,
         title: '电话',
-        dataIndex: 'mobile',
-        align: 'center',
         searcher: true,
+        align: 'center',
+        dataIndex: 'mobile',
       }, {
+        width: 100,
         title: '品牌',
         align: 'center',
         dataIndex: 'brand_id',
-        filters: brand && brand.map((item) => {
-          return { text: item.name, value: item.id };
-        }),
-        render: (val) => {
-          const data = brand && brand.filter(item => item.id === val)[0];
-          return data ? data.name : '';
-        },
+        filters: getFiltersData(brand),
+        render: key => OATable.renderEllipsis(findRenderKey(brand, key).name, true),
       }, {
+        width: 100,
         title: '职位',
         dataIndex: 'position_id',
-        filters: position && position.map((item) => {
-          return { text: item.name, value: item.id };
-        }),
-        render: (val) => {
-          const data = position && position.filter(item => item.id === val)[0];
-          return data ? data.name : '';
-        },
+        filters: getFiltersData(position),
+        render: key => findRenderKey(position, key).name,
       }, {
-        title: '部门',
-        dataIndex: 'department_id',
         width: 200,
+        title: '部门',
         treeFilters: {
-          title: 'name',
           value: 'id',
+          title: 'name',
+          data: department,
           parentId: 'parent_id',
-          data: department.map(item => item),
         },
-        render: (val) => {
-          const data = department && department.filter(item => item.id === val)[0];
-          const fullName = data ? data.full_name : '';
-          const content = (
-            <Tooltip title={fullName} placement="right">
-              {fullName}
-            </Tooltip>
-          );
-          return content;
-        },
+        dataIndex: 'department_id',
+        render: key => OATable.renderEllipsis(findRenderKey(department, key).full_name, true),
       },
       {
+        width: 70,
         title: '状态',
-        dataIndex: 'status_id',
         align: 'center',
         filters: status,
-        render: val => status.filter(item => item.value === val)[0].text,
+        dataIndex: 'status_id',
+        render: key => findRenderKey(status, key, 'value').text,
       },
       {
+        width: 200,
         title: '店铺',
-        dataIndex: 'shop.name',
         searcher: true,
-        render: (val) => {
-          if (val) {
-            const content = (
-              <Tooltip title={val} placement="right">
-                {val}
-              </Tooltip>
-            );
-            return content;
-          }
-        },
+        dataIndex: 'shop.name',
+        render: key => OATable.renderEllipsis(key, true),
       }, {
+        width: 100,
         title: '店铺代码',
         dataIndex: 'shop_sn',
-        searcher: true,
       },
       {
+        width: 100,
+        align: 'center',
         title: '入职日期',
+        dateFilters: true,
         dataIndex: 'hired_at',
-        align: 'center',
-        dateFilters: true,
       }, {
+        width: 100,
+        hidden: true,
+        align: 'center',
         title: '转正日期',
+        dateFilters: true,
         dataIndex: 'employed_at',
-        align: 'center',
-        dateFilters: true,
       }, {
+        width: 100,
+        hidden: true,
+        align: 'center',
         title: '离职日期',
+        dateFilters: true,
         dataIndex: 'left_at',
-        align: 'center',
-        dateFilters: true,
       },
       {
-        title: '生日',
-        dataIndex: 'birthday',
-        align: 'center',
-        dateFilters: true,
-      },
-      {
+        width: 70,
         title: '性别',
-        dataIndex: 'gender_id',
+        hidden: true,
         align: 'center',
         filters: gender,
-        render: val => genderArr[val],
+        dataIndex: 'gender',
       },
       {
+        width: 100,
+        hidden: true,
+        align: 'center',
         title: '员工属性',
         dataIndex: 'property',
-        align: 'center',
-        filters: staffProperty.map((item, i) => {
-          return { text: item, value: i };
-        }),
         render: val => staffProperty[val],
+        filters: staffProperty.map((item, index) => ({ value: `${index}`, text: item })),
       },
-      // {
-      //   title: '操作',
-      //   width: 120,
-      //   fixed: 'right',
-      //   key: 'operation',
-      //   render: (val, rowData) => {
-      //     const checkBrand = getBrandAuthority(rowData.brand_id);
-      //     const checkDepartment = getDepartmentAuthority(rowData.department_id);
-      //     if ((!checkBrand || !checkDepartment) && rowData.status_id > 0) {
-      //       return '暂无操作权限';
-      //     }
-      //     return (
-      //       <Fragment>
-      //         {this.makeAction(rowData)}
-      //       </Fragment>
-      //     );
-      //   },
-      // },
+      {
+        width: 200,
+        title: '操作',
+        fixed: 'right',
+        render: (_, rowData) => {
+          const checkBrand = getBrandAuthority(rowData.brand_id);
+          const checkDepartment = getDepartmentAuthority(rowData.department_id);
+          if ((!checkBrand || !checkDepartment) && rowData.status_id > 0) {
+            return '暂无操作权限';
+          }
+          return (
+            <Fragment>
+              {this.makeAction(rowData)}
+              {rowData.is_active === 1 && <Divider type="vertical" />}
+              {rowData.is_active === 1 && this.makeMoreAction(rowData)}
+            </Fragment>
+          );
+        },
+      },
     ];
   }
 
   makeExtraOperator = () => {
     const extra = [];
     const { staff: { total } } = this.props;
-    const { visible, moreInfo } = this.state;
-    let style = {};
-    if (moreInfo) {
-      style = {
-        color: '#40a9ff',
-        backgroundColor: '#fff',
-        borderColor: '#40a9ff',
-      };
-    }
     extra.push(
-      // (customerAuthority(62)) && (
-      //   <Button
-      //     icon="plus"
-      //     key="plus"
-      //     type="primary"
-      //     onClick={() => {
-      //       this.setState({ editVisible: true });
-      //     }}
-      //   >
-      //     添加员工
-      //   </Button>
-      // ),
-      // (customerAuthority(62)) && (
-      //   <ImportStaff key="importPop" />
-      // ),
-      (customerAuthority(84) && (
+      (checkAuthority(62)) && (
+        <Button
+          icon="plus"
+          key="plus"
+          type="primary"
+          onClick={() => {
+            this.setState({ addVisible: true });
+          }}
+        >
+          添加员工
+        </Button>
+      ),
+      (checkAuthority(62)) && (
+        <ImportStaff key="importPop" />
+      ),
+      (checkAuthority(84) && (
         <ExportStaff key="exportBtn" filters={this.searchFilter} total={total} />
       ))
     );
-    extra.push((
-      <Popover
-        key="searchPop"
-        visible={visible}
-        trigger="click"
-        placement="bottomLeft"
-        onVisibleChange={this.handleVisibleChange}
-        content={(
-          <MoreSearch
-            ref={(e) => {
-              this.moreSearch = e;
-            }}
-            modalVisible={this.searChModal}
-            fetchDataSource={this.fetchStaff}
-            loading={this.props.staffLoading}
-            defaultFilter={this.searchFilter}
-            handleVisibleChange={this.handleVisibleChange}
-          />
-        )}
-      >
-        <Button icon="search" style={style}>更多搜索</Button>
-      </Popover>
-    ));
-
     return extra;
   }
 
@@ -556,13 +570,10 @@ export default class extends PureComponent {
     this.setState({ activeKey });
   }
 
-  searChModal = (visible) => {
-    this.modalVisible = visible;
-  }
-
   render() {
-    const { panes, activeKey } = this.state;
-    const { staffLoading, staffInfo, staff } = this.props;
+    const { panes, activeKey, filters } = this.state;
+    const { staffLoading, staffInfo, staffInfoLoading, staff } = this.props;
+    const columns = this.makeColumns();
     return (
       <Fragment>
         <Tabs
@@ -579,15 +590,19 @@ export default class extends PureComponent {
             closable={false}
           >
             <OATable
+              bordered
               serverSide
+              extraColumns
+              autoComplete
+              columns={columns}
+              filters={filters}
+              total={staff.total}
+              scroll={{ y: 550 }}
               loading={staffLoading}
-              scroll={{ x: 300 }}
-              columns={this.makeColumns()}
-              dataSource={staff && staff.data}
-              total={staff && staff.total}
-              filtered={staff && staff.filtered}
-              extraOperator={this.makeExtraOperator()}
+              dataSource={staff.data}
+              moreSearch={<Search />}
               fetchDataSource={this.fetchStaff}
+              extraOperator={this.makeExtraOperator()}
             />
           </TabPane>
           {panes.map((pane) => {
@@ -599,7 +614,7 @@ export default class extends PureComponent {
               >
                 {staffInfo[pane.key] && (Object.keys(staffInfo[pane.key]).length !== 0) && (
                   <StaffInfo
-                    loading={staffLoading}
+                    loading={staffInfoLoading}
                     data={staffInfo[pane.key]}
                     staffId={pane.key}
                   />
@@ -608,19 +623,21 @@ export default class extends PureComponent {
             );
           })}
         </Tabs>
+        <AddStaff
+          visible={this.state.addVisible}
+          editStaff={this.state.editStaff}
+          onCancel={() => {
+            this.setState({ addVisible: false, editStaff: {} });
+          }}
+        />
         <EditStaff
-          loading={staffLoading}
           visible={this.state.editVisible}
           editStaff={this.state.editStaff}
           onCancel={() => {
-            this.setState({
-              editVisible: false,
-              editStaff: {},
-            });
+            this.setState({ editVisible: false, editStaff: {} });
           }}
         />
         <EditTransfer
-          loading={staffLoading}
           visible={this.state.transferVisible}
           editStaff={this.state.editStaff}
           onCancel={() => {
@@ -631,7 +648,6 @@ export default class extends PureComponent {
           }}
         />
         <EditLeave
-          loading={staffLoading}
           visible={this.state.leaveVisible}
           editStaff={this.state.editStaff}
           onCancel={() => {
@@ -641,8 +657,27 @@ export default class extends PureComponent {
             });
           }}
         />
+        <EditLeaving
+          visible={this.state.leavingVisible}
+          editStaff={this.state.editStaff}
+          onCancel={() => {
+            this.setState({
+              leavingVisible: false,
+              editStaff: {},
+            });
+          }}
+        />
+        <AgainEntry
+          visible={this.state.entryVisible}
+          editStaff={this.state.editStaff}
+          onCancel={() => {
+            this.setState({
+              entryVisible: false,
+              editStaff: {},
+            });
+          }}
+        />
         <EditProcess
-          loading={staffLoading}
           visible={this.state.processVisible}
           editStaff={this.state.editStaff}
           onCancel={() => {

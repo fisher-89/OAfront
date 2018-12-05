@@ -1,168 +1,82 @@
 import request from '../utils/request';
 
-/**
- * 被大爱列表
- */
-export async function fineList(param) {
-  return request('/api/violation/punish/list', {
-    method: 'POST',
-    body: {
-      ...param,
-    },
-  });
+export async function fetchFineLog(params) {
+  return request('/api/violation/punish', { method: 'GET', body: params });
 }
 
-/**
- * 大爱详情
- */
-export async function fineInfo(param) {
-  return request('/api/violation/punish/Info', {
+export async function fetchFineMoney(params) {
+  return request('/api/violation/punish/money', { method: 'POST', body: params });
+}
+
+export async function fetchFineScore(params) {
+  return request('/api/violation/punish/score', { method: 'POST', body: params });
+}
+
+export async function downloadExcelTemp() {
+  return request('/api/violation/punish/example', { method: 'GET' });
+}
+
+export async function downloadExcelFinLog(params) {
+  return request('/api/violation/punish/export', {
     method: 'GET',
-    body: {
-      ...param,
-    },
+    body: params,
+    headers: { Accept: '*' },
   });
 }
 
-/**
- * 大爱添加
- */
-export async function addFine(param) {
-  return request('/api/violation/punish/add', {
-    method: 'POST',
-    body: {
-      ...param,
-    },
-  });
+export async function addFineLog(params) {
+  return request('/api/violation/punish', { method: 'POST', body: params });
 }
-
 
 /**
  * 大爱修改
  */
-export async function updateFine(param) {
-  return request('/api/violation/punish/update', {
-    method: 'PUT',
-    body: {
-      ...param,
-    },
-  });
+export async function editFineLog(params, id) {
+  return request(`/api/violation/punish/${id}`, { method: 'PUT', body: params });
+}
+
+export async function editPayState(params) {
+  return request('/api/violation/punish/pay', { method: 'POST', body: params });
 }
 
 /**
  * 大爱删除
  */
-export async function deleteFine(param) {
-  return request('/api/violation/punish/delete', {
-    method: 'DELETE',
-    body: {
-      ...param,
-    },
-  });
-}
-
-/**
- * 大爱统计
- */
-export async function countFine(param) {
-  return request('/api/violation/punish/count', {
-    method: 'POST',
-    body: {
-      ...param,
-    },
-  });
+export async function deleteFineLog(id) {
+  return request(`/api/violation/punish/${id}`, { method: 'DELETE' });
 }
 
 
-/**
- * 大爱Excel 导出
- */
-export async function exportFine(param) {
-  return request('/api/violation/punish/export', {
-    method: 'GET',
-    body: {
-      ...param,
-    },
-  });
+/*  大爱制度 */
+export async function fetchRuleType() {
+  return request('/api/violation/rule-type', { method: 'GET' });
+}
+
+export async function addRuleType(params) {
+  return request('/api/violation/rule-type', { method: 'POST', body: params });
+}
+
+export async function editRuleType(params, id) {
+  return request(`/api/violation/rule-type/${id}`, { method: 'PUT', body: params });
+}
+
+export async function deleteRuleType(id) {
+  return request(`/api/violation/rule-type/${id}`, { method: 'DELETE' });
 }
 
 
-/**
- * 大爱Excel 导入
- */
-export async function intoFine(param) {
-  return request('/api/violation/punish/into', {
-    method: 'POST',
-    body: {
-      ...param,
-    },
-  });
+export async function fetchRule() {
+  return request('/api/violation/rule', { method: 'GET' });
 }
 
-/**
- * 制度列表
- */
-
-export async function regimeList(param) {
-  return request('/api/violation/rule/list', {
-    method: 'POST',
-    body: {
-      ...param,
-    },
-  });
+export async function addRule(params) {
+  return request('/api/violation/rule', { method: 'POST', body: params });
 }
 
-
-/**
- * 制度详情
- */
-
-export async function regimeInfo(param) {
-  return request('/api/violation/rule/info', {
-    method: 'POST',
-    body: {
-      ...param,
-    },
-  });
+export async function editRule(params, id) {
+  return request(`/api/violation/rule/${id}`, { method: 'PUT', body: params });
 }
 
-/**
- * 制度添加
- */
-
-export async function addRegime(param) {
-  return request('/api/violation/rule/add', {
-    method: 'POST',
-    body: {
-      ...param,
-    },
-  });
+export async function deleteRule(id) {
+  return request(`/api/violation/rule/${id}`, { method: 'DELETE' });
 }
-
-
-/**
- * 制度更新
- */
-
-export async function updateRegime(param) {
-  return request('/api/violation/rule/update', {
-    method: 'PUT',
-    body: {
-      ...param,
-    },
-  });
-}
-
-/**
- * 制度删除
- */
-
-export async function deleteRegime(param) {
-  return request('/api/violation/rule/delete', {
-    method: 'DELETE',
-    body: {
-      ...param,
-    },
-  });
-}
-

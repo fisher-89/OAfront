@@ -6,9 +6,11 @@ import {
 } from 'antd';
 import { connect } from 'dva';
 
-import OATable from '../../../components/OATable';
+import { checkAuthority } from 'utils/utils';
+import OATable from 'components/OATable';
+import Ellipsis from 'components/Ellipsis/index';
 import BrandForm from './form';
-import { customerAuthority } from '../../../utils/utils';
+
 @connect(({ brand, loading }) => ({
   brand: brand.brand,
   fLoading: loading.effects['brand/fetchBrand'],
@@ -68,6 +70,20 @@ export default class extends PureComponent {
         searcher: true,
       },
       {
+        title: '关联费用品牌',
+        align: 'center',
+        dataIndex: 'cost_brands',
+        searcher: true,
+        render: (brand) => {
+          const brandStr = (brand || []).map(item => item.name).join(',');
+          return (<Ellipsis tooltip lines={2}>{brandStr}</Ellipsis>);
+        },
+        onFilter: (value, brand) => {
+          const brandStr = (brand.cost_brands || []).map(item => item.name);
+          return brandStr.indexOf(value) !== -1;
+        },
+      },
+      {
         title: '是否共享',
         dataIndex: 'is_public',
         filters: isPublic.map((item, i) => {
@@ -77,18 +93,18 @@ export default class extends PureComponent {
       },
     ];
 
-    if (customerAuthority(63) || customerAuthority(64)) {
+    if (checkAuthority(63) || checkAuthority(64)) {
       columns.push(
         {
           title: '操作',
           render: (rowData) => {
             return (
               <Fragment>
-                {customerAuthority(63) && (
+                {checkAuthority(63) && (
                   <a onClick={() => this.handleEdit(rowData)}>编辑</a>
                 )}
                 <Divider type="vertical" />
-                {customerAuthority(64) && (
+                {checkAuthority(64) && (
                   <a onClick={() => this.handleDelete(rowData.id)}>删除</a>
                 )}
               </Fragment>
@@ -103,7 +119,7 @@ export default class extends PureComponent {
 
   makeExtraOperator = () => {
     const extra = [];
-    if (customerAuthority(62)) {
+    if (checkAuthority(62)) {
       extra.push((
         <Button
           icon="plus"
@@ -125,7 +141,7 @@ export default class extends PureComponent {
     return (
       <React.Fragment>
         {
-          (customerAuthority(63) || customerAuthority(64)) &&
+          (checkAuthority(63) || checkAuthority(64)) &&
           (
             <BrandForm
               initialValue={editInfo}

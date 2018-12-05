@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Input, message, Button, Select } from 'antd';
+import { Input, message, Button, Select, Modal } from 'antd';
 import store from '../store/urlSource';
 import OAForm, { OAModal } from '../../../../components/OAForm';
 
@@ -34,7 +34,25 @@ export default class extends PureComponent {
     submit({
       ...initialValue,
       ...values,
-    }, onError, this.handleCancel);
+    }, (response) => {
+      if (typeof response === 'string') {
+        Modal.confirm({
+          title: '确认修改？',
+          content: response,
+          okText: '确认',
+          cancelText: '取消',
+          onOk: () => {
+            submit({
+              ...initialValue,
+              ...values,
+              confirm: 1,
+            }, onError, this.handleCancel);
+          },
+        });
+      } else {
+        onError(response);
+      }
+    }, this.handleCancel);
   }
 
   handleCancel = () => {

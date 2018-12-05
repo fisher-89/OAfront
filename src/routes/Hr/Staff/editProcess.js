@@ -1,122 +1,107 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import moment from 'moment';
 import {
   Input,
   Select,
-  message,
+
 } from 'antd';
 
-import OAForm, { DatePicker, OAModal } from '../../../components/OAForm';
+import NextForm from './nextForm';
+import OAForm, { OAModal } from '../../../components/OAForm';
 
 const FormItem = OAForm.Item;
 const { Option } = Select;
 
-@OAForm.create()
-@connect(({ staffs }) => ({ staffs }))
 
+const formItemLayout = {
+  labelCol: { span: 6 },
+  wrapperCol: { span: 8 },
+};
+
+
+@OAForm.create()
+@connect(({ loading }) => ({ loading: loading.staffs }))
 export default class extends PureComponent {
-  handleSubmit = (params) => {
-    const { dispatch } = this.props;
+  state = {
+    visible: false,
+  }
+
+  handleSubmit = (params, onError) => {
+    const { dispatch, onCancel } = this.props;
     dispatch({
       type: 'staffs/process',
       payload: params,
-      onError: this.handleError,
-      onSuccess: this.handleSuccess,
+      onError: (errors) => {
+        this.setState({ visible: false }, onError(errors));
+      },
+      onSuccess: () => {
+        this.setState({ visible: false }, onCancel());
+      },
     });
   }
 
-  handleError = (err) => {
-    const { onError } = this.props;
-    console.log(err);
-    onError(err.errors);
-  }
-
-  handleSuccess = () => {
-    this.props.onCancel();
+  handleNextForm = () => {
+    this.setState({ visible: true });
   }
 
   render() {
     const {
+      form,
       loading,
       visible,
+      onCancel,
       editStaff,
       validateFields,
       form: { getFieldDecorator },
     } = this.props;
 
-    const formItemLayout = {
-      labelCol: { span: 6 },
-      wrapperCol: { span: 8 },
-    };
-    const formItemLayout1 = {
-      labelCol: { span: 6 },
-      wrapperCol: { span: 16 },
-    };
 
     return (
-      <OAModal
-        width={600}
-        title="转正"
-        loading={loading}
-        visible={visible}
-        style={{ top: 30 }}
-        onCancel={() => this.props.onCancel()}
-        onSubmit={validateFields(this.handleSubmit)}
-      >
-        <FormItem label="姓名" {...formItemLayout}>
+      <React.Fragment>
+        <NextForm
+          form={form}
+          visible={this.state.visible}
+          onSubmit={validateFields(this.handleSubmit)}
+          onCancel={() => { this.setState({ visible: false }); }}
+        />
+        <OAModal
+          width={600}
+          title="转正"
+          okText="下一步"
+          loading={loading}
+          visible={visible}
+          style={{ top: 30 }}
+          onCancel={onCancel}
+          onSubmit={validateFields(this.handleNextForm)}
+        >
           {getFieldDecorator('staff_sn', {
-              initialValue: editStaff.staff_sn || '',
-            })(
-              <Input type="hidden" />
+            initialValue: editStaff.staff_sn || '',
+          })(
+            <Input type="hidden" />
           )}
           {getFieldDecorator('operation_type', {
-              initialValue: 'employ',
+            initialValue: 'employ',
+          })(
+            <Input type="hidden" />
+          )}
+          <FormItem label="姓名" {...formItemLayout}>
+            {getFieldDecorator('realname', {
+              initialValue: editStaff.realname,
             })(
-              <Input type="hidden" />
-          )}
-          {getFieldDecorator('realname', {
-            initialValue: editStaff.realname,
-          })(
-            <Input placeholder="请输入" name="realname" disabled />
-          )}
-        </FormItem>
-        <FormItem label="状态" required {...formItemLayout}>
-          {getFieldDecorator('status_id', {
-            initialValue: 2,
-          })(
-            <Select name="status_id" placeholer="请选择">
-              <Option value={2}>在职</Option>
-            </Select>
-          )}
-        </FormItem>
-        <FormItem label="执行时间" name="operate_at" required {...formItemLayout}>
-          {getFieldDecorator('operate_at', {
-            initialValue: '',
-          })(
-            <DatePicker
-              onChange={(time) => {
-                if (moment(time).isAfter()) {
-                  message.warning(`将预约 ${time} 执行`);
-                }
-              }}
-            />
-          )}
-        </FormItem>
-        <FormItem label="操作说明" {...formItemLayout1} name="operation_remark">
-          {getFieldDecorator('operation_remark', {
-            initialValue: '',
-          })(
-            <Input.TextArea
-              placeholder="最大长度100个字符"
-              autosize={{
-                minRows: 4,
-                maxRows: 6,
-              }}
-            />
-          )}
-        </FormItem>
-      </OAModal>
+              <Input placeholder="请输入" name="realname" disabled />
+            )}
+          </FormItem>
+          <FormItem label="状态" required {...formItemLayout}>
+            {getFieldDecorator('status_id', {
+              initialValue: 2,
+            })(
+              <Select name="status_id" placeholer="请选择">
+                <Option value={2}>在职</Option>
+              </Select>
+            )}
+          </FormItem>
+        </OAModal>
+      </React.Fragment>
     );
   }
 }

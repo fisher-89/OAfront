@@ -221,55 +221,64 @@ const menuData = [
         path: 'staff/edit/:staff_sn',
         hideInMenu: true,
       },
-      // {
-      //   name: '部门管理',
-      //   path: 'department',
-      //   authority: '38',
-      // },
-      // {
-      //   name: '职位管理',
-      //   path: 'position',
-      //   authority: '42',
-      // },
-      // {
-      //   name: '品牌管理',
-      //   path: 'brand',
-      //   authority: '42',
-      // },
-      // {
-      //   name: '店铺管理',
-      //   path: 'shop',
-      //   authority: '70',
-      // },
-      // {
-      //   name: '大爱',
-      //   path: 'violation',
-      //   authority: '76',
-      //   children: [
-      //     {
-      //       name: '大爱查询',
-      //       path: 'fine',
-      //     },
-      //     {
-      //       name: '制度列表',
-      //       path: 'regime',
-      //     },
-      //     {
-      //       name: '添加制度',
-      //       path: 'regime/add',
-      //       hideInMenu: true,
-      //     },
-      //     {
-      //       name: '添加制度',
-      //       path: 'regime/edit/:id',
-      //       hideInMenu: true,
-      //     },
-      //     {
-      //       name: '大爱统计',
-      //       path: 'count',
-      //     },
-      //   ],
-      // },
+      {
+        name: '部门管理',
+        path: 'department',
+        authority: '38',
+      },
+      {
+        name: '职位管理',
+        path: 'position',
+        authority: '42',
+      },
+      {
+        name: '品牌管理',
+        path: 'brand',
+        authority: '42',
+      },
+      {
+        name: '费用品牌',
+        path: 'expense',
+      },
+      {
+        name: '店铺管理',
+        path: 'shop',
+        authority: '70',
+      },
+      {
+        name: '标签管理',
+        path: 'tags',
+        children: [
+          {
+            name: '员工标签',
+            path: 'stafftags',
+          },
+          {
+            name: '店铺标签',
+            path: 'shoptags',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    name: '大爱',
+    icon: 'heart',
+    path: 'violation',
+    authority: '76',
+    children: [
+      {
+        name: '大爱记录',
+        path: 'log',
+      },
+      {
+        name: '制度管理',
+        path: 'regime',
+      },
+      {
+        name: '员工统计',
+        path: 'staffcensus',
+      },
     ],
   },
   {
@@ -338,6 +347,10 @@ const menuData = [
             name: '编辑表单',
             path: 'list/edit/:id',
             hideInMenu: true,
+          }, {
+            name: '历史表单',
+            path: 'list/info/:id',
+            hideInMenu: true,
           },
           {
             name: '表单分类',
@@ -355,6 +368,44 @@ const menuData = [
           {
             name: '验证规则',
             path: 'validator',
+          },
+        ],
+      },
+      {
+        name: '消息管理',
+        path: 'dingTalk',
+        children: [
+          {
+            name: '待办通知',
+            path: 'waitMsg',
+          },
+          {
+            name: '工作通知',
+            path: 'workMsg',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    name: '应用管理',
+    icon: 'form',
+    path: 'appmanage',
+    authority: '51',
+    children: [
+      {
+        name: '报销系统',
+        path: 'reimburse',
+        children: [
+          {
+            name: '审批人配置',
+            path: 'approverset',
+            authority: '115',
+          },
+          {
+            name: '审核人配置',
+            path: 'auditorset',
+            authority: '116',
           },
         ],
       },

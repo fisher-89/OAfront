@@ -1,5 +1,5 @@
 import shopEffects from './shop';
-import defaultReducers from '../reducers';
+import defaultReducers from '../reducers/shop';
 
 export default {
   namespace: 'shop',

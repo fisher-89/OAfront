@@ -6,6 +6,8 @@ export default {
   state: {
     staff: [],
     staffDetails: {},
+    staffLogDetails: {},
+    staffBespokeDetails: {},
     tableResult: {},
     totalResult: {},
     total: 0,
@@ -32,6 +34,25 @@ export default {
         totalResult: {
           ...state.totalResult,
           [JSON.stringify(params)]: total,
+        },
+      };
+    },
+    deleteBespoke(state, { payload }) {
+      const { id, data } = payload;
+      const staffSn = payload.staff_sn;
+      const { staffBespokeDetails } = state;
+      const newData = staffBespokeDetails[staffSn].map((item) => {
+        if (item.id === id) {
+          return { ...item, ...data };
+        } else {
+          return item;
+        }
+      });
+      return {
+        ...state,
+        staffBespokeDetails: {
+          ...staffBespokeDetails,
+          [staffSn]: newData,
         },
       };
     },

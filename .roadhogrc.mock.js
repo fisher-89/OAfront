@@ -7,8 +7,8 @@ const crm_port = `${TEST_URI}:8003`;
 const pms_port = `${TEST_URI}:8009`;
 const api_port = `${TEST_URI}:8002`;
 const workflow_port = `${TEST_URI}:8006`;
-
-
+const reimburse_port = `${TEST_URI}:8001`;
+const violation_port = `${TEST_URI}:8004`;
 
 export default !noProxy ? {
   /**
@@ -55,6 +55,12 @@ export default !noProxy ? {
     /**
      * 测试服  ： 报销
      */
+    'GET /api/finance/reimburse/admin/(.*)': `${reimburse_port}/admin/`,
+    'POST /api/finance/reimburse/admin/(.*)': `${reimburse_port}/admin/`,
+    'PATCH /api/finance/reimburse/admin/(.*)': `${reimburse_port}/admin/`,
+    'PUT /api/finance/reimburse/admin/(.*)': `${reimburse_port}/admin/`,
+    'DELETE /api/finance/reimburse/admin/(.*)': `${reimburse_port}/admin/`,
+
     'GET /api/finance/reimburse/(.*)': `${api_port}/reimburse/`,
     'POST /api/finance/reimburse/(.*)': `${api_port}/reimburse/`,
     'PATCH /api/finance/reimburse/(.*)': `${api_port}/reimburse/`,
@@ -68,6 +74,7 @@ export default !noProxy ? {
     'POST /api/workflow/(.*)': `${workflow_port}/admin/`,
     'PUT /api/workflow/(.*)': `${workflow_port}/admin/`,
     'DELETE /api/workflow/(.*)': `${workflow_port}/admin/`,
+    'PATCH /api/workflow/(.*)': `${workflow_port}/admin/`,
 
     /** 客户端管理 */
     'GET /api/crm/(.*)': `${crm_port}/admin/`,
@@ -93,6 +100,16 @@ export default !noProxy ? {
     'DELETE /api/admin/(.*)': `${pms_port}/admin/`,
 
     /**
+     * 唐娇  ： 大爱
+     */
+
+    'GET /api/violation/(.*)': `${violation_port}/admin/`,
+    'POST /api/violation/(.*)': `${violation_port}/admin/`,
+    'PUT /api/violation/(.*)': `${violation_port}/admin/`,
+    'DELETE /api/violation/(.*)': `${violation_port}/admin/`,
+    
+
+    /**
      * 测试服  ： 登录
      */
     'GET /api/(.*)': `${api_port}/api/`,
@@ -101,9 +118,9 @@ export default !noProxy ? {
     'PATCH /api/(.*)': `${api_port}/api/`,
     'DELETE /api/(.*)': `${api_port}/api/`,
     'POST /oauth/(.*)': `${api_port}/oauth/`,
-    /**
-     * 唐娇  ： 大爱
-     */
-    // 'POST /api/violation/(.*)': 'http://192.168.20.144:8001/api/',
+
+
+
+
   };
 

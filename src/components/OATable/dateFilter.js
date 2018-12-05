@@ -50,9 +50,9 @@ export default class extends PureComponent {
     return (
       <div className="ant-table-filter-dropdown">
         <RangePicker
+          value={date}
           format={dateFormat}
           open={dateFilterVisible}
-          defaultValue={date}
           renderExtraFooter={this.makeExtraFooter}
           getCalendarContainer={(trigger) => {
             return trigger;

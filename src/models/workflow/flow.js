@@ -1,19 +1,131 @@
-import { notification } from 'antd';
-import { flowRunLogExport, fetchFlow, addFlow, editFlow, deleteFlow, flowRunLog } from '../../services/workflow';
+import { notification, message } from 'antd';
+import {
+  flowRunFormVersion,
+  flowClone,
+  startFlowRunLogExport,
+  delay,
+  checkFlowRunLogExport,
+  fetchFlow,
+  addFlow,
+  editFlow,
+  deleteFlow,
+  flowRunLog,
+  uploadIcon,
+} from '../../services/workflow';
 
 const store = 'flow';
 
 export default {
-  *flowRunLogExport({ payload, onError, onSuccess }, { call }) {
+  * flowRunFormVersion({ payload, onError }, { call, put, select }) {
     try {
       const params = { ...payload };
-      const response = yield call(flowRunLogExport, params);
+      let response = yield select(models => models.workflow.formVersionDetails[params.id]);
+      if (response) return;
+      response = yield call(flowRunFormVersion, params.id || '');
       if (response.errors) {
         onError(response.errors);
         return;
       }
+      yield put({
+        type: 'save',
+        payload: {
+          id: params.id,
+          data: response,
+          store: 'formVersion',
+        },
+      });
+    } catch (err) {
+      return err;
+    }
+  },
+  * flowClone({ payload, onError, onSuccess }, { call, put }) {
+    try {
+      const params = { ...payload };
+      const response = yield call(flowClone, params.id || '');
+      if (response.errors) {
+        onError(response.errors);
+        return;
+      }
+      yield put({
+        type: 'add',
+        payload: {
+          store,
+          message: '克隆成功',
+          data: response,
+        },
+      });
       onSuccess(response);
-    } catch (err) { console.log(err); return err; }
+    } catch (err) {
+      return err;
+    }
+  },
+  * flowRunLogExport({ payload }, { call, put }) {
+    const params = { ...payload };
+    const code = yield call(startFlowRunLogExport, params);
+    yield put({
+      type: 'save',
+      payload: {
+        store: 'exportProgress',
+        data: 0,
+      },
+    });
+    yield call(delay, 1000);
+    yield put({
+      type: 'checkRunLogExport',
+      payload: { code },
+    });
+  },
+  * checkRunLogExport({ payload }, { call, put }) {
+    const { code } = payload;
+    const response = yield call(checkFlowRunLogExport, code);
+    if (response.type === 'finish') {
+      yield put({
+        type: 'save',
+        payload: {
+          store: 'exportProgress',
+          data: response.progress,
+        },
+      });
+      location.href = response.url;
+      yield call(delay, 3000);
+      yield put({
+        type: 'save',
+        payload: {
+          store: 'exportProgress',
+          data: null,
+        },
+      });
+    } else if (response.progress) {
+      yield call(delay, 1000);
+      yield put({
+        type: 'checkRunLogExport',
+        payload: { code },
+      });
+      yield put({
+        type: 'save',
+        payload: {
+          store: 'exportProgress',
+          data: response.progress,
+        },
+      });
+    } else {
+      message.error('遇到未知错误，导出失败');
+      yield put({
+        type: 'save',
+        payload: {
+          store: 'exportProgress',
+          data: -1,
+        },
+      });
+      yield call(delay, 3000);
+      yield put({
+        type: 'save',
+        payload: {
+          store: 'exportProgress',
+          data: null,
+        },
+      });
+    }
   },
   * flowRunLog({ payload }, { call, put }) {
     try {
@@ -26,7 +138,9 @@ export default {
           store: 'flowRunLog',
         },
       });
-    } catch (err) { return err; }
+    } catch (err) {
+      return err;
+    }
   },
   * fetchFlow({ payload }, { call, put }) {
     try {
@@ -44,7 +158,9 @@ export default {
           data: response,
         },
       });
-    } catch (err) { return err; }
+    } catch (err) {
+      return err;
+    }
   },
   * addFlows({ payload, onSuccess, onError }, { call, put }) {
     try {
@@ -62,7 +178,9 @@ export default {
         });
         onSuccess(response);
       }
-    } catch (err) { return err; }
+    } catch (err) {
+      return err;
+    }
   },
   * editFlow({ payload, onSuccess, onError }, { call, put }) {
     try {
@@ -85,7 +203,9 @@ export default {
         });
         onSuccess(response);
       }
-    } catch (err) { return err; }
+    } catch (err) {
+      return err;
+    }
   },
   * deleteFlow({ payload }, { call, put }) {
     try {
@@ -105,6 +225,20 @@ export default {
           },
         });
       }
-    } catch (err) { return err; }
+    } catch (err) {
+      return err;
+    }
+  },
+  * uploadIcon({ payload, onSuccess, onError }, { call }) {
+    try {
+      const response = yield call(uploadIcon, payload);
+      if (typeof response === 'object' && response.errors) {
+        onError(response.errors);
+        return;
+      }
+      if (onSuccess) onSuccess(response.url);
+    } catch (err) {
+      return err;
+    }
   },
 };

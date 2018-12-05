@@ -10,7 +10,7 @@ import { connect } from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import DepartForm from './departForm';
 import TreeSort from '../../../components/TreeSort';
-import { customerAuthority } from '../../../utils/utils';
+import { checkAuthority } from '../../../utils/utils';
 import './department.less';
 
 const { TreeNode } = Tree;
@@ -107,28 +107,31 @@ export default class extends PureComponent {
       const content = (
         <React.Fragment>
           <a className="title-content" onClick={() => fetchDataSource(item.id)}>{item.name}</a>
-          <div className="selected-Icon">
-            {customerAuthority(40) &&
-              (
-                <Icon
-                  className="icon-form"
-                  type="form"
-                  style={{ marginLeft: '10px' }}
-                  onClick={e => this.handleEidtEvent(e, item)}
-                />
-              )
-            }
-            {customerAuthority(41) &&
-              (
-                <Icon
-                  className="icon-delete"
-                  type="delete"
-                  style={{ marginLeft: '10px' }}
-                  onClick={e => this.handleDelete(e, item.id)}
-                />
-              )
-            }
-          </div>
+          {
+            !item.is_locked ? (
+              <div className="selected-Icon">
+                {checkAuthority(40) &&
+                  (
+                    <Icon
+                      className="icon-edit"
+                      type="edit"
+                      style={{ marginLeft: '10px' }}
+                      onClick={e => this.handleEidtEvent(e, item)}
+                    />
+                  )
+                }
+                {checkAuthority(41) &&
+                  (
+                    <Icon
+                      className="icon-delete"
+                      type="delete"
+                      style={{ marginLeft: '10px' }}
+                      onClick={e => this.handleDelete(e, item.id)}
+                    />
+                  )
+                }
+              </div>
+          ) : null}
         </React.Fragment>
       );
       if (item.children && item.children.length) {
@@ -150,7 +153,7 @@ export default class extends PureComponent {
     return (
       <QueueAnim type="left">
         {
-          customerAuthority(39) &&
+          checkAuthority(39) &&
           (
             <div
               key="add"
@@ -169,7 +172,7 @@ export default class extends PureComponent {
         }
         <TreeSort
           rootPid={0}
-          sorter={customerAuthority(65)}
+          sorter={checkAuthority(65)}
           key="treeSort"
           showLine
           loading={loading || sortLoading}
@@ -177,7 +180,7 @@ export default class extends PureComponent {
           dataSource={department}
           onChange={this.handleOnchange}
         />
-        {(customerAuthority(39) || customerAuthority(40)) &&
+        {(checkAuthority(39) || checkAuthority(40)) &&
           (
             <DepartForm
               visible={visible}

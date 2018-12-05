@@ -5,23 +5,38 @@ import {
   Divider,
 
 } from 'antd';
+import moment from 'moment';
 import { connect } from 'dva';
-
+import Search from './search';
+import ShopForm from './form';
 import OATable from '../../../components/OATable';
 import Ellipsis from '../../../components/Ellipsis/index';
-import ShopForm from './form';
-import Amap from './amap';
-import { customerAuthority } from '../../../utils/utils';
-@connect(({ shop, loading }) => ({
+import { checkAuthority, getFiltersData } from '../../../utils/utils';
+
+const status = [
+  { id: 1, name: '未营业' },
+  { id: 2, name: '营业中' },
+  { id: 3, name: '闭店' },
+  { id: 4, name: '结束' },
+];
+
+@connect(({ shop, loading, stafftags, department, brand }) => ({
+  stafftags: stafftags.stafftags,
+  brand: brand.brand,
   shop: shop.shop,
+  department: department.department,
   sLoading: loading.effects['shop/fetchShop'],
+  brandLoading: loading.effects['brand/fetchBrand'],
 }))
 export default class extends PureComponent {
   state = {
     visible: false,
     editInfo: {},
-    poiVisible: false,
-    poiInfo: {},
+  }
+
+  componentDidMount() {
+    this.fetchTags();
+    this.fetchTagsType();
   }
 
   fetchShop = (params) => {
@@ -29,23 +44,25 @@ export default class extends PureComponent {
     dispatch({ type: 'shop/fetchShop', payload: params });
   }
 
-  handleModalVisible = (flag) => {
-    this.setState({ visible: !!flag });
+  fetchTags = (params) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'stafftags/fetchStaffTags', payload: { ...params, type: 'shops' } });
   }
 
-  handlePoiVisible = (flag) => {
-    this.setState({ poiVisible: !!flag });
+  fetchTagsType = (params) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'stafftags/fetchStaffTagCategories', payload: { ...params, type: 'shops' } });
+  }
+
+  handleModalVisible = (flag) => {
+    this.setState({ visible: !!flag });
   }
 
   handleEdit = (data) => {
     this.setState({ editInfo: data }, () => this.handleModalVisible(true));
   }
 
-  handlePositon = (data) => {
-    this.setState({ poiInfo: data }, () => this.handlePoiVisible(true));
-  }
-
-  handleDelete = (id) => {
+  handleDelete = (shopSn) => {
     Modal.confirm({
       title: '确认删除?',
       cancelText: '取消',
@@ -54,65 +71,134 @@ export default class extends PureComponent {
         const { dispatch } = this.props;
         dispatch({
           type: 'shop/deleteShop',
-          payload: { id },
+          payload: { shop_sn: shopSn },
         });
       },
       onCancel: () => {},
     });
   }
 
+  /* 店铺状态筛选 */
+  statusSelect = (dataSource, value = 'id', text = 'name') => {
+    return (dataSource || []).map(item => ({ value: item[value], text: item[text] }));
+  }
+
   makeColumns = () => {
+    const { department, brand, brandLoading } = this.props;
     const columns = [
       {
         title: '店铺代码',
         dataIndex: 'shop_sn',
         searcher: true,
+        width: 100,
+        fixed: 'left',
       },
       {
         title: '店铺名称',
         dataIndex: 'name',
         searcher: true,
         width: 250,
+        fixed: 'left',
       },
       {
         title: '所属部门',
-        dataIndex: 'department.name',
-        searcher: true,
-        render: val => (val || '未分配'),
+        dataIndex: 'department.id',
+        align: 'center',
+        treeFilters: {
+          value: 'id',
+          title: 'name',
+          data: department,
+          parentId: 'parent_id',
+        },
+        render: key => OATable.findRenderKey(department, key).name,
+        width: 120,
       },
       {
         title: '所属品牌',
-        dataIndex: 'brand.name',
-        searcher: true,
-        render: val => (val || '未分配'),
+        dataIndex: 'brand.id',
+        align: 'center',
+        filters: getFiltersData(brand),
+        loading: brandLoading,
+        render: key => OATable.findRenderKey(brand, key).name,
+        width: 150,
       },
       {
         title: '店铺地址',
         dataIndex: 'address',
+        align: 'center',
+        width: 300,
+      },
+      {
+        title: '店铺标签',
+        dataIndex: 'tags',
         searcher: true,
-        width: 250,
+        align: 'center',
+        width: 200,
+        render: (_, record) => {
+          const { stafftags } = this.props;
+          const shoptags = (record.tags || []).map(item => item.id.toString());
+          const name = shoptags.map(item => OATable.findRenderKey(stafftags, item).name);
+          return name.join(',');
+        },
+      },
+      {
+        title: '店铺状态',
+        dataIndex: 'status_id',
+        align: 'center',
+        filters: this.statusSelect(status),
+        width: 100,
+        render: (key) => {
+          const current = status.filter(item => `${item.id}` === `${key}`);
+          return current ? current[0].name : '';
+        },
+      },
+      {
+        title: '开业日期',
+        hidden: true,
+        dataIndex: 'opening_at',
+        dateFilters: true,
+        align: 'center',
+        width: 120,
+        render: time => (time ? moment(time).format('YYYY-MM-DD') : ''),
+      },
+      {
+        title: '闭店日期',
+        hidden: true,
+        dataIndex: 'end_at',
+        dateFilters: true,
+        align: 'center',
+        width: 120,
+        render: time => (time ? moment(time).format('YYYY-MM-DD') : ''),
       },
       {
         title: '上班时间',
+        hidden: true,
         dataIndex: 'clock_in',
+        width: 100,
       },
       {
         title: '下班时间',
+        hidden: true,
         dataIndex: 'clock_out',
+        width: 100,
       },
       {
         title: '店长',
+        searcher: true,
         dataIndex: 'manager_name',
         render: val => (val || '暂无'),
+        width: 60,
       },
       {
-        title: '店长电话',
-        dataIndex: 'manager_mobile',
-        width: 120,
-        render: val => (val || '暂无'),
+        title: '驻店人',
+        hidden: true,
+        searcher: true,
+        dataIndex: 'assistant_name',
+        width: 60,
       },
       {
         title: '店员',
+        hidden: true,
         dataIndex: 'staff',
         width: 300,
         render: (staff) => {
@@ -122,24 +208,21 @@ export default class extends PureComponent {
       },
     ];
 
-    if (customerAuthority(72) || customerAuthority(73)) {
+    if (checkAuthority(72) || checkAuthority(73)) {
       columns.push(
         {
           title: '操作',
           fixed: 'right',
+          width: 100,
           render: (rowData) => {
             return (
               <Fragment>
-                {customerAuthority(72) && (
+                {checkAuthority(72) && (
                   <a onClick={() => this.handleEdit(rowData)}>编辑</a>
                 )}
                 <Divider type="vertical" />
-                {customerAuthority(73) && (
-                  <a onClick={() => this.handleDelete(rowData.id)}>删除</a>
-                )}
-                <Divider type="vertical" />
-                {customerAuthority(73) && (
-                  <a onClick={() => this.handlePositon(rowData)}>定位</a>
+                {checkAuthority(73) && (
+                  <a onClick={() => this.handleDelete(rowData.shop_sn)}>删除</a>
                 )}
               </Fragment>
             );
@@ -153,7 +236,7 @@ export default class extends PureComponent {
 
   makeExtraOperator = () => {
     const extra = [];
-    if (customerAuthority(71)) {
+    if (checkAuthority(71)) {
       extra.push((
         <Button
           icon="plus"
@@ -171,30 +254,29 @@ export default class extends PureComponent {
 
   render() {
     const { shop, sLoading } = this.props;
-    const { visible, editInfo, poiVisible, poiInfo } = this.state;
+    const { visible, editInfo } = this.state;
     return (
       <React.Fragment>
         {
-          (customerAuthority(72) || customerAuthority(73)) &&
+          (checkAuthority(72) || checkAuthority(73)) &&
           (
             <React.Fragment>
               <ShopForm
                 initialValue={editInfo}
                 visible={visible}
-                onCancel={() => { this.setState({ editInfo: {} }); }}
-                handleVisible={this.handleModalVisible}
-              />
-              <Amap
-                initialValue={poiInfo}
-                visible={poiVisible}
-                onCancel={() => { this.setState({ poiInfo: {} }); }}
-                handleVisible={this.handlePoiVisible}
+                onCancel={() => {
+                  this.setState({ visible: false, editInfo: {} });
+                }}
               />
             </React.Fragment>
           )
         }
         <OATable
+          bordered
+          autoComplete
           serverSide
+          moreSearch={<Search />}
+          extraColumns
           loading={sLoading || false}
           extraOperator={this.makeExtraOperator()}
           columns={this.makeColumns()}

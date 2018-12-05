@@ -55,7 +55,7 @@ export default class extends PureComponent {
       validateFields,
       form: { getFieldDecorator },
     } = this.props;
-    const newTreeData = markTreeData(treeData, { value: 'id', lable: 'name', parentId: 'parent_id' }, 0);
+    const newTreeData = markTreeData(treeData, { value: 'id', label: 'name', parentId: 'parent_id' }, 0);
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 16 },
@@ -97,7 +97,7 @@ export default class extends PureComponent {
         >
           {getFieldDecorator('parent_id', initialValue.parent_id ? {
             initialValue: initialValue.parent_id.toString(),
-          } : { initialValue: null })(
+          } : { initialValue: '' })(
             <TreeSelect
               placeholder="上级部门默认为空"
               treeDefaultExpandAll
@@ -108,7 +108,7 @@ export default class extends PureComponent {
         </FormItem>
         <FormItem label="品牌" {...formItemLayout}>
           {getFieldDecorator('brand_id', {
-            initialValue: initialValue.brand_id,
+            initialValue: initialValue.brand_id || 1,
           })(
             <Select name="brand_id" placeholer="请选择" onChange={this.handleChange}>
               {brand && brand.map((item) => {

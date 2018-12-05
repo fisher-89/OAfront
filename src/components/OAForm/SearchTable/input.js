@@ -51,10 +51,10 @@ export default class SearchInput extends React.Component {
         }}
         disabled={disabled}
         suffix={buttonBefore}
-        value={(typeof value === 'object') ? value[showName] : value}
         onBlur={this.handleBlur}
         onFocus={this.handleFocus}
         placeholder={placeholder || '请选择'}
+        value={(typeof value === 'object') ? value[showName] : value}
         prefix={<Icon type="search" style={{ color: 'rgba(0,0,0,.25)' }} />}
       />
     );

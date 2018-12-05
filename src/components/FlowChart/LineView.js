@@ -549,9 +549,7 @@ export default class LineView extends React.PureComponent {
         >
           <div
             className={RectCss.option}
-            onClick={() => {
-              this.deleteLine();
-            }}
+            onClick={this.deleteLine}
           ><Icon type="delete" />&nbsp;&nbsp;&nbsp;删除
           </div>
         </div>

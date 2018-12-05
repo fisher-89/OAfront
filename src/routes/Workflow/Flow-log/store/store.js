@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'dva';
+import { message } from 'antd';
 import { makeProps } from '../../../../utils/utils';
 
 function makeLoading(loading) {
@@ -10,7 +11,9 @@ function makeLoading(loading) {
       loading.effects['workflow/flowRunLog'] ||
       loading.effects['workflow/fetchFlowType'] ||
       loading.effects['workflow/fetchFormType'] ||
-      loading.effects['workflow/flowRunLogExport']
+      loading.effects['workflow/flowRunLogExport'] ||
+      loading.effects['workflow/flowRunFormVersion'] ||
+      loading.effects['workflow/formVersion']
     ),
   };
 }
@@ -22,6 +25,9 @@ export default type => (Component) => {
     flowType: workflow.flowType,
     formType: workflow.formType,
     flowRunLog: workflow.flowRunLog,
+    formVersion: workflow.formVersionDetails,
+    formVData: workflow.formVDetails,
+    exportProgress: workflow.exportProgress,
     loading: makeLoading(loading),
   }))
   class NewComponent extends React.PureComponent {
@@ -38,11 +44,30 @@ export default type => (Component) => {
       dispatch({ type: 'workflow/flowRunLog', payload: params });
     }
 
+    flowRunFormVersion = (id) => {
+      const { dispatch } = this.props;
+      dispatch({ type: 'workflow/flowRunFormVersion', payload: { id } });
+    }
+
+    fetchFormVersion = (id) => {
+      const { dispatch } = this.props;
+      dispatch({ type: 'workflow/formVersion', payload: { id } });
+    }
+
+    exportExcel = (formId, flowId = null) => {
+      const { dispatch } = this.props;
+      if (!formId.length) return message.error('请选择导出的表单!');
+      const payload = { form_id: formId };
+      if (flowId) payload.flow_id = flowId;
+      dispatch({ type: 'workflow/flowRunLogExport', payload });
+    }
+
     render() {
       return (
         <Component {...makeProps(this, type)} />
       );
     }
   }
+
   return NewComponent;
 };

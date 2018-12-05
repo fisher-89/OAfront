@@ -8,7 +8,7 @@ import {
 import NoteInfo from './info';
 import store from './store/store';
 import OATable from '../../../components/OATable';
-import { getFiltersData, customerAuthority } from '../../../utils/utils';
+import { getFiltersData, checkAuthority } from '../../../utils/utils';
 @store()
 export default class extends PureComponent {
   constructor(props) {
@@ -110,7 +110,7 @@ export default class extends PureComponent {
                 }}
               >查看
               </a>
-              {customerAuthority(182) && (
+              {checkAuthority(182) && (
                 <React.Fragment>
                   <Divider type="vertical" />
                   {editAble ? (
@@ -160,7 +160,7 @@ export default class extends PureComponent {
       ({ data, total } = notes);
     }
     const extraOperator = [];
-    if (customerAuthority(182) && !type) {
+    if (checkAuthority(182) && !type) {
       extraOperator.push((
         <Button
           type="primary"

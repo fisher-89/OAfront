@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
+import { find, filter } from 'lodash';
 import {
   Button,
   Tabs,
@@ -10,14 +11,14 @@ import {
   InputNumber,
   Form,
   Select,
-  Radio,
   Modal,
-  Spin,
   TreeSelect,
   notification,
 } from 'antd';
 import FlowChart from '../../../components/FlowChart';
+import Switch from '../../../components/CustomSwitch';
 import SearchTable from '../../../components/OAForm/SearchTable';
+import UploadCropper from '../../../components/UploadCropper';
 import { markTreeData } from '../../../utils/utils';
 import StepForm from './StepForm';
 
@@ -25,8 +26,6 @@ const { TabPane } = Tabs;
 
 const FormItem = Form.Item;
 const { Option } = Select;
-const RadioButton = Radio.Button;
-const RadioGroup = Radio.Group;
 
 
 @connect(({ workflow, staffs, department, roles, loading }) => ({
@@ -65,13 +64,17 @@ export default class Flow extends React.PureComponent {
       description: '',
       flow_type_id: null,
       form_id: null,
-      is_active: 1,
+      is_active: '1',
       start_callback_uri: '',
       end_callback_uri: '',
       flows_has_staff: [],
       flows_has_roles: [],
       flows_has_departments: [],
       steps: [],
+      send_message: '1',
+      is_client: '1',
+      accept_end_callback: '0',
+      accept_start_callback: '0',
     };
     const flowId = props.match.params.id ? parseInt(props.match.params.id, 10) : null;
     const isEdit = flowId !== null;
@@ -387,41 +390,23 @@ export default class Flow extends React.PureComponent {
     return result;
   };
 
-  handleSteps = (data, isEdit) => {
+  handleSteps = (data) => {
     const { formData, formData: { steps } } = this.state;
-    let step = 0;
-    let result = true;
-
-    steps.forEach((item) => {
-      if (data.name === item.name) {
-        step += 1;
-      }
-    });
-
-    if (isEdit) {
-      if (step > 1) {
-        result = false;
-        return result;
-      }
-      steps.forEach((item, i) => {
-        if (item.step_key === data.step_key) {
-          steps[i] = data;
-        }
-      });
-    } else {
-      if (step > 0) {
-        result = false;
-        return result;
-      }
-      const location = !steps.length ? { x: 120, y: 120 } : { x: 0, y: 0 };
-      const flowData = {
-        ...data,
-        ...location,
-      };
-      steps.push(flowData);
+    const nameData = filter(steps, ['name', data.name]);
+    if (nameData.length > 1) {
+      return false;
     }
-    this.setState({ formData: { ...formData, steps: [...steps] } });
-    return result;
+    const oldStep = find(steps, ['step_key', data.step_key]);
+    let newSteps = [...steps];
+    if (oldStep) {
+      newSteps = newSteps.map(value => (oldStep.step_key === value.step_key ? data : value));
+    } else {
+      const location = !steps.length ? { x: 120, y: 120 } : { x: 0, y: 0 };
+      const newData = { ...data, ...location };
+      newSteps.push(newData);
+    }
+    this.setState({ formData: { ...formData, steps: [...newSteps] } });
+    return true;
   };
 
   editFlows = () => {
@@ -506,9 +491,13 @@ export default class Flow extends React.PureComponent {
 
   flowChartForm = () => {
     const { formData, formData: { steps } } = this.state;
-    const departmentTree = markTreeData(this.props.department, { parentId: 'parent_id', value: 'id', lable: 'full_name' }, 0);
+    const departmentTree = markTreeData(this.props.department, {
+      parentId: 'parent_id',
+      value: 'id',
+      label: 'full_name',
+    }, 0);
     const {
-      form: { getFieldDecorator },
+      form: { getFieldDecorator, setFieldsValue },
       formsList,
       flowType,
       roles,
@@ -561,6 +550,26 @@ export default class Flow extends React.PureComponent {
       <Form
         onSubmit={this.affirmFlow}
       >
+        <FormItem label="流程图标" {...formItemLayout}>
+          {getFieldDecorator('icon', {
+            initialValue: formData.icon,
+          })(
+            <Input type="hidden" disabled={this.state.formAble} />
+          )}
+          <UploadCropper
+            name="icon"
+            cropperProps={{
+              aspectRatio: 1,
+            }}
+            value={formData.icon ? [formData.icon] : []}
+            actionType="workflow/uploadIcon"
+            disabled={this.state.formAble}
+            onChange={(values) => {
+              formData.icon = values[0] || null;
+              setFieldsValue({ icon: values[0] });
+            }}
+          />
+        </FormItem>
         <FormItem
           {...formItemLayout}
           label="名称"
@@ -586,6 +595,7 @@ export default class Flow extends React.PureComponent {
             <Input placeholder="请输入流程描述" disabled={this.state.formAble} />
           )}
         </FormItem>
+
         <FormItem
           labelCol={formItemLayout.labelCol}
           wrapperCol={{ span: 5 }}
@@ -604,6 +614,7 @@ export default class Flow extends React.PureComponent {
             </Select>
           )}
         </FormItem>
+
 
         <FormItem
           labelCol={formItemLayout.labelCol}
@@ -640,6 +651,48 @@ export default class Flow extends React.PureComponent {
               <Option value={null}>---请选择---</Option>
               {formsOption}
             </Select>
+          )}
+        </FormItem>
+
+        <FormItem
+          {...formItemLayout}
+          label="是否启用"
+        >
+          {getFieldDecorator('is_active', {
+            rules: [{
+              required: true, message: '必选选项',
+            }],
+            initialValue: formData.is_active,
+          })(
+            <Switch defaultChecked disabled={this.state.formAble} />
+          )}
+        </FormItem>
+
+        <FormItem
+          {...formItemLayout}
+          label="发送通知"
+        >
+          {getFieldDecorator('send_message', {
+            rules: [{
+              required: true, message: '必选选项',
+            }],
+            initialValue: formData.send_message,
+          })(
+            <Switch defaultChecked disabled={this.state.formAble} />
+          )}
+        </FormItem>
+
+        <FormItem
+          {...formItemLayout}
+          label="客户端可见"
+        >
+          {getFieldDecorator('is_client', {
+            rules: [{
+              required: true, message: '必选选项',
+            }],
+            initialValue: formData.is_client,
+          })(
+            <Switch defaultChecked disabled={this.state.formAble} />
           )}
         </FormItem>
 
@@ -746,7 +799,19 @@ export default class Flow extends React.PureComponent {
           )}
 
         </FormItem>
-
+        <FormItem
+          {...formItemLayout}
+          label="接收开始回调返回值"
+        >
+          {getFieldDecorator('accept_start_callback', {
+            rules: [
+              { required: true, message: '请选择' },
+            ],
+            initialValue: formData.accept_end_callback || '0',
+          })(
+            <Switch disabled={this.state.formAble} />
+          )}
+        </FormItem>
         <FormItem
           {...formItemLayout}
           label="结束回调地址"
@@ -760,23 +825,20 @@ export default class Flow extends React.PureComponent {
             <Input placeholder="请输入结束回调地址" disabled={this.state.formAble} />
           )}
         </FormItem>
-
         <FormItem
           {...formItemLayout}
-          label="是否启用"
+          label="接收结束回调返回值"
         >
-          {getFieldDecorator('is_active', {
-            rules: [{
-              required: true, message: '必选选项',
-            }],
-            initialValue: formData.is_active,
+          {getFieldDecorator('accept_end_callback', {
+            rules: [
+              { required: true, message: '请选择' },
+            ],
+            initialValue: formData.accept_end_callback || '0',
           })(
-            <RadioGroup name="radiogroup3" disabled={this.state.formAble}>
-              <RadioButton value={0}>停用</RadioButton>
-              <RadioButton value={1}>启用</RadioButton>
-            </RadioGroup>
+            <Switch disabled={this.state.formAble} />
           )}
         </FormItem>
+
 
         <FormItem
           {...formItemLayout}
@@ -785,7 +847,7 @@ export default class Flow extends React.PureComponent {
           {getFieldDecorator('sort', {
             initialValue: formData.sort,
           })(
-            <InputNumber placeholder="请输入" />
+            <InputNumber placeholder="请输入" disabled={this.state.formAble} />
           )}
         </FormItem>
 
@@ -852,11 +914,11 @@ export default class Flow extends React.PureComponent {
       formData: { steps },
     } = this.state;
 
-    const {
-      staffsLoading,
-      rolesLoading,
-      departmentLoading,
-    } = this.props;
+    // const {
+    //   staffsLoading,
+    //   rolesLoading,
+    //   departmentLoading,
+    // } = this.props;
 
     const operations = (
       <Button
@@ -878,6 +940,7 @@ export default class Flow extends React.PureComponent {
         steps={steps}
         location={location}
         editStep={this.editStep}
+        addSteps={this.handleSteps}
         updateSteps={this.updateSteps}
         loactionUpdate={this.locationUpdate}
       />
@@ -897,34 +960,28 @@ export default class Flow extends React.PureComponent {
         key="i"
         extra={operations}
       >
-        <Spin
-          tip="Loading..."
-          spinning={(rolesLoading || departmentLoading || staffsLoading) === true}
-          delay={500}
+        <Tabs
+          renderTabBar
+          renderTabContent
+          animated
+          tabBarExtraContent={addSteps}
+          onChange={this.onChange}
+          activeKey={activeKey}
+          type="editable-card"
+          onEdit={this.onEdit}
+          hideAdd
         >
-          <Tabs
-            renderTabBar
-            renderTabContent
-            animated
-            tabBarExtraContent={addSteps}
-            onChange={this.onChange}
-            activeKey={activeKey}
-            type="editable-card"
-            onEdit={this.onEdit}
-            hideAdd
-          >
-            {panes.map(pane => (
-              <TabPane
-                forceRender
-                tab={pane.title}
-                key={pane.key}
-                closable={pane.closable}
-              >
-                {pane.content}
-              </TabPane>)
-            )}
-          </Tabs>
-        </Spin>
+          {panes.map(pane => (
+            <TabPane
+              forceRender
+              tab={pane.title}
+              key={pane.key}
+              closable={pane.closable}
+            >
+              {pane.content}
+            </TabPane>)
+          )}
+        </Tabs>
       </Card>
     );
   }

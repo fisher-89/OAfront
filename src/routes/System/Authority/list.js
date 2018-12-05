@@ -11,7 +11,7 @@ import { connect } from 'dva';
 import OATable from '../../../components/OATable';
 import AuthForm from './form';
 import AuthTree from './authTree';
-import { customerAuthority } from '../../../utils/utils';
+import { checkAuthority } from '../../../utils/utils';
 @connect(({ authority, loading }) => ({
   authority: authority.authority,
   fLoading: loading.effects['authority/fetchAuth'],
@@ -24,11 +24,19 @@ export default class extends PureComponent {
   state = {
     visible: false,
     editInfo: {},
+    filters: {},
   }
 
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({ type: 'authority/fetchAuth' });
+  }
+
+  setAuthId = (id) => {
+    const ids = this.props.authority.filter((item) => {
+      return `${item.id}` === `${id}` || `${item.parent_id}` === `${id}`;
+    }).map(item => `${item.id}`);
+    this.setState({ filters: { id: ids } });
   }
 
   fetchAuth = (params) => {
@@ -67,6 +75,10 @@ export default class extends PureComponent {
         title: '编号',
         dataIndex: 'id',
         searcher: true,
+        onFilter: (value, record) => {
+          const { filters: { id } } = this.state;
+          return id.indexOf(`${record.id}`) !== -1;
+        },
       },
       {
         title: '权限名称',
@@ -75,7 +87,7 @@ export default class extends PureComponent {
       },
       {
         title: '关联 URI',
-        dataIndex: 'full_url',
+        dataIndex: 'full_url_tmp',
       },
       {
         title: '是否为菜单',
@@ -96,19 +108,27 @@ export default class extends PureComponent {
       },
     ];
 
-    if (customerAuthority(63) || customerAuthority(64)) {
+    if (checkAuthority(63) || checkAuthority(64)) {
       columns.push(
         {
           title: '操作',
           render: (rowData) => {
             return (
               <Fragment>
-                {customerAuthority(63) && (
-                  <a onClick={() => this.handleEdit(rowData)}>编辑</a>
+                {checkAuthority(63) && (
+                  <a
+                    onClick={() => this.handleEdit(rowData)}
+                    disabled={rowData.is_lock === 1}
+                  > 编辑
+                  </a>
                 )}
                 <Divider type="vertical" />
-                {customerAuthority(64) && (
-                  <a onClick={() => this.handleDelete(rowData.id)}>删除</a>
+                {checkAuthority(64) && (
+                  <a
+                    onClick={() => this.handleDelete(rowData.id)}
+                    disabled={rowData.is_lock === 1}
+                  >删除
+                  </a>
                 )}
               </Fragment>
             );
@@ -122,7 +142,7 @@ export default class extends PureComponent {
 
   makeExtraOperator = () => {
     const extra = [];
-    if (customerAuthority(62)) {
+    if (checkAuthority(62)) {
       extra.push((
         <Button
           icon="plus"
@@ -140,15 +160,15 @@ export default class extends PureComponent {
 
   render() {
     const { authority, fLoading, loading } = this.props;
-    const { visible, editInfo } = this.state;
+    const { visible, editInfo, filters } = this.state;
     return (
       <Row gutter={16}>
         <Col span={4} style={{ borderRight: '1px solid #e8e8e8' }}>
-          <AuthTree dataSource={authority} />
+          <AuthTree dataSource={authority} fetchDataSource={this.setAuthId} />
         </Col>
         <Col span={20}>
           {
-            (customerAuthority(63) || customerAuthority(64)) &&
+            (checkAuthority(63) || checkAuthority(64)) &&
             (
               <AuthForm
                 treeData={authority}
@@ -161,6 +181,7 @@ export default class extends PureComponent {
             )
           }
           <OATable
+            filters={filters}
             serverSide={false}
             loading={fLoading || false}
             extraOperator={this.makeExtraOperator()}

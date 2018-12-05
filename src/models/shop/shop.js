@@ -47,8 +47,8 @@ export default {
   * editShop({ payload, onSuccess, onError }, { call, put }) {
     try {
       const params = { ...payload };
-      const { id } = payload;
-      const response = yield call(editShop, params, id);
+      const shopSn = payload.shop_sn;
+      const response = yield call(editShop, params, shopSn);
       if (response.errors && onError) {
         onError(response.errors);
       } else {
@@ -56,7 +56,7 @@ export default {
           type: 'update',
           payload: {
             store,
-            id,
+            shopSn,
             data: response,
           },
         });
@@ -66,22 +66,15 @@ export default {
   },
   * deleteShop({ payload }, { call, put }) {
     try {
-      const { id } = payload;
-      const response = yield call(deleteShop, id);
-      if (response.error) {
-        notification({
-          message: '删除失败',
-          description: response.error,
-        });
-      } else {
-        yield put({
-          type: 'delete',
-          payload: {
-            store,
-            id,
-          },
-        });
-      }
+      const shopSn = payload.shop_sn;
+      yield call(deleteShop, shopSn);
+      yield put({
+        type: 'delete',
+        payload: {
+          store,
+          shopSn,
+        },
+      });
     } catch (error) { return error; }
   },
   * positionShop({ payload, onSuccess, onError }, { call }) {

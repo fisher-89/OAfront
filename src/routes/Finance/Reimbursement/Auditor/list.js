@@ -86,7 +86,7 @@ export default class extends PureComponent {
         dataIndex: 'reim_department_id',
         filters: fundsAttribution.map(item => ({ text: item.name, value: item.id })),
         render: (cellData) => {
-          return fundsAttribution.filter(item => item.id === cellData)[0].name || '';
+          return { ...fundsAttribution.find(item => item.id === cellData) }.name || '';
         },
       },
       {

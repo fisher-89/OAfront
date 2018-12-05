@@ -170,7 +170,7 @@ export default class extends React.PureComponent {
         type={type}
         fieldType={fieldType}
         disabledDate={(date) => {
-          if (!validateTime) return validateTime;
+          if (!validateTime.max && !validateTime.min) return false;
           if (date) {
             let currentDate = date.format('YYYY-MM-DD');
             currentDate = moment(currentDate, 'YYYY-MM-DD 00:00:00');
@@ -695,7 +695,7 @@ export default class extends React.PureComponent {
         if (maxAble && parseFloat(value) > max) {
           cb(`默认值的最大值为${max}`);
         }
-        if (scale !== undefined && scale !== '') {
+        if (scale !== undefined && scale !== '' && scale !== 0) {
           const regArr = ['^(-|\\d)?[0-9]+\\.\\d', `{${scale}}$`];
           const regStr = regArr.join('');
           const reg = new RegExp(regStr);

@@ -122,18 +122,21 @@ export default async function request(url, options) {
         cntType === 'application/vnd.ms-excel; charset=UTF-8'
         ||
         cntType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=UTF-8'
+        ||
+        cntType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       ) {
         return response;
       }
 
-      if (response.status === 400 || (newOptions.method === 'GET' && response.status === 401)) {
-        const promise = response.json();
-        notificateErrorMessage(promise, response);
-      }
-      if (response.status === 204) {
+      if (response.status === 204 || cntType.indexOf('application/json') === -1) {
         return response.text();
+      } else {
+        const promise = response.json();
+        if (response.status === 400 || (newOptions.method === 'GET' && response.status === 401)) {
+          notificateErrorMessage(promise, response);
+        }
+        return promise;
       }
-      return response.json();
     });
   return result;
 }

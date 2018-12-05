@@ -9,7 +9,7 @@ import { connect } from 'dva';
 import OATable from '../../../components/OATable';
 import DepartTree from './departTree';
 import DepartForm from './departForm';
-import { customerAuthority, getBrandAuthority } from '../../../utils/utils';
+import { checkAuthority, getBrandAuthority } from '../../../utils/utils';
 
 @connect(({ department, brand, loading }) => ({
   brand: brand.brand,
@@ -110,19 +110,27 @@ export default class extends PureComponent {
         sorter: true,
       },
     ];
-    if (customerAuthority(40) || customerAuthority(41)) {
+    if (checkAuthority(40) || checkAuthority(41)) {
       columns.push(
         {
           title: '操作',
           render: (rowData) => {
             return (
               <Fragment>
-                {customerAuthority(40) && (
-                  <a onClick={() => this.handleEdit(rowData)}>编辑</a>
+                {checkAuthority(40) && (
+                  <a
+                    onClick={() => this.handleEdit(rowData)}
+                    disabled={rowData.is_locked === 1}
+                  >编辑
+                  </a>
                 )}
                 <Divider type="vertical" />
-                {customerAuthority(41) && (
-                  <a onClick={() => this.handleDelete(rowData.id)}>删除</a>
+                {checkAuthority(41) && (
+                  <a
+                    onClick={() => this.handleDelete(rowData.id)}
+                    disabled={rowData.is_locked === 1}
+                  >删除
+                  </a>
                 )}
               </Fragment>
             );
@@ -152,7 +160,7 @@ export default class extends PureComponent {
           />
         </Col>
         <Col span={20}>
-          {(customerAuthority(39) || customerAuthority(40)) &&
+          {(checkAuthority(39) || checkAuthority(40)) &&
             (
               <DepartForm
                 visible={visible}

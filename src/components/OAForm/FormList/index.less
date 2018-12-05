@@ -4,7 +4,7 @@
     cursor: pointer;
     position: relative;
     font-size: 16px;
-    color: #fff;
+    color: #aaa;
     transition: all .3s;
     float: right;
     width: 20px;
@@ -19,12 +19,12 @@
 }
 
 .container {
-  box-shadow: @box-shadow-base;
+  box-shadow: 0 0 2px 0 #aaa;
+  margin: 2px 4px;
   border-radius: 4px;
   overflow: hidden;
   .header {
-    height: 30px;
-    background: @primary-color;
+    height: 30px; // background: @primary-color;
   }
 }
 
@@ -32,7 +32,7 @@
   width: inherit;
   display: flex;
   border-radius: 4px;
-  border: solid 1px #cccccc;
+  border: solid 1px #ccc;
   margin-bottom: 30px;
   .content {
     padding: 20px 30px;
@@ -56,7 +56,7 @@
   }
   .header {
     width: 30px;
-    border-right: solid 1px #cccccc;
+    border-right: solid 1px #ccc;
     text-align: center;
     display: flex;
     flex-direction: column;

@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import Ellipsis from '../../../../../components/Ellipsis';
-import { customerAuthority } from '../../../../../utils/utils';
+import { checkAuthority } from '../../../../../utils/utils';
 
 import OATable from '../../../../../components/OATable';
 
@@ -114,7 +114,7 @@ export default class extends PureComponent {
       {
         title: '操作',
         render: (rowData) => {
-          return customerAuthority(34) && (
+          return checkAuthority(34) && (
             <a onClick={() => showDetail(rowData)}>查看详情</a>
           );
         },

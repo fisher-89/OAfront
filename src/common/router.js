@@ -207,24 +207,26 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['position', 'brand'], () => import('../routes/Hr/Brand')),
       authority: '42',
     },
+    '/hr/expense': {
+      component: dynamicWrapper(app, ['expense', 'brand'], () => import('../routes/Hr/Expense')),
+    },
     '/hr/shop': {
-      component: dynamicWrapper(app, ['department', 'shop', 'brand'], () => import('../routes/Hr/Shop')),
+      component: dynamicWrapper(app, ['department', 'shop', 'stafftags', 'brand'], () => import('../routes/Hr/Shop')),
       authority: '70',
     },
     '/hr/staff/edit/:staff_sn': {
       component: dynamicWrapper(app, [], () => import('../routes/Hr/Staff/edit')),
     },
-    '/hr/violation/fine': {
-      component: dynamicWrapper(app, ['violation', 'department', 'brand', 'position', 'shop'], () => import('../routes/Hr/Violation/Fine')),
+    '/hr/tags/stafftags': {
+      component: dynamicWrapper(app, ['stafftags'], () => import('../routes/Hr/Stafftags')),
     },
-    '/hr/violation/regime': {
-      component: dynamicWrapper(app, ['violation', 'department', 'brand', 'position', 'shop'], () => import('../routes/Hr/Violation/Regime')),
+    '/hr/tags/shoptags': {
+      component: dynamicWrapper(app, ['stafftags'], () => import('../routes/Hr/Shoptags')),
     },
-    '/hr/violation/regime/add': {
-      component: dynamicWrapper(app, ['violation', 'department', 'brand', 'position'], () => import('../routes/Hr/Violation/Regime/form')),
-    },
-    '/hr/violation/regime/edit/:id': {
-      component: dynamicWrapper(app, ['violation', 'department', 'brand', 'position'], () => import('../routes/Hr/Violation/Regime/form')),
+
+    /* 大爱 */
+    '/violation/log': {
+      component: dynamicWrapper(app, ['violation'], () => import('../routes/Violation/Log')),
     },
 
     /**  系统 */
@@ -273,6 +275,10 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['workflow'], () => import('../routes/Workflow/Form/form')),
       authority: '51',
     },
+    '/workflow/form/list/info/:id': {
+      component: dynamicWrapper(app, ['workflow'], () => import('../routes/Workflow/Form/info')),
+      authority: '51',
+    },
     '/workflow/form/list/type': {
       component: dynamicWrapper(app, ['workflow'], () => import('../routes/Workflow/Form/type')),
       authority: '51',
@@ -288,7 +294,14 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['workflow'], () => import('../routes/Workflow/Validator')),
       authority: '51',
     },
-
+    '/workflow/dingTalk/waitMsg': {
+      component: dynamicWrapper(app, ['workflow'], () => import('../routes/Workflow/WaitMsg')),
+      authority: '51',
+    },
+    '/workflow/dingTalk/workMsg': {
+      component: dynamicWrapper(app, ['workflow'], () => import('../routes/Workflow/WorkMsg')),
+      authority: '51',
+    },
 
     /** 异常界面 */
     '/exception/403': {
@@ -319,6 +332,16 @@ export const getRouterData = (app) => {
     },
     '/passport/redirect_to_authorize': {
       component: dynamicWrapper(app, [], () => import('../routes/Oauth/RedirectToAuthorize')),
+    },
+
+    /** 应用管理 */
+    '/appmanage/reimburse/approverset': {
+      component: dynamicWrapper(app, ['appmanage'], () => import('../routes/Appmanage/Approverset')),
+      authority: '115',
+    },
+    '/appmanage/reimburse/auditorset': {
+      component: dynamicWrapper(app, ['appmanage'], () => import('../routes/Appmanage/Auditorset')),
+      authority: '116',
     },
   };
   // Get name from ./menu.js or just set it in the router data.

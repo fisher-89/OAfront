@@ -19,7 +19,7 @@ import ActionLog from '../ActionLog/customer';
 import district from '../../../assets/district';
 import Ellipsis from '../../../components/Ellipsis';
 import { customerStatus } from '../../../assets/customer';
-import { findRenderKey, analysisData, customerAuthority } from '../../../utils/utils';
+import { findRenderKey, analysisData, checkAuthority } from '../../../utils/utils';
 
 const { Meta } = Card;
 
@@ -118,7 +118,7 @@ function CustomerInfo(props) {
       <Button icon="left" onClick={() => { props.history.goBack(-1); }}>返回</Button>
       <Card bordered={false} style={style} loading={loading}>
         <Meta
-          avatar={<Avatar src={data.icon && data.icon[1]} size="large" />}
+          avatar={<Avatar src={data.icon && data.icon[1]} size="large" style={{ width: 96, height: 96 }} />}
           title={
             <React.Fragment>
               {data.name}&nbsp;&nbsp;
@@ -197,6 +197,7 @@ export default class extends React.PureComponent {
     const customerInfo = details[this.id] || {};
     const customerInfoProps = { ...this.props };
     delete customerInfoProps.customer;
+
     return (
       <React.Fragment>
         <Row gutter={16}>
@@ -208,7 +209,7 @@ export default class extends React.PureComponent {
           <Col span={16}>
             <Card bordered={false} style={{ height: 850 }}>
               <Tabs defaultActiveKey="2" style={{ marginTop: 10 }} >
-                {customerAuthority(181) && (
+                {checkAuthority(181) && (
                   <TabPane tab="客户事件" key="2" style={{ minHeight: 300 }}>
                     <Notepad
                       type="user"
@@ -216,7 +217,7 @@ export default class extends React.PureComponent {
                     />
                   </TabPane>
                 )}
-                {customerAuthority(184) && (
+                {checkAuthority(184) && (
                   <TabPane tab="操作日志" key="3" style={{ minHeight: 300 }}>
                     <ActionLog
                       type="user"

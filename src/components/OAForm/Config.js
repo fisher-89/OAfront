@@ -34,7 +34,7 @@ function getFieldsValueKey(name) {
 }
 
 
-export default formCreate => option => (Componet) => {
+export default formCreate => (option = {}) => (Componet) => {
   const newOption = {
     ...option,
     onFieldsChange(props, fields) {
@@ -46,13 +46,16 @@ export default formCreate => option => (Componet) => {
       }
     },
     onValuesChange(props, _, allValues) {
+      const { onValuesChange } = option;
       props.onChange(allValues, props.index);
+      if (onValuesChange) onValuesChange(props, _, allValues);
     },
   };
   const { localBackUpKey, modal } = option || {};
   delete newOption.localBackUpKey;
   delete newOption.modal;
   const FormComponent = Create(formCreate)(newOption)(Componet);
+
   class NewFormComponent extends React.PureComponent {
     state = {
       autoSave: false,
@@ -82,7 +85,9 @@ export default formCreate => option => (Componet) => {
       const fieldsErrors = getFieldError(name);
       if (fieldsErrors && value) {
         setFields({ [name]: { value } });
-      } else if (value === null) { setFields({ [name]: {} }); }
+      } else if (value === null) {
+        setFields({ [name]: {} });
+      }
     }
 
     handleOnChange = (changedFields, index) => {
@@ -167,7 +172,10 @@ export default formCreate => option => (Componet) => {
             errorAble = true;
           }
         });
-        if (errorAble) { message.destroy(); message.error('表单存在未处理的错误信息！'); }
+        if (errorAble) {
+          message.destroy();
+          message.error('表单存在未处理的错误信息！');
+        }
         this.form.validateFieldsAndScroll(false, { force: true }, (err, values) => {
           if (!err && !errorAble) {
             callback(values, this.handleOnError);
@@ -177,7 +185,7 @@ export default formCreate => option => (Componet) => {
     }
 
     validatorRequired = (_, value, cb) => {
-      if (value === '' || !value) cb('必填选项!');
+      if ((value !== 0) && !value) cb('必填选项!');
       if (Array.isArray(value) && value.length === 0) cb('必填选项!');
       if (typeof value === 'object' && Object.keys(value).length === 0) cb('必填选项!');
       cb();
@@ -226,5 +234,6 @@ export default formCreate => option => (Componet) => {
       );
     }
   }
+
   return NewFormComponent;
 };

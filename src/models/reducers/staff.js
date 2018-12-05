@@ -60,9 +60,16 @@ export default {
     notification.success({
       message: '添加成功',
     });
-    let dataState = [];
-    dataState = [...state[store]];
-    dataState.push(data);
+    let dataState = state[store];
+    if (Array.isArray(state[store])) {
+      dataState = [...state[store]];
+      dataState.push(data);
+    } else if (state[store].data) {
+      dataState = { ...state[store] };
+      dataState.data = [...state[store].data];
+      dataState.data.push(data);
+      dataState.total = state[store].total + 1;
+    }
     return {
       ...state,
       [store]: dataState,
@@ -86,7 +93,7 @@ export default {
       newStore.push(data);
     }
     notification.success({
-      message: '编辑成功',
+      message: '操作成功',
     });
     return {
       ...state,
@@ -136,10 +143,13 @@ export default {
       message: data.message,
     });
     const dataSource = Array.isArray(state[store]) ? state[store] : (state[store].data || []);
-    const dataFilter = dataSource.filter(item => item.staff_sn !== staffSn);
-    const dataItem = dataSource.filter(item => item.staff_sn === staffSn);
-    const mergeData = Object.assign(dataItem, data.changes);
-    const newStore = dataFilter.push(mergeData);
+    const newStore = dataSource.map((item) => {
+      if (parseInt(item.staff_sn, 0) === parseInt(staffSn, 0)) {
+        return { ...item, ...data.changes };
+      } else {
+        return item;
+      }
+    });
     return {
       ...state,
       [store]: Array.isArray(state[store]) ? newStore : { ...state[store], data: newStore },

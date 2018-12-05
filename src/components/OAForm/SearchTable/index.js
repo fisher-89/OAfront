@@ -79,7 +79,7 @@ export default class SearchTable extends PureComponent {
         <RadioInput
           {...commonProps}
           modalVisible={visible}
-          clearValue={() => onChange([])}
+          clearValue={() => onChange({})}
         />
       );
   };

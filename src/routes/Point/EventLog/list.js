@@ -2,12 +2,19 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Divider } from 'antd';
 import RevokeForm from './revokeForm';
-import { customerAuthority } from '../../../utils/utils';
+import { checkAuthority } from '../../../utils/utils';
 import EventLogInfo from './Info/info';
 import OATable from '../../../components/OATable';
 import Ellipsis from '../../../components/Ellipsis';
 
-const stateList = { 0: '待初审', 1: '待终审', 2: '已通过', '-1': '已驳回', '-2': '已撤回', '-3': '已删除' };
+const stateList = [
+  { text: '待初审', value: 0 },
+  { text: '待终审', value: 1 },
+  { text: '已通过', value: 2 },
+  { text: '已驳回', value: -1 },
+  { text: '已撤回', value: -2 },
+  { text: '已删除', value: -3 },
+];
 
 @connect(({ point, loading }) => ({
   log: point.eventLog,
@@ -64,8 +71,8 @@ export default class extends PureComponent {
         title: '状态',
         dataIndex: 'status_id',
         filters: stateList,
-        render: (text) => {
-          return stateList[text];
+        render: (value) => {
+          return { ...stateList.find(item => item.value === value) }.text;
         },
       },
       {
@@ -94,7 +101,7 @@ export default class extends PureComponent {
               查看
             </a>,
           ];
-          if (customerAuthority(173) && rowData.status_id === 2) {
+          if (checkAuthority(173) && rowData.status_id === 2) {
             action.push(<Divider key="vertical" type="vertical" />);
             action.push(<a key="cancel" onClick={() => this.showRevokeForm(rowData)}>删除</a>);
           }

@@ -16,7 +16,7 @@ import { nation } from '../../../assets/nation';
 import OATable from '../../../components/OATable';
 import { province } from '../../../assets/province';
 import { customerStatus } from '../../../assets/customer';
-import { getFiltersData, customerAuthority } from '../../../utils/utils';
+import { getFiltersData, checkAuthority, analysisData } from '../../../utils/utils';
 
 
 @connect(({ customer }) => ({ customer: customer.customer }))
@@ -36,9 +36,7 @@ export default class extends PureComponent {
   makeColumns = () => {
     const { source, tags, brands, deleted, staffBrandsAuth } = this.props;
     const { editable = [], visible = [] } = staffBrandsAuth;
-    const onClick = (name, id) => {
-      this.props.history.push(`/client/customer/list/${name}/${id}`);
-    };
+    const onClick = (name, id) => this.props.history.push(`/client/customer/list/${name}/${id}`);
     const columns = [
       {
         width: 80,
@@ -83,6 +81,12 @@ export default class extends PureComponent {
         render: (_, record) => OATable.analysisColumn(brands, record.brands, 'brand_id'),
       },
       {
+        hidden: true,
+        title: '合作品牌',
+        dataIndex: 'brands',
+        render: (_, record) => analysisData(brands, record.brands, 'brand_id').join('、'),
+      },
+      {
         // width: 120,
         align: 'center',
         title: '初次合作时间',
@@ -104,6 +108,13 @@ export default class extends PureComponent {
         dataIndex: 'tags.tag_id',
         filters: tags.map(tag => ({ text: tag.name, value: tag.id })),
         render: (_, record) => OATable.analysisColumn(tags, record.tags, 'tag_id'),
+      },
+      {
+        hidden: true,
+        title: '标签',
+        align: 'center',
+        dataIndex: 'tags',
+        render: (_, record) => analysisData(tags, record.tags, 'tag_id').join('、'),
       },
       {
         title: '操作',
@@ -133,7 +144,7 @@ export default class extends PureComponent {
                 }}
               >查看
               </a>
-              {customerAuthority(187) && (
+              {checkAuthority(187) && (
                 <React.Fragment>
                   <Divider type="vertical" />
                   {editAble ? (
@@ -144,7 +155,7 @@ export default class extends PureComponent {
                     )}
                 </React.Fragment>
               )}
-              {customerAuthority(178) && (
+              {checkAuthority(178) && (
                 <React.Fragment>
                   <Divider type="vertical" />
                   {editAble ? (
@@ -170,12 +181,11 @@ export default class extends PureComponent {
       {
         hidden: true,
         title: '性别',
-        searcher: true,
         dataIndex: 'gender',
       },
       {
         hidden: true,
-        title: '备注',
+        title: '微信',
         searcher: true,
         dataIndex: 'wechat',
       },
@@ -200,18 +210,21 @@ export default class extends PureComponent {
         title: '现住地址-省',
         dataIndex: 'province_id',
         filters: addressFilter,
+        render: key => OATable.findRenderKey(addressFilter, key, 'value').text,
       },
       {
         hidden: true,
         title: '现住地址-市',
         dataIndex: 'city_id',
         filters: addressFilter,
+        render: key => OATable.findRenderKey(addressFilter, key, 'value').text,
       },
       {
         hidden: true,
         title: '现住地址-区',
         dataIndex: 'county_id',
         filters: addressFilter,
+        render: key => OATable.findRenderKey(addressFilter, key, 'value').text,
       },
       {
         hidden: true,
@@ -258,7 +271,7 @@ export default class extends PureComponent {
         </Button>
       </Popover>
     ));
-    if (customerAuthority(188)) {
+    if (checkAuthority(188)) {
       extraOperator.push((
         <Button
           type="primary"
@@ -272,29 +285,19 @@ export default class extends PureComponent {
         </Button>
       ));
     }
-    if (customerAuthority(192)) {
+    let excelExport = null;
+    if (checkAuthority(192)) {
       extraOperator.push((
         <Button
-          key="download"
+          key="download-temp"
           icon="cloud-download"
         >
           <a href="/api/crm/clients/example" style={{ color: 'rgba(0, 0, 0, 0.65)', marginLeft: 5 }}>下载模板</a>
         </Button>
       ));
+      excelExport = { actionType: 'customer/downloadExcelCustomer', fileName: '客户资料.xlsx' };
     }
-    if (customerAuthority(192)) {
-      extraOperator.push((
-        <Button
-          key="exprot"
-          icon="cloud-download"
-          onClick={() => {
-            this.props.downloadExcelCustomer(this.searchParamsFilter);
-          }}
-        >
-          导出数据
-        </Button>
-      ));
-    }
+    const excelInto = checkAuthority(192) ? '/api/crm/clients/import' : false;
     const { loading, customer, fetchDataSource } = this.props;
     return (
       <React.Fragment>
@@ -303,14 +306,12 @@ export default class extends PureComponent {
           filters={filters}
           loading={loading}
           data={customer.data}
+          excelInto={excelInto}
           total={customer.total}
+          excelExport={excelExport}
           columns={this.makeColumns()}
           extraOperator={extraOperator}
-          fetchDataSource={(params) => {
-            this.searchParamsFilter.filters = params.filters;
-            fetchDataSource(params);
-          }}
-          excelInto={customerAuthority(192) ? '/api/crm/clients/import' : false}
+          fetchDataSource={fetchDataSource}
         />
       </React.Fragment>
 

@@ -15,7 +15,7 @@ export default {
         const params = { ...payload };
         delete params.update;
         const oldResponse =
-          yield select(model => model.tableClients.tableResult[JSON.stringify(params)]);
+          yield select(model => model.tableShop.tableResult[JSON.stringify(params)]);
         if (oldResponse === undefined || payload.update) {
           let response = [];
           response = yield call(fetchShop, params, '');

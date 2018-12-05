@@ -1,11 +1,8 @@
 import React from 'react';
-
-import { Icon, Modal, Tooltip } from 'antd';
+import { Icon, Tooltip } from 'antd';
 
 import Points from './Points';
 import RectCss from './Rect.less';
-
-const { confirm } = Modal;
 
 
 export default class Rect extends React.PureComponent {
@@ -184,15 +181,8 @@ export default class Rect extends React.PureComponent {
   };
 
   editFlow = () => {
-    confirm({
-      title: '确定修改该流程方案吗?',
-      okText: '修改',
-      cancelText: '取消',
-      onOk: () => {
-        const { editFlowChart, step } = this.props;
-        editFlowChart(step.data);
-      },
-    });
+    const { editFlowChart, step } = this.props;
+    editFlowChart(step.data);
   };
 
   keyDelete = (e) => {
@@ -212,6 +202,7 @@ export default class Rect extends React.PureComponent {
       num,
       step,
       deleteStep,
+      cloneNewSteps,
     } = this.props;
     const { visible, zIndex, TooltipVisible, pointVisible } = this.state;
     const rectStyle = { ...style, left: step.x, top: step.y, zIndex };
@@ -257,7 +248,6 @@ export default class Rect extends React.PureComponent {
             width={width}
             height={height}
           />
-
           {
             pointVisible ? (
               <Points
@@ -281,10 +271,13 @@ export default class Rect extends React.PureComponent {
               >
                 <div
                   className={RectCss.option}
-                  onClick={() => {
-                    this.editFlow();
-                  }}
+                  onClick={this.editFlow}
                 ><Icon type="edit" />&nbsp;&nbsp;&nbsp;编辑
+                </div>
+                <div
+                  className={RectCss.option}
+                  onClick={() => cloneNewSteps(step)}
+                ><Icon type="copy" />&nbsp;&nbsp;&nbsp;克隆
                 </div>
                 <div
                   className={RectCss.option}

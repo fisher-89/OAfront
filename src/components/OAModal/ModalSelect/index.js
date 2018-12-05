@@ -14,11 +14,8 @@ const defaultProps = {
 export default class ModalStaff extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.pushValue = [];
     const value = makeInitialValue(props.name, props.value, props.multiple);
-    this.state = {
-      value,
-    };
+    this.state = { value };
   }
 
   componentWillReceiveProps(nextProps) {
@@ -29,22 +26,21 @@ export default class ModalStaff extends React.PureComponent {
   }
 
   setSelectedValue = (rowDatas) => {
-    this.pushValue = rowDatas;
     const { onCancel, onChange, name, multiple } = this.props;
-    if (!multiple) {
-      const value = dontInitialValue(name, rowDatas[0], multiple);
-      onCancel(false);
-      onChange(value);
-    }
+    this.setState({ value: rowDatas }, () => {
+      if (!multiple) {
+        const value = dontInitialValue(name, rowDatas[0], multiple);
+        onCancel(false);
+        onChange(value);
+      }
+    });
   }
 
   handleOnChange = () => {
-    this.setState({ value: [...this.pushValue] }, () => {
-      const { onCancel, onChange, name, multiple } = this.props;
-      const value = dontInitialValue(name, this.state.value, multiple);
-      onCancel(false);
-      onChange(value);
-    });
+    const { onCancel, onChange, name, multiple } = this.props;
+    const value = dontInitialValue(name, this.state.value, multiple);
+    onCancel(false);
+    onChange(value);
   }
 
 
