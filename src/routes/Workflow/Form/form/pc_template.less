@@ -1,0 +1,107 @@
+:global {
+  .drag-shadow, .drag-shadow:hover {
+    position: fixed;
+    opacity: 0.5;
+    cursor: move;
+    margin: 0;
+  }
+}
+
+.pcTemplate {
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  > div {
+    float: left;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+  }
+  .component {
+    width: 240px;
+    .fields {
+      margin-bottom: 40px;
+    }
+    .grids {
+      :global {
+        .ant-tag {
+          float: left;
+        }
+      }
+      > div:after {
+        content: "";
+        clear: both;
+        display: block;
+      }
+      > div {
+        > .horizontalLine {
+          float: left;
+          margin-top: 15px;
+          border-top: 1px solid #bbb;
+          width: 12px;
+        }
+        .gridFields {
+          float: left;
+          position: relative;
+          > div:after {
+            content: "";
+            clear: both;
+            display: block;
+          }
+          .verticalLine {
+            padding: 15px 0;
+            display: block;
+            position: absolute;
+            height: 100%;
+          }
+          .verticalLine:after {
+            content: "";
+            display: block;
+            border-left: 1px solid #bbb;
+            height: 100%;
+          }
+          .horizontalLine {
+            float: left;
+            margin-top: 15px;
+            border-top: 1px solid #bbb;
+            width: 6px;
+          }
+        }
+      }
+    }
+  }
+  .template {
+    height: 693px;
+    padding: 42px 40px 40px;
+    background-color: rgba(250, 250, 250, 1);
+    border: 1px dashed rgba(153, 153, 153, 1);
+    border-radius: 4px;
+    position: relative;
+    .scale {
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding-left: 1px;
+      > div {
+        width: 75px;
+        float: left;
+        text-align: center;
+        margin-left: 1px;
+        font-size: 12px;
+        > span {
+          display: block;
+          height: 6px;
+          width: 1px;
+          margin: 0 auto;
+          background-color: rgba(153, 153, 153, 1);
+        }
+      }
+    }
+    .board {
+      width: 913px;
+      height: 100%;
+      background-color: #fff;
+      background-image: url(/template_background.png);
+      background-position: 1px 1px;
+    }
+  }
+}

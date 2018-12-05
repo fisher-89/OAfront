@@ -10,9 +10,11 @@ import {
   Tooltip,
   InputNumber,
 } from 'antd';
-import OAForm from '../../../components/OAForm';
-import FooterToolbar from '../../../components/FooterToolbar';
-import FieldList from './fieldList';
+import OAForm from 'components/OAForm';
+import FooterToolbar from 'components/FooterToolbar';
+import FieldList from '../fieldList';
+import PCTemplate from './pc_template';
+import MobileTemplate from './mobile_template';
 
 const FormItem = OAForm.Item;
 const { Option } = Select;
@@ -202,6 +204,7 @@ class addForm extends PureComponent {
       form: {
         getFieldDecorator,
         getFieldsError,
+        getFieldValue,
       },
       validatorRequired,
       formType, validateFields, validator, formVal,
@@ -209,7 +212,7 @@ class addForm extends PureComponent {
 
     const { formId, isEdit, activeKey, panes, listError } = this.state;
     let initialFieldsValue = {};
-    let grids = {};
+    let grids = [];
     let fields = [];
     if (isEdit && formVal[formId]) {
       initialFieldsValue = formVal[formId];
@@ -242,149 +245,159 @@ class addForm extends PureComponent {
       (formError.name || formError.form_type_id || formError.fields || listError.fields) && { style: { color: 'red' } };
     const gridsError = listError.grids || formError.grids || {};
     return (
-      <OAForm onSubmit={validateFields(isEdit ? this.handleEditSubmit : this.handleAddSubmit)}>
-        <Tabs
-          tabPosition="left"
-          activeKey={activeKey}
-          onChange={this.onChange}
-          tabBarExtraContent={(
-            <Tooltip title="添加表单组件" placement="bottomRight">
-              <Icon
-                type="plus"
-                className="ant-tabs-new-tab"
-                onClick={() => {
-                  this.addTabs();
-                }}
-              />
-            </Tooltip>
-          )}
-        >
-          <TabPane
-            tab={<span {...errColor}>表单</span>}
-            key="form"
-          >
-            <FormItem
-              {...formItemLayout}
-              label="名称"
-              required
-            >
-              {getFieldDecorator('name', {
-                initialValue: initialFieldsValue.name || '',
-                rules: [validatorRequired],
-              })(
-                <Input placeholder="请输入" />
+      <Tabs>
+        <TabPane tab="表单配置" key="basic">
+          <OAForm onSubmit={validateFields(isEdit ? this.handleEditSubmit : this.handleAddSubmit)}>
+            <Tabs
+              tabPosition="left"
+              activeKey={activeKey}
+              onChange={this.onChange}
+              tabBarExtraContent={(
+                <Tooltip title="添加表单组件" placement="bottomRight">
+                  <Icon
+                    type="plus"
+                    className="ant-tabs-new-tab"
+                    onClick={() => {
+                      this.addTabs();
+                    }}
+                  />
+                </Tooltip>
               )}
-            </FormItem>
-            <FormItem
-              {...formItemLayout}
-              label="描述"
             >
-              {getFieldDecorator('description', {
-                initialValue: initialFieldsValue.description || '',
-              })(
-                <Input placeholder="请输入" />
-              )}
-            </FormItem>
-            <FormItem
-              {...formItemLayout}
-              label="表单分类"
-              required
-            >
-              {getFieldDecorator('form_type_id', (initialFieldsValue ? {
-                initialValue: initialFieldsValue.form_type_id,
-                rules: [validatorRequired],
-              } : {}))(
-                <Select placeholder="请选择">
-                  {formType.map(item => <Option key={item.id}>{item.name}</Option>)}
-                </Select>
-              )}
-            </FormItem>
-            <FormItem
-              {...formItemLayout}
-              label="排序"
-            >
-              {getFieldDecorator('sort', {
-                initialValue: initialFieldsValue.sort || 0,
-              })(
-                <InputNumber placeholder="请输入" />
-              )}
-            </FormItem>
-            <FormItem
-              {...formItemLayout}
-              label="表单控件"
-            >
-              {getFieldDecorator('fields', {
-                initialValue: initialFieldsValue.fields || [],
-                rules: [validatorRequired],
-              })(
-                <FieldList
-                  validator={validator}
-                  error={listError.fields || {}}
-                  onChange={(_, key) => this.fieldListChange(key, 'grids')}
-                />
-              )}
-            </FormItem>
-          </TabPane>
-          {panes.map((pane, index) => {
-            let colorAble = false;
-            Object.keys(gridsError[index] || {}).forEach((key) => {
-              if (gridsError[index][key] !== undefined) {
-                colorAble = true;
-              }
-            });
-            const filedsError = gridsError[index] || {};
-            return (
               <TabPane
-                tab={(
-                  <span>
-                    <span {...(colorAble && { style: { color: 'red' } })}>{pane.title}</span>
-                    <Icon type="close" onClick={e => this.removeTabs(pane.key, e)} />
-                  </span>
-                )}
-                forceRender
-                key={pane.key}
+                tab={<span {...errColor}>表单</span>}
+                key="form"
               >
-                {getFieldDecorator(`grids.${index}.id`, {
-                  initialValue: grids && grids[index] ? grids[index].id : '',
-                })(
-                  <Input hidden />
-                )}
-                <FormItem label="名称" {...formItemLayout} required>
-                  {getFieldDecorator(`grids.${index}.name`, {
-                    initialValue: grids && grids[index] ? grids[index].name : '',
+                <FormItem
+                  {...formItemLayout}
+                  label="名称"
+                  required
+                >
+                  {getFieldDecorator('name', {
+                    initialValue: initialFieldsValue.name || '',
                     rules: [validatorRequired],
                   })(
                     <Input placeholder="请输入" />
                   )}
                 </FormItem>
-                <FormItem label="键名" {...formItemLayout} required>
-                  {getFieldDecorator(`grids.${index}.key`, {
-                    initialValue: grids && grids[index] ? grids[index].key : '',
-                    rules: [validatorRequired],
+                <FormItem
+                  {...formItemLayout}
+                  label="描述"
+                >
+                  {getFieldDecorator('description', {
+                    initialValue: initialFieldsValue.description || '',
                   })(
                     <Input placeholder="请输入" />
                   )}
                 </FormItem>
-                <FormItem label="表单控件" {...formItemLayout} required>
-                  {getFieldDecorator(`grids.${index}.fields`, {
-                    initialValue: grids && grids[index] ? grids[index].fields : [],
+                <FormItem
+                  {...formItemLayout}
+                  label="表单分类"
+                  required
+                >
+                  {getFieldDecorator('form_type_id', (initialFieldsValue ? {
+                    initialValue: initialFieldsValue.form_type_id,
+                    rules: [validatorRequired],
+                  } : {}))(
+                    <Select placeholder="请选择">
+                      {formType.map(item => <Option key={item.id}>{item.name}</Option>)}
+                    </Select>
+                  )}
+                </FormItem>
+                <FormItem
+                  {...formItemLayout}
+                  label="排序"
+                >
+                  {getFieldDecorator('sort', {
+                    initialValue: initialFieldsValue.sort || 0,
+                  })(
+                    <InputNumber placeholder="请输入" />
+                  )}
+                </FormItem>
+                <FormItem
+                  {...formItemLayout}
+                  label="表单控件"
+                >
+                  {getFieldDecorator('fields', {
+                    initialValue: initialFieldsValue.fields || [],
                     rules: [validatorRequired],
                   })(
                     <FieldList
                       validator={validator}
-                      error={filedsError.fields || {}}
+                      error={listError.fields || {}}
                       onChange={(_, key) => this.fieldListChange(key, 'grids')}
                     />
                   )}
                 </FormItem>
               </TabPane>
-            );
-          })}
-        </Tabs>
-        <FooterToolbar>
-          <Button type="primary" htmlType="submit">提交</Button>
-        </FooterToolbar>
-      </OAForm>
+              {panes.map((pane, index) => {
+                let colorAble = false;
+                Object.keys(gridsError[index] || {}).forEach((key) => {
+                  if (gridsError[index][key] !== undefined) {
+                    colorAble = true;
+                  }
+                });
+                const filedsError = gridsError[index] || {};
+                return (
+                  <TabPane
+                    tab={(
+                      <span>
+                        <span {...(colorAble && { style: { color: 'red' } })}>{pane.title}</span>
+                        <Icon type="close" onClick={e => this.removeTabs(pane.key, e)} />
+                      </span>
+                    )}
+                    forceRender
+                    key={pane.key}
+                  >
+                    {getFieldDecorator(`grids.${index}.id`, {
+                      initialValue: grids && grids[index] ? grids[index].id : '',
+                    })(
+                      <Input hidden />
+                    )}
+                    <FormItem label="名称" {...formItemLayout} required>
+                      {getFieldDecorator(`grids.${index}.name`, {
+                        initialValue: grids && grids[index] ? grids[index].name : '',
+                        rules: [validatorRequired],
+                      })(
+                        <Input placeholder="请输入" />
+                      )}
+                    </FormItem>
+                    <FormItem label="键名" {...formItemLayout} required>
+                      {getFieldDecorator(`grids.${index}.key`, {
+                        initialValue: grids && grids[index] ? grids[index].key : '',
+                        rules: [validatorRequired],
+                      })(
+                        <Input placeholder="请输入" />
+                      )}
+                    </FormItem>
+                    <FormItem label="表单控件" {...formItemLayout} required>
+                      {getFieldDecorator(`grids.${index}.fields`, {
+                        initialValue: grids && grids[index] ? grids[index].fields : [],
+                        rules: [validatorRequired],
+                      })(
+                        <FieldList
+                          validator={validator}
+                          error={filedsError.fields || {}}
+                          onChange={(_, key) => this.fieldListChange(key, 'grids')}
+                        />
+                      )}
+                    </FormItem>
+                  </TabPane>
+                );
+              })}
+            </Tabs>
+            <FooterToolbar>
+              <Button type="primary" htmlType="submit">提交</Button>
+            </FooterToolbar>
+          </OAForm>
+        </TabPane>
+        <TabPane tab="PC端模板" key="pc">
+          <PCTemplate fields={getFieldValue('fields')} grids={grids} />
+        </TabPane>
+        <TabPane tab="移动端模板" key="mobile">
+          <MobileTemplate />
+        </TabPane>
+      </Tabs>
     );
   }
 }
