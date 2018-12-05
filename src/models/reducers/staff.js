@@ -60,9 +60,16 @@ export default {
     notification.success({
       message: '添加成功',
     });
-    let dataState = [];
-    dataState = [...state[store]];
-    dataState.push(data);
+    let dataState = state[store];
+    if (Array.isArray(state[store])) {
+      dataState = [...state[store]];
+      dataState.push(data);
+    } else if (state[store].data) {
+      dataState = { ...state[store] };
+      dataState.data = [...state[store].data];
+      dataState.data.push(data);
+      dataState.total = state[store].total + 1;
+    }
     return {
       ...state,
       [store]: dataState,
