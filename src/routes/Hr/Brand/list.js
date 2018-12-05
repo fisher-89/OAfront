@@ -6,9 +6,11 @@ import {
 } from 'antd';
 import { connect } from 'dva';
 
-import OATable from '../../../components/OATable';
+import { checkAuthority } from 'utils/utils';
+import OATable from 'components/OATable';
+import Ellipsis from 'components/Ellipsis/index';
 import BrandForm from './form';
-import { checkAuthority } from '../../../utils/utils';
+
 @connect(({ brand, loading }) => ({
   brand: brand.brand,
   fLoading: loading.effects['brand/fetchBrand'],
@@ -66,6 +68,20 @@ export default class extends PureComponent {
         title: '名称',
         dataIndex: 'name',
         searcher: true,
+      },
+      {
+        title: '关联费用品牌',
+        align: 'center',
+        dataIndex: 'cost_brands',
+        searcher: true,
+        render: (brand) => {
+          const brandStr = brand.map(item => item.name).join(',');
+          return (<Ellipsis tooltip lines={2}>{brandStr}</Ellipsis>);
+        },
+        onFilter: (value, brand) => {
+          const brandStr = brand.cost_brands.map(item => item.name);
+          return brandStr.indexOf(value) !== -1;
+        },
       },
       {
         title: '是否共享',
