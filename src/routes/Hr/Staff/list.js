@@ -14,7 +14,6 @@ import {
 } from 'antd';
 
 import { connect } from 'dva';
-
 import Search from './search';
 import AddStaff from './create';
 import EditStaff from './edit';
@@ -430,12 +429,14 @@ export default class extends PureComponent {
         fixed: 'left',
         searcher: true,
         dataIndex: 'realname',
+        render: key => OATable.renderEllipsis(key, true),
       }, {
         width: 100,
         title: '电话',
         searcher: true,
         align: 'center',
         dataIndex: 'mobile',
+        render: key => OATable.renderEllipsis(key, true),
       }, {
         width: 100,
         title: '品牌',
