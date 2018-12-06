@@ -377,7 +377,7 @@ export default class extends PureComponent {
     const buttonKey = [];
     const statusId = rowData.status_id;
     const { user: { authorities: { oa } } } = window;
-    if (rowData.is_active === 0) {
+    if (rowData.is_active === 0 && statusId > 0) {
       if (oa.indexOf(66) !== -1) {
         buttonKey.push(66);
       }
