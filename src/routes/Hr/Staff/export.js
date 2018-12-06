@@ -55,7 +55,7 @@ export default class extends PureComponent {
           { property: '员工属性', auth: 0 },
           { mobile: '手机号码', auth: 1 },
           { id_card_number: '身份证号', auth: 1 },
-          { account_number: '银行卡号', auth: 1 },
+          { account_number: '银行卡号', auth: 0 },
           { account_name: '开户人', auth: 1 },
           { account_bank: '开户行', auth: 1 },
           { national: '民族', auth: 1 },
@@ -71,6 +71,7 @@ export default class extends PureComponent {
           { concat_name: '紧急联系人', auth: 1 },
           { concat_tel: '联系人电话', auth: 1 },
           { concat_type: '联系人关系类型', auth: 1 },
+          { birthday: '出生日期', auth: 0 },
           { remark: '备注', auth: 0 },
         ];
         const headMaps = mapWithKey.filter((item) => {

@@ -26,8 +26,8 @@ export default class extends PureComponent {
     ],
     // 人事变动导入模版
     transferTemp: [
-      ['员工编号', '员工状态', '所属部门', '所属品牌', '费用品牌', '职位', '店铺编号'],
-      ['100000', '在职', 'it部-开发组', '集团公司', '成都/濮院', '经理', 'lsw2673'],
+      ['员工编号', '员工状态', '所属部门', '所属品牌', '费用品牌', '职位', '店铺编号', '执行日期'],
+      ['100000', '在职', 'it部-开发组', '集团公司', '成都/濮院', '经理', 'lsw2673', '2010-01-01'],
     ],
     // 批量创建字段
     createFields: [
@@ -43,7 +43,7 @@ export default class extends PureComponent {
       'living_city', 'living_county', 'living_address', 'native_place', 'concat_name', 'concat_tel', 'concat_type',
     ],
     // 批量变动字段
-    transferFields: ['staff_sn', 'status', 'department', 'brand', 'cost_brand', 'position', 'shop_sn'],
+    transferFields: ['staff_sn', 'status', 'department', 'brand', 'cost_brand', 'position', 'shop_sn', 'operate_at'],
     importType: '',
     visible: false,
     spinning: false,
