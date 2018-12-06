@@ -206,7 +206,7 @@ export default class extends PureComponent {
           authAble ? {
             key: index,
             onClick: () => { },
-            style: { color: '#8E8E8E' },
+            style: { color: 'rgba(0, 0, 0, 0.25)', cursor: 'default' },
           } :
             {
               style,
@@ -324,7 +324,7 @@ export default class extends PureComponent {
     );
 
     return (
-      <Dropdown overlay={menu} trigger={['click']}>
+      <Dropdown overlay={menu} trigger={['click']} disabled={action.length === 0}>
         <a className="ant-dropdown-link">
           更多操作 <Icon type="down" />
         </a>
@@ -379,36 +379,36 @@ export default class extends PureComponent {
     const statusId = rowData.status_id;
     const { user: { authorities: { oa } } } = window;
     if (rowData.is_active === 0) {
-      if (oa.indexOf(66)) {
+      if (oa.indexOf(66) !== -1) {
         buttonKey.push(66);
       }
     } else if (rowData.is_active === 1) {
-      if (oa.indexOf(66)) {
+      if (oa.indexOf(66) !== -1) {
         buttonKey.push(66);
       }
-      if (statusId === 1 && oa.indexOf(55)) {
+      if (statusId === 1 && oa.indexOf(55) !== -1) {
         buttonKey.push(55);
       }
-      if (statusId > 0 && oa.indexOf(175)) {
+      if (statusId > 0 && oa.indexOf(175) !== -1) {
         buttonKey.push(175);
       }
-      if (statusId > 0 && oa.indexOf(56)) {
+      if (statusId > 0 && oa.indexOf(56) !== -1) {
         buttonKey.push(56);
       }
-      if (statusId > 0 && oa.indexOf(57)) {
+      if (statusId > 0 && oa.indexOf(57) !== -1) {
         buttonKey.push(57);
       }
-      if (statusId === 0 && oa.indexOf(107)) {
+      if (statusId === 0 && oa.indexOf(107) !== -1) {
         buttonKey.push(107);
       }
     }
-    if (statusId < 0 && oa.indexOf(58)) {
+    if (statusId < 0 && oa.indexOf(58) !== -1) {
       buttonKey.push(58);
     }
-    if (oa.indexOf(82)) {
+    if (oa.indexOf(82) !== -1) {
       buttonKey.push(82);
     }
-    if (oa.indexOf(59)) {
+    if (oa.indexOf(59) !== -1) {
       buttonKey.push(59);
     }
     return buttonKey;
@@ -544,7 +544,7 @@ export default class extends PureComponent {
     const extra = [];
     const { staff: { total } } = this.props;
     extra.push(
-      (checkAuthority(62)) && (
+      (checkAuthority(54)) && (
         <Button
           icon="plus"
           key="plus"
@@ -556,7 +556,7 @@ export default class extends PureComponent {
           添加员工
         </Button>
       ),
-      (checkAuthority(62)) && (
+      (checkAuthority(89)) && (
         <ImportStaff key="importPop" />
       ),
       (checkAuthority(84) && (
