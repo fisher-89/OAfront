@@ -99,6 +99,7 @@ export default class extends PureComponent {
         searcher: true,
         width: 250,
         fixed: 'left',
+        render: key => OATable.renderEllipsis(key, true),
       },
       {
         title: '所属部门',
