@@ -67,9 +67,11 @@ export default class extends PureComponent {
   handleSelectChange = () => {
     const { form } = this.props;
     const brands = form.getFieldValue('cost_brands');
-    if (!isEmpty(brands)) {
+    const positionId = form.getFieldValue('position_id');
+    if (!isEmpty(brands) || positionId !== '') {
       form.setFieldsValue({
         cost_brands: [],
+        position_id: '',
       });
     }
   }
@@ -92,6 +94,10 @@ export default class extends PureComponent {
 
     const brandId = getFieldValue('brand_id');
     const costBrand = expense.filter((item) => {
+      const ids = item.brands.map(i => i.id);
+      return ids.indexOf(parseInt(brandId, 10)) !== -1;
+    });
+    const fposition = position.filter((item) => {
       const ids = item.brands.map(i => i.id);
       return ids.indexOf(parseInt(brandId, 10)) !== -1;
     });
@@ -153,9 +159,13 @@ export default class extends PureComponent {
                   rules: [validatorRequired],
                 })(
                   <TreeSelect
+                    showSearch
                     treeDefaultExpandAll
                     treeData={newTreeData}
                     dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                    filterTreeNode={(inputValue, treeNode) => {
+                      return treeNode.props.title.indexOf(inputValue) !== -1;
+                    }}
                   />
                 )}
               </FormItem>
@@ -184,9 +194,9 @@ export default class extends PureComponent {
                   initialValue: editStaff.position_id,
                   rules: [validatorRequired],
                 })(
-                  <Select name="position_id" placeholer="请选择">
+                  <Select showSearch placeholer="请选择">
                     <Option key="-1" value="">--请选择--</Option>
-                    {position.map((item) => {
+                    {fposition.map((item) => {
                       return (
                         <Option key={item.id} value={item.id}>{item.name}</Option>
                       );

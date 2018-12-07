@@ -117,9 +117,11 @@ export default class EditStaff extends PureComponent {
   handleSelectChange = () => {
     const { form } = this.props;
     const brands = form.getFieldValue('cost_brands');
-    if (!isEmpty(brands)) {
+    const positionId = form.getFieldValue('position_id');
+    if (!isEmpty(brands) || positionId !== '') {
       form.setFieldsValue({
         cost_brands: [],
+        position_id: '',
       });
     }
   }
@@ -146,6 +148,10 @@ export default class EditStaff extends PureComponent {
     const renderTitle = title => <div style={tabPaneTitleStyle}>{title}</div>;
     const brandId = getFieldValue('brand_id');
     const costBrand = expense.filter((item) => {
+      const ids = item.brands.map(i => i.id);
+      return ids.indexOf(parseInt(brandId, 10)) !== -1;
+    });
+    const fposition = position.filter((item) => {
       const ids = item.brands.map(i => i.id);
       return ids.indexOf(parseInt(brandId, 10)) !== -1;
     });
@@ -260,11 +266,12 @@ export default class EditStaff extends PureComponent {
                 <Col {...fieldsBoxLayout}>
                   <FormItem label="职位" {...formItemLayout2} required>
                     {getFieldDecorator('position_id', {
-                      initialValue: 1,
+                      initialValue: '',
                       rules: [validatorRequired],
                     })(
                       <Select placeholer="请选择">
-                        {position.map((item) => {
+                        <Option key="-1" value="">--请选择--</Option>
+                        {fposition.map((item) => {
                           return (
                             <Option key={item.id} value={item.id}>{item.name}</Option>
                           );
