@@ -148,14 +148,16 @@ export default class Result extends React.PureComponent {
             <p className={styles.timer}>{moment().format('YYYY-MM-DD HH:mm:ss')}</p>
           </div>
           <div>
-            <TableUpload
-              uri={this.props.uri}
-              afterChange={() => {
-                this.props.onCancel();
-              }}
-            >
-              继续导入
-            </TableUpload>
+            {this.props.uri !== undefined ? (
+              <TableUpload
+                uri={this.props.uri}
+                afterChange={() => {
+                  this.props.onCancel();
+                }}
+              >
+                继续导入
+              </TableUpload>
+            ) : null}
           </div>
         </div>
         <div className={styles.tableResult}>

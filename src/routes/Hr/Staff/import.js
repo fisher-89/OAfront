@@ -3,11 +3,11 @@ import {
   Popover,
   Button,
   Spin,
-  List,
   notification,
 } from 'antd';
 import { connect } from 'dva';
 import XLSX from 'xlsx';
+import ImportResult from 'components/importResult';
 
 @connect(({ staff }) => ({ staff }))
 export default class extends PureComponent {
@@ -48,6 +48,11 @@ export default class extends PureComponent {
     visible: false,
     spinning: false,
     tempVisible: false,
+    importResult: {
+      visible: false,
+      error: false,
+      response: {},
+    },
   }
 
   handleVisible = (visib) => {
@@ -135,30 +140,40 @@ export default class extends PureComponent {
       onSuccess: this.handleSuccess,
     });
   }
-
-  handleError = (error) => {
-    const { errors } = error;
-    const desc = Object.keys(errors).map((val) => {
-      return errors[val][0];
-    });
-    notification.open({
-      message: error.message,
-      description: <List size="small" dataSource={desc} renderItem={item => (<List.Item>{item}</List.Item>)} />,
-      duration: 180,
-    });
+  handleError = (response) => {
+    const result = {
+      visible: true,
+      error: true,
+      response,
+    };
+    this.setState({ importResult: { ...result } });
   }
-
-  handleSuccess = (result) => {
-    notification.success({
-      message: result.message,
+  handleSuccess = () => {
+    this.setState({ visible: false }, () => {
+      notification.success({
+        message: '导入成功',
+      });
     });
   }
 
   render() {
+    const { importResult, visible, tempVisible } = this.state;
     return (
       <Fragment>
+        <ImportResult
+          {...importResult}
+          onCancel={() => {
+            this.setState({
+              importResult: {
+                visible: false,
+                error: importResult.error,
+                response: {},
+              },
+            });
+          }}
+        />
         <Popover
-          visible={this.state.tempVisible}
+          visible={tempVisible}
           trigger="click"
           placement="bottomLeft"
           onVisibleChange={this.handleTempVisible}
@@ -173,7 +188,7 @@ export default class extends PureComponent {
           <Button icon="cloud-download">下载模版</Button>
         </Popover>
         <Popover
-          visible={this.state.visible}
+          visible={visible}
           trigger="click"
           placement="bottomLeft"
           onVisibleChange={this.handleVisible}
