@@ -5,7 +5,7 @@ import {
   deleteFineLog,
   editPayState,
   downloadExcelFinLog,
-
+  paymentChange,
 } from '../../services/violation';
 
 const store = 'finelog';
@@ -110,6 +110,21 @@ export default {
         return onError();
       }
       onSuccess(response);
+    } catch (err) { return err; }
+  },
+
+  *paymentChange({ payload }, { call, put }) {
+    try {
+      const id = payload;
+      const response = yield call(paymentChange, payload);
+      yield put({
+        type: 'update',
+        payload: {
+          store,
+          id,
+          data: response,
+        },
+      });
     } catch (err) { return err; }
   },
 };

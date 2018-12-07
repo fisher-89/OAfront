@@ -3,8 +3,11 @@ import { Tabs, Button, Divider } from 'antd';
 import OATable from '../../../components/OATable';
 import BigLove from './form';
 import Details from './details';
+import {
+  getFiltersData,
+  findRenderKey,
+} from '../../../utils/utils';
 import store from './store/store';
-
 
 const { TabPane } = Tabs;
 @store()
@@ -30,32 +33,45 @@ export default class extends PureComponent {
   }
 
   makeColumns = () => {
-    const { ruleType, rule, deleted, loading } = this.props;
+    const { ruleType, rule, deleted, department, paymentChange, brand, loading } = this.props;
     const columns = [
       {
         title: '编号',
         dataIndex: 'id',
         width: 50,
         fixed: 'left',
+        sorter: (a, b) => a.id - b.id,
+        defaultSortOrder: 'ascend',
       },
       {
         title: '姓名',
         dataIndex: 'staff_name',
+        searcher: true,
         width: 60,
         fixed: 'left',
       },
       {
         title: '品牌',
-        dataIndex: 'brand_name',
+        dataIndex: 'brand_id',
         width: 120,
+        filters: getFiltersData(brand),
+        render: key => OATable.renderEllipsis(findRenderKey(brand, key).name, true),
       },
       {
         title: '部门',
-        dataIndex: 'department_name',
-        width: 400,
+        dataIndex: 'department_id',
+        treeFilters: {
+          value: 'id',
+          title: 'name',
+          data: department,
+          parentId: 'parent_id',
+        },
+        width: 285,
+        render: key => OATable.findRenderKey(department, key).name,
       },
       {
         title: '大爱日期',
+        dateFilters: true,
         dataIndex: 'violate_at',
         width: 100,
       },
@@ -69,7 +85,7 @@ export default class extends PureComponent {
         title: '大爱类型',
         dataIndex: 'rules',
         loading,
-        width: 120,
+        width: 105,
         render: (_, record) => {
           const type = OATable.findRenderKey(rule, record.rule_id).type_id;
           return OATable.findRenderKey(ruleType, type).name;
@@ -104,11 +120,13 @@ export default class extends PureComponent {
       },
       {
         title: '开单日期',
+        dateFilters: true,
         dataIndex: 'billing_at',
         width: 100,
       },
       {
         title: '开单人',
+        searcher: true,
         dataIndex: 'billing_name',
         width: 60,
       },
@@ -119,9 +137,10 @@ export default class extends PureComponent {
       },
       {
         title: '操作',
-        width: 150,
+        width: 180,
         fixed: 'right',
         render: (rowData) => {
+          const payOrRefunder = rowData.has_paid ? '退款' : '支付';
           return (
             <Fragment>
               <a onClick={() => this.setState({
@@ -131,6 +150,8 @@ export default class extends PureComponent {
               </a>
               <Divider type="vertical" />
               <a onClick={() => this.setState({ visible: true, initialValue: rowData })}>编辑</a>
+              <Divider type="vertical" />
+              <a onClick={() => paymentChange(rowData.id)}>{payOrRefunder}</a>
               <Divider type="vertical" />
               <a onClick={() => deleted(rowData.id)}>删除</a>
             </Fragment>
@@ -176,6 +197,7 @@ export default class extends PureComponent {
     payFine(selectId, onError);
     this.onSelectChange([], []);
   }
+
 
   render() {
     const { finelog, fetchFineLog, loading } = this.props;
@@ -243,7 +265,7 @@ export default class extends PureComponent {
               serverSide
               extraOperator={extra}
               total={finelog.total}
-              scroll={{ x: 1785 }}
+              scroll={{ x: 1685 }}
               rowSelection={rowSelection}
               multiOperator={multiOperator}
               excelInto={excelInto}
@@ -257,6 +279,7 @@ export default class extends PureComponent {
           onCancel={this.handleModalVisible}
         />
         <Details
+          paychange={this.paychange}
           visible={detailsVisible}
           initialValue={initialValue}
           onCancel={this.handleDetailsVisible}

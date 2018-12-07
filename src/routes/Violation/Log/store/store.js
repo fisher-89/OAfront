@@ -3,8 +3,10 @@ import { connect } from 'dva';
 import { makeProps } from '../../../../utils/utils';
 
 export default type => (Component) => {
-  @connect(({ violation, loading }) => ({
+  @connect(({ violation, department, brand, loading }) => ({
+    department: department.department,
     score: violation.score,
+    brand: brand.brand,
     money: violation.money,
     finelog: violation.finelog,
     rule: violation.rule,
@@ -25,12 +27,20 @@ export default type => (Component) => {
     componentWillMount() {
       this.fetchRule();
       this.fetchRuleType();
+      this.fetchDepartment();
     }
 
     fetchFineLog = (params) => {
       const { dispatch } = this.props;
       dispatch({ type: 'violation/fetchFineLog', payload: params });
     }
+
+    fetchDepartment = (params) => {
+      const { dispatch } = this.props;
+      dispatch({ type: 'department/fetchDepartment', payload: params });
+      dispatch({ type: 'brand/fetchBrand' });
+    }
+
 
     fetchRule = (params) => {
       const { dispatch } = this.props;
@@ -46,6 +56,11 @@ export default type => (Component) => {
       const { dispatch } = this.props;
       dispatch({ type: 'violation/fetchFineMoney', payload: params });
       dispatch({ type: 'violation/fetchFineScore', payload: params });
+    }
+
+    paymentChange = (params) => {
+      const { dispatch } = this.props;
+      dispatch({ type: 'violation/paymentChange', payload: params });
     }
 
     deleted = (id, onError, onSuccess) => {

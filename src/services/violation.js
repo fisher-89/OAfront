@@ -28,6 +28,11 @@ export async function addFineLog(params) {
   return request('/api/violation/punish', { method: 'POST', body: params });
 }
 
+/** 付款状态修改 */
+export async function paymentChange(id, params) {
+  return request(`/api/violation/punish/both-pay/${id}`, { method: 'GET', body: params });
+}
+
 /**
  * 大爱修改
  */
