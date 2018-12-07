@@ -12,9 +12,9 @@ import {
 } from 'antd';
 import moment from 'moment';
 import { omit, assign } from 'lodash';
-import OAForm, { SearchTable, Address, OAModal } from '../../../components/OAForm';
+import { markTreeData } from 'utils/utils';
+import OAForm, { SearchTable, Address, OAModal } from 'components/OAForm';
 import RelativeList from './relativeList';
-import { markTreeData } from '../../../utils/utils';
 import NextForm from './nextForm';
 
 
@@ -168,21 +168,18 @@ export default class EditStaff extends PureComponent {
             <TabPane forceRender tab={renderTitle('基础资料')} key="1" style={style}>
               <Row>
                 <Col {...fieldsBoxLayout}>
-                  {editStaff.staff_sn
-                    ? getFieldDecorator('staff_sn', {
+                  {getFieldDecorator('staff_sn', {
                       initialValue: editStaff.staff_sn,
-                    })(<Input type="hidden" />)
-                    : null}
+                    })(<Input type="hidden" />)}
+
                   {getFieldDecorator('operation_type', {
                     initialValue: 'edit',
-                  })(
-                    <Input type="hidden" />
-                  )}
+                  })(<Input type="hidden" />)}
+
                   {getFieldDecorator('operate_at', {
                     initialValue: moment().format('YYYY-MM-DD'),
-                  })(
-                    <Input type="hidden" />
-                  )}
+                  })(<Input type="hidden" />)}
+
                   <FormItem {...formItemLayout2} label="员工姓名" required>
                     {getFieldDecorator('realname', {
                       initialValue: editStaff.realname || '',

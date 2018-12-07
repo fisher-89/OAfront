@@ -626,7 +626,6 @@ export default class extends PureComponent {
         </Tabs>
         <AddStaff
           visible={this.state.addVisible}
-          editStaff={this.state.editStaff}
           onCancel={() => {
             this.setState({ addVisible: false, editStaff: {} });
           }}
