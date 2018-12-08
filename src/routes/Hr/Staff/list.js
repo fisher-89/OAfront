@@ -8,15 +8,25 @@ import {
   Menu,
   Modal,
   Button,
+  Switch,
   Divider,
   Dropdown,
   notification,
 } from 'antd';
 
 import { connect } from 'dva';
+import OATable from 'components/OATable';
+import {
+  findRenderKey,
+  getFiltersData,
+  checkAuthority,
+  getBrandAuthority,
+  getDepartmentAuthority,
+} from 'utils/utils';
 import Search from './search';
 import AddStaff from './create';
 import EditStaff from './edit';
+import styles from './index.less';
 import ImportStaff from './import';
 import ExportStaff from './export';
 import StaffInfo from './staffInfo';
@@ -25,14 +35,6 @@ import AgainEntry from './againEntry';
 import EditLeaving from './editLeaving';
 import EditProcess from './editProcess';
 import EditTransfer from './editTransfer';
-import OATable from '../../../components/OATable';
-import {
-  findRenderKey,
-  getFiltersData,
-  checkAuthority,
-  getBrandAuthority,
-  getDepartmentAuthority,
-} from '../../../utils/utils';
 
 const { TabPane } = Tabs;
 
@@ -88,9 +90,24 @@ export default class extends PureComponent {
     this[action](targetKey);
   }
 
+  leveSwichChange = (checked) => {
+    const { dispatch } = this.props;
+    const filter = { filters: 'status_id>0', page: 1, pagesize: 10 };
+    if (checked === true) {
+      filter.filters = '';
+    }
+    dispatch({ type: 'staffs/fetchStaff', payload: filter });
+  }
+
   fetchStaff = (params) => {
     const { dispatch } = this.props;
-    dispatch({ type: 'staffs/fetchStaff', payload: params });
+    dispatch({
+      type: 'staffs/fetchStaff',
+      payload: {
+        ...params,
+        filters: `${params.filters}status_id>0`,
+      },
+    });
     this.searchFilter = params;
   }
 
@@ -474,9 +491,10 @@ export default class extends PureComponent {
         width: 200,
         title: '店铺',
         searcher: true,
-        dataIndex: 'shop.name',
-        render: key => OATable.renderEllipsis(key, true),
-      }, {
+        dataIndex: 'shop',
+        render: key => OATable.renderEllipsis((key ? `${key.address}${key.name}` : ''), true),
+      },
+      {
         width: 100,
         title: '店铺代码',
         dataIndex: 'shop_sn',
@@ -560,9 +578,15 @@ export default class extends PureComponent {
       (checkAuthority(89)) && (
         <ImportStaff key="importPop" />
       ),
-      (checkAuthority(84) && (
+      (checkAuthority(84)) && (
         <ExportStaff key="exportBtn" filters={this.searchFilter} total={total} />
-      ))
+      ),
+      (
+        <div key="swich" className={styles.leveSearchBtn}>
+          显示离职员工：
+          <Switch onChange={this.leveSwichChange} />
+        </div>
+      )
     );
     return extra;
   }
