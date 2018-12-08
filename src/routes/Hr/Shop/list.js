@@ -128,6 +128,7 @@ export default class extends PureComponent {
         dataIndex: 'address',
         align: 'center',
         width: 300,
+        render: key => OATable.renderEllipsis(key, true),
       },
       {
         title: '店铺标签',

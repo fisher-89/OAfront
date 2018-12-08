@@ -491,8 +491,8 @@ export default class extends PureComponent {
         width: 200,
         title: '店铺',
         searcher: true,
-        dataIndex: 'shop',
-        render: key => OATable.renderEllipsis((key ? `${key.address}${key.name}` : ''), true),
+        dataIndex: 'shop.name',
+        render: key => OATable.renderEllipsis(key, true),
       },
       {
         width: 100,
