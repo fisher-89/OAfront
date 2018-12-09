@@ -98,12 +98,16 @@ export default class Address extends PureComponent {
         <InputGroup compact>
           {!visibles.province && (
             <Select
+              showSearch
               placeholder="省"
               key="province_id"
               onChange={this.makeCity}
               disabled={able.province}
               value={`${value.province_id || ''}`}
               style={{ ...style }}
+              filterOption={(inputValue, option) => {
+                return option.props.children.indexOf(inputValue) !== -1;
+              }}
             >
               <Option value="" key="province" >---省---</Option>
               {province.map((item) => {
@@ -113,12 +117,16 @@ export default class Address extends PureComponent {
           )}
           {!visibles.city && (
             <Select
+              showSearch
               key="city_id"
               placeholder="市"
               disabled={able.city}
               onChange={this.makeCounty}
               value={`${value.city_id || ''}`}
               style={{ ...style }}
+              filterOption={(inputValue, option) => {
+                return option.props.children.indexOf(inputValue) !== -1;
+              }}
             >
               <Option value="" key="city" >---市---</Option>
               {city.map((item) => {
@@ -128,6 +136,7 @@ export default class Address extends PureComponent {
           )}
           {!visibles.county && (
             <Select
+              showSearch
               key="countyId"
               onChange={(countyId) => {
                 this.setState({
@@ -142,6 +151,9 @@ export default class Address extends PureComponent {
               disabled={able.county}
               value={`${value.county_id || ''}`}
               style={{ ...style }}
+              filterOption={(inputValue, option) => {
+                return option.props.children.indexOf(inputValue) !== -1;
+              }}
             >
               <Option value="" key="county_id" >---区---</Option>
               {county.map((item) => {
