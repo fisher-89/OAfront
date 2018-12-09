@@ -269,7 +269,13 @@ export default class EditStaff extends PureComponent {
                       initialValue: '',
                       rules: [validatorRequired],
                     })(
-                      <Select placeholer="请选择">
+                      <Select
+                        showSearch
+                        filterOption={(inputValue, option) => {
+                          return option.props.children.indexOf(inputValue) !== -1;
+                        }}
+                        placeholer="请选择"
+                      >
                         <Option key="-1" value="">--请选择--</Option>
                         {fposition.map((item) => {
                           return (
@@ -307,9 +313,13 @@ export default class EditStaff extends PureComponent {
                       rules: [validatorRequired],
                     })(
                       <TreeSelect
+                        showSearch
                         treeDefaultExpandAll
                         treeData={newTreeData}
                         dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                        filterTreeNode={(inputValue, treeNode) => {
+                          return treeNode.props.title.indexOf(inputValue) !== -1;
+                        }}
                       />
                     )}
                   </FormItem>

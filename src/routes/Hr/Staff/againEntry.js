@@ -271,7 +271,13 @@ export default class EditStaff extends PureComponent {
                       initialValue: editStaff.position_id || 1,
                       rules: [validatorRequired],
                     })(
-                      <Select placeholer="请选择">
+                      <Select
+                        placeholer="请选择"
+                        showSearch
+                        filterOption={(inputValue, option) => {
+                          return option.props.children.indexOf(inputValue) !== -1;
+                        }}
+                      >
                         {position.map((item) => {
                           return (
                             <Option key={item.id} value={item.id}>{item.name}</Option>
@@ -308,9 +314,13 @@ export default class EditStaff extends PureComponent {
                       rules: [validatorRequired],
                     })(
                       <TreeSelect
+                        showSearch
                         treeDefaultExpandAll
                         treeData={newTreeData}
                         dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                        filterTreeNode={(inputValue, treeNode) => {
+                          return treeNode.props.title.indexOf(inputValue) !== -1;
+                        }}
                       />
                     )}
                   </FormItem>
