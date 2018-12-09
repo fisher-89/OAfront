@@ -74,6 +74,8 @@ export default class extends PureComponent {
     leavingVisible: false,
     transferVisible: false,
     activeKey: 'staff_list',
+    withoutLeaving: true,
+    latestParams: {},
   }
 
   componentWillMount() {
@@ -91,21 +93,20 @@ export default class extends PureComponent {
   }
 
   leveSwichChange = (checked) => {
-    const { dispatch } = this.props;
-    const filter = { filters: 'status_id>0', page: 1, pagesize: 10 };
-    if (checked === true) {
-      filter.filters = '';
-    }
-    dispatch({ type: 'staffs/fetchStaff', payload: filter });
+    const { latestParams } = this.state;
+    this.state.withoutLeaving = !checked;
+    this.fetchStaff(latestParams);
   }
 
   fetchStaff = (params) => {
+    this.state.latestParams = params;
+    const { withoutLeaving } = this.state;
     const { dispatch } = this.props;
     dispatch({
       type: 'staffs/fetchStaff',
       payload: {
         ...params,
-        filters: `${params.filters}status_id>0`,
+        filters: `${params.filters}${withoutLeaving ? 'status_id>0' : ''}`,
       },
     });
     this.searchFilter = params;
