@@ -91,7 +91,7 @@ export default class StaffInfo extends PureComponent {
                   </div>
                   {!isEmpty(data.tags) ? (
                     <FormItem label="标签" {...formItemLayout}>
-                      { (data.tags || []).map(item => <Tag>{item.name}</Tag>) }
+                      { (data.tags || []).map(item => <Tag key={item.id}>{item.name}</Tag>) }
                     </FormItem>
                   ) : ''}
                 </Card>
