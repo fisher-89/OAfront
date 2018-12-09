@@ -19,10 +19,7 @@ export default class extends PureComponent {
     dispatch({
       type: 'staffs/leaving',
       payload: params,
-      onSuccess: () => {
-        onCancel(false);
-        console.log(111);
-      },
+      onSuccess: () => onCancel(),
       onError: errors => onError(errors),
     });
   }

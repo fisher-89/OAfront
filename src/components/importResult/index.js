@@ -69,6 +69,7 @@ export default class Result extends React.PureComponent {
         width: 300,
         title: '失败原因',
         dataIndex: 'reason',
+        render: key => OATable.renderEllipsis(key, true),
       },
     ];
     return columns;
