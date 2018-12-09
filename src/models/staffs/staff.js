@@ -379,12 +379,21 @@ export default {
       return error;
     }
   },
-  * leaving({ payload, onSuccess, onError }, { call }) {
+  * leaving({ payload, onSuccess, onError }, { call, put }) {
     try {
+      const staffSn = payload.staff_sn;
       const response = yield call(leaving, payload);
-      if (!response.status && onError) {
-        onError(response);
+      if (response.errors && onError) {
+        onError(response.errors);
       } else {
+        yield put({
+          type: 'merge',
+          payload: {
+            store,
+            staff_sn: staffSn,
+            data: response,
+          },
+        });
         onSuccess(response);
       }
     } catch (error) {

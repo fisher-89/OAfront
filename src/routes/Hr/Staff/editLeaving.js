@@ -1,9 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import {
-  Input,
-  notification,
-} from 'antd';
+import { Input } from 'antd';
 
 import OAForm, { OAModal, DatePicker } from '../../../components/OAForm';
 
@@ -18,23 +15,15 @@ const formItemLayout = {
 @connect(({ loading }) => ({ loading: loading.staffs }))
 export default class extends PureComponent {
   handleSubmit = (params) => {
-    const { dispatch, onCancel } = this.props;
+    const { dispatch, onCancel, onError } = this.props;
     dispatch({
       type: 'staffs/leaving',
-      payload: {
-        ...params,
+      payload: params,
+      onSuccess: () => {
+        onCancel(false);
+        console.log(111);
       },
-      onError: (errors) => {
-        notification.error({
-          message: errors.message,
-        });
-      },
-      onSuccess: (response) => {
-        onCancel();
-        notification.success({
-          message: response.message,
-        });
-      },
+      onError: errors => onError(errors),
     });
   }
 
