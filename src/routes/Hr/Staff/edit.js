@@ -9,6 +9,7 @@ import {
   Select,
   Switch,
   TreeSelect,
+  notification,
 } from 'antd';
 import moment from 'moment';
 import { omit, assign } from 'lodash';
@@ -97,6 +98,7 @@ export default class EditStaff extends PureComponent {
           household_address: 'household',
           living_address: 'living',
         }));
+        notification.error({ message: '表单错误，请重新填写。' });
       },
     });
   }

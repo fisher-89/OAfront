@@ -10,6 +10,7 @@ import {
   Switch,
   message,
   TreeSelect,
+  notification,
 } from 'antd';
 import { omit, assign, isEmpty } from 'lodash';
 import OAForm, { SearchTable, Address, OAModal } from '../../../components/OAForm';
@@ -99,6 +100,7 @@ export default class EditStaff extends PureComponent {
           household_address: 'household',
           living_address: 'living',
         }));
+        notification.error({ message: '表单错误，请重新填写。' });
       },
       onSuccess: () => {
         this.setState({ visible: false }, onCancel());
