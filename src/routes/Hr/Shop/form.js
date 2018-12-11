@@ -22,12 +22,11 @@ import SearchMap from '../../../components/Maps';
 
 const { TabPane } = Tabs;
 const FormItem = OAForm.Item;
-const { Option, OptGroup } = Select;
+const { Option } = Select;
 @OAForm.create()
 @connect(({ brand, department, stafftags, loading }) => ({
-  stafftagtypes: stafftags.stafftagtypes,
-  stafftags: stafftags.stafftags,
   brand: brand.brand,
+  stafftags: stafftags.stafftags,
   department: department.department,
   loading: (
     loading.effects['shop/addShop'] ||
@@ -39,6 +38,7 @@ export default class extends PureComponent {
     const { dispatch } = this.props;
     dispatch({ type: 'brand/fetchBrand' });
     dispatch({ type: 'department/fetchDepartment' });
+    dispatch({ type: 'stafftags/fetchStaffTags', payload: { type: 'shops' } });
   }
 
   handleSubmit = (params) => {
@@ -74,7 +74,6 @@ export default class extends PureComponent {
       brand,
       department,
       stafftags,
-      stafftagtypes,
       visible,
       initialValue,
       onCancel,
@@ -106,21 +105,6 @@ export default class extends PureComponent {
     const colSpan = { xs: 24, lg: 12 };
     const isEdit = initialValue.shop_sn !== undefined;
     const shoptags = (initialValue.tags || []).map(item => item.id.toString());
-    let tagsGroup = [];
-    const tagsTypeId = stafftagtypes.map(type => type.id);
-    const tagsGroupAble = stafftags.filter(tag => tagsTypeId.indexOf(tag.category.id) === -1);
-    stafftagtypes.forEach((type) => {
-      const temp = { ...type };
-      temp.children = [];
-      stafftags.forEach((tag) => {
-        if (tag.category.id === type.id) {
-          temp.children.push(tag);
-        }
-      });
-      if (temp.children.length) tagsGroup.push(temp);
-    });
-    tagsGroup = tagsGroup.concat(tagsGroupAble);
-
     return (
       <OAModal
         title={initialValue.id ? '编辑店铺' : '添加店铺'}
@@ -316,17 +300,9 @@ export default class extends PureComponent {
                       mode="multiple"
                       placeholder="请选择"
                     >
-                      {tagsGroup.map((item) => {
-                      return item.children ? (
-                        <OptGroup key={`${item.id}`} label={item.name}>
-                          {item.children.map(tag => (<Option key={`${tag.id}`} value={`${tag.id}`}>{tag.name}</Option>))}
-                        </OptGroup>
-                      ) :
-                        (
-                          <Option key={`${item.id}`}>{item.name}</Option>
-                        );
-                    })
-                    }
+                      {stafftags.map((item) => {
+                        return <Option key={`${item.id}`}>{item.name}</Option>;
+                      })}
                     </Select>
                   )}
                 </FormItem>
