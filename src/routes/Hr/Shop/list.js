@@ -116,7 +116,9 @@ export default class extends PureComponent {
         align: 'center',
         width: 300,
         searcher: true,
-        render: key => OATable.renderEllipsis(key, true),
+        render: (_, record) => {
+          return OATable.renderEllipsis(record.full_address, true);
+        },
       },
       {
         title: '店长',
