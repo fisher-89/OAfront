@@ -35,7 +35,10 @@ export default class extends PureComponent {
 
   fetchShop = (params) => {
     const { dispatch } = this.props;
+    dispatch({ type: 'brand/fetchBrand' });
+    dispatch({ type: 'department/fetchDepartment' });
     dispatch({ type: 'shop/fetchShop', payload: params });
+    dispatch({ type: 'stafftags/fetchStaffTags', payload: { type: 'shops' } });
   }
 
   handleModalVisible = (flag) => {

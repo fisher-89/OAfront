@@ -83,9 +83,8 @@ export default class extends PureComponent {
     dispatch({ type: 'brand/fetchBrand' });
     dispatch({ type: 'expense/fetchExpense' });
     dispatch({ type: 'position/fetchPosition' });
+    dispatch({ type: 'stafftags/fetchStaffTags', payload: { type: 'staff' } });
     dispatch({ type: 'department/fetchDepartment', payload: { withTrashed: true } });
-    this.fetchTags();
-    this.fetchTagsType();
   }
 
   onEdit = (targetKey, action) => {
@@ -115,16 +114,6 @@ export default class extends PureComponent {
   fetchStaffInfo = (param) => {
     const { dispatch } = this.props;
     dispatch({ type: 'staffs/fetchStaffInfo', payload: param });
-  }
-
-  fetchTags = (params) => {
-    const { dispatch } = this.props;
-    dispatch({ type: 'stafftags/fetchStaffTags', payload: { ...params, type: 'staff' } });
-  }
-
-  fetchTagsType = (params) => {
-    const { dispatch } = this.props;
-    dispatch({ type: 'stafftags/fetchStaffTagCategories', payload: { ...params, type: 'staff' } });
   }
 
   showUserInfo = (info) => {

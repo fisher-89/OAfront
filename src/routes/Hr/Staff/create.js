@@ -13,17 +13,17 @@ import {
   notification,
 } from 'antd';
 import { omit, assign, isEmpty } from 'lodash';
-import OAForm, { SearchTable, Address, OAModal } from '../../../components/OAForm';
-import RelativeList from './relativeList';
 import NextForm from './nextForm';
+import RelativeList from './relativeList';
 import { markTreeData } from '../../../utils/utils';
+import OAForm, { SearchTable, Address, OAModal } from '../../../components/OAForm';
 
 
 const FormItem = OAForm.Item;
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 const { TextArea } = Input;
-const { Option, OptGroup } = Select;
+const { Option } = Select;
 const { TabPane } = Tabs;
 
 const formItemLayout = {
@@ -48,20 +48,9 @@ const formItemLayout2 = {
   },
 };
 const fieldsBoxLayout = { xs: 24, lg: 12 };
-const formItemLayout3 = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 10 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 12 },
-  },
-};
 @OAForm.create()
 @connect(({ brand, expense, position, department, staffs, stafftags, loading }) => ({
   brand: brand.brand,
-  stafftagtypes: stafftags.stafftagtypes,
   stafftags: stafftags.stafftags,
   expense: expense.expense,
   position: position.position,
@@ -135,7 +124,6 @@ export default class EditStaff extends PureComponent {
       expense,
       visible,
       stafftags,
-      stafftagtypes,
       onCancel,
       position,
       department,
@@ -145,9 +133,7 @@ export default class EditStaff extends PureComponent {
       form: { getFieldDecorator, getFieldValue } } = this.props;
     const newTreeData = markTreeData(department, { value: 'id', label: 'name', parentId: 'parent_id' }, 0);
     const style = { maxHeight: 600, overflowY: 'auto', overflowX: 'hidden' };
-
-    const tabPaneTitleStyle = { width: 118, textAlign: 'center' };
-    const renderTitle = title => <div style={tabPaneTitleStyle}>{title}</div>;
+    const renderTitle = title => <div style={{ width: 118, textAlign: 'center' }}>{title}</div>;
     const brandId = getFieldValue('brand_id');
     const costBrand = expense.filter((item) => {
       const ids = item.brands.map(i => i.id);
@@ -157,21 +143,6 @@ export default class EditStaff extends PureComponent {
       const ids = item.brands.map(i => i.id);
       return ids.indexOf(parseInt(brandId, 10)) !== -1;
     });
-
-    let tagsGroup = [];
-    const tagsTypeId = stafftagtypes.map(type => type.id);
-    const tagsGroupAble = stafftags.filter(tag => tagsTypeId.indexOf(tag.category.id) === -1);
-    stafftagtypes.forEach((type) => {
-      const temp = { ...type };
-      temp.children = [];
-      stafftags.forEach((tag) => {
-        if (tag.category.id === type.id) {
-          temp.children.push(tag);
-        }
-      });
-      if (temp.children.length) tagsGroup.push(temp);
-    });
-    tagsGroup = tagsGroup.concat(tagsGroupAble);
 
     return (
       <React.Fragment>
@@ -222,7 +193,7 @@ export default class EditStaff extends PureComponent {
               </Row>
               <Row>
                 <Col {...fieldsBoxLayout}>
-                  <FormItem {...formItemLayout3} label="电话号码" required>
+                  <FormItem {...formItemLayout2} label="电话号码" required>
                     {getFieldDecorator('mobile', {
                       initialValue: '',
                       rules: [validatorRequired],
@@ -233,7 +204,7 @@ export default class EditStaff extends PureComponent {
                 </Col>
 
                 <Col {...fieldsBoxLayout}>
-                  <FormItem {...formItemLayout3} label="性别" required>
+                  <FormItem {...formItemLayout2} label="性别" required>
                     {getFieldDecorator('gender', {
                       initialValue: '未知',
                       rules: [validatorRequired],
@@ -330,7 +301,7 @@ export default class EditStaff extends PureComponent {
 
               <Row>
                 <Col {...fieldsBoxLayout}>
-                  <FormItem {...formItemLayout3} label="员工状态" required>
+                  <FormItem {...formItemLayout2} label="员工状态" required>
                     {getFieldDecorator('status_id', {
                       initialValue: 1,
                       rules: [validatorRequired],
@@ -343,7 +314,7 @@ export default class EditStaff extends PureComponent {
                   </FormItem>
                 </Col>
                 <Col {...fieldsBoxLayout}>
-                  <FormItem {...formItemLayout3} label="员工属性">
+                  <FormItem {...formItemLayout2} label="员工属性">
                     {getFieldDecorator('property', {
                       initialValue: '0',
                     })(
@@ -392,7 +363,7 @@ export default class EditStaff extends PureComponent {
             <TabPane forceRender tab={renderTitle('个人信息')} key="2" style={style}>
               <Row>
                 <Col {...fieldsBoxLayout}>
-                  <FormItem {...formItemLayout3} label="开户行" name="account_bank">
+                  <FormItem {...formItemLayout2} label="开户行" name="account_bank">
                     {getFieldDecorator('account_bank', {
                       initialValue: '',
                     })(
@@ -421,7 +392,7 @@ export default class EditStaff extends PureComponent {
                   </FormItem>
                 </Col>
                 <Col {...fieldsBoxLayout}>
-                  <FormItem {...formItemLayout3} label="使用工资卡" name="account_active">
+                  <FormItem {...formItemLayout2} label="使用工资卡" name="account_active">
                     {getFieldDecorator('account_active', {
                       initialValue: true,
                       valuePropName: 'checked',
@@ -447,7 +418,7 @@ export default class EditStaff extends PureComponent {
                   </FormItem>
                 </Col>
                 <Col {...fieldsBoxLayout}>
-                  <FormItem {...formItemLayout3} label="联系人电话" required>
+                  <FormItem {...formItemLayout2} label="联系人电话" required>
                     {getFieldDecorator('concat_tel', {
                       initialValue: '',
                       rules: [validatorRequired],
@@ -469,7 +440,7 @@ export default class EditStaff extends PureComponent {
                   </FormItem>
                 </Col>
                 <Col {...fieldsBoxLayout}>
-                  <FormItem {...formItemLayout3} label="微信号" >
+                  <FormItem {...formItemLayout2} label="微信号" >
                     {getFieldDecorator('wechat_number', {
                       initialValue: '',
                     })(
@@ -511,19 +482,10 @@ export default class EditStaff extends PureComponent {
                 {getFieldDecorator('tags', {
                   initialValue: [],
                 })(
-                  <Select
-                    mode="multiple"
-                    placeholder="请选择"
-                  >
-                    {
-                      tagsGroup.map((item) => {
-                        return item.children ? (
-                          <OptGroup key={`${item.id}`} label={item.name}>
-                            {item.children.map(tag => (<Option key={`${tag.id}`} value={`${tag.id}`}>{tag.name}</Option>))}
-                          </OptGroup>
-                        ) : (<Option key={`${item.id}`}>{item.name}</Option>);
-                      })
-                    }
+                  <Select mode="multiple" placeholder="请选择">
+                    {stafftags.map((item) => {
+                      return (<Option key={`${item.id}`}>{item.name}</Option>);
+                    })}
                   </Select>
                 )}
               </FormItem>
@@ -583,7 +545,7 @@ export default class EditStaff extends PureComponent {
                   </FormItem>
                 </Col>
                 <Col {...fieldsBoxLayout}>
-                  <FormItem {...formItemLayout3} label="民族">
+                  <FormItem {...formItemLayout2} label="民族">
                     {getFieldDecorator('national', {
                       initialValue: '未知',
                     })(
@@ -684,7 +646,7 @@ export default class EditStaff extends PureComponent {
                   </FormItem>
                 </Col>
                 <Col {...fieldsBoxLayout}>
-                  <FormItem {...formItemLayout3} label="政治面貌" >
+                  <FormItem {...formItemLayout2} label="政治面貌" >
                     {getFieldDecorator('politics', {
                       initialValue: '未知',
                     })(
@@ -724,7 +686,7 @@ export default class EditStaff extends PureComponent {
                   </FormItem>
                 </Col>
                 <Col {...fieldsBoxLayout}>
-                  <FormItem {...formItemLayout3} label="体重(kg)">
+                  <FormItem {...formItemLayout2} label="体重(kg)">
                     {getFieldDecorator('weight', {
                       initialValue: '',
                     })(

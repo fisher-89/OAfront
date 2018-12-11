@@ -34,13 +34,6 @@ const { Option } = Select;
   ),
 }))
 export default class extends PureComponent {
-  componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch({ type: 'brand/fetchBrand' });
-    dispatch({ type: 'department/fetchDepartment' });
-    dispatch({ type: 'stafftags/fetchStaffTags', payload: { type: 'shops' } });
-  }
-
   handleSubmit = (params) => {
     const { dispatch, onCancel, onError } = this.props;
     const { address } = params.real_address;
