@@ -20,8 +20,7 @@ const status = [
   { id: 4, name: '结束' },
 ];
 
-@connect(({ shop, loading, stafftags, department, brand }) => ({
-  stafftags: stafftags.stafftags,
+@connect(({ shop, loading, department, brand }) => ({
   brand: brand.brand,
   shop: shop.shop,
   department: department.department,
@@ -34,24 +33,9 @@ export default class extends PureComponent {
     editInfo: {},
   }
 
-  componentDidMount() {
-    this.fetchTags();
-    this.fetchTagsType();
-  }
-
   fetchShop = (params) => {
     const { dispatch } = this.props;
     dispatch({ type: 'shop/fetchShop', payload: params });
-  }
-
-  fetchTags = (params) => {
-    const { dispatch } = this.props;
-    dispatch({ type: 'stafftags/fetchStaffTags', payload: { ...params, type: 'shops' } });
-  }
-
-  fetchTagsType = (params) => {
-    const { dispatch } = this.props;
-    dispatch({ type: 'stafftags/fetchStaffTagCategories', payload: { ...params, type: 'shops' } });
   }
 
   handleModalVisible = (flag) => {
@@ -132,16 +116,44 @@ export default class extends PureComponent {
         render: key => OATable.renderEllipsis(key, true),
       },
       {
+        title: '店长',
+        searcher: true,
+        dataIndex: 'manager_name',
+        render: val => (val || '暂无'),
+        width: 60,
+      },
+      {
+        title: '店长手机号',
+        searcher: true,
+        dataIndex: 'manager_mobile',
+        render: key => OATable.renderEllipsis(key, true),
+        width: 60,
+      },
+      {
+        title: '驻店人',
+        hidden: true,
+        searcher: true,
+        dataIndex: 'assistant_name',
+        width: 60,
+      },
+      {
+        title: '店员',
+        hidden: true,
+        searcher: true,
+        dataIndex: 'staff.realname',
+        render: (_, record) => {
+          const staffStr = record.staff.map(item => item.realname).join(',');
+          return (<Ellipsis tooltip lines={1}>{staffStr}</Ellipsis>);
+        },
+      },
+      {
         title: '店铺标签',
         dataIndex: 'tags',
         searcher: true,
         align: 'center',
-        width: 200,
-        render: (_, record) => {
-          const { stafftags } = this.props;
-          const shoptags = (record.tags || []).map(item => item.id.toString());
-          const name = shoptags.map(item => OATable.findRenderKey(stafftags, item).name);
-          return name.join(',');
+        render: (tags) => {
+          const STR = tags.map(item => item.name).join(',');
+          return (<Ellipsis tooltip lines={1}>{STR}</Ellipsis>);
         },
       },
       {
@@ -149,29 +161,10 @@ export default class extends PureComponent {
         dataIndex: 'status_id',
         align: 'center',
         filters: this.statusSelect(status),
-        width: 100,
         render: (key) => {
           const current = status.filter(item => `${item.id}` === `${key}`);
           return current ? current[0].name : '';
         },
-      },
-      {
-        title: '开业日期',
-        hidden: true,
-        dataIndex: 'opening_at',
-        dateFilters: true,
-        align: 'center',
-        width: 120,
-        render: time => (time ? moment(time).format('YYYY-MM-DD') : ''),
-      },
-      {
-        title: '闭店日期',
-        hidden: true,
-        dataIndex: 'end_at',
-        dateFilters: true,
-        align: 'center',
-        width: 120,
-        render: time => (time ? moment(time).format('YYYY-MM-DD') : ''),
       },
       {
         title: '上班时间',
@@ -186,34 +179,22 @@ export default class extends PureComponent {
         width: 100,
       },
       {
-        title: '店长',
-        searcher: true,
-        dataIndex: 'manager_name',
-        render: val => (val || '暂无'),
-        width: 60,
-      },
-      {
-        title: '店长手机号',
-        searcher: true,
-        dataIndex: 'manager_mobile',
-        width: 60,
-      },
-      {
-        title: '驻店人',
+        title: '开业日期',
         hidden: true,
-        searcher: true,
-        dataIndex: 'assistant_name',
-        width: 60,
+        dataIndex: 'opening_at',
+        dateFilters: true,
+        align: 'center',
+        width: 110,
+        render: time => (time ? moment(time).format('YYYY-MM-DD') : ''),
       },
       {
-        title: '店员',
+        title: '闭店日期',
         hidden: true,
-        dataIndex: 'staff',
-        width: 300,
-        render: (staff) => {
-          const staffStr = staff.map(item => item.realname).join(',');
-          return (<Ellipsis tooltip lines={1} style={{ width: 155 }}>{staffStr}</Ellipsis>);
-        },
+        dataIndex: 'end_at',
+        dateFilters: true,
+        align: 'center',
+        width: 110,
+        render: time => (time ? moment(time).format('YYYY-MM-DD') : ''),
       },
     ];
 
