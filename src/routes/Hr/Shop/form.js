@@ -6,6 +6,7 @@ import {
   Tabs,
   Col,
   Row,
+  notification,
 } from 'antd';
 import { connect } from 'dva';
 import { omit } from 'lodash';
@@ -56,11 +57,15 @@ export default class extends PureComponent {
       type: params.id ? 'shop/editShop' : 'shop/addShop',
       payload: body,
       onSuccess: () => onCancel(),
-      onError: errors => onError(errors, {
-        city_id: 'shop_address',
-        county_id: 'shop_address',
-        province_id: 'shop_address',
-      }),
+      onError: (errors) => {
+        onError(errors, {
+          city_id: 'shop_address',
+          county_id: 'shop_address',
+          province_id: 'shop_address',
+          address: 'shop_address',
+        });
+        notification.error({ message: '表单错误，请重新填写。' });
+      },
     });
   }
 
@@ -265,7 +270,7 @@ export default class extends PureComponent {
               <Col {...colSpan}>
                 <FormItem label="上班时间" {...formItemLayout}>
                   {getFieldDecorator('clock_in', {
-                    initialValue: initialValue.clock_in || '00:00:00',
+                    initialValue: initialValue.clock_in || null,
                   })(
                     <DatePicker
                       mode="time"
@@ -284,7 +289,7 @@ export default class extends PureComponent {
               <Col {...colSpan}>
                 <FormItem label="下班时间" {...formItemLayout}>
                   {getFieldDecorator('clock_out', {
-                    initialValue: initialValue.clock_out || '00:00:00',
+                    initialValue: initialValue.clock_out || null,
                   })(
                     <DatePicker
                       mode="time"
