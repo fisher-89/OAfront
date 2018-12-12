@@ -265,13 +265,17 @@ export default class EditStaff extends PureComponent {
                 </Col>
                 <Col {...fieldsBoxLayout}>
                   <FormItem {...formItemLayout2} label="员工属性">
-                    <Select disabled defaultValue={editStaff.property} OptionFilterProp="children">
-                      <Option value={0}>无</Option>
-                      <Option value={1}>108将</Option>
-                      <Option value={2}>36天罡</Option>
-                      <Option value={3}>24金刚</Option>
-                      <Option value={4}>18罗汉</Option>
-                    </Select>
+                    {getFieldDecorator('property', {
+                      initialValue: editStaff.property || 0,
+                    })(
+                      <Select OptionFilterProp="children">
+                        <Option value={0}>无</Option>
+                        <Option value={1}>108将</Option>
+                        <Option value={2}>36天罡</Option>
+                        <Option value={3}>24金刚</Option>
+                        <Option value={4}>18罗汉</Option>
+                      </Select>
+                    )}
                   </FormItem>
                 </Col>
               </Row>
@@ -637,8 +641,6 @@ export default class EditStaff extends PureComponent {
                     )}
                   </FormItem>
                 </Col>
-
-
               </Row>
 
               <Row>

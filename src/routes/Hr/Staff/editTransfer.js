@@ -50,7 +50,10 @@ export default class extends PureComponent {
     const { dispatch, onCancel } = this.props;
     dispatch({
       type: 'staffs/transfer',
-      payload: params,
+      payload: {
+        ...params,
+        ...params.shop_sn,
+      },
       onError: (errors) => {
         this.setState({ visible: false }, onError(errors));
       },
@@ -89,7 +92,7 @@ export default class extends PureComponent {
       department,
       validateFields,
       validatorRequired,
-      form: { getFieldDecorator, setFieldsValue, getFieldValue },
+      form: { getFieldDecorator, getFieldValue },
     } = this.props;
 
     const brandId = getFieldValue('brand_id');
@@ -135,39 +138,7 @@ export default class extends PureComponent {
                 <Input type="hidden" />
               )}
               <FormItem label="员工姓名" {...formItemLayout}>
-                <span>{editStaff.realname}</span>
-              </FormItem>
-            </Col>
-            <Col {...fieldsBoxLayout}>
-              <FormItem label="员工状态" {...formItemLayout} required>
-                {getFieldDecorator('status_id', {
-                  initialValue: editStaff.status_id,
-                  rules: [validatorRequired],
-                })(
-                  <Select name="status_id" placeholer="请选择">
-                    <Option key="-1" value={1}>试用期</Option>
-                    <Option key="2" value={2}>在职</Option>
-                    <Option key="3" value={3}>停薪留职</Option>
-                  </Select>
-                )}
-              </FormItem>
-            </Col>
-            <Col span={24} >
-              <FormItem label="所属部门" {...formItemLayout1} required>
-                {getFieldDecorator('department_id', {
-                  initialValue: `${editStaff.department_id}`,
-                  rules: [validatorRequired],
-                })(
-                  <TreeSelect
-                    showSearch
-                    treeDefaultExpandAll
-                    treeData={newTreeData}
-                    dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                    filterTreeNode={(inputValue, treeNode) => {
-                      return treeNode.props.title.indexOf(inputValue) !== -1;
-                    }}
-                  />
-                )}
+                <span className="ant-form-text">{editStaff.realname}</span>
               </FormItem>
             </Col>
           </Row>
@@ -194,7 +165,13 @@ export default class extends PureComponent {
                   initialValue: editStaff.position_id,
                   rules: [validatorRequired],
                 })(
-                  <Select showSearch placeholer="请选择">
+                  <Select
+                    showSearch
+                    placeholer="请选择"
+                    filterOption={(inputValue, option) => {
+                      return option.props.children.indexOf(inputValue) !== -1;
+                    }}
+                  >
                     <Option key="-1" value="">--请选择--</Option>
                     {fposition.map((item) => {
                       return (
@@ -224,18 +201,46 @@ export default class extends PureComponent {
               </FormItem>
             </Col>
             <Col span={24} >
-              <FormItem label="店铺编号" {...formItemLayout1}>
-                {getFieldDecorator('shop_sn', {
-                  initialValue: editStaff.shop_sn,
+              <FormItem label="所属部门" {...formItemLayout1} required>
+                {getFieldDecorator('department_id', {
+                  initialValue: `${editStaff.department_id}`,
+                  rules: [validatorRequired],
                 })(
-                  <SearchTable.Shop
-                    name="shop_sn"
-                    showName="shop_sn"
-                    placeholder="请选择"
-                    onChange={(value) => {
-                      setFieldsValue(value);
+                  <TreeSelect
+                    showSearch
+                    treeDefaultExpandAll
+                    treeData={newTreeData}
+                    dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                    filterTreeNode={(inputValue, treeNode) => {
+                      return treeNode.props.title.indexOf(inputValue) !== -1;
                     }}
                   />
+                )}
+              </FormItem>
+            </Col>
+            <Col {...fieldsBoxLayout}>
+              <FormItem label="员工状态" {...formItemLayout} required>
+                {getFieldDecorator('status_id', {
+                  initialValue: editStaff.status_id,
+                  rules: [validatorRequired],
+                })(
+                  <Select name="status_id" placeholer="请选择">
+                    <Option key="-1" value={1}>试用期</Option>
+                    <Option key="2" value={2}>在职</Option>
+                    <Option key="3" value={3}>停薪留职</Option>
+                  </Select>
+                )}
+              </FormItem>
+            </Col>
+            <Col span={24} >
+              <FormItem label="所属店铺" {...formItemLayout1}>
+                {getFieldDecorator('shop_sn', {
+                  initialValue: {
+                    shop_name: '',
+                    shop_sn: '',
+                  },
+                })(
+                  <SearchTable.Shop />
                 )}
               </FormItem>
             </Col>
