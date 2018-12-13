@@ -15,7 +15,7 @@ import {
 import { omit, assign, isEmpty } from 'lodash';
 import NextForm from './nextForm';
 import RelativeList from './relativeList';
-import { markTreeData } from '../../../utils/utils';
+import { markTreeData, getBrandAuthority, getDepartmentAuthority } from '../../../utils/utils';
 import OAForm, { SearchTable, Address, OAModal } from '../../../components/OAForm';
 
 
@@ -131,7 +131,21 @@ export default class EditStaff extends PureComponent {
       validateFields,
       validatorRequired,
       form: { getFieldDecorator, getFieldValue } } = this.props;
-    const newTreeData = markTreeData(department, { value: 'id', label: 'name', parentId: 'parent_id' }, 0);
+    const formatDepart = department.map((item) => {
+      const curItem = item;
+      if (getDepartmentAuthority(item.id) === false) {
+        curItem.disabled = true;
+      }
+      return curItem;
+    });
+    const brands = brand.filter((item) => {
+      const curItem = item;
+      if (getBrandAuthority(item.id) === false) {
+        curItem.disabled = true;
+      }
+      return curItem;
+    });
+    const newTreeData = markTreeData(formatDepart, { value: 'id', label: 'name', parentId: 'parent_id' }, 0);
     const style = { maxHeight: 600, overflowY: 'auto', overflowX: 'hidden' };
     const renderTitle = title => <div style={{ width: 118, textAlign: 'center' }}>{title}</div>;
     const brandId = getFieldValue('brand_id');
@@ -143,7 +157,6 @@ export default class EditStaff extends PureComponent {
       const ids = item.brands.map(i => i.id);
       return ids.indexOf(parseInt(brandId, 10)) !== -1;
     });
-
     return (
       <React.Fragment>
         <NextForm
@@ -226,9 +239,11 @@ export default class EditStaff extends PureComponent {
                       rules: [validatorRequired],
                     })(
                       <Select placeholer="请选择" onChange={this.handleSelectChange}>
-                        {brand && brand.map((item) => {
+                        {brands && brands.map((item) => {
                           return (
-                            <Option key={item.id} value={item.id}>{item.name}</Option>
+                            <Option key={item.id} value={item.id} disabled={item.disabled}>
+                              {item.name}
+                            </Option>
                           );
                         })}
                       </Select>
@@ -287,7 +302,6 @@ export default class EditStaff extends PureComponent {
                     })(
                       <TreeSelect
                         showSearch
-                        treeDefaultExpandAll
                         treeData={newTreeData}
                         dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                         filterTreeNode={(inputValue, treeNode) => {

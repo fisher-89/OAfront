@@ -6,7 +6,7 @@ import NextForm from './nextForm';
 
 
 import OAForm, { SearchTable, OAModal } from '../../../components/OAForm';
-import { markTreeData } from '../../../utils/utils';
+import { markTreeData, getBrandAuthority, getDepartmentAuthority } from '../../../utils/utils';
 
 const FormItem = OAForm.Item;
 const { Option } = Select;
@@ -94,7 +94,20 @@ export default class extends PureComponent {
       validatorRequired,
       form: { getFieldDecorator, getFieldValue },
     } = this.props;
-
+    const formatDepart = department.map((item) => {
+      const curItem = item;
+      if (getDepartmentAuthority(item.id) === false) {
+        curItem.disabled = true;
+      }
+      return curItem;
+    });
+    const brands = brand.filter((item) => {
+      const curItem = item;
+      if (getBrandAuthority(item.id) === false) {
+        curItem.disabled = true;
+      }
+      return curItem;
+    });
     const brandId = getFieldValue('brand_id');
     const costBrand = expense.filter((item) => {
       const ids = item.brands.map(i => i.id);
@@ -104,7 +117,7 @@ export default class extends PureComponent {
       const ids = item.brands.map(i => i.id);
       return ids.indexOf(parseInt(brandId, 10)) !== -1;
     });
-    const newTreeData = markTreeData(department, { value: 'id', label: 'name', parentId: 'parent_id' }, 0);
+    const newTreeData = markTreeData(formatDepart, { value: 'id', label: 'name', parentId: 'parent_id' }, 0);
 
     return (
       <React.Fragment>
@@ -150,9 +163,11 @@ export default class extends PureComponent {
                   rules: [validatorRequired],
                 })(
                   <Select name="brand_id" placeholer="请选择" onChange={this.handleSelectChange}>
-                    {brand && brand.map((item) => {
+                    {brands && brands.map((item) => {
                       return (
-                        <Option key={item.id} value={item.id}>{item.name}</Option>
+                        <Option key={item.id} value={item.id} disabled={item.disabled}>
+                          {item.name}
+                        </Option>
                       );
                     })}
                   </Select>
@@ -208,7 +223,6 @@ export default class extends PureComponent {
                 })(
                   <TreeSelect
                     showSearch
-                    treeDefaultExpandAll
                     treeData={newTreeData}
                     dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                     filterTreeNode={(inputValue, treeNode) => {
