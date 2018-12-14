@@ -172,10 +172,13 @@ export default class extends PureComponent {
                     rules: [validatorRequired],
                   })(
                     <TreeSelect
+                      showSearch
                       placeholder="请选择部门"
-                      treeDefaultExpandAll
                       treeData={newTreeData}
                       dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                      filterTreeNode={(inputValue, treeNode) => {
+                        return treeNode.props.title.indexOf(inputValue) !== -1;
+                      }}
                     />
                   )}
                 </FormItem>

@@ -167,8 +167,8 @@ export default class extends PureComponent {
         align: 'center',
         filters: this.statusSelect(status),
         render: (key) => {
-          const current = status.filter(item => `${item.id}` === `${key}`);
-          return current ? current[0].name : '';
+          const current = status.filter(item => `${item.id}` === `${key}`).pop();
+          return (current !== undefined) ? current.name : '';
         },
       },
       {
