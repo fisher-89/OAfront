@@ -19,7 +19,7 @@ const { Option } = Select;
     const { fetchMoneyAndScore } = props;
     if ((allValues.staff_sn || {}).staff_sn && allValues.rule_id && allValues.violate_at) {
       const params = {
-        staff_sn: allValues.staff_sn,
+        staff_sn: allValues.staff_sn.staff_sn,
         rule_id: allValues.rule_id,
         violate_at: allValues.violate_at,
       };
@@ -124,6 +124,7 @@ export default class extends PureComponent {
     billing.billing_name = initialValue.billing_name;
     return (
       <OAModal
+        title="编辑大爱"
         visible={visible}
         loading={loading}
         onCancel={() => onCancel(false)}
@@ -273,7 +274,7 @@ export default class extends PureComponent {
           <Col>
             <FormItem label="备注" {...longFormItemLayout}>
               {getFieldDecorator('remark', {
-                initialValue: initialValue.remark || [],
+                initialValue: initialValue.remark || '',
               })(
                 <TextArea />
               )}

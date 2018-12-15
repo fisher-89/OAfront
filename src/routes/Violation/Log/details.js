@@ -1,70 +1,90 @@
 import React, { PureComponent } from 'react';
-import { Row, Col } from 'antd';
+import { Button, Tooltip } from 'antd';
 import OATable from '../../../components/OATable';
 import OAForm, { OAModal } from '../../../components/OAForm';
 import store from './store/store';
 import style from './details.less';
 
-const FormItem = OAForm.Item;
 @OAForm.create()
 @store()
 export default class extends PureComponent {
+  state = {
+    value: {},
+  }
+  componentWillReceiveProps(nextProps) {
+    if (this.props.initialValue !== nextProps.initialValue) {
+      this.setState({ value: nextProps.initialValue });
+    }
+  }
+
   render() {
     const {
-      initialValue,
       visible,
       onCancel,
       ruleType,
+      rule,
+      paymentChange,
     } = this.props;
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 8 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 16 },
-      },
-    };
-    const payment = initialValue.has_paid ? '已支付' : '未支付';
-    const typerule = OATable.findRenderKey(ruleType, { ...initialValue.rules }.type_id).name;
+    const { value } = this.state;
+
+    const payment = value.has_paid ? '已支付' : '未支付';
+    const pay = value.has_paid ? '退款' : '支付';
+    const rulename = OATable.findRenderKey(rule, value.rule_id).name;
+    const typename = OATable.findRenderKey(
+      ruleType, OATable.findRenderKey(rule, value.rule_id).type_id).name;
     return (
       <OAModal
         visible={visible}
-        title="大爱详情"
+        title="查看大爱"
         onCancel={() => onCancel(false)}
-        onSubmit={() => onCancel(false)}
+        footer={null}
       >
         <div className={style.name}>
-          <FormItem><h1>{initialValue.staff_name}</h1></FormItem>
+          <div className={style.namediv}><font>{value.staff_name}</font></div>
+          <div className={style.staffsndiv}>
+            <font className={style.staffsn}>({value.staff_sn})</font>
+          </div>
         </div>
-        <div>
-          <Row gutter={24}>
-            <Col span={6}><FormItem {...formItemLayout} label="编号">{initialValue.id}</FormItem></Col>
-            <Col span={8}><FormItem {...formItemLayout} label="品牌">{initialValue.brand_name}</FormItem></Col>
-            <Col span={10}><FormItem {...formItemLayout} label="部门">{initialValue.department_name}</FormItem></Col>
-          </Row>
+
+        <div className={style.staff}>
+          <div className={style.branddiv}>
+            <div className={style.brand}>品牌：</div>
+            <div className={style.brandfont}>{value.brand_name}</div>
+          </div>
+          <div className={style.departmentdiv}>
+            <div className={style.department}>部门：</div>
+            <div className={style.departmentfont}>
+              <Tooltip title={value.department_name}>{value.department_name}</Tooltip>
+            </div>
+          </div>
         </div>
-        <div className={style.details}>
-          <p>违纪日期：{initialValue.violate_at}</p>
-          <p>大爱类型：{typerule}</p>
-          <p>大爱原因：{{ ...initialValue.rules }.name} &nbsp;&nbsp;&nbsp;&nbsp;
-            <font className={style.quantity}>
-              本月第{initialValue.quantity}次违纪
-            </font>
-          </p>
-          <p>大爱金额：{initialValue.money}元</p>
-          <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;分值：{initialValue.score}</p>
+
+        <div className={style.xuxian} />
+
+        <div className={style.simple}>违纪日期：{value.violate_at}</div>
+
+        <div className={style.normal}>大爱类型：{typename}</div>
+
+        <div className={style.normal}>
+          <div className={style.reason}>大爱原因：{rulename}</div>
+          <div className={style.quantity}>本月第{value.quantity}次违纪</div>
         </div>
-        <div className={style.details}>
-          <p>支付状态：{payment}</p>
-          <p>支付时间：{initialValue.paid_at}</p>
-        </div>
-        <div className={style.details}>
-          <p>&nbsp;&nbsp;&nbsp;开单人：{initialValue.billing_name}</p>
-          <p>开单日期：{initialValue.billing_at}</p>
-          <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;备注：{initialValue.remark}</p>
-        </div>
+
+        <div className={style.normal}>大爱金额：{value.money}元</div>
+
+        <div className={style.score}>分值：{value.score}</div>
+
+        <div className={style.simple}><div className={style.payment}>支付状态：{payment}</div><div className={style.paychange}><Button onClick={() => paymentChange(value.id)} type="danger" size="small">{pay}</Button></div></div>
+
+        <div className={style.normal}>支付时间：{value.paid_at}</div>
+
+        <div className={style.bill}>开单人：{value.billing_name}</div>
+
+        <div className={style.normal}>开单日期：{value.billing_at}</div>
+
+        <div className={style.score}>备注：{value.remark}</div>
+
+        <div className={style.extr} />
       </OAModal>
     );
   }
