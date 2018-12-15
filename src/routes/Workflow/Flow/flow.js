@@ -961,8 +961,6 @@ export default class Flow extends React.PureComponent {
         extra={operations}
       >
         <Tabs
-          renderTabBar
-          renderTabContent
           animated
           tabBarExtraContent={addSteps}
           onChange={this.onChange}
