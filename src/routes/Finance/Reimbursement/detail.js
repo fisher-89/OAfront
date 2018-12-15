@@ -443,7 +443,7 @@ export default class extends Component {
                   </Col>
                 </React.Fragment>
               )}
-              {checkAuthority(135) && info.status_id === 6 && (
+              {(checkAuthority(134) || checkAuthority(194)) && info.status_id === 6 && (
                 <React.Fragment>
                   <Col span={2}>
                     <Popconfirm
