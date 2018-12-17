@@ -228,6 +228,12 @@ export const getRouterData = (app) => {
     '/violation/log': {
       component: dynamicWrapper(app, ['violation'], () => import('../routes/Violation/Log')),
     },
+    // '/violation/regime': {
+    //   component: dynamicWrapper(app, ['violation'], () => import('../routes/Violation/Regime')),
+    // },
+    '/violation/statistics': {
+      component: dynamicWrapper(app, ['violation'], () => import('../routes/Violation/Statistics')),
+    },
 
     /**  系统 */
     '/system/authority': {

@@ -3,6 +3,8 @@ import ruleEffects from './rule';
 import ruleTypeEffects from './rule-type';
 import scoreEffects from './score';
 import moneyEffects from './money';
+import staffViolationEffects from './staffviolation';
+import departmentViolationEffects from './departmentviolation';
 import defaultReducers from '../reducers';
 
 export default {
@@ -13,6 +15,8 @@ export default {
     ruletype: [],
     money: {},
     score: {},
+    staffviolation: [],
+    departmentviolation: [],
   },
   effects: {
     ...fineLogEffects,
@@ -20,6 +24,8 @@ export default {
     ...ruleTypeEffects,
     ...moneyEffects,
     ...scoreEffects,
+    ...staffViolationEffects,
+    ...departmentViolationEffects,
   },
   reducers: {
     ...defaultReducers,

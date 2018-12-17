@@ -85,3 +85,25 @@ export async function editRule(params, id) {
 export async function deleteRule(id) {
   return request(`/api/violation/rule/${id}`, { method: 'DELETE' });
 }
+
+/* 员工详情 */
+
+export async function fetchStaffViolation(params) {
+  return request('/api/violation/count-staff', { method: 'GET', body: params });
+}
+
+export async function fetchDepartmentViolation(params) {
+  return request('/api/violation/count-department', { method: 'GET', body: params });
+}
+
+export async function editStaffPayment(params) {
+  return request('/api/violation/count-staff', { method: 'POST', body: params });
+}
+
+export async function downloadDepartmentExcel(params) {
+  return request('/api/violation/count-department-excel', {
+    method: 'GET',
+    body: params,
+    headers: { Accept: '*' },
+  });
+}

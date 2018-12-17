@@ -277,7 +277,7 @@ const menuData = [
       },
       {
         name: '员工统计',
-        path: 'staffcensus',
+        path: 'statistics',
       },
     ],
   },
