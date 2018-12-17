@@ -91,6 +91,7 @@ export default class extends PureComponent {
       {
         title: '部门',
         dataIndex: 'department_id',
+        render: key => OATable.findRenderKey(department, key).name,
       },
       {
         title: '大爱总金额',
@@ -106,6 +107,11 @@ export default class extends PureComponent {
       },
       {
         title: '是否结清',
+        render: (rowData) => {
+          if (rowData.paid_money === rowData.money) {
+            return '结清';
+          } else { return '未结清'; }
+        },
       },
       {
         title: '操作',
@@ -173,6 +179,7 @@ export default class extends PureComponent {
     const { panes, activeKey } = this.state;
     let excelExport = null;
     excelExport = { actionType: 'violation/downloadExcelFinLog', fileName: '大爱记录.xlsx' };
+    const fulldepart = departmentId === 'alldepartment';
     return (
       <Tabs
         hideAdd
@@ -194,6 +201,7 @@ export default class extends PureComponent {
             extraOperator={this.makeExtraOperator()}
             loading={loading}
           />
+          <p hidden={fulldepart}>部门大爱金额: &nbsp;&nbsp;&nbsp;已支付金额：&nbsp;&nbsp;&nbsp; 部门总分值：</p>
         </TabPane>
         {panes.map(pane => (
           <TabPane tab={pane.title} key={pane.key} >
