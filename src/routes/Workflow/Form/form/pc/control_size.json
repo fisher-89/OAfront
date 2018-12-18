@@ -1,0 +1,74 @@
+{
+    "int": {
+        "col": 4,
+        "row": 1
+    },
+    "text": {
+        "col": 4,
+        "row": 1
+    },
+    "date": {
+        "col": 4,
+        "row": 1
+    },
+    "datetime": {
+        "col": 4,
+        "row": 1
+    },
+    "time": {
+        "col": 4,
+        "row": 1
+    },
+    "file": {
+        "col": 8,
+        "row": 2
+    },
+    "array": {
+        "col": 8,
+        "row": 1
+    },
+    "select": {
+        "col": 4,
+        "row": 1,
+        "multiple": {
+            "col": 8,
+            "row": 1
+        }
+    },
+    "department": {
+        "col": 4,
+        "row": 1,
+        "multiple": {
+            "col": 8,
+            "row": 1
+        }
+    },
+    "staff": {
+        "col": 4,
+        "row": 1,
+        "multiple": {
+            "col": 8,
+            "row": 1
+        }
+    },
+    "shop": {
+        "col": 4,
+        "row": 1,
+        "multiple": {
+            "col": 8,
+            "row": 1
+        }
+    },
+    "region": {
+        "col": 8,
+        "row": 2
+    },
+    "api": {
+        "col": 4,
+        "row": 1,
+        "multiple": {
+            "col": 8,
+            "row": 1
+        }
+    }
+}

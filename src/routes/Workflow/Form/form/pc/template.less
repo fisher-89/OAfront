@@ -1,16 +1,3 @@
-:global {
-  .drag-shadow {
-    -moz-user-select: none;
-    -webkit-user-select: none;
-    user-select: none;
-    position: fixed;
-    opacity: 0.5;
-    .ant-tag, .ant-tag:hover {
-      margin: 0;
-    }
-  }
-}
-
 .pcTemplate {
   -moz-user-select: none;
   -webkit-user-select: none;
@@ -74,17 +61,16 @@
     }
   }
   .template {
-    height: 693px;
-    padding: 42px 40px 40px;
+    padding: 40px 0;
     background-color: rgba(250, 250, 250, 1);
     border: 1px dashed rgba(153, 153, 153, 1);
     border-radius: 4px;
     position: relative;
-    .scale {
+    .scaleHorizontal {
       position: absolute;
       top: 0;
       left: 0;
-      padding-left: 1px;
+      padding-left: 2px;
       > div {
         width: 75px;
         float: left;
@@ -101,11 +87,66 @@
       }
     }
     .board {
-      width: 913px;
-      height: 100%;
-      background-color: #fff;
-      background-image: url(/template_background.png);
-      background-position: 1px 1px;
+      padding: 1px 40px;
+      width: 993px;
+      height: 535px;
+      overflow: scroll;
+      position: relative;
+      .scroller {
+        width: 100%;
+        background-color: #fff;
+        background-image: url(/public/template_background.png);
+        background-position: 1px 1px;
+        .line {
+          height: 77px;
+          width: 100%;
+          margin-top: -1px;
+        }
+        .line:first-child {
+          margin-top: 0;
+        }
+        .lineFocus {
+          position: absolute;
+          width: 100%;
+          top: 2px;
+          left: 0;
+          > div {
+            float: left;
+          }
+          .leftControl {
+            width: 41px;
+            line-height: 75px;
+            font-size: 24px;
+            text-align: center;
+            font-weight: 700;
+            color: #1890ff;
+            opacity: 0.2;
+          }
+          .boxShadow {
+            width: 911px;
+            height: 75px;
+            box-shadow: #1890ff 0 0 2px 0;
+          }
+          .rightControl {
+            width: 41px;
+          }
+        }
+      }
+    }
+    .board::-webkit-scrollbar {
+      display: none;
+    }
+  }
+  .dragShadow {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+    position: fixed;
+    opacity: 0.7;
+    :global {
+      .ant-tag, .ant-tag:hover {
+        margin: 0;
+      }
     }
   }
 }

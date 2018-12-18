@@ -15,11 +15,11 @@ import {
   TreeSelect,
   notification,
 } from 'antd';
-import FlowChart from '../../../components/FlowChart';
-import Switch from '../../../components/CustomSwitch';
-import SearchTable from '../../../components/OAForm/SearchTable';
-import UploadCropper from '../../../components/UploadCropper';
-import { markTreeData } from '../../../utils/utils';
+import FlowChart from 'components/FlowChart';
+import Switch from 'components/CustomSwitch';
+import SearchTable from 'components/OAForm/SearchTable';
+import UploadCropper from 'components/UploadCropper';
+import { markTreeData } from 'utils/utils';
 import StepForm from './StepForm';
 
 const { TabPane } = Tabs;
