@@ -76,7 +76,6 @@ export default class extends PureComponent {
               address: result.regeocode.formattedAddress,
               position: center,
             });
-            document.getElementById('address').value = result.regeocode.formattedAddress;
           }
         });
       });

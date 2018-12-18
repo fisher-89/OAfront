@@ -114,7 +114,7 @@ const menuData = [
   }, {
     name: '财务',
     path: 'finance',
-    icon: '',
+    icon: 'pay-circle',
     authority: '33',
     children: [{
       name: '报销',

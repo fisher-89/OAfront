@@ -175,6 +175,7 @@ export default formCreate => (option = {}) => (Componet) => {
         if (errorAble) {
           message.destroy();
           message.error('表单存在未处理的错误信息！');
+          return;
         }
         this.form.validateFieldsAndScroll(false, { force: true }, (err, values) => {
           if (!err && !errorAble) {
