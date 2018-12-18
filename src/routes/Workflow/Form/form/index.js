@@ -10,10 +10,11 @@ import {
   Tooltip,
   InputNumber,
 } from 'antd';
+import Switch from 'components/CustomSwitch';
 import OAForm from 'components/OAForm';
 import FooterToolbar from 'components/FooterToolbar';
 import FieldList from '../fieldList';
-import PCTemplate from './pc_template';
+import PCTemplate from './pc/template';
 import MobileTemplate from './mobile_template';
 
 const FormItem = OAForm.Item;
@@ -302,6 +303,28 @@ class addForm extends PureComponent {
                     <Select placeholder="请选择">
                       {formType.map(item => <Option key={item.id}>{item.name}</Option>)}
                     </Select>
+                  )}
+                </FormItem>
+                <FormItem
+                  {...formItemLayout}
+                  label="启用PC模板"
+                >
+                  {getFieldDecorator('pc_template', (initialFieldsValue ? {
+                    initialValue: initialFieldsValue.pc_template,
+                    rules: [validatorRequired],
+                  } : {}))(
+                    <Switch />
+                  )}
+                </FormItem>
+                <FormItem
+                  {...formItemLayout}
+                  label="启用移动端模板"
+                >
+                  {getFieldDecorator('mobile_template', (initialFieldsValue ? {
+                    initialValue: initialFieldsValue.mobile_template,
+                    rules: [validatorRequired],
+                  } : {}))(
+                    <Switch />
                   )}
                 </FormItem>
                 <FormItem
