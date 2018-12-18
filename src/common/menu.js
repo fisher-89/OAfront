@@ -225,6 +225,16 @@ const menuData = [
         name: '部门管理',
         path: 'department',
         authority: '38',
+        children: [
+          {
+            name: '部门管理',
+            path: 'list',
+          },
+          {
+            name: '分类管理',
+            path: 'cates',
+          },
+        ],
       },
       {
         name: '职位管理',

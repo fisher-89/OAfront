@@ -40,3 +40,30 @@ export async function sortDepartment(params) {
     body: params,
   });
 }
+
+export async function fetchCategory(params) {
+  return request('/api/hr/department/cates', {
+    method: 'GET',
+    body: params,
+  });
+}
+
+export async function addCategory(params) {
+  return request('/api/hr/department/cates', {
+    method: 'POST',
+    body: params,
+  });
+}
+
+export async function editCategory(params, id) {
+  return request(`/api/hr/department/cates/${id}`, {
+    method: 'PATCH',
+    body: params,
+  });
+}
+
+export async function deleteCategory(id) {
+  return request(`/api/hr/department/cates/${id}`, {
+    method: 'DELETE',
+  });
+}
