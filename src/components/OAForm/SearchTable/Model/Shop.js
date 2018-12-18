@@ -103,11 +103,10 @@ export default class Shop extends PureComponent {
       },
       {
         title: '店员',
-        dataIndex: 'staff',
+        dataIndex: 'staff.realname',
         searcher: true,
-        render: (val) => {
-          let shopStaff = val.map(item => item.realname);
-          shopStaff = shopStaff.join(',');
+        render: (_, record) => {
+          const shopStaff = record.staff.map(item => item.realname).join(',');
           return (
             <Tooltip title={shopStaff} placement="right">
               {shopStaff.length > 9 ? `${shopStaff.substr(0, 9)}...` : shopStaff}

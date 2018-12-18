@@ -3,11 +3,11 @@ import {
   Popover,
   Button,
   Spin,
-  List,
   notification,
 } from 'antd';
 import { connect } from 'dva';
 import XLSX from 'xlsx';
+import ImportResult from 'components/importResult';
 
 @connect(({ staff }) => ({ staff }))
 export default class extends PureComponent {
@@ -16,8 +16,8 @@ export default class extends PureComponent {
     cols: [],
     // 入职导入模版
     createTemp: [
-      ['姓名', '手机号码', '身份证号', '性别', '品牌', '费用品牌', '部门全称', '店铺代码', '职位', '员工状态', '银行卡号', '开户人', '开户行', '民族', '微信号', '学历', '政治面貌', '婚姻状况', '身高', '体重', '户口所在地（省）', '户口所在地（市）', '户口所在地（区/县）', '户口所在地（详细地址）', '现居住地（省）', '现居住地（市）', '现居住地（区/县）', '现居住地（详细地址）', '籍贯', '紧急联系人', '联系人电话', '联系人关系类型', '备注', '钉钉用户编码'],
-      ['测试', '15817308876', '513124199303240379', '男', '集团公司', '成都/濮院', 'IT部-开发组', '', '初级专员', '在职', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ' 请勿随便填写'],
+      ['姓名', '手机号码', '身份证号', '性别', '品牌', '费用品牌', '部门全称', '店铺代码', '职位', '员工状态', '银行卡号', '开户人', '开户行', '民族', '微信号', '学历', '政治面貌', '婚姻状况', '身高', '体重', '户口所在地（省）', '户口所在地（市）', '户口所在地（区/县）', '户口所在地（详细地址）', '现居住地（省）', '现居住地（市）', '现居住地（区/县）', '现居住地（详细地址）', '籍贯', '紧急联系人', '联系人电话', '联系人关系类型', '备注', '钉钉用户编码', '入职日期'],
+      ['测试', '15817308876', '513124199303240379', '男', '集团公司', '成都/濮院', 'IT部-开发组', '', '初级专员', '在职', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ' 请勿随便填写', '2011-01-01'],
     ],
     // 编辑导入模版
     editTemp: [
@@ -26,15 +26,15 @@ export default class extends PureComponent {
     ],
     // 人事变动导入模版
     transferTemp: [
-      ['员工编号', '员工状态', '所属部门', '所属品牌', '费用品牌', '职位', '店铺编号'],
-      ['100000', '在职', 'it部-开发组', '集团公司', '成都/濮院', '经理', 'lsw2673'],
+      ['员工编号', '员工状态', '所属部门', '所属品牌', '费用品牌', '职位', '店铺编号', '执行日期'],
+      ['100000', '在职', 'it部-开发组', '集团公司', '成都/濮院', '经理', 'lsw2673', '2010-01-01'],
     ],
     // 批量创建字段
     createFields: [
       'realname', 'mobile', 'id_card_number', 'gender', 'brand', 'cost_brand', 'department', 'shop_sn', 'position', 'status',
       'account_number', 'account_name', 'account_bank', 'national', 'wechat_number', 'education', 'politics', 'marital_status',
       'height', 'weight', 'household_province', 'household_city', 'household_county', 'household_address', 'living_province',
-      'living_city', 'living_county', 'living_address', 'native_place', 'concat_name', 'concat_tel', 'concat_type', 'remark', 'dingtalk_number',
+      'living_city', 'living_county', 'living_address', 'native_place', 'concat_name', 'concat_tel', 'concat_type', 'remark', 'dingtalk_number', 'hired_at',
     ],
     // 批量修改字段
     changeFields: [
@@ -43,11 +43,16 @@ export default class extends PureComponent {
       'living_city', 'living_county', 'living_address', 'native_place', 'concat_name', 'concat_tel', 'concat_type',
     ],
     // 批量变动字段
-    transferFields: ['staff_sn', 'status', 'department', 'brand', 'cost_brand', 'position', 'shop_sn'],
+    transferFields: ['staff_sn', 'status', 'department', 'brand', 'cost_brand', 'position', 'shop_sn', 'operate_at'],
     importType: '',
     visible: false,
     spinning: false,
     tempVisible: false,
+    importResult: {
+      visible: false,
+      error: false,
+      response: {},
+    },
   }
 
   handleVisible = (visib) => {
@@ -135,30 +140,40 @@ export default class extends PureComponent {
       onSuccess: this.handleSuccess,
     });
   }
-
-  handleError = (error) => {
-    const { errors } = error;
-    const desc = Object.keys(errors).map((val) => {
-      return errors[val][0];
-    });
-    notification.open({
-      message: error.message,
-      description: <List size="small" dataSource={desc} renderItem={item => (<List.Item>{item}</List.Item>)} />,
-      duration: 180,
-    });
+  handleError = (response) => {
+    const result = {
+      visible: true,
+      error: true,
+      response,
+    };
+    this.setState({ importResult: { ...result } });
   }
-
-  handleSuccess = (result) => {
-    notification.success({
-      message: result.message,
+  handleSuccess = () => {
+    this.setState({ visible: false }, () => {
+      notification.success({
+        message: '导入成功',
+      });
     });
   }
 
   render() {
+    const { importResult, visible, tempVisible } = this.state;
     return (
       <Fragment>
+        <ImportResult
+          {...importResult}
+          onCancel={() => {
+            this.setState({
+              importResult: {
+                visible: false,
+                error: importResult.error,
+                response: {},
+              },
+            });
+          }}
+        />
         <Popover
-          visible={this.state.tempVisible}
+          visible={tempVisible}
           trigger="click"
           placement="bottomLeft"
           onVisibleChange={this.handleTempVisible}
@@ -173,7 +188,7 @@ export default class extends PureComponent {
           <Button icon="cloud-download">下载模版</Button>
         </Popover>
         <Popover
-          visible={this.state.visible}
+          visible={visible}
           trigger="click"
           placement="bottomLeft"
           onVisibleChange={this.handleVisible}

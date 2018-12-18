@@ -85,7 +85,7 @@ export default class extends PureComponent {
             <Input type="hidden" />
           )}
           <FormItem label="员工姓名" {...formItemLayout}>
-            <span>{editStaff.realname}</span>
+            <span className="ant-form-text">{editStaff.realname}</span>
           </FormItem>
           <FormItem label="状态" required {...formItemLayout}>
             {getFieldDecorator('status_id', {

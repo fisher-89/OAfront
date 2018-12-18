@@ -8,16 +8,25 @@ import {
   Menu,
   Modal,
   Button,
+  Switch,
   Divider,
   Dropdown,
   notification,
 } from 'antd';
 
 import { connect } from 'dva';
-
+import OATable from 'components/OATable';
+import {
+  findRenderKey,
+  getFiltersData,
+  checkAuthority,
+  getBrandAuthority,
+  getDepartmentAuthority,
+} from 'utils/utils';
 import Search from './search';
 import AddStaff from './create';
 import EditStaff from './edit';
+import styles from './index.less';
 import ImportStaff from './import';
 import ExportStaff from './export';
 import StaffInfo from './staffInfo';
@@ -26,14 +35,6 @@ import AgainEntry from './againEntry';
 import EditLeaving from './editLeaving';
 import EditProcess from './editProcess';
 import EditTransfer from './editTransfer';
-import OATable from '../../../components/OATable';
-import {
-  findRenderKey,
-  getFiltersData,
-  checkAuthority,
-  getBrandAuthority,
-  getDepartmentAuthority,
-} from '../../../utils/utils';
 
 const { TabPane } = Tabs;
 
@@ -73,6 +74,8 @@ export default class extends PureComponent {
     leavingVisible: false,
     transferVisible: false,
     activeKey: 'staff_list',
+    withoutLeaving: true,
+    latestParams: {},
   }
 
   componentWillMount() {
@@ -80,34 +83,37 @@ export default class extends PureComponent {
     dispatch({ type: 'brand/fetchBrand' });
     dispatch({ type: 'expense/fetchExpense' });
     dispatch({ type: 'position/fetchPosition' });
+    dispatch({ type: 'stafftags/fetchStaffTags', payload: { type: 'staff' } });
     dispatch({ type: 'department/fetchDepartment', payload: { withTrashed: true } });
-    this.fetchTags();
-    this.fetchTagsType();
   }
 
   onEdit = (targetKey, action) => {
     this[action](targetKey);
   }
 
+  leveSwichChange = (checked) => {
+    const { latestParams } = this.state;
+    this.state.withoutLeaving = !checked;
+    this.fetchStaff(latestParams);
+  }
+
   fetchStaff = (params) => {
+    this.state.latestParams = params;
+    const { withoutLeaving } = this.state;
     const { dispatch } = this.props;
-    dispatch({ type: 'staffs/fetchStaff', payload: params });
+    dispatch({
+      type: 'staffs/fetchStaff',
+      payload: {
+        ...params,
+        filters: `${params.filters}${withoutLeaving ? 'status_id>0' : ''}`,
+      },
+    });
     this.searchFilter = params;
   }
 
   fetchStaffInfo = (param) => {
     const { dispatch } = this.props;
     dispatch({ type: 'staffs/fetchStaffInfo', payload: param });
-  }
-
-  fetchTags = (params) => {
-    const { dispatch } = this.props;
-    dispatch({ type: 'stafftags/fetchStaffTags', payload: { ...params, type: 'staff' } });
-  }
-
-  fetchTagsType = (params) => {
-    const { dispatch } = this.props;
-    dispatch({ type: 'stafftags/fetchStaffTagCategories', payload: { ...params, type: 'staff' } });
   }
 
   showUserInfo = (info) => {
@@ -206,7 +212,7 @@ export default class extends PureComponent {
           authAble ? {
             key: index,
             onClick: () => { },
-            style: { color: '#8E8E8E' },
+            style: { color: 'rgba(0, 0, 0, 0.25)', cursor: 'default' },
           } :
             {
               style,
@@ -324,7 +330,7 @@ export default class extends PureComponent {
     );
 
     return (
-      <Dropdown overlay={menu} trigger={['click']}>
+      <Dropdown overlay={menu} trigger={['click']} disabled={action.length === 0}>
         <a className="ant-dropdown-link">
           更多操作 <Icon type="down" />
         </a>
@@ -378,37 +384,37 @@ export default class extends PureComponent {
     const buttonKey = [];
     const statusId = rowData.status_id;
     const { user: { authorities: { oa } } } = window;
-    if (rowData.is_active === 0) {
-      if (oa.indexOf(66)) {
+    if (rowData.is_active === 0 && statusId > 0) {
+      if (oa.indexOf(66) !== -1) {
         buttonKey.push(66);
       }
     } else if (rowData.is_active === 1) {
-      if (oa.indexOf(66)) {
+      if (oa.indexOf(66) !== -1) {
         buttonKey.push(66);
       }
-      if (statusId === 1 && oa.indexOf(55)) {
+      if (statusId === 1 && oa.indexOf(55) !== -1) {
         buttonKey.push(55);
       }
-      if (statusId > 0 && oa.indexOf(175)) {
+      if (statusId > 0 && oa.indexOf(175) !== -1) {
         buttonKey.push(175);
       }
-      if (statusId > 0 && oa.indexOf(56)) {
+      if (statusId > 0 && oa.indexOf(56) !== -1) {
         buttonKey.push(56);
       }
-      if (statusId > 0 && oa.indexOf(57)) {
+      if (statusId > 0 && oa.indexOf(57) !== -1) {
         buttonKey.push(57);
       }
-      if (statusId === 0 && oa.indexOf(107)) {
+      if (statusId === 0 && oa.indexOf(107) !== -1) {
         buttonKey.push(107);
       }
     }
-    if (statusId < 0 && oa.indexOf(58)) {
+    if (statusId < 0 && oa.indexOf(58) !== -1) {
       buttonKey.push(58);
     }
-    if (oa.indexOf(82)) {
+    if (oa.indexOf(82) !== -1) {
       buttonKey.push(82);
     }
-    if (oa.indexOf(59)) {
+    if (oa.indexOf(59) !== -1) {
       buttonKey.push(59);
     }
     return buttonKey;
@@ -425,17 +431,20 @@ export default class extends PureComponent {
         searcher: true,
         dataIndex: 'staff_sn',
       }, {
-        width: 70,
+        width: 100,
         title: '姓名',
         fixed: 'left',
         searcher: true,
+        align: 'center',
         dataIndex: 'realname',
+        render: key => OATable.renderEllipsis(key, true),
       }, {
-        width: 100,
+        width: 120,
         title: '电话',
         searcher: true,
         align: 'center',
         dataIndex: 'mobile',
+        render: key => OATable.renderEllipsis(key, true),
       }, {
         width: 100,
         title: '品牌',
@@ -446,11 +455,12 @@ export default class extends PureComponent {
       }, {
         width: 100,
         title: '职位',
+        align: 'center',
         dataIndex: 'position_id',
         filters: getFiltersData(position),
         render: key => findRenderKey(position, key).name,
       }, {
-        width: 200,
+        width: 220,
         title: '部门',
         treeFilters: {
           value: 'id',
@@ -462,7 +472,7 @@ export default class extends PureComponent {
         render: key => OATable.renderEllipsis(findRenderKey(department, key).full_name, true),
       },
       {
-        width: 70,
+        width: 80,
         title: '状态',
         align: 'center',
         filters: status,
@@ -475,9 +485,11 @@ export default class extends PureComponent {
         searcher: true,
         dataIndex: 'shop.name',
         render: key => OATable.renderEllipsis(key, true),
-      }, {
+      },
+      {
         width: 100,
         title: '店铺代码',
+        searcher: true,
         dataIndex: 'shop_sn',
       },
       {
@@ -544,7 +556,7 @@ export default class extends PureComponent {
     const extra = [];
     const { staff: { total } } = this.props;
     extra.push(
-      (checkAuthority(62)) && (
+      (checkAuthority(54)) && (
         <Button
           icon="plus"
           key="plus"
@@ -556,12 +568,18 @@ export default class extends PureComponent {
           添加员工
         </Button>
       ),
-      (checkAuthority(62)) && (
+      (checkAuthority(89)) && (
         <ImportStaff key="importPop" />
       ),
-      (checkAuthority(84) && (
+      (checkAuthority(84)) && (
         <ExportStaff key="exportBtn" filters={this.searchFilter} total={total} />
-      ))
+      ),
+      (
+        <div key="swich" className={styles.leveSearchBtn}>
+          显示离职员工：
+          <Switch onChange={this.leveSwichChange} />
+        </div>
+      )
     );
     return extra;
   }
@@ -625,7 +643,6 @@ export default class extends PureComponent {
         </Tabs>
         <AddStaff
           visible={this.state.addVisible}
-          editStaff={this.state.editStaff}
           onCancel={() => {
             this.setState({ addVisible: false, editStaff: {} });
           }}

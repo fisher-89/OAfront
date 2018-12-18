@@ -75,10 +75,6 @@ export default class extends PureComponent {
         title: '编号',
         dataIndex: 'id',
         searcher: true,
-        onFilter: (value, record) => {
-          const { filters: { id } } = this.state;
-          return id.indexOf(`${record.id}`) !== -1;
-        },
       },
       {
         title: '权限名称',

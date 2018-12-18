@@ -6,6 +6,7 @@ import {
   Tabs,
   Col,
   Row,
+  notification,
 } from 'antd';
 import { connect } from 'dva';
 import { omit } from 'lodash';
@@ -21,12 +22,11 @@ import SearchMap from '../../../components/Maps';
 
 const { TabPane } = Tabs;
 const FormItem = OAForm.Item;
-const { Option, OptGroup } = Select;
+const { Option } = Select;
 @OAForm.create()
 @connect(({ brand, department, stafftags, loading }) => ({
-  stafftagtypes: stafftags.stafftagtypes,
-  stafftags: stafftags.stafftags,
   brand: brand.brand,
+  stafftags: stafftags.stafftags,
   department: department.department,
   loading: (
     loading.effects['shop/addShop'] ||
@@ -34,12 +34,6 @@ const { Option, OptGroup } = Select;
   ),
 }))
 export default class extends PureComponent {
-  componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch({ type: 'brand/fetchBrand' });
-    dispatch({ type: 'department/fetchDepartment' });
-  }
-
   handleSubmit = (params) => {
     const { dispatch, onCancel, onError } = this.props;
     const { address } = params.real_address;
@@ -56,11 +50,15 @@ export default class extends PureComponent {
       type: params.id ? 'shop/editShop' : 'shop/addShop',
       payload: body,
       onSuccess: () => onCancel(),
-      onError: errors => onError(errors, {
-        city_id: 'shop_address',
-        county_id: 'shop_address',
-        province_id: 'shop_address',
-      }),
+      onError: (errors) => {
+        onError(errors, {
+          city_id: 'shop_address',
+          county_id: 'shop_address',
+          province_id: 'shop_address',
+          address: 'shop_address',
+        });
+        notification.error({ message: '表单错误，请重新填写。' });
+      },
     });
   }
 
@@ -69,7 +67,6 @@ export default class extends PureComponent {
       brand,
       department,
       stafftags,
-      stafftagtypes,
       visible,
       initialValue,
       onCancel,
@@ -101,21 +98,6 @@ export default class extends PureComponent {
     const colSpan = { xs: 24, lg: 12 };
     const isEdit = initialValue.shop_sn !== undefined;
     const shoptags = (initialValue.tags || []).map(item => item.id.toString());
-    let tagsGroup = [];
-    const tagsTypeId = stafftagtypes.map(type => type.id);
-    const tagsGroupAble = stafftags.filter(tag => tagsTypeId.indexOf(tag.category.id) === -1);
-    stafftagtypes.forEach((type) => {
-      const temp = { ...type };
-      temp.children = [];
-      stafftags.forEach((tag) => {
-        if (tag.category.id === type.id) {
-          temp.children.push(tag);
-        }
-      });
-      if (temp.children.length) tagsGroup.push(temp);
-    });
-    tagsGroup = tagsGroup.concat(tagsGroupAble);
-
     return (
       <OAModal
         title={initialValue.id ? '编辑店铺' : '添加店铺'}
@@ -190,10 +172,13 @@ export default class extends PureComponent {
                     rules: [validatorRequired],
                   })(
                     <TreeSelect
+                      showSearch
                       placeholder="请选择部门"
-                      treeDefaultExpandAll
                       treeData={newTreeData}
                       dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                      filterTreeNode={(inputValue, treeNode) => {
+                        return treeNode.props.title.indexOf(inputValue) !== -1;
+                      }}
                     />
                   )}
                 </FormItem>
@@ -265,7 +250,7 @@ export default class extends PureComponent {
               <Col {...colSpan}>
                 <FormItem label="上班时间" {...formItemLayout}>
                   {getFieldDecorator('clock_in', {
-                    initialValue: initialValue.clock_in || '00:00:00',
+                    initialValue: initialValue.clock_in || null,
                   })(
                     <DatePicker
                       mode="time"
@@ -284,7 +269,7 @@ export default class extends PureComponent {
               <Col {...colSpan}>
                 <FormItem label="下班时间" {...formItemLayout}>
                   {getFieldDecorator('clock_out', {
-                    initialValue: initialValue.clock_out || '00:00:00',
+                    initialValue: initialValue.clock_out || null,
                   })(
                     <DatePicker
                       mode="time"
@@ -311,17 +296,9 @@ export default class extends PureComponent {
                       mode="multiple"
                       placeholder="请选择"
                     >
-                      {tagsGroup.map((item) => {
-                      return item.children ? (
-                        <OptGroup key={`${item.id}`} label={item.name}>
-                          {item.children.map(tag => (<Option key={`${tag.id}`} value={`${tag.id}`}>{tag.name}</Option>))}
-                        </OptGroup>
-                      ) :
-                        (
-                          <Option key={`${item.id}`}>{item.name}</Option>
-                        );
-                    })
-                    }
+                      {stafftags.map((item) => {
+                        return <Option key={`${item.id}`}>{item.name}</Option>;
+                      })}
                     </Select>
                   )}
                 </FormItem>
@@ -415,8 +392,8 @@ export default class extends PureComponent {
             {getFieldDecorator('real_address', {
               initialValue: {
                 address: initialValue.real_address || '',
-                lng: initialValue.lng || 104.066,
-                lat: initialValue.lat || 30.65,
+                lng: initialValue.lng || null,
+                lat: initialValue.lat || null,
             },
             })(<SearchMap />)}
           </TabPane>

@@ -2,11 +2,21 @@ import React, { PureComponent, Fragment } from 'react';
 import { Cascader, Col } from 'antd';
 import { mapValues, find } from 'lodash';
 import OAForm from '../../../components/OAForm';
-import { formItemLayout } from '../../../components/OATable/MoreSearch';
 import district, { treeDistrict } from '../../../assets/district';
 
 const districtData = treeDistrict;
 const FormItem = OAForm.Item;
+const formItemLayout1 = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 4 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 20 },
+  },
+};
+
 export default class extends PureComponent {
   cascaderChange = (name, title) => {
     return (value) => {
@@ -28,7 +38,7 @@ export default class extends PureComponent {
   }
   render() {
     const { colSpan, initialValue } = this.props;
-    const shopAddress = initialValue.shopAddress_province_id ? [
+    const shopAddress = initialValue.province_id ? [
       initialValue.province_id,
       initialValue.city_id,
       initialValue.county_id,
@@ -36,7 +46,7 @@ export default class extends PureComponent {
     return (
       <Fragment>
         <Col span={colSpan}>
-          <FormItem {...formItemLayout} label="所在地区">
+          <FormItem {...formItemLayout1} label="所在地区">
             <Cascader
               value={shopAddress}
               placeholder="请选择"
