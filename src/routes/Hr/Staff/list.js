@@ -431,14 +431,15 @@ export default class extends PureComponent {
         searcher: true,
         dataIndex: 'staff_sn',
       }, {
-        width: 70,
+        width: 100,
         title: '姓名',
         fixed: 'left',
         searcher: true,
+        align: 'center',
         dataIndex: 'realname',
         render: key => OATable.renderEllipsis(key, true),
       }, {
-        width: 100,
+        width: 120,
         title: '电话',
         searcher: true,
         align: 'center',
@@ -454,11 +455,12 @@ export default class extends PureComponent {
       }, {
         width: 100,
         title: '职位',
+        align: 'center',
         dataIndex: 'position_id',
         filters: getFiltersData(position),
         render: key => findRenderKey(position, key).name,
       }, {
-        width: 200,
+        width: 220,
         title: '部门',
         treeFilters: {
           value: 'id',
@@ -470,7 +472,7 @@ export default class extends PureComponent {
         render: key => OATable.renderEllipsis(findRenderKey(department, key).full_name, true),
       },
       {
-        width: 70,
+        width: 80,
         title: '状态',
         align: 'center',
         filters: status,
@@ -487,6 +489,7 @@ export default class extends PureComponent {
       {
         width: 100,
         title: '店铺代码',
+        searcher: true,
         dataIndex: 'shop_sn',
       },
       {
