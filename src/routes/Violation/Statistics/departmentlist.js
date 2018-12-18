@@ -30,6 +30,7 @@ export default class extends PureComponent {
     const { department } = this.props;
     return (
       <TreeSort
+        showLine
         rootPid={0}
         key="treeSort"
         renderTreeNodes={this.renderTreeNodes}
