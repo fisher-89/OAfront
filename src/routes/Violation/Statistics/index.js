@@ -61,14 +61,14 @@ export default class extends PureComponent {
       <PageHeaderLayout>
         <Row gutter={10}>
           <Col span={4} >
-            <Card bordered={false}>
+            <Card className={style.departTree} bordered={false}>
               <p>选择部门</p>
               <div className={style.xuxian} />
               <DepartmentTree setDepartment={this.setDepartment} />
             </Card>
           </Col>
           <Col span={20}>
-            <Card bordered={false}>
+            <Card className={style.detail} bordered={false}>
               <Tabs
                 tabPosition="left"
                 hideAdd
@@ -76,6 +76,7 @@ export default class extends PureComponent {
                 activeKey={activeKey}
                 onEdit={this.onEdit}
                 onChange={this.tabsChange}
+                className={style.alltab}
               >
                 <TabPane
                   tab="全部"
