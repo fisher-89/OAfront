@@ -14,12 +14,12 @@ class GridTag extends Component {
   render() {
     const { data: { key, fields }, data, onDrag, selected, toggleGridField } = this.props;
     return (
-      <div key={key}>
+      <div>
         <FieldTag data={data} onDrag={onDrag} />
         <div>
           <Icon
             type={selected ? 'minus-circle' : 'plus-circle-o'}
-            style={{ float: 'left', marginTop: '9px', marginRight: '4px', color: '#1890ff' }}
+            className={styles.toggleButton}
             onClick={() => {
               toggleGridField(key);
             }}
@@ -31,8 +31,14 @@ class GridTag extends Component {
                 <div className={styles.verticalLine} />
                 {fields.map((field) => {
                   return (
-                    <div key={field.id}>
-                      <FieldTag data={field} onDrag={onDrag} />
+                    <div key={`${key}.${field.key}`}>
+                      <FieldTag
+                        data={field}
+                        onDrag={(p1, p2, p3) => {
+                          // typeof data.x === 'number' && onDrag(p1, p2, p3, data);
+                          onDrag(p1, p2, p3, data);
+                        }}
+                      />
                     </div>
                   );
                 })}

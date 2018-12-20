@@ -10,7 +10,7 @@ class PCTemplate extends Component {
   state = {
     selectedGrid: null,
     dataIndex: null,
-    overTemplate: false,
+    parentGridIndex: null,
     startPoint: { x: null, y: null },
     tagPosition: { top: 0, left: 0 },
     onDragging: false,
@@ -22,7 +22,6 @@ class PCTemplate extends Component {
       || (nextProps.fields !== this.props.fields);
     const changeDragging = nextState.onDragging !== this.state.onDragging;
     if (changeSelectedGrid || changeList || changeDragging) return true;
-    if (this.state.onDragging && (nextState.overTemplate !== this.state.overTemplate)) return true;
     return false;
   }
 
@@ -33,12 +32,15 @@ class PCTemplate extends Component {
     });
   }
 
-  handleDragStart = (data, startPoint, tagPosition) => {
+  handleDragStart = (data, startPoint, tagPosition, grid = null) => {
     const { fields, grids } = this.props;
-    const index = 'fields' in data ? grids.indexOf(data) : fields.indexOf(data);
+    let index = 'fields' in data ? grids.indexOf(data) : fields.indexOf(data);
+    const gridIndex = grid ? grids.indexOf(grid) : null;
+    if (grid) index = grid.fields.indexOf(data);
     this.setState({
       dataIndex: index,
       onDragging: data,
+      parentGridIndex: gridIndex,
       startPoint,
       tagPosition,
     });
@@ -47,19 +49,30 @@ class PCTemplate extends Component {
   handleDragCancel = () => {
     this.setState({
       onDragging: false,
+      parentGridIndex: null,
     });
   }
 
   handleDragConfirm = (data) => {
-    const { form, fields } = this.props;
-    const { dataIndex } = this.state;
+    const { form, fields, grids } = this.props;
+    const { dataIndex, parentGridIndex } = this.state;
     this.state.onDragging = false;
+    console.log(parentGridIndex);
     if ('fields' in data) {
       form.setFieldsValue({
         [`grids.${dataIndex}.x`]: data.x,
         [`grids.${dataIndex}.y`]: data.y,
         [`grids.${dataIndex}.row`]: data.row,
         [`grids.${dataIndex}.col`]: data.col,
+      });
+    } else if (parentGridIndex !== null) {
+      const gridFields = grids[parentGridIndex].fields;
+      gridFields[dataIndex].x = data.x;
+      gridFields[dataIndex].y = data.y;
+      gridFields[dataIndex].row = data.row;
+      gridFields[dataIndex].col = data.col;
+      form.setFieldsValue({
+        [`grids.${parentGridIndex}.fields`]: gridFields,
       });
     } else {
       fields[dataIndex].x = data.x;
@@ -68,6 +81,7 @@ class PCTemplate extends Component {
       fields[dataIndex].col = data.col;
       form.setFieldsValue({ fields });
     }
+    this.state.parentGridIndex = null;
   }
 
   makeFieldOptions = () => {
@@ -84,14 +98,13 @@ class PCTemplate extends Component {
       const { key } = grid;
       const selected = selectedGrid === key;
       return (
-        <div key={key}>
-          <GridTag
-            data={grid}
-            onDrag={this.handleDragStart}
-            selected={selected}
-            toggleGridField={this.toggleGridField}
-          />
-        </div>
+        <GridTag
+          key={key}
+          data={grid}
+          selected={selected}
+          onDrag={this.handleDragStart}
+          toggleGridField={this.toggleGridField}
+        />
       );
     });
   }

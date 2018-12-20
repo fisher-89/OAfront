@@ -248,7 +248,7 @@ class addForm extends PureComponent {
       (formError.name || formError.form_type_id || formError.fields || listError.fields) && { style: { color: 'red' } };
     const gridsError = listError.grids || formError.grids || {};
     return (
-      <Tabs>
+      <Tabs activeKey="pc">
         <TabPane tab="表单配置" key="basic">
           <OAForm onSubmit={validateFields(isEdit ? this.handleEditSubmit : this.handleAddSubmit)}>
             <Tabs
