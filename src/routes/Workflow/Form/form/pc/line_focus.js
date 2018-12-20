@@ -43,6 +43,7 @@ class DraggingFieldTag extends Component {
     const { minX, maxX, minY, maxY } = templateArea;
     const { board } = this.props;
     const { clientY, pageX, pageY } = event.type === 'touchmove' ? e.touches[0] : e;
+    if (!board) return false;
     let offsetY = 0;
     let onTemplate = false;
     if (pageX >= minX && pageX <= maxX && pageY >= minY && pageY <= maxY) {
@@ -59,21 +60,20 @@ class DraggingFieldTag extends Component {
   render() {
     const { offsetY, onTemplate } = this.state;
     return onTemplate && (
-      <div
-        style={{ transform: `translate(0px,${offsetY}px)` }}
-        className={styles.lineFocus}
+      <Dropdown
+        trigger={['contextMenu']}
+        onVisibleChange={this.handleContextMenuToggle}
+        overlay={this.contextMenu}
       >
-        <div className={styles.leftControl}>{(offsetY / 76) + 1}</div>
-        <Dropdown
-          trigger={['contextMenu']}
-          onVisibleChange={this.handleContextMenuToggle}
-          overlay={this.contextMenu}
+        <div
+          style={{ transform: `translate(0px,${offsetY}px)` }}
+          className={styles.lineFocus}
         >
+          <div className={styles.leftControl}>{(offsetY / 76) + 1}</div>
           <div className={styles.boxShadow} />
-        </Dropdown>
-        <div className={styles.rightControl}>&nbsp;</div>
-      </div>
-
+          <div className={styles.rightControl}>&nbsp;</div>
+        </div>
+      </Dropdown>
     );
   }
 }

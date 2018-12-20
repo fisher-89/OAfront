@@ -8,7 +8,8 @@ import FieldTagShadow from './dragging_field_tag';
 
 class PCTemplate extends Component {
   state = {
-    selectedTag: null,
+    selectedGrid: null,
+    dataIndex: null,
     overTemplate: false,
     startPoint: { x: null, y: null },
     tagPosition: { top: 0, left: 0 },
@@ -16,19 +17,28 @@ class PCTemplate extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    const changeSelectedTag = nextState.selectedTag !== this.state.selectedTag;
+    const changeSelectedGrid = nextState.selectedGrid !== this.state.selectedGrid;
     const changeList = (nextProps.grids !== this.props.grids)
       || (nextProps.fields !== this.props.fields);
     const changeDragging = nextState.onDragging !== this.state.onDragging;
-    if (changeSelectedTag || changeList || changeDragging) return true;
+    if (changeSelectedGrid || changeList || changeDragging) return true;
     if (this.state.onDragging && (nextState.overTemplate !== this.state.overTemplate)) return true;
     return false;
   }
 
-  handleDragStart = (data, startPoint, tagPosition) => {
+  toggleGridField = (key) => {
+    const { selectedGrid } = this.state;
     this.setState({
-      selectedTag: data,
-      onDragging: true,
+      selectedGrid: selectedGrid === key ? null : key,
+    });
+  }
+
+  handleDragStart = (data, startPoint, tagPosition) => {
+    const { fields, grids } = this.props;
+    const index = 'fields' in data ? grids.indexOf(data) : fields.indexOf(data);
+    this.setState({
+      dataIndex: index,
+      onDragging: data,
       startPoint,
       tagPosition,
     });
@@ -40,10 +50,24 @@ class PCTemplate extends Component {
     });
   }
 
-  handleDragConfirm = () => {
-    this.setState({
-      onDragging: false,
-    });
+  handleDragConfirm = (data) => {
+    const { form, fields } = this.props;
+    const { dataIndex } = this.state;
+    this.state.onDragging = false;
+    if ('fields' in data) {
+      form.setFieldsValue({
+        [`grids.${dataIndex}.x`]: data.x,
+        [`grids.${dataIndex}.y`]: data.y,
+        [`grids.${dataIndex}.row`]: data.row,
+        [`grids.${dataIndex}.col`]: data.col,
+      });
+    } else {
+      fields[dataIndex].x = data.x;
+      fields[dataIndex].y = data.y;
+      fields[dataIndex].row = data.row;
+      fields[dataIndex].col = data.col;
+      form.setFieldsValue({ fields });
+    }
   }
 
   makeFieldOptions = () => {
@@ -55,13 +79,18 @@ class PCTemplate extends Component {
 
   makeGridOptions = () => {
     const { grids } = this.props;
-    const { selectedTag } = this.state;
+    const { selectedGrid } = this.state;
     return grids.map((grid) => {
-      const { key, fields } = grid;
-      const selected = selectedTag === grid || fields.indexOf(selectedTag) !== -1;
+      const { key } = grid;
+      const selected = selectedGrid === key;
       return (
         <div key={key}>
-          <GridTag data={grid} onDrag={this.handleDragStart} selected={selected} />
+          <GridTag
+            data={grid}
+            onDrag={this.handleDragStart}
+            selected={selected}
+            toggleGridField={this.toggleGridField}
+          />
         </div>
       );
     });
@@ -81,8 +110,8 @@ class PCTemplate extends Component {
 
   render() {
     console.log('pc_template:render');
-    const { grids } = this.props;
-    const { selectedTag, startPoint, tagPosition, onDragging } = this.state;
+    const { fields, grids } = this.props;
+    const { startPoint, tagPosition, onDragging } = this.state;
     return (
       <Row className={styles.pcTemplate}>
         <div className={styles.component}>
@@ -102,6 +131,8 @@ class PCTemplate extends Component {
               {this.makeScale()}
             </div>
             <Board
+              grids={grids}
+              fields={fields}
               bind={(board) => {
                 this.board = board;
               }}
@@ -110,7 +141,7 @@ class PCTemplate extends Component {
         </div>
         {onDragging && (
           <FieldTagShadow
-            data={selectedTag}
+            data={onDragging}
             style={{ ...tagPosition }}
             startPoint={startPoint}
             onCancel={this.handleDragCancel}

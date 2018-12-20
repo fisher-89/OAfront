@@ -2,16 +2,27 @@ import React, { Component } from 'react';
 import { Tag } from 'antd';
 
 class FieldTag extends Component {
-  shouldComponentUpdate(nextProps) {
+  state = { disabled: false }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      disabled: typeof nextProps.data.x === 'number',
+    });
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
     const changeData = nextProps.data !== this.props.data;
     const changeColor = nextProps.color !== this.props.color;
-    if (changeData || changeColor) return true;
+    const changeDisabled = nextState.disabled !== this.state.disabled;
+    if (changeData || changeColor || changeDisabled) return true;
     return false;
   }
 
   mouseDown = (e) => {
     e.preventDefault();
     const { onDrag, data } = this.props;
+    const { disabled } = this.state;
+    if (disabled) return false;
     const { top, left } = e.target.getBoundingClientRect();
     let x;
     let y;
@@ -25,11 +36,13 @@ class FieldTag extends Component {
   }
 
   render() {
-    const { data, color } = this.props;
+    const { data } = this.props;
+    const { disabled } = this.state;
     return (
       <React.Fragment>
         <Tag
-          color={color || 'blue'}
+          color={disabled ? '' : 'blue'}
+          style={disabled && { cursor: 'default' }}
           onMouseDown={this.mouseDown}
           onTouchStart={this.mouseDown}
           onTouchEnd={this.mouseDown}

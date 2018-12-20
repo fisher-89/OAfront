@@ -202,10 +202,12 @@ class addForm extends PureComponent {
 
   render() {
     const {
+      form,
       form: {
         getFieldDecorator,
         getFieldsError,
         getFieldValue,
+        getFieldsValue,
       },
       validatorRequired,
       formType, validateFields, validator, formVal,
@@ -405,6 +407,26 @@ class addForm extends PureComponent {
                         />
                       )}
                     </FormItem>
+                    {getFieldDecorator(`grids.${index}.x`, {
+                      initialValue: grids && grids[index] ? grids[index].x : null,
+                    })(
+                      <Input type="hidden" />
+                    )}
+                    {getFieldDecorator(`grids.${index}.y`, {
+                      initialValue: grids && grids[index] ? grids[index].y : null,
+                    })(
+                      <Input type="hidden" />
+                    )}
+                    {getFieldDecorator(`grids.${index}.col`, {
+                      initialValue: grids && grids[index] ? grids[index].col : null,
+                    })(
+                      <Input type="hidden" />
+                    )}
+                    {getFieldDecorator(`grids.${index}.row`, {
+                      initialValue: grids && grids[index] ? grids[index].row : null,
+                    })(
+                      <Input type="hidden" />
+                    )}
                   </TabPane>
                 );
               })}
@@ -415,7 +437,7 @@ class addForm extends PureComponent {
           </OAForm>
         </TabPane>
         <TabPane tab="PC端模板" key="pc">
-          <PCTemplate fields={getFieldValue('fields')} grids={grids} />
+          <PCTemplate fields={getFieldValue('fields')} grids={getFieldsValue().grids || []} form={form} />
         </TabPane>
         <TabPane tab="移动端模板" key="mobile">
           <MobileTemplate />

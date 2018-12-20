@@ -23,38 +23,38 @@
         clear: both;
         display: block;
       }
-      > div {
-        > .horizontalLine {
+      > div > div {
+        .horizontalLine {
           float: left;
           margin-top: 15px;
           border-top: 1px solid #bbb;
-          width: 12px;
+          width: 4px;
         }
         .gridFields {
           float: left;
           position: relative;
+          padding-left: 4px;
           > div:after {
             content: "";
             clear: both;
             display: block;
           }
           .verticalLine {
-            padding: 15px 0;
             display: block;
             position: absolute;
+            left: 0;
             height: 100%;
+            width: 6px;
+            overflow: hidden;
           }
           .verticalLine:after {
             content: "";
             display: block;
-            border-left: 1px solid #bbb;
             height: 100%;
-          }
-          .horizontalLine {
-            float: left;
-            margin-top: 15px;
-            border-top: 1px solid #bbb;
-            width: 6px;
+            width: 12px;
+            border: 1px solid #bbb;
+            border-right: none;
+            border-radius: 6px;
           }
         }
       }
@@ -97,13 +97,8 @@
         background-color: #fff;
         background-image: url(/public/template_background.png);
         background-position: 1px 1px;
-        .line {
-          height: 77px;
-          width: 100%;
-          margin-top: -1px;
-        }
-        .line:first-child {
-          margin-top: 0;
+        .controls {
+          position: relative;
         }
         .lineFocus {
           position: absolute;

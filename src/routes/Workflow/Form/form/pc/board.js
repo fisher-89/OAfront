@@ -4,21 +4,7 @@ import styles from './template.less';
 
 class Board extends Component {
   state = {
-    lines: [
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-    ],
+    lines: 13,
   }
 
   componentDidMount() {
@@ -30,17 +16,24 @@ class Board extends Component {
   //
   // }
 
-  makeScale = () => {
-    const { lines } = this.state;
-    const scale = [];
-    for (let i = 0; i <= lines.length; i += 1) {
-      scale.push(
-        <div key={`scale_${i}`}>
-          {i}
+  makeControls = () => {
+    const { fields, grids } = this.props;
+    return [...fields, ...grids].filter(item => typeof item.x === 'number')
+      .map(item => (
+        <div
+          key={item.key}
+          style={{
+            position: 'absolute',
+            width: `${(item.col * 76) - 1}px`,
+            height: `${(item.row * 76) - 1}px`,
+            top: `${(item.y * 76) + 1}px`,
+            left: `${(item.x * 76) + 1}px`,
+            backgroundColor: 'green',
+          }}
+        >
+          {item.name}
         </div>
-      );
-    }
-    return scale;
+      ));
   }
 
   render() {
@@ -53,10 +46,8 @@ class Board extends Component {
             this.board = ele;
           }}
         >
-          <div>
-            {lines.map(() => {
-              return (<div className={styles.line} />);
-            })}
+          <div className={styles.controls} style={{ height: `${(lines * 76) + 1}px` }}>
+            {this.makeControls()}
           </div>
           <FocusLine board={this.board} />
         </div>
