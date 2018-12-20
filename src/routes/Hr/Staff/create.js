@@ -74,10 +74,10 @@ export default class EditStaff extends PureComponent {
       ...params.recruiter,
       ...params.household,
       ...params.living,
-      ...params.shop,
+      ...params.shop_sn,
       account_active: params.account_active ? 1 : 0,
     };
-    const newBody = omit(body, ['recruiter', 'household', 'living', 'shop']);
+    const newBody = omit(body, ['recruiter', 'household', 'living']);
     newBody.relatives = (body.relatives || []).map(item => assign(item.relative, {
       relative_type: item.relative_type,
     }));
@@ -349,7 +349,7 @@ export default class EditStaff extends PureComponent {
               </Row>
 
               <FormItem {...formItemLayout} label="所属店铺">
-                {getFieldDecorator('shop', {
+                {getFieldDecorator('shop_sn', {
                   initialValue: {
                     shop_name: '',
                     shop_sn: '',
