@@ -422,6 +422,13 @@ export default class EditStaff extends PureComponent {
                   </FormItem>
                 </Col>
               </Row>
+              <FormItem label="招聘渠道" {...formItemLayout}>
+                {getFieldDecorator('job_source', {
+                  initialValue: editStaff.job_source || '',
+                })(
+                  <Input placeholder="请填写不大于20字的招聘渠道描述" />
+                )}
+              </FormItem>
               <FormItem label="员工标签" {...formItemLayout}>
                 {getFieldDecorator('tags', {
                   initialValue: tags || [],
