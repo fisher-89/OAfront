@@ -250,8 +250,8 @@ export default class extends PureComponent {
               <FormItem label="所属店铺" {...formItemLayout1}>
                 {getFieldDecorator('shop_sn', {
                   initialValue: editStaff.shop_sn ? {
-                    shop_name: editStaff.shop_name || editStaff.shop.name,
                     shop_sn: editStaff.shop_sn,
+                    shop_name: editStaff.shop.name,
                   } : {},
                 })(
                   <SearchTable.Shop />
