@@ -10,6 +10,7 @@ import approverModeEffects from './approverMode';
 import approverEffects from './approver';
 import messageEffects from './message';
 import defaultReducers from '../reducers';
+import auth from './auth';
 
 
 export default {
@@ -36,6 +37,12 @@ export default {
     waitMsg: {},
     workMsg: {},
     exportProgress: null,
+    // 权限
+    auth: [],
+    // 流程列表（不带权限）
+    flowList: [],
+    // 表单列表（不带权限）
+    formList: [],
   },
   effects: {
     ...formEffects,
@@ -48,6 +55,8 @@ export default {
     ...approverModeEffects,
     ...approverEffects,
     ...messageEffects,
+    // 权限
+    ...auth,
   },
   reducers: {
     ...defaultReducers,

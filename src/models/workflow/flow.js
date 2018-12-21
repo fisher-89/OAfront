@@ -11,6 +11,7 @@ import {
   deleteFlow,
   flowRunLog,
   uploadIcon,
+  getFlowList,
 } from '../../services/workflow';
 
 const store = 'flow';
@@ -240,5 +241,16 @@ export default {
     } catch (err) {
       return err;
     }
+  },
+  // 获取流程列表（不带权限）
+  * flowList({ payload }, { call, put }) {
+    const response = yield call(getFlowList, payload);
+    yield put({
+      type: 'save',
+      payload: {
+        store: 'flowList',
+        data: response,
+      },
+    });
   },
 };

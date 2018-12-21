@@ -361,3 +361,43 @@ export async function resendWorkMsg(id) {
   });
 }
 
+// 权限
+
+// 列表
+export async function authIndex() {
+  return request('/api/workflow/auth/role', {
+    method: 'GET',
+  });
+}
+
+// 删除
+export async function authDelete(id) {
+  return request(`/api/workflow/auth/role/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+// 获取流程列表（不带权限）
+export async function getFlowList(params) {
+  return request('/api/workflow/flow-list', {
+    method: 'GET',
+    body: params,
+  });
+}
+
+// 获取流程列表（不带权限）
+export async function getFormList(params) {
+  return request('/api/workflow/form-list', {
+    method: 'GET',
+    body: params,
+  });
+}
+
+// 新增保存
+export async function authStore(params) {
+  return request('/api/workflow/auth/role', {
+    method: 'POST',
+    body: params,
+  });
+}
+
