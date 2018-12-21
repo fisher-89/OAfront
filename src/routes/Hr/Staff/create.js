@@ -74,10 +74,10 @@ export default class EditStaff extends PureComponent {
       ...params.recruiter,
       ...params.household,
       ...params.living,
-      ...params.shop,
+      ...params.shop_sn,
       account_active: params.account_active ? 1 : 0,
     };
-    const newBody = omit(body, ['recruiter', 'household', 'living', 'shop']);
+    const newBody = omit(body, ['recruiter', 'household', 'living']);
     newBody.relatives = (body.relatives || []).map(item => assign(item.relative, {
       relative_type: item.relative_type,
     }));
@@ -219,11 +219,10 @@ export default class EditStaff extends PureComponent {
                 <Col {...fieldsBoxLayout}>
                   <FormItem {...formItemLayout2} label="性别" required>
                     {getFieldDecorator('gender', {
-                      initialValue: '未知',
+                      initialValue: '',
                       rules: [validatorRequired],
                     })(
                       <RadioGroup size="small" buttonStyle="solid">
-                        <RadioButton value="未知">未知</RadioButton>
                         <RadioButton value="男">男</RadioButton>
                         <RadioButton value="女">女</RadioButton>
                       </RadioGroup>
@@ -350,7 +349,7 @@ export default class EditStaff extends PureComponent {
               </Row>
 
               <FormItem {...formItemLayout} label="所属店铺">
-                {getFieldDecorator('shop', {
+                {getFieldDecorator('shop_sn', {
                   initialValue: {
                     shop_name: '',
                     shop_sn: '',

@@ -186,11 +186,10 @@ export default class EditStaff extends PureComponent {
                 <Col {...fieldsBoxLayout}>
                   <FormItem {...formItemLayout2} label="性别" required>
                     {getFieldDecorator('gender', {
-                      initialValue: editStaff.gender || '未知',
+                      initialValue: editStaff.gender || '',
                       rules: [validatorRequired],
                     })(
                       <RadioGroup size="small" buttonStyle="solid">
-                        <RadioButton value="未知">未知</RadioButton>
                         <RadioButton value="男">男</RadioButton>
                         <RadioButton value="女">女</RadioButton>
                       </RadioGroup>

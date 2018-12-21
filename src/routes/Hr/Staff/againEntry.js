@@ -72,13 +72,14 @@ export default class EditStaff extends PureComponent {
       ...params.recruiter,
       ...params.household,
       ...params.living,
-      shop_sn: params.shop.shop_sn || '',
+      shop_sn: params.shop_sn.shop_sn || '',
       account_active: params.account_active ? 1 : 0,
     };
-    const newBody = omit(body, ['recruiter', 'household', 'living', 'shop']);
+    const newBody = omit(body, ['recruiter', 'household', 'living']);
     newBody.relatives = (body.relatives || []).map(item => assign(item.relative, {
       relative_type: item.relative_type,
     }));
+
     dispatch({
       type: 'staffs/editStaff',
       payload: newBody,
@@ -106,9 +107,11 @@ export default class EditStaff extends PureComponent {
   handleSelectChange = () => {
     const { form } = this.props;
     const brands = form.getFieldValue('cost_brands');
-    if (!isEmpty(brands)) {
+    const positionId = form.getFieldValue('position_id');
+    if (!isEmpty(brands) || positionId !== '') {
       form.setFieldsValue({
         cost_brands: [],
+        position_id: '',
       });
     }
   }
@@ -148,6 +151,10 @@ export default class EditStaff extends PureComponent {
     const renderTitle = title => <div style={{ width: 118, textAlign: 'center' }}>{title}</div>;
     const brandId = getFieldValue('brand_id');
     const costBrand = expense.filter((item) => {
+      const ids = item.brands.map(i => i.id);
+      return ids.indexOf(parseInt(brandId, 10)) !== -1;
+    });
+    const fposition = position.filter((item) => {
       const ids = item.brands.map(i => i.id);
       return ids.indexOf(parseInt(brandId, 10)) !== -1;
     });
@@ -219,11 +226,10 @@ export default class EditStaff extends PureComponent {
                 <Col {...fieldsBoxLayout}>
                   <FormItem {...formItemLayout2} label="性别" required>
                     {getFieldDecorator('gender', {
-                      initialValue: editStaff.gender || '未知',
+                      initialValue: editStaff.gender || '',
                       rules: [validatorRequired],
                     })(
                       <RadioGroup size="small" buttonStyle="solid">
-                        <RadioButton value="未知">未知</RadioButton>
                         <RadioButton value="男">男</RadioButton>
                         <RadioButton value="女">女</RadioButton>
                       </RadioGroup>
@@ -264,7 +270,7 @@ export default class EditStaff extends PureComponent {
                           return option.props.children.indexOf(inputValue) !== -1;
                         }}
                       >
-                        {position.map((item) => {
+                        {fposition.map((item) => {
                           return (
                             <Option key={item.id} value={item.id}>{item.name}</Option>
                           );
@@ -349,7 +355,7 @@ export default class EditStaff extends PureComponent {
               </Row>
 
               <FormItem {...formItemLayout} label="所属店铺">
-                {getFieldDecorator('shop', {
+                {getFieldDecorator('shop_sn', {
                   initialValue: editStaff.shop_sn ? {
                     shop_name: editStaff.shop.name,
                     shop_sn: editStaff.shop_sn,

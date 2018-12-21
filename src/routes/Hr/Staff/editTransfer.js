@@ -52,7 +52,7 @@ export default class extends PureComponent {
       type: 'staffs/transfer',
       payload: {
         ...params,
-        ...params.shop_sn,
+        shop_sn: params.shop_sn.shop_sn || '',
       },
       onError: (errors) => {
         this.setState({ visible: false }, onError(errors));
@@ -249,10 +249,10 @@ export default class extends PureComponent {
             <Col span={24} >
               <FormItem label="所属店铺" {...formItemLayout1}>
                 {getFieldDecorator('shop_sn', {
-                  initialValue: {
-                    shop_name: '',
-                    shop_sn: '',
-                  },
+                  initialValue: editStaff.shop_sn ? {
+                    shop_name: editStaff.shop_name || editStaff.shop.name,
+                    shop_sn: editStaff.shop_sn,
+                  } : {},
                 })(
                   <SearchTable.Shop />
                 )}
