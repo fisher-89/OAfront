@@ -52,7 +52,7 @@ export default class extends PureComponent {
       type: 'staffs/transfer',
       payload: {
         ...params,
-        ...params.shop_sn,
+        shop_sn: params.shop_sn.shop_sn || '',
       },
       onError: (errors) => {
         this.setState({ visible: false }, onError(errors));

@@ -72,7 +72,7 @@ export default class EditStaff extends PureComponent {
       ...params.recruiter,
       ...params.household,
       ...params.living,
-      ...params.shop_sn,
+      shop_sn: params.shop_sn.shop_sn || '',
       account_active: params.account_active ? 1 : 0,
     };
     const newBody = omit(body, ['recruiter', 'household', 'living']);
