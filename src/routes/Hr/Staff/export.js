@@ -72,6 +72,10 @@ export default class extends PureComponent {
           { concat_tel: '联系人电话', auth: 1 },
           { concat_type: '联系人关系类型', auth: 1 },
           { birthday: '出生日期', auth: 0 },
+          { job_source: '招聘渠道', auth: 0 },
+          { position_pull: '最后调出岗位', auth: 0 },
+          { position_push: '最后调入岗位', auth: 0 },
+          { position_push_at: '调动时间', auth: 0 },
           { remark: '备注', auth: 0 },
         ];
         const headMaps = mapWithKey.filter((item) => {
