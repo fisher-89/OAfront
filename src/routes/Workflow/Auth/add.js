@@ -373,10 +373,10 @@ export default class Add extends Component {
             }
           </FormItem>
           <FormItem
-            wrapperCol={{ span: 12, offset: 5 }}
+            labelCol={{ xs: { span: 24 }, sm: { span: 6 } }}
+            wrapperCol={{ span: 24, offset: 6 }}
           >
-            <Button type="primary" htmlType="submit" className={style.submitButton}>确定</Button>
-            <Button>取消</Button>
+            <Button type="primary" htmlType="submit">确定</Button>
           </FormItem>
         </OAForm>
         <FlowAuthModal
