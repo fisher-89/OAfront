@@ -11,7 +11,8 @@ import OATable from '../../../components/OATable';
 @connect(({ workflow, loading }) => ({
   list: workflow.auth,
   loading: (
-    loading.effects['workflow/fetchAuthIndex']
+    loading.effects['workflow/fetchAuthIndex'] ||
+    loading.effects['workflow/authDelete']
   ),
 }))
 
