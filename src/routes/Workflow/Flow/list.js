@@ -20,8 +20,11 @@ import { getFiltersData } from '../../../utils/utils';
 }))
 export default class Flow extends PureComponent {
   componentWillMount() {
-    const { dispatch } = this.props;
-    dispatch({ type: 'workflow/fetchFlowType' });
+    const { dispatch, flowType } = this.props;
+    // 模型无流程分类数据
+    if (flowType.length === 0) {
+      dispatch({ type: 'workflow/fetchFlowType' });
+    }
   }
 
   fetchTable = (params) => {
