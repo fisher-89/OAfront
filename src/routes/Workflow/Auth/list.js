@@ -35,9 +35,9 @@ export default class List extends Component {
     deleteRole(id);
   };
   // 编辑
-  update = (id) => {
+  update = (id, text) => {
     const { updateRole } = this.props;
-    updateRole(id);
+    updateRole(id, text);
   };
   // table字段
   columns = [
@@ -63,13 +63,14 @@ export default class List extends Component {
     {
       title: '操作权限',
       align: 'center',
+      dataIndex: 'handle',
       searcher: true,
-      render: (text, record) => {
+      render: (text) => {
         let value = '';
-        if (record.handle.length > 0) {
-          const handleName = record.handle.map((item) => {
+        if (text.length > 0) {
+          const handleName = text.map((item) => {
             let name = '';
-            switch (item.id) {
+            switch (item) {
               case 1:
                 name = '查看';
                 break;
@@ -95,11 +96,12 @@ export default class List extends Component {
     {
       title: '关联员工',
       align: 'center',
+      dataIndex: 'staff',
       searcher: true,
-      render: (text, record) => {
+      render: (text) => {
         let staffText = '';
-        if (record.staff.length > 0) {
-          const staffArr = record.staff.map((staff) => {
+        if (text.length > 0) {
+          const staffArr = text.map((staff) => {
             return staff.realname;
           });
           staffText = staffArr.join('、');
@@ -109,14 +111,14 @@ export default class List extends Component {
     },
     {
       title: '关联流程',
-      dataIndex: 'flow_auth',
+      dataIndex: 'flow_auth_data',
       align: 'center',
       searcher: true,
-      render: (text, record) => {
+      render: (text) => {
         let value = '';
-        if (record.flow_auth.length > 0) {
-          const flowAuth = record.flow_auth.map((auth) => {
-            return auth.flow.name;
+        if (text.length > 0) {
+          const flowAuth = text.map((flow) => {
+            return flow.name;
           });
           value = flowAuth.join('、');
         }
@@ -125,14 +127,14 @@ export default class List extends Component {
     },
     {
       title: '关联表单',
-      dataIndex: 'form_auth',
+      dataIndex: 'form_auth_data',
       align: 'center',
       searcher: true,
-      render: (text, record) => {
+      render: (text) => {
         let value = '';
-        if (record.flow_auth.length > 0) {
-          const formAuth = record.form_auth.map((auth) => {
-            return auth.form.name;
+        if (text.length > 0) {
+          const formAuth = text.map((form) => {
+            return form.name;
           });
           value = formAuth.join('、');
         }
@@ -141,13 +143,13 @@ export default class List extends Component {
     },
     {
       title: '操作',
-      render: ({ id }) => {
+      render: ({ id }, text) => {
         return (
           <span>
-            <a href="#" title="编辑" onClick={() => this.update(id)}>编辑</a>
+            <a title="编辑" onClick={() => this.update(id, text)}>编辑</a>
             <Divider type="vertical" />
             <Popconfirm title="你确认删除" onConfirm={() => this.delete(id)}>
-              <a href="#" title="删除">删除</a>
+              <a title="删除">删除</a>
             </Popconfirm>
           </span>
         );

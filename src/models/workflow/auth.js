@@ -1,4 +1,4 @@
-import { authIndex, authDelete, authStore } from '../../services/workflow';
+import { authIndex, authDelete, authStore, authUpdate } from '../../services/workflow';
 
 const store = 'auth';
 
@@ -43,6 +43,23 @@ export default {
       }
     } catch (e) {
       return e;
+    }
+  },
+  // 编辑
+  * authUpdate({ payload, id, onSuccess, onError }, { call, put }) {
+    const response = yield call(authUpdate, payload, id);
+    if (response.errors) {
+      onError(response.errors);
+    } else {
+      yield put({
+        type: 'update',
+        payload: {
+          store,
+          id,
+          data: response,
+        },
+      });
+      onSuccess(response);
     }
   },
 };

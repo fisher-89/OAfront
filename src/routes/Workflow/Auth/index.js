@@ -85,8 +85,18 @@ export default class Auth extends Component {
     });
   };
   // 编辑角色
-  handleUpdateRole = () => {
-    // console.log('update', id);
+  handleUpdateRole = (id, text) => {
+    const { panes } = this.state;
+    const activeKey = text.name;
+    panes.push({
+      title: activeKey,
+      key: activeKey,
+      content: <Add onCancel={() => this.remove(activeKey)} data={text} />,
+    });
+    this.setState({
+      panes,
+      activeKey,
+    });
   };
   // 删除角色
   handleDeleteRole = (id) => {
@@ -97,7 +107,8 @@ export default class Auth extends Component {
   };
 
   render() {
-    const tabPane = this.state.panes.map(pane => (
+    const { panes, activeKey } = this.state;
+    const tabPane = panes.map(pane => (
       <TabPane tab={pane.title} key={pane.key} closable={pane.closable}>
         {pane.content}
       </TabPane>
@@ -108,7 +119,7 @@ export default class Auth extends Component {
           <Tabs
             hideAdd
             type="editable-card"
-            activeKey={this.state.activeKey}
+            activeKey={activeKey}
             onEdit={this.onEdit}
             onChange={this.onChange}
           >

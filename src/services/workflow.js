@@ -401,3 +401,11 @@ export async function authStore(params) {
   });
 }
 
+// 编辑 保存
+export async function authUpdate(params, id) {
+  return request(`/api/workflow/auth/role/${id}`, {
+    method: 'PUT',
+    body: params,
+  });
+}
+
