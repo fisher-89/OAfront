@@ -121,6 +121,7 @@ export default class FormAuthModal extends Component {
         visible={visible}
         onCancel={this.modalCancel}
         onOk={this.flowOnOk}
+        width={1000}
       >
         <OATable
           serverSide

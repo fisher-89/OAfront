@@ -131,6 +131,7 @@ export default class FlowAuthModal extends Component {
         visible={visible}
         onCancel={this.modalCancel}
         onOk={this.flowOnOk}
+        width={1000}
       >
         <OATable
           serverSide
