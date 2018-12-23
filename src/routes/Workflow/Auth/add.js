@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {
-  Spin,
   Input,
   Switch,
   Checkbox,
@@ -25,13 +24,13 @@ const checkBoxGroupOptions = [
   { label: '删除', value: 4 },
 ];
 
-@OAForm.create()
 @connect(({ loading }) => ({
   loading: (
     loading.effects['workflow/authStore'] ||
     loading.effects['workflow/authUpdate']
   ),
 }))
+@OAForm.create()
 export default class Add extends Component {
   constructor(props) {
     super(props);
@@ -248,7 +247,6 @@ export default class Add extends Component {
     const {
       form: { getFieldDecorator },
       validateFields,
-      loading,
     } = this.props;
     const { initialForm, flowVisible, flowAuthData, formVisible, formAuthData } = this.state;
     // 流程tags
@@ -273,116 +271,114 @@ export default class Add extends Component {
     ));
     return (
       <div className={style.layout}>
-        <Spin tip="处理中..." spinning={loading}>
-          <OAForm
-            onSubmit={validateFields(this.handleSubmit)}
+        <OAForm
+          onSubmit={validateFields(this.handleSubmit)}
+        >
+          <FormItem
+            {...formItemLayout}
+            label="角色名称"
+            required
           >
-            <FormItem
-              {...formItemLayout}
-              label="角色名称"
-              required
-            >
-              {
-                getFieldDecorator('name', {
-                  rules: [{
-                    required: true,
-                    message: '请输入角色名称',
-                  }],
-                  initialValue: initialForm.name,
-                })(
-                  <Input type="text" placeholder="请输入角色名称 最大255" />
-                )
-              }
-            </FormItem>
-            <FormItem
-              {...formItemLayout}
-              label="超级管理员"
-              required
-            >
-              {
-                getFieldDecorator('is_super', {
-                  rules: [{
-                    required: true,
-                    message: '请选择是或否',
-                  }],
-                  initialValue: initialForm.is_super,
-                })(
-                  <Switch defaultChecked={!!initialForm.is_super} />
-                )
-              }
-            </FormItem>
-            <FormItem
-              {...formItemLayout}
-              label="操作权限"
-            >
-              {
-                getFieldDecorator('handle', {
-                  initialValue: initialForm.handle,
-                })(
-                  <CheckboxGroup
-                    options={checkBoxGroupOptions}
-                    onChange={this.checkBoxOnChange}
-                  />
-                )
-              }
-            </FormItem>
-            <FormItem
-              {...formItemLayout}
-              label="关联员工"
-            >
-              {
-                getFieldDecorator('staff', {
-                  initialValue: initialForm.staff,
-                })(
-                  <Button hidden type="dashed" className={style.relateButton}>
+            {
+              getFieldDecorator('name', {
+                rules: [{
+                  required: true,
+                  message: '请输入角色名称',
+                }],
+                initialValue: initialForm.name,
+              })(
+                <Input type="text" placeholder="请输入角色名称 最大255" />
+              )
+            }
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+            label="超级管理员"
+            required
+          >
+            {
+              getFieldDecorator('is_super', {
+                rules: [{
+                  required: true,
+                  message: '请选择是或否',
+                }],
+                initialValue: initialForm.is_super,
+              })(
+                <Switch defaultChecked={!!initialForm.is_super} />
+              )
+            }
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+            label="操作权限"
+          >
+            {
+              getFieldDecorator('handle', {
+                initialValue: initialForm.handle,
+              })(
+                <CheckboxGroup
+                  options={checkBoxGroupOptions}
+                  onChange={this.checkBoxOnChange}
+                />
+              )
+            }
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+            label="关联员工"
+          >
+            {
+              getFieldDecorator('staff', {
+                initialValue: initialForm.staff,
+              })(
+                <Button hidden type="dashed" className={style.relateButton}>
+                  <Icon type="plus" />
+                </Button>
+              )
+            }
+            {this.searchStaff()}
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+            label="关联流程"
+          >
+            {
+              getFieldDecorator('flow_auth', {
+                initialValue: initialForm.flow_auth,
+              })(
+                <span>
+                  {getFlowTags}
+                  <Button type="dashed" className={style.relateButton} onClick={this.showFlowAuthModal}>
                     <Icon type="plus" />
                   </Button>
-                )
-              }
-              {this.searchStaff()}
-            </FormItem>
-            <FormItem
-              {...formItemLayout}
-              label="关联流程"
-            >
-              {
-                getFieldDecorator('flow_auth', {
-                  initialValue: initialForm.flow_auth,
-                })(
-                  <span>
-                    {getFlowTags}
-                    <Button type="dashed" className={style.relateButton} onClick={this.showFlowAuthModal}>
-                      <Icon type="plus" />
-                    </Button>
-                  </span>
-                )
-              }
-            </FormItem>
-            <FormItem
-              {...formItemLayout}
-              label="关联表单"
-            >
-              {
-                getFieldDecorator('form_auth', {
-                  initialValue: initialForm.form_auth,
-                })(
-                  <span>
-                    {getFormTags}
-                    <Button type="dashed" className={style.relateButton} onClick={this.showFormAuthModal}>
-                      <Icon type="plus" />
-                    </Button>
-                  </span>
-                )
-              }
-            </FormItem>
-            <FormItem
-              wrapperCol={{ span: 12, offset: 5 }}
-            >
-              <Button type="primary" htmlType="submit" className={style.submitButton}>确定</Button>
-              <Button>取消</Button>
-            </FormItem>
-          </OAForm>
-        </Spin>
+                </span>
+              )
+            }
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+            label="关联表单"
+          >
+            {
+              getFieldDecorator('form_auth', {
+                initialValue: initialForm.form_auth,
+              })(
+                <span>
+                  {getFormTags}
+                  <Button type="dashed" className={style.relateButton} onClick={this.showFormAuthModal}>
+                    <Icon type="plus" />
+                  </Button>
+                </span>
+              )
+            }
+          </FormItem>
+          <FormItem
+            wrapperCol={{ span: 12, offset: 5 }}
+          >
+            <Button type="primary" htmlType="submit" className={style.submitButton}>确定</Button>
+            <Button>取消</Button>
+          </FormItem>
+        </OAForm>
         <FlowAuthModal
           visible={flowVisible}
           onCancel={this.onCancelFlow}
