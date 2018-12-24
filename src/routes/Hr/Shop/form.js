@@ -1,15 +1,17 @@
 import React, { PureComponent } from 'react';
 import {
-  Input,
-  Select,
-  TreeSelect,
   Tabs,
   Col,
   Row,
+  Radio,
+  Input,
+  Select,
+  TreeSelect,
   notification,
+  InputNumber,
 } from 'antd';
 import { connect } from 'dva';
-import { omit } from 'lodash';
+import { omit, isEmpty } from 'lodash';
 import OAForm, {
   OAModal,
   Address,
@@ -45,7 +47,6 @@ export default class extends PureComponent {
       ...params.shop_address,
       real_address: address,
     }, ['shop_address']);
-
     dispatch({
       type: params.id ? 'shop/editShop' : 'shop/addShop',
       payload: body,
@@ -60,6 +61,22 @@ export default class extends PureComponent {
         notification.error({ message: '表单错误，请重新填写。' });
       },
     });
+  }
+  handleSelectChange = (v) => {
+    const { form } = this.props;
+    const deploy = [
+      { key: 'A', val: 25 },
+      { key: 'B1', val: 20 },
+      { key: 'B2', val: 15 },
+      { key: 'B3', val: 10 },
+      { key: 'C', val: 5 },
+    ].filter(item => item.key === v);
+    form.setFieldsValue({ staff_deploy: '' });
+    if (!isEmpty(deploy)) {
+      form.setFieldsValue({
+        staff_deploy: deploy[0].val,
+      });
+    }
   }
 
   render() {
@@ -308,9 +325,78 @@ export default class extends PureComponent {
 
 
           <TabPane
-            tab={<div className={styles.tabpane}>店铺成员</div>}
+            tab={<div className={styles.tabpane}>店铺信息</div>}
             key="2"
           >
+            <Row>
+              <Col {...colSpan}>
+                <FormItem label="店铺面积" {...formItemLayout}>
+                  {getFieldDecorator('total_area', {
+                    initialValue: initialValue.total_area || null,
+                  })(
+                    <Input placeholder="保留两位小数点" />
+                  )}
+                </FormItem>
+              </Col>
+              <Col {...colSpan}>
+                <FormItem label="排班类型" {...formItemLayout}>
+                  {getFieldDecorator('work_type', {
+                    initialValue: initialValue.work_type || '全班',
+                  })(
+                    <Radio.Group buttonStyle="solid">
+                      <Radio.Button value="全班">全班</Radio.Button>
+                      <Radio.Button value="倒班">倒班</Radio.Button>
+                    </Radio.Group>
+                  )}
+                </FormItem>
+              </Col>
+            </Row>
+
+            <Row>
+              <Col {...colSpan}>
+                <FormItem label="店铺类型" {...formItemLayout}>
+                  {getFieldDecorator('shop_type', {
+                    initialValue: initialValue.shop_type || '',
+                  })(
+                    <Select onChange={this.handleSelectChange}>
+                      <Option value="">请选择</Option>
+                      <Option value="A">A</Option>
+                      <Option value="B1">B1</Option>
+                      <Option value="B2">B2</Option>
+                      <Option value="B3">B3</Option>
+                      <Option value="C">C</Option>
+                    </Select>
+                  )}
+                </FormItem>
+              </Col>
+              <Col {...colSpan}>
+                <FormItem label="城市系数" {...formItemLayout}>
+                  {getFieldDecorator('city_ratio', {
+                    initialValue: initialValue.city_ratio || null,
+                  })(
+                    <Select>
+                      <Option value={null}>请选择</Option>
+                      <Option value="0.8">0.8</Option>
+                      <Option value="1">1</Option>
+                      <Option value="1.2">1.2</Option>
+                    </Select>
+                  )}
+                </FormItem>
+              </Col>
+            </Row>
+
+            <Row>
+              <Col>
+                <FormItem label="人员配置" {...longFormItemLayout}>
+                  {getFieldDecorator('staff_deploy', {
+                    initialValue: initialValue.staff_deploy || '',
+                  })(
+                    <InputNumber placeholder="店铺人员配置数量" style={{ width: '100%' }} />
+                  )}
+                </FormItem>
+              </Col>
+            </Row>
+
             <Row>
               <Col {...colSpan}>
                 <FormItem label="店长" {...formItemLayout}>
