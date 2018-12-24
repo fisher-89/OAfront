@@ -57,7 +57,6 @@ class PCTemplate extends Component {
     const { form, fields, grids } = this.props;
     const { dataIndex, parentGridIndex } = this.state;
     this.state.onDragging = false;
-    console.log(parentGridIndex);
     if ('fields' in data) {
       form.setFieldsValue({
         [`grids.${dataIndex}.x`]: data.x,
@@ -123,7 +122,7 @@ class PCTemplate extends Component {
 
   render() {
     console.log('pc_template:render');
-    const { fields, grids } = this.props;
+    const { fields, grids, form } = this.props;
     const { startPoint, tagPosition, onDragging } = this.state;
     return (
       <Row className={styles.pcTemplate}>
@@ -146,6 +145,7 @@ class PCTemplate extends Component {
             <Board
               grids={grids}
               fields={fields}
+              form={form}
               bind={(board) => {
                 this.board = board;
               }}

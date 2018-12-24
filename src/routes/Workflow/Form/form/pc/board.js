@@ -4,7 +4,7 @@ import styles from './template.less';
 
 class Board extends Component {
   state = {
-    lines: 13,
+    lines: 7,
   }
 
   componentDidMount() {
@@ -12,9 +12,51 @@ class Board extends Component {
     bind(this.board);
   }
 
-  // handleAddLine = (index) => {
-  //
-  // }
+  handleAddLine = (row) => {
+    const { fields, grids, form } = this.props;
+    const options = {};
+    fields.forEach((field) => {
+      if (typeof field.y === 'number' && field.y >= row - 1) {
+        field.y += 1; // eslint-disable-line no-param-reassign
+      }
+    });
+    options.fields = fields;
+    grids.forEach((grid, index) => {
+      if (typeof grid.y === 'number' && grid.y >= row - 1) {
+        options[`grids.${index}.y`] = grid.y + 1;
+      }
+    });
+    this.state.lines += 1;
+    form.setFieldsValue(options);
+  }
+
+  handleDeleteLine = (row) => {
+    const { fields, grids, form } = this.props;
+    const options = {};
+    fields.forEach((field) => {
+      if (typeof field.y === 'number' && field.y > row - 1) {
+        field.y -= 1; // eslint-disable-line no-param-reassign
+      } else if (typeof field.y === 'number' && field.y + field.row > row - 1) {
+        field.x = null; // eslint-disable-line no-param-reassign
+        field.y = null; // eslint-disable-line no-param-reassign
+        field.row = null; // eslint-disable-line no-param-reassign
+        field.col = null; // eslint-disable-line no-param-reassign
+      }
+    });
+    options.fields = fields;
+    grids.forEach((grid, index) => {
+      if (typeof grid.y === 'number' && grid.y > row - 1) {
+        options[`grids.${index}.y`] = grid.y - 1;
+      } else if (typeof grid.y === 'number' && grid.y + grid.row > row - 1) {
+        options[`grids.${index}.x`] = null;
+        options[`grids.${index}.y`] = null;
+        options[`grids.${index}.row`] = null;
+        options[`grids.${index}.col`] = null;
+      }
+    });
+    this.state.lines -= 1;
+    form.setFieldsValue(options);
+  }
 
   makeControls = () => {
     const { fields, grids } = this.props;
@@ -49,7 +91,11 @@ class Board extends Component {
           <div className={styles.controls} style={{ height: `${(lines * 76) + 1}px` }}>
             {this.makeControls()}
           </div>
-          <FocusLine board={this.board} />
+          <FocusLine
+            board={this.board}
+            addLine={this.handleAddLine}
+            deleteLine={this.handleDeleteLine}
+          />
         </div>
       </div>
     );

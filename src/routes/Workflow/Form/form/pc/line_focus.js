@@ -6,8 +6,8 @@ const templateArea = { minX: 553, maxX: 1545, minY: 301, maxY: 833 };
 
 class DraggingFieldTag extends Component {
   state = {
+    row: 0,
     offsetY: 0,
-    onTemplate: false,
   }
 
   componentWillMount() {
@@ -15,20 +15,58 @@ class DraggingFieldTag extends Component {
     document.addEventListener('touchmove', this.handleMouseMove);
   }
 
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextState.row !== this.state.row) {
+      return true;
+    }
+    return false;
+  }
+
   componentWillUnmount() {
+    console.log('unmount');
     document.removeEventListener('mousemove', this.handleMouseMove);
     document.removeEventListener('touchmove', this.handleMouseMove);
   }
 
-  contextMenu = (
-    <Menu>
-      <Menu.Item>在上方插入行</Menu.Item>
-      <Menu.Item>在下方插入行</Menu.Item>
-      <Menu.Item>删除行</Menu.Item>
-    </Menu>
-  )
+  contextMenu = () => {
+    const { addLine, deleteLine } = this.props;
+    const { row } = this.state;
+    return (
+      <Menu>
+        <Menu.Item
+          onClick={() => {
+            document.addEventListener('mousemove', this.handleMouseMove);
+            document.addEventListener('touchmove', this.handleMouseMove);
+            addLine(row);
+          }}
+        >
+          在上方插入行
+        </Menu.Item>
+        <Menu.Item
+          onClick={() => {
+            document.addEventListener('mousemove', this.handleMouseMove);
+            document.addEventListener('touchmove', this.handleMouseMove);
+            addLine(row + 1);
+          }}
+        >
+          在下方插入行
+        </Menu.Item>
+        <Menu.Item
+          onClick={() => {
+            document.addEventListener('mousemove', this.handleMouseMove);
+            document.addEventListener('touchmove', this.handleMouseMove);
+            deleteLine(row);
+          }}
+        >
+          删除行
+        </Menu.Item>
+      </Menu>
+    );
+  }
 
   handleContextMenuToggle = (visible) => {
+    console.log('visible:', visible);
     if (visible) {
       document.removeEventListener('mousemove', this.handleMouseMove);
       document.removeEventListener('touchmove', this.handleMouseMove);
@@ -45,31 +83,32 @@ class DraggingFieldTag extends Component {
     const { clientY, pageX, pageY } = event.type === 'touchmove' ? e.touches[0] : e;
     if (!board) return false;
     let offsetY = 0;
-    let onTemplate = false;
+    let row = 0;
     if (pageX >= minX && pageX <= maxX && pageY >= minY && pageY <= maxY) {
-      onTemplate = true;
       const boardGeo = board.getBoundingClientRect();
-      offsetY = (Math.floor((clientY - boardGeo.top) / 76) * 76);
+      const index = Math.floor((clientY - boardGeo.top) / 76);
+      offsetY = index * 76;
+      row = index + 1;
     }
     this.setState({
       offsetY,
-      onTemplate,
+      row,
     });
   }
 
   render() {
-    const { offsetY, onTemplate } = this.state;
-    return onTemplate && (
+    const { row, offsetY } = this.state;
+    return row > 0 && (
       <Dropdown
         trigger={['contextMenu']}
         onVisibleChange={this.handleContextMenuToggle}
-        overlay={this.contextMenu}
+        overlay={this.contextMenu()}
       >
         <div
           style={{ transform: `translate(0px,${offsetY}px)` }}
           className={styles.lineFocus}
         >
-          <div className={styles.leftControl}>{(offsetY / 76) + 1}</div>
+          <div className={styles.leftControl}>{row}</div>
           <div className={styles.boxShadow} />
           <div className={styles.rightControl}>&nbsp;</div>
         </div>
