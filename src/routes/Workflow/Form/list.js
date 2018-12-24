@@ -6,10 +6,12 @@ import { Button, Tooltip, Divider, Row, Col, Card, Icon } from 'antd';
 import moment from 'moment';
 import OATable from '../../../components/OATable';
 
-@connect(({ workflow, loading }) => ({
+@connect(({ currentUser, workflow, loading }) => ({
+  currentUserId: currentUser.currentUser.staff_sn,
   list: workflow.form,
   oldList: workflow.oldFormDetails,
   formType: workflow.formType,
+  superData: workflow.superData,
   oldLoading: loading.effects['workflow/fetchOldForm'],
   loading: (
     loading.effects['workflow/fetchForm'] ||
@@ -23,7 +25,14 @@ export default class List extends PureComponent {
   }
 
   componentWillMount() {
-    this.fetchFormType();
+    const { formType, superData, dispatch } = this.props;
+    if (formType.length === 0) {
+      this.fetchFormType();
+    }
+    // 超级管理员获取
+    if (superData.length === 0) {
+      dispatch({ type: 'workflow/getSuper' });
+    }
   }
 
   fetchForm = (params) => {
@@ -60,7 +69,9 @@ export default class List extends PureComponent {
 
   searchHistory = (id) => {
     return () => {
-      this.setState({ formId: id }, () => { if (this.state.formId) this.fetchOldForm(); });
+      this.setState({ formId: id }, () => {
+        if (this.state.formId) this.fetchOldForm();
+      });
     };
   }
 
@@ -96,7 +107,7 @@ export default class List extends PureComponent {
   }
 
   render() {
-    const { list, oldList, oldLoading, loading, formType } = this.props;
+    const { list, oldList, oldLoading, loading, formType, superData, currentUserId } = this.props;
     const { formId } = this.state;
     const formTypeIndexById = {};
     formType.forEach((item) => {
@@ -123,13 +134,41 @@ export default class List extends PureComponent {
       },
       {
         title: '操作',
-        render: ({ id }) => (
+        render: ({ id }, text) => (
           <Fragment>
-            <a onClick={this.searchHistory(id)}>查看</a>
-            <Divider type="vertical" />
-            <Link to={`/workflow/form/list/edit/${id}`}> 编辑 </Link>
-            <Divider type="vertical" />
-            <a onClick={() => this.handleDelete(id)}>删除</a>
+            {
+              superData.includes(currentUserId) ?
+                (
+                  <a onClick={this.searchHistory(id)}>历史</a>
+                )
+                : null
+            }
+            {
+              text.handle_id.includes(3) ?
+                (
+                  <span>
+                    {
+                      superData.includes(currentUserId) ?
+                        (
+                          <Divider type="vertical" />
+                        )
+                        : null
+                    }
+                    <Link to={`/workflow/form/list/edit/${id}`}> 编辑 </Link>
+                  </span>
+                )
+                : null
+            }
+            {
+              text.handle_id.includes(4) ?
+                (
+                  <span>
+                    <Divider type="vertical" />
+                    <a onClick={() => this.handleDelete(id)}>删除</a>
+                  </span>
+                )
+                : null
+            }
           </Fragment>
         ),
       },
@@ -141,12 +180,17 @@ export default class List extends PureComponent {
           分类管理
         </Button>
       </Link>,
-      <Tooltip title="新建表单" key="add">
-        <Link to="/workflow/form/list/add">
-          <Button type="primary" icon="plus" />
-        </Link>
-      </Tooltip>,
     ];
+    if (superData.includes(currentUserId)) {
+      const add = (
+        <Tooltip title="新建表单" key="add">
+          <Link to="/workflow/form/list/add">
+            <Button type="primary" icon="plus" />
+          </Link>
+        </Tooltip>
+      );
+      extraOperator.push(add);
+    }
 
     const span = formId ? 12 : 24;
     const oldData = oldList[formId] || [];
