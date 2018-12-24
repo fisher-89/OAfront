@@ -186,11 +186,10 @@ export default class EditStaff extends PureComponent {
                 <Col {...fieldsBoxLayout}>
                   <FormItem {...formItemLayout2} label="性别" required>
                     {getFieldDecorator('gender', {
-                      initialValue: editStaff.gender || '未知',
+                      initialValue: editStaff.gender || '',
                       rules: [validatorRequired],
                     })(
                       <RadioGroup size="small" buttonStyle="solid">
-                        <RadioButton value="未知">未知</RadioButton>
                         <RadioButton value="男">男</RadioButton>
                         <RadioButton value="女">女</RadioButton>
                       </RadioGroup>
@@ -422,6 +421,13 @@ export default class EditStaff extends PureComponent {
                   </FormItem>
                 </Col>
               </Row>
+              <FormItem label="招聘渠道" {...formItemLayout}>
+                {getFieldDecorator('job_source', {
+                  initialValue: editStaff.job_source || '',
+                })(
+                  <Input placeholder="请填写不大于20字的招聘渠道描述" />
+                )}
+              </FormItem>
               <FormItem label="员工标签" {...formItemLayout}>
                 {getFieldDecorator('tags', {
                   initialValue: tags || [],

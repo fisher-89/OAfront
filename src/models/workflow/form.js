@@ -1,4 +1,6 @@
-import { formVersion, fetchOldForm, fetchForm, addForm, editForm, deleteForm } from '../../services/workflow';
+import {
+  formVersion, fetchOldForm, fetchForm, addForm, editForm, deleteForm, getFormList,
+} from '../../services/workflow';
 
 const store = 'form';
 
@@ -120,5 +122,16 @@ export default {
         });
       }
     } catch (err) { return err; }
+  },
+  // 获取表单列表（不带权限）
+  * formList({ payload }, { call, put }) {
+    const response = yield call(getFormList, payload);
+    yield put({
+      type: 'save',
+      payload: {
+        store: 'formList',
+        data: response,
+      },
+    });
   },
 };

@@ -395,6 +395,10 @@ const menuData = [
           },
         ],
       },
+      {
+        name: '权限配置',
+        path: 'auth',
+      },
     ],
   },
   {

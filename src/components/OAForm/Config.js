@@ -51,9 +51,8 @@ export default formCreate => (option = {}) => (Componet) => {
       if (onValuesChange) onValuesChange(props, _, allValues);
     },
   };
-  const { localBackUpKey, modal } = option || {};
+  const { localBackUpKey } = option || {};
   delete newOption.localBackUpKey;
-  delete newOption.modal;
   const FormComponent = Create(formCreate)(newOption)(Componet);
 
   class NewFormComponent extends React.PureComponent {
@@ -193,7 +192,7 @@ export default formCreate => (option = {}) => (Componet) => {
     }
 
     makeNewFormComponetProps = () => {
-      const respone = {
+      const response = {
         bindAutoSave: this.bindAutoSave,
         bindModalAutoSave: this.bindModalAutoSave,
         setFiedError: this.handleFieldsError,
@@ -202,15 +201,15 @@ export default formCreate => (option = {}) => (Componet) => {
         onError: this.handleOnError,
         ...this.props,
       };
-      respone.validatorRequired = { validator: this.validatorRequired };
-      return respone;
+      response.validatorRequired = { validator: this.validatorRequired };
+      return response;
     }
 
     render() {
       const { loading } = this.props;
       const { autoSave, localSave, modalSave } = this.state;
       return (
-        <Spin spinning={modal ? false : loading === true}>
+        <Spin spinning={loading || false}>
           <div className={styles.OAForm}>
             {(autoSave || localSave) && (
               <Operator
