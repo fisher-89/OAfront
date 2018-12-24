@@ -43,6 +43,8 @@ export default {
     flowList: [],
     // 表单列表（不带权限）
     formList: [],
+    // 超级管理员
+    superData: [],
   },
   effects: {
     ...formEffects,

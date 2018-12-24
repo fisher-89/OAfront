@@ -1,4 +1,4 @@
-import { authIndex, authDelete, authStore, authUpdate } from '../../services/workflow';
+import { authIndex, authDelete, authStore, authUpdate, getSuper } from '../../services/workflow';
 
 const store = 'auth';
 
@@ -61,5 +61,16 @@ export default {
       });
       onSuccess(response);
     }
+  },
+  // 获取超级管理员
+  * getSuper({ payload }, { call, put }) {
+    const response = yield call(getSuper, payload);
+    yield put({
+      type: 'save',
+      payload: {
+        store: 'superData',
+        data: response,
+      },
+    });
   },
 };

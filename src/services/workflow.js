@@ -361,7 +361,7 @@ export async function resendWorkMsg(id) {
   });
 }
 
-// 权限
+// 权限start
 
 // 列表
 export async function authIndex() {
@@ -408,4 +408,13 @@ export async function authUpdate(params, id) {
     body: params,
   });
 }
+
+// 获取超级管理员
+export async function getSuper() {
+  return request('/api/workflow/auth/super', {
+    method: 'GET',
+  });
+}
+
+// 权限end
 
