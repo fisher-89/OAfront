@@ -40,9 +40,8 @@ class DraggingFieldTag extends Component {
     const { clientX, clientY, pageX, pageY } = event.type === 'touchmove' ? e.touches[0] : e;
     let offsetX = clientX - x;
     let offsetY = clientY - y;
-    let onTemplate = false;
-    if (pageX >= minX && pageX <= maxX && pageY >= minY && pageY <= maxY) {
-      onTemplate = true;
+    const onTemplate = pageX >= minX && pageX <= maxX && pageY >= minY && pageY <= maxY;
+    if (onTemplate) {
       const boardGeo = board.getBoundingClientRect();
       const { width, height } = this.calculateSize();
       const newX = Math.floor(

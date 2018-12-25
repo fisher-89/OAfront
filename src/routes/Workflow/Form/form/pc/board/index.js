@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import FocusLine from './line_focus';
-import styles from './template.less';
+import Control from './control';
+import styles from '../template.less';
 
 class Board extends Component {
   state = {
@@ -24,6 +25,8 @@ class Board extends Component {
     grids.forEach((grid, index) => {
       if (typeof grid.y === 'number' && grid.y >= row - 1) {
         options[`grids.${index}.y`] = grid.y + 1;
+      } else if (typeof grid.y === 'number' && grid.y + grid.row >= row) {
+        options[`grids.${index}.row`] = grid.row + 1;
       }
     });
     this.state.lines += 1;
@@ -47,6 +50,8 @@ class Board extends Component {
     grids.forEach((grid, index) => {
       if (typeof grid.y === 'number' && grid.y > row - 1) {
         options[`grids.${index}.y`] = grid.y - 1;
+      } else if (typeof grid.y === 'number' && grid.y !== row - 1 && grid.y + grid.row > row && grid.row > 3) {
+        options[`grids.${index}.row`] = grid.row - 1;
       } else if (typeof grid.y === 'number' && grid.y + grid.row > row - 1) {
         options[`grids.${index}.x`] = null;
         options[`grids.${index}.y`] = null;
@@ -60,22 +65,14 @@ class Board extends Component {
 
   makeControls = () => {
     const { fields, grids } = this.props;
-    return [...fields, ...grids].filter(item => typeof item.x === 'number')
-      .map(item => (
-        <div
-          key={item.key}
-          style={{
-            position: 'absolute',
-            width: `${(item.col * 76) - 1}px`,
-            height: `${(item.row * 76) - 1}px`,
-            top: `${(item.y * 76) + 1}px`,
-            left: `${(item.x * 76) + 1}px`,
-            backgroundColor: 'green',
-          }}
-        >
-          {item.name}
-        </div>
-      ));
+    return [
+      ...fields.filter(item => typeof item.x === 'number').map(item => (
+        <Control key={item.key} data={item} />
+      )),
+      ...grids.filter(item => typeof item.x === 'number').map(item => (
+        <Control key={item.key} data={item} grid />
+      )),
+    ];
   }
 
   render() {
@@ -84,18 +81,23 @@ class Board extends Component {
       <div className={styles.board}>
         <div
           className={styles.scroller}
+          style={{ height: `${(lines * 76) + 1}px` }}
+          onContextMenu={(e) => {
+            e.preventDefault();
+            return false;
+          }}
           ref={(ele) => {
             this.board = ele;
           }}
         >
-          <div className={styles.controls} style={{ height: `${(lines * 76) + 1}px` }}>
-            {this.makeControls()}
-          </div>
           <FocusLine
             board={this.board}
             addLine={this.handleAddLine}
             deleteLine={this.handleDeleteLine}
           />
+          <div className={styles.controls}>
+            {this.makeControls()}
+          </div>
         </div>
       </div>
     );

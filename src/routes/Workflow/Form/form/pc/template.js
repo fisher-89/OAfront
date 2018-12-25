@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Row } from 'antd';
 import styles from './template.less';
-import Board from './board';
+import Board from './board/index';
 import FieldTag from './field_tag';
 import GridTag from './grid_tag';
 import FieldTagShadow from './dragging_field_tag';
@@ -121,9 +121,8 @@ class PCTemplate extends Component {
   }
 
   render() {
-    console.log('pc_template:render');
     const { fields, grids, form } = this.props;
-    const { startPoint, tagPosition, onDragging } = this.state;
+    const { startPoint, tagPosition, onDragging, parentGridIndex } = this.state;
     return (
       <Row className={styles.pcTemplate}>
         <div className={styles.component}>
@@ -160,6 +159,7 @@ class PCTemplate extends Component {
             onCancel={this.handleDragCancel}
             onConfirm={this.handleDragConfirm}
             board={this.board}
+            parentGrid={parentGridIndex !== null ? grids[parentGridIndex] : null}
           />
         )}
       </Row>

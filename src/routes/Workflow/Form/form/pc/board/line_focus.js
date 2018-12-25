@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Dropdown, Menu } from 'antd';
-import styles from './template.less';
+import styles from '../template.less';
 
 const templateArea = { minX: 553, maxX: 1545, minY: 301, maxY: 833 };
 
@@ -24,7 +24,6 @@ class DraggingFieldTag extends Component {
   }
 
   componentWillUnmount() {
-    console.log('unmount');
     document.removeEventListener('mousemove', this.handleMouseMove);
     document.removeEventListener('touchmove', this.handleMouseMove);
   }
@@ -66,7 +65,6 @@ class DraggingFieldTag extends Component {
   }
 
   handleContextMenuToggle = (visible) => {
-    console.log('visible:', visible);
     if (visible) {
       document.removeEventListener('mousemove', this.handleMouseMove);
       document.removeEventListener('touchmove', this.handleMouseMove);
@@ -110,7 +108,7 @@ class DraggingFieldTag extends Component {
         >
           <div className={styles.leftControl}>{row}</div>
           <div className={styles.boxShadow} />
-          <div className={styles.rightControl}>&nbsp;</div>
+          <div className={styles.rightControl}>{row}</div>
         </div>
       </Dropdown>
     );

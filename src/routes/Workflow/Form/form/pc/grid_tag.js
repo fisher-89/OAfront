@@ -35,7 +35,7 @@ class GridTag extends Component {
                       <FieldTag
                         data={field}
                         onDrag={(p1, p2, p3) => {
-                          // typeof data.x === 'number' && onDrag(p1, p2, p3, data);
+                          // if (typeof data.x === 'number') onDrag(p1, p2, p3, data);
                           onDrag(p1, p2, p3, data);
                         }}
                       />

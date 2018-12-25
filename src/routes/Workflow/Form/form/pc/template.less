@@ -103,6 +103,11 @@
         background-position: 1px 1px;
         .controls {
           position: relative;
+          height: 0;
+          > div {
+            position: absolute;
+            background-color: seagreen;
+          }
         }
         .lineFocus {
           position: absolute;
@@ -112,22 +117,20 @@
           > div {
             float: left;
           }
-          .leftControl {
+          .leftControl, .rightControl {
             width: 41px;
             line-height: 75px;
             font-size: 24px;
             text-align: center;
             font-weight: 700;
-            color: #1890ff;
+            color: #fff;
             opacity: 0.2;
+            background-color: #1890ff;
           }
           .boxShadow {
             width: 911px;
             height: 75px;
             box-shadow: #1890ff 0 0 2px 0;
-          }
-          .rightControl {
-            width: 41px;
           }
         }
       }
