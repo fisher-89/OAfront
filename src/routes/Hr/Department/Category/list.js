@@ -9,6 +9,11 @@ import OATable from 'components/OATable';
 import { checkAuthority } from 'utils/utils';
 import CateForm from './form';
 
+const mapWithKey = [
+  { key: 'area_manager_sn', name: '区域经理' },
+  { key: 'regional_manager_sn', name: '大区经理' },
+  { key: 'personnel_manager_sn', name: '人事负责人' },
+];
 @connect(({ department, loading }) => ({
   category: department.category,
   fLoading: loading.effects['department/fetchCategory'],
@@ -65,7 +70,9 @@ export default class extends PureComponent {
         title: '分类字段',
         dataIndex: 'fields',
         render: (val) => {
-          return val.join('，');
+          return val.map((item) => {
+            return mapWithKey.filter(cur => cur.key === item)[0].name;
+          }).join('，');
         },
       },
     ];

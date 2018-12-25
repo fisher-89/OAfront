@@ -140,6 +140,50 @@ export default class extends PureComponent {
             </Select>
           )}
         </FormItem>
+
+        <FormItem label="上级部门" {...formItemLayout} >
+          {getFieldDecorator('parent_id', initialValue.parent_id ? {
+            initialValue: initialValue.parent_id.toString(),
+          } : { initialValue: '' })(
+            <TreeSelect
+              treeDefaultExpandAll
+              treeData={newTreeData}
+              dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+            />
+          )}
+        </FormItem>
+
+        <FormItem label="品牌" {...formItemLayout}>
+          {getFieldDecorator('brand_id', {
+            initialValue: initialValue.brand_id || 1,
+          })(
+            <Select name="brand_id" placeholer="请选择">
+              {brand && brand.map((item) => {
+                return (
+                  <Option key={item.id} value={item.id}>{item.name}</Option>
+                );
+              })}
+            </Select>
+          )}
+        </FormItem>
+
+        <FormItem {...formItemLayout} label="部门负责人">
+          {getFieldDecorator('manager', {
+              initialValue: {
+                manager_sn: initialValue.manager_sn,
+                manager_name: initialValue.manager_name,
+              } || {},
+            })(
+              <SearchTable.Staff
+                name={{
+                  manager_sn: 'staff_sn',
+                  manager_name: 'realname',
+                }}
+                showName="manager_name"
+              />
+          )}
+        </FormItem>
+
         {
           this.state.regional_manager_sn ? (
             <FormItem label="大区经理" {...formItemLayout}>
@@ -200,50 +244,6 @@ export default class extends PureComponent {
             </FormItem>
           ) : null
         }
-
-        <FormItem label="上级部门" {...formItemLayout} >
-          {getFieldDecorator('parent_id', initialValue.parent_id ? {
-            initialValue: initialValue.parent_id.toString(),
-          } : { initialValue: '' })(
-            <TreeSelect
-              placeholder="上级部门默认为空"
-              treeDefaultExpandAll
-              treeData={newTreeData}
-              dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-            />
-          )}
-        </FormItem>
-
-        <FormItem label="品牌" {...formItemLayout}>
-          {getFieldDecorator('brand_id', {
-            initialValue: initialValue.brand_id || 1,
-          })(
-            <Select name="brand_id" placeholer="请选择">
-              {brand && brand.map((item) => {
-                return (
-                  <Option key={item.id} value={item.id}>{item.name}</Option>
-                );
-              })}
-            </Select>
-          )}
-        </FormItem>
-
-        <FormItem {...formItemLayout} label="部门负责人">
-          {getFieldDecorator('manager', {
-              initialValue: {
-                manager_sn: initialValue.manager_sn,
-                manager_name: initialValue.manager_name,
-              } || {},
-            })(
-              <SearchTable.Staff
-                name={{
-                  manager_sn: 'staff_sn',
-                  manager_name: 'realname',
-                }}
-                showName="manager_name"
-              />
-          )}
-        </FormItem>
       </OAModal>
     );
   }
