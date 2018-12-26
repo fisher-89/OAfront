@@ -68,10 +68,10 @@ export default class extends PureComponent {
 
     const formItemLayout = {
       labelCol: {
-        span: 6,
+        span: 5,
       },
       wrapperCol: {
-        span: 16,
+        span: 18,
       },
     };
 

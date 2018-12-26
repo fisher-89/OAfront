@@ -14,6 +14,7 @@ import {
 } from 'antd';
 import { isEmpty } from 'lodash';
 import QueueAnim from 'rc-queue-anim';
+import { checkAuthority } from 'utils/utils';
 import styles from './index.less';
 import ChangeLog from './infoTabs/changeLog';
 import Bespoke from './infoTabs/bespoke';
@@ -192,10 +193,14 @@ export default class StaffInfo extends PureComponent {
             <Card>
               {/* <div style={{ width: 200, flexShrink: 0 }} /> */}
               <div key="userLog">
-                <Tabs defaultActiveKey="changeLog">
-                  <TabPane key="changeLog" tab="变更记录" >
-                    <ChangeLog staffSn={data.staff_sn} />
-                  </TabPane>
+                <Tabs defaultActiveKey={checkAuthority(118) ? 'changeLog' : 'userAuth'}>
+                  {
+                    checkAuthority(118) ? (
+                      <TabPane key="changeLog" tab="变更记录" >
+                        <ChangeLog staffSn={data.staff_sn} />
+                      </TabPane>
+                    ) : null
+                  }
                   <TabPane key="userAuth" tab="员工权限" >
                     <StaffAuth data={data} />
                   </TabPane>

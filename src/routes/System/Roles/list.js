@@ -85,7 +85,7 @@ export default class extends PureComponent {
         searcher: true,
         width: 160,
         render: (staff) => {
-          const staffStr = staff.map(item => item.realname).join(',');
+          const staffStr = staff.map(item => item.realname).join('，');
           return (<Ellipsis tooltip lines={2}>{staffStr}</Ellipsis>);
         },
         onFilter: (value, record) => {
@@ -99,7 +99,7 @@ export default class extends PureComponent {
         searcher: true,
         width: 160,
         render: (brand) => {
-          const brandStr = brand.map(item => item.name).join(',');
+          const brandStr = brand.map(item => item.name).join('，');
           return (<Ellipsis tooltip lines={2}>{brandStr}</Ellipsis>);
         },
         onFilter: (value, record) => {
@@ -112,7 +112,7 @@ export default class extends PureComponent {
         dataIndex: 'department',
         searcher: true,
         render: (department) => {
-          const departmentStr = department.map(item => item.name).join(',');
+          const departmentStr = department.map(item => item.name).join('，');
           return (<Ellipsis tooltip lines={2}>{departmentStr}</Ellipsis>);
         },
         onFilter: (value, record) => {
