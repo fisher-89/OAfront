@@ -71,11 +71,10 @@ export default class extends PureComponent {
       },
       {
         title: '关联费用品牌',
-        align: 'center',
         dataIndex: 'cost_brands',
         searcher: true,
         render: (brand) => {
-          const brandStr = (brand || []).map(item => item.name).join(',');
+          const brandStr = (brand || []).map(item => item.name).join('，');
           return (<Ellipsis tooltip lines={2}>{brandStr}</Ellipsis>);
         },
         onFilter: (value, brand) => {
@@ -85,7 +84,9 @@ export default class extends PureComponent {
       },
       {
         title: '是否共享',
+        align: 'center',
         dataIndex: 'is_public',
+        width: 80,
         filters: isPublic.map((item, i) => {
           return { text: item, value: i };
         }),
