@@ -34,35 +34,51 @@ class DraggingFieldTag extends Component {
 
   dragField = (e) => {
     e.preventDefault();
-    const { minX, maxX, minY, maxY } = templateArea;
-    const { startPoint: { x, y }, style: { top, left }, board, parentGrid } = this.props;
-    const { data } = this.state;
+    const { parentGrid, board } = this.props;
     const { clientX, clientY, pageX, pageY } = event.type === 'touchmove' ? e.touches[0] : e;
-    let offsetX = clientX - x;
-    let offsetY = clientY - y;
+    const { minX, maxX, minY, maxY } = templateArea;
     const onTemplate = pageX >= minX && pageX <= maxX && pageY >= minY && pageY <= maxY;
-    const boardGeo = board.getBoundingClientRect();
-    const inGrid = !parentGrid || (
-      parentGrid.x !== null && (
-        clientY >= boardGeo.top + ((parentGrid.y + 1) * 76) &&
-        clientY <= boardGeo.top + (((parentGrid.y + parentGrid.row) - 1) * 76)
-      )
-    );
-    if (onTemplate && inGrid) {
-      const { width, height } = this.calculateSize();
-      const newX = Math.floor(
-        (Math.min(clientX, boardGeo.right - width) - boardGeo.left) / 76
-      );
-      const newY = Math.floor(
-        (Math.min(clientY, boardGeo.bottom - height) - boardGeo.top) / 76
-      );
-      offsetX = (newX * 76) + (boardGeo.left - left) + 1;
-      offsetY = (newY * 76) + (boardGeo.top - top) + 1;
-      this.state.data = { ...data, x: newX, y: newY };
+    const boardRect = board.getBoundingClientRect();
+    let { top, bottom } = boardRect;
+    const { left, right } = boardRect;
+    let inGrid = !parentGrid;
+    if (parentGrid && parentGrid.x !== null) {
+      top += ((parentGrid.y + 1) * 76) - 1;
+      bottom = top + ((parentGrid.row - 2) * 76);
+      inGrid = parentGrid.x !== null && clientY >= top && clientY <= bottom;
     }
+    if (onTemplate && inGrid) {
+      this.handleDragControl(clientX, clientY, { top, bottom, left, right });
+    } else {
+      this.handleDragTag(clientX, clientY);
+    }
+  }
+
+  handleDragTag = (clientX, clientY) => {
+    const { startPoint: { x, y } } = this.props;
+    this.setState({
+      offset: { x: clientX - x, y: clientY - y },
+      onTemplate: false,
+    });
+  }
+
+  handleDragControl = (clientX, clientY, { top, bottom, left, right }) => {
+    const { style } = this.props;
+    const { data } = this.state;
+    const { width, height } = this.calculateSize();
+    const newX = Math.floor(
+      (Math.min(clientX, right - width) - left) / 76
+    );
+    const newY = Math.max(Math.floor(
+      (Math.min(clientY, bottom - height) - top) / 76
+    ), 0);
+    console.log(newY, clientY, bottom - height, top);
+    const offsetX = (newX * 76) + (left - style.left) + 1;
+    const offsetY = (newY * 76) + (top - style.top) + 1;
+    this.state.data = { ...data, x: newX, y: newY };
     this.setState({
       offset: { x: offsetX, y: offsetY },
-      onTemplate: onTemplate && inGrid,
+      onTemplate: true,
     });
   }
 

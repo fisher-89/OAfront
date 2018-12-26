@@ -70,6 +70,7 @@ class PCTemplate extends Component {
       gridFields[dataIndex].y = data.y;
       gridFields[dataIndex].row = data.row;
       gridFields[dataIndex].col = data.col;
+      this.state.parentGridIndex = null;
       form.setFieldsValue({
         [`grids.${parentGridIndex}.fields`]: gridFields,
       });
@@ -80,7 +81,6 @@ class PCTemplate extends Component {
       fields[dataIndex].col = data.col;
       form.setFieldsValue({ fields });
     }
-    this.state.parentGridIndex = null;
   }
 
   makeFieldOptions = () => {
