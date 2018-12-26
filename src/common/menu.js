@@ -227,11 +227,11 @@ const menuData = [
         authority: '38',
         children: [
           {
-            name: '部门管理',
+            name: '部门列表',
             path: 'list',
           },
           {
-            name: '分类管理',
+            name: '部门分类',
             path: 'cates',
           },
         ],
