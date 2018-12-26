@@ -38,7 +38,7 @@ const formItemLayout = {
 @connect(({ brand, department, loading }) => ({
   brand: brand.brand,
   categories: department.category,
-  loading: loading.effects['brand/fetchBrand'],
+  loading: loading.models.department,
 }))
 @OAForm.create()
 export default class extends PureComponent {
@@ -132,6 +132,7 @@ export default class extends PureComponent {
         form={form}
         title={initialValue.id ? '编辑部门' : '创建部门'}
         visible={visible}
+        loading={this.props.loading}
         onSubmit={validateFields(this.handleSubmit)}
         onCancel={() => onCancel(false)}
         afterClose={onClose}
