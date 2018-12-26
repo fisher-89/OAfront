@@ -8,7 +8,6 @@ import {
 } from 'antd';
 import { connect } from 'dva';
 import { assign } from 'lodash';
-import { routerRedux } from 'dva/router';
 import OAForm, { OAModal, SearchTable, Address } from '../../../components/OAForm';
 import { markTreeData } from '../../../utils/utils';
 
@@ -71,7 +70,7 @@ export default class extends PureComponent {
   }
 
   handleSubmit = (params) => {
-    const { dispatch, onError } = this.props;
+    const { dispatch, onError, onCancel } = this.props;
     dispatch({
       type: params.id ? 'department/editDepartment' : 'department/addDepartment',
       payload: {
@@ -84,10 +83,7 @@ export default class extends PureComponent {
         ...params.personnel_manager,
       },
       onError: errors => onError(errors),
-      onSuccess: () => {
-        this.props.onCancel();
-        this.props.dispatch(routerRedux.push('/hr/department'));
-      },
+      onSuccess: () => onCancel(),
     });
   }
 
