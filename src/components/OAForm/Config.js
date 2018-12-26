@@ -187,7 +187,7 @@ export default formCreate => (option = {}) => (Componet) => {
     validatorRequired = (_, value, cb) => {
       if ((value !== 0) && !value) cb('必填选项!');
       if (Array.isArray(value) && value.length === 0) cb('必填选项!');
-      if (typeof value === 'object' && Object.keys(value).length === 0) cb('必填选项!');
+      if (typeof value === 'object' && Object.keys(value || {}).length === 0) cb('必填选项!');
       cb();
     }
 

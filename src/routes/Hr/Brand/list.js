@@ -88,7 +88,7 @@ export default class extends PureComponent {
         dataIndex: 'is_public',
         width: 80,
         filters: isPublic.map((item, i) => {
-          return { text: item, value: i };
+          return ({ text: item, value: i });
         }),
         render: val => isPublic[val],
       },
