@@ -33,3 +33,10 @@ export async function positionShop(params) {
     body: params,
   });
 }
+
+export async function exportShop(params) {
+  return request('/api/hr/shops/export', {
+    method: 'POST',
+    body: params,
+  });
+}

@@ -9,6 +9,7 @@ import moment from 'moment';
 import { connect } from 'dva';
 import Search from './search';
 import ShopForm from './form';
+import ExportShop from './export';
 import OATable from '../../../components/OATable';
 import Ellipsis from '../../../components/Ellipsis/index';
 import { checkAuthority, getFiltersData } from '../../../utils/utils';
@@ -39,6 +40,7 @@ export default class extends PureComponent {
     dispatch({ type: 'department/fetchDepartment' });
     dispatch({ type: 'shop/fetchShop', payload: params });
     dispatch({ type: 'stafftags/fetchStaffTags', payload: { type: 'shops' } });
+    this.searchFilter = params;
   }
 
   handleModalVisible = (flag) => {
@@ -231,8 +233,9 @@ export default class extends PureComponent {
 
   makeExtraOperator = () => {
     const extra = [];
+    const { shop: { total } } = this.props;
     if (checkAuthority(71)) {
-      extra.push((
+      extra.push(
         <Button
           icon="plus"
           key="plus"
@@ -242,8 +245,12 @@ export default class extends PureComponent {
         >
           添加店铺
         </Button>
-      ));
+      );
     }
+    if (checkAuthority(196)) {
+      extra.push(<ExportShop key="exportBtn" filters={this.searchFilter} total={total} />);
+    }
+
     return extra;
   }
 

@@ -8,13 +8,10 @@ import OAForm, { OAModal } from 'components/OAForm';
 
 const { Option } = Select;
 const FormItem = OAForm.Item;
-const fields = [
-  { key: 'area_manager_sn', name: '区域经理编号' },
-  { key: 'area_manager_name', name: '区域经理姓名' },
-  { key: 'regional_manager_sn', name: '大区经理编号' },
-  { key: 'regional_manager_name', name: '大区经理姓名' },
-  { key: 'personnel_manager_sn', name: '人事负责人编号' },
-  { key: 'personnel_manager_name', name: '人事负责人姓名' },
+const mapWithKey = [
+  { key: 'area_manager_sn', name: '区域经理' },
+  { key: 'regional_manager_sn', name: '大区经理' },
+  { key: 'personnel_manager_sn', name: '人事负责人' },
 ];
 @connect(({ loading }) => ({
   loading: (
@@ -64,6 +61,7 @@ export default class extends PureComponent {
         })(
           <Input placeholder="请输入" type="hidden" />
         ) : null}
+
         <FormItem label="名称" {...formItemLayout} required>
           {getFieldDecorator('name', {
             initialValue: initialValue.name || '',
@@ -72,12 +70,13 @@ export default class extends PureComponent {
             <Input placeholder="请输入" />
           )}
         </FormItem>
+
         <FormItem label="分类字段" {...formItemLayout}>
           {getFieldDecorator('fields', {
             initialValue: initialValue.fields || [],
           })(
             <Select mode="multiple" placeholer="请选择">
-              {fields.map((item) => {
+              {mapWithKey.map((item) => {
                 return (<Option key={item.key} value={item.key}>{item.name}</Option>);
               })}
             </Select>

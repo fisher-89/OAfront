@@ -3,6 +3,7 @@ import {
   fetchShop,
   addShop,
   editShop,
+  exportShop,
   deleteShop,
   positionShop } from '../../services/shop';
 
@@ -85,6 +86,17 @@ export default {
         notification.error({
           message: response.message,
         });
+      } else {
+        onSuccess(response);
+      }
+    } catch (error) { return error; }
+  },
+  * exportShop({ payload, onSuccess, onError }, { call }) {
+    try {
+      const params = { ...payload };
+      const response = yield call(exportShop, params);
+      if (response.errors && onError) {
+        onError(response.errors);
       } else {
         onSuccess(response);
       }
