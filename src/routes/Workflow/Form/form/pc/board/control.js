@@ -13,7 +13,7 @@ export default class Control extends Component {
   }
 
   render() {
-    const { data } = this.props;
+    const { data, grid } = this.props;
     return (
       <Dropdown
         trigger={['contextMenu']}
@@ -25,6 +25,8 @@ export default class Control extends Component {
             height: `${(data.row * 76) - 1}px`,
             top: `${(data.y * 76) + 1}px`,
             left: `${(data.x * 76) + 1}px`,
+            backgroundColor: grid ? 'none' : 'seagreen',
+            border: grid ? '1px solid seagreen' : 'none',
           }}
         >
           {data.name}

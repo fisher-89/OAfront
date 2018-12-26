@@ -75,6 +75,24 @@ class Board extends Component {
     ];
   }
 
+  makeMask = () => {
+    const { parentGrid } = this.props;
+    const { lines } = this.state;
+    console.log(parentGrid, lines);
+    return parentGrid !== null ? (
+      <React.Fragment>
+        <div className={styles.mask} style={{ top: 0, height: `${(parentGrid.y) * 76}px` }} />
+        <div
+          className={styles.mask}
+          style={{
+            top: `${(parentGrid.row) * 76}px`,
+            height: `${((lines - parentGrid.y - parentGrid.row) + 1) * 76}px`,
+          }}
+        />
+      </React.Fragment>
+    ) : null;
+  }
+
   render() {
     const { lines } = this.state;
     return (
@@ -97,7 +115,9 @@ class Board extends Component {
           />
           <div className={styles.controls}>
             {this.makeControls()}
+            {this.makeMask()}
           </div>
+
         </div>
       </div>
     );

@@ -145,6 +145,7 @@ class PCTemplate extends Component {
               grids={grids}
               fields={fields}
               form={form}
+              parentGrid={parentGridIndex !== null ? grids[parentGridIndex] : null}
               bind={(board) => {
                 this.board = board;
               }}

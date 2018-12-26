@@ -35,14 +35,20 @@ class DraggingFieldTag extends Component {
   dragField = (e) => {
     e.preventDefault();
     const { minX, maxX, minY, maxY } = templateArea;
-    const { startPoint: { x, y }, style: { top, left }, board } = this.props;
+    const { startPoint: { x, y }, style: { top, left }, board, parentGrid } = this.props;
     const { data } = this.state;
     const { clientX, clientY, pageX, pageY } = event.type === 'touchmove' ? e.touches[0] : e;
     let offsetX = clientX - x;
     let offsetY = clientY - y;
     const onTemplate = pageX >= minX && pageX <= maxX && pageY >= minY && pageY <= maxY;
-    if (onTemplate) {
-      const boardGeo = board.getBoundingClientRect();
+    const boardGeo = board.getBoundingClientRect();
+    const inGrid = !parentGrid || (
+      parentGrid.x !== null && (
+        clientY >= boardGeo.top + ((parentGrid.y + 1) * 76) &&
+        clientY <= boardGeo.top + (((parentGrid.y + parentGrid.row) - 1) * 76)
+      )
+    );
+    if (onTemplate && inGrid) {
       const { width, height } = this.calculateSize();
       const newX = Math.floor(
         (Math.min(clientX, boardGeo.right - width) - boardGeo.left) / 76
@@ -56,7 +62,7 @@ class DraggingFieldTag extends Component {
     }
     this.setState({
       offset: { x: offsetX, y: offsetY },
-      onTemplate,
+      onTemplate: onTemplate && inGrid,
     });
   }
 
