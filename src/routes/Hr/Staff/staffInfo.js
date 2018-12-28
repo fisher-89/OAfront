@@ -1,17 +1,18 @@
 /**
  * Created by Administrator on 2018/4/15.
  */
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import {
   Row,
   Col,
   Tag,
   Card,
   Icon,
-  Form,
   Tabs,
   Avatar,
+  Timeline,
 } from 'antd';
+import { connect } from 'dva';
 import { isEmpty } from 'lodash';
 import QueueAnim from 'rc-queue-anim';
 import { checkAuthority } from 'utils/utils';
@@ -22,178 +23,120 @@ import StaffAuth from './infoTabs/staffAuth';
 
 const { Meta } = Card;
 const { TabPane } = Tabs;
-const FormItem = Form.Item;
 
-const formItemLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 4 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 20 },
-  },
-};
-
-const staffProperty = ['无', '108将', '36天罡', '24金刚', '18罗汉'];
-
+@connect(({ staffs, loading }) => ({
+  list: staffs.formatLogDetails,
+  loading: loading.effects['staffs/fetchFormatLog'],
+}))
 export default class StaffInfo extends PureComponent {
+  componentWillMount() {
+    const { dispatch, data } = this.props;
+    dispatch({ type: 'staffs/fetchFormatLog', payload: { id: data.staff_sn } });
+  }
   render() {
-    const { data, loading } = this.props;
+    const { data, loading, list } = this.props;
+    const timelist = list[data.staff_sn];
     // const relatives = data.relatives ? data.relatives.map((item) => {
     //   return `${item.realname}   (${item.relative_type.name})   编号(${item.staff_sn})`;
     // }).join('') : '  ';
     const idNumber = data.id_card_number;
     const birthday = idNumber ? [idNumber.substr(6, 4), idNumber.substr(10, 2), idNumber.substr(12, 2)].join('-') : '';
-    const style = { paddingTop: 5, paddingBottom: 0, padding: '0' };
     return (
       <QueueAnim style={{ display: 'flex' }} className={styles.userInfo}>
         <Row gutter={16} style={{ width: '100%' }}>
           <Col span={9}>
-            <Card>
+            <Card bordered={false}>
               <div key="userInfo" style={{ flexGrow: 1, wordBreak: 'break-all' }}>
-                <Card key="userInfo" bordered={false} loading={loading} bodyStyle={{ borderBottom: '1px dashed #aaa', padding: '24px 0' }}>
+                <Card key="userInfo" bordered={false} loading={loading} bodyStyle={{ padding: 0 }}>
                   <Meta
                     avatar={<Avatar src="/default_avatar.png" size="large" style={{ width: 40, height: 40 }} />}
                     title={
-                      <React.Fragment>
-                        {data.realname}&nbsp;&nbsp;
-                        {data.gender === '男' ?
-                          <Icon type="man" style={{ color: '#4A90E2' }} /> :
-                          <Icon type="woman" style={{ color: '#E53A82' }} />
-                        }
-                      </React.Fragment>
+                      <Fragment>
+                        <div className={styles.splitBox}>{data.realname}&nbsp;&nbsp;
+                          {data.gender === '男' ?
+                            <Icon type="man" style={{ color: '#4A90E2' }} /> :
+                            <Icon type="woman" style={{ color: '#E53A82' }} />
+                          }
+                        </div>
+                        <div className={styles.splitBox}>
+                          <div className={styles.mobile}><Icon type="mobile" />&nbsp;&nbsp;{data.mobile}</div>
+                        </div>
+                      </Fragment>
                     }
-                    description={<span>员工编号：{ data.staff_sn }</span>}
+                    description={
+                      <Fragment>
+                        <p className={styles.splitBox}>编号：{ data.staff_sn }</p>
+                        <p className={styles.splitBox}><Icon type="idcard" />&nbsp;&nbsp;{ data.id_card_number }</p>
+                      </Fragment>
+                    }
                   />
-                  <div style={{ margin: '20px 0 10px 20px' }}>
-                    <p>
-                      {data.mobile ? (
-                        <span className={styles.iconSpan} style={{ marginRight: 40 }}>
-                          <Icon type="mobile" />{data.mobile}
-                        </span>
-                      ) : ''}
-                      {data.wechat_number ? (
-                        <span className={styles.iconSpan}>
-                          <Icon type="wechat" />{data.wechat_number}
-                        </span>
-                      ) : ''}
-                    </p>
-                    {data.living_province_name ? (
-                      <span className={styles.iconSpan}><Icon type="home" />
-                        {`
-                          ${data.living_province_name || ''}
-                          ${data.living_city_name ? `-${data.living_city_name}` : ''}
-                          ${data.living_county_name ? `-${data.living_county_name}` : ''}
-                          ${`${data.living_address || ''}`}
-                        `}
-                      </span>
-                    ) : ''}
+                  <div className={styles.tags}>
+                    标签: { (data.tags).map(item => <Tag key={item.id}>{item.name}</Tag>) }
                   </div>
-                  {!isEmpty(data.tags) ? (
-                    <FormItem label="标签" {...formItemLayout}>
-                      { (data.tags || []).map(item => <Tag key={item.id}>{item.name}</Tag>) }
-                    </FormItem>
-                  ) : ''}
-                </Card>
-                <Card key="userInfo1" bordered={false} loading={loading} bodyStyle={style} style={style}>
-                  <FormItem label="状态" {...formItemLayout}>{data.status.name}</FormItem>
-                  <FormItem label="品牌" {...formItemLayout}>
-                    {data.brand.name || ''}
-                  </FormItem>
-                  <FormItem label="职位" {...formItemLayout}>
-                    {data.position.name || ''}
-                  </FormItem>
-                  <FormItem label="部门" {...formItemLayout}>
-                    {`${data.department.full_name}`}
-                  </FormItem>
-                  {data.shop ? (
-                    <FormItem label="店铺" {...formItemLayout}>
-                      {data.shop.name}
-                    </FormItem>
-                  ) : ''}
-                  <FormItem label="员工属性" {...formItemLayout}>
-                    {`${staffProperty[data.property]}`}
-                  </FormItem>
-                </Card>
-                <Card key="userInfo2" bordered={false} loading={loading} bodyStyle={style} style={style}>
-                  <FormItem label="入职时间" {...formItemLayout}>
-                    {data.hired_at}
-                  </FormItem>
-                  <FormItem label="转正时间" {...formItemLayout}>
-                    {data.employed_at}
-                  </FormItem>
-                  <FormItem label="离职时间" {...formItemLayout}>
-                    {data.left_at}
-                  </FormItem>
-                </Card>
-                <Card key="userInfo3" bordered={false} loading={loading} bodyStyle={style} style={style}>
-                  <FormItem label="生日" {...formItemLayout}>
-                    {birthday}
-                  </FormItem>
-                  <FormItem label="学历" {...formItemLayout}>
-                    {data.education}
-                  </FormItem>
-                  <FormItem label="民族" {...formItemLayout}>
-                    {data.national}
-                  </FormItem>
-                  <FormItem label="政治面貌" {...formItemLayout}>
-                    {data.politics}
-                  </FormItem>
-                  <FormItem label="籍贯" {...formItemLayout}>
-                    {data.native_place}
-                  </FormItem>
-                  <FormItem label="婚姻状况" {...formItemLayout}>
-                    {data.marital_status}
-                  </FormItem>
-                  <FormItem label="身高/体重" {...formItemLayout}>
-                    {`${data.height} ${data.height && 'cm'} ${(data.height && data.weight) && '/'} ${data.weight}${data.weight && 'kg'}`}
-                  </FormItem>
-                  <FormItem label="身份证号" {...formItemLayout}>
-                    {data.id_card_number}
-                  </FormItem>
-                  <FormItem label="户口所在地" {...formItemLayout}>
-                    {`
-                      ${data.household_province_name || ''}
-                      ${data.household_city_name ? `-${data.household_city_name}` : ''}
-                      ${data.household_county_name ? `-${data.household_county_name}` : ''}
-                      ${`${data.household_address || ''}`}
-                    `}
-                  </FormItem>
-                  <FormItem label="现居地址" {...formItemLayout}>
-                    {`
-                      ${data.living_province_name || ''}
-                      ${data.living_city_name ? `-${data.living_city_name}` : ''}
-                      ${data.living_county_name ? `-${data.living_county_name}` : ''}
-                      ${`${data.living_address || ''}`}
-                    `}
-                  </FormItem>
-                  <FormItem label="银行账户" {...formItemLayout}>
-                    {` ${data.account_name}    ${data.account_bank}   ${data.account_number}  `}
-                  </FormItem>
-                  <FormItem label="紧急联系人" {...formItemLayout}>
-                    {`${data.concat_name || ''} ${data.concat_type ? `(${data.concat_type})` : ''} ${`${data.concat_tel || ''}`}`}
-                  </FormItem>
-                </Card>
-                <Card key="userInfo4" bordered={false} loading={loading} bodyStyle={style} style={style}>
-                  <FormItem label="钉钉编码" {...formItemLayout}>
-                    {data.dingtalk_number}
-                  </FormItem>
-                  <FormItem label="招聘人员" {...formItemLayout}>
-                    {data.recruiter_name}
-                  </FormItem>
-                  <FormItem label="备注" {...formItemLayout}>
-                    {data.remark}
-                  </FormItem>
+                  <Card className={styles.card} bodyStyle={{ padding: '20px' }}>
+                    <p>状态：{ data.status.name }</p>
+                    <p>品牌：{ data.brand.name }</p>
+                    <p>职位：{ data.position.name }</p>
+                    <p>部门：{ data.department.full_name }</p>
+                  </Card>
+                  <Card className={styles.card} bodyStyle={{ padding: '20px' }}>
+                    <p className={styles.splitBox}>微信：{ data.wechat_number }</p>
+                    <p className={styles.splitBox}>生日：{ birthday }</p>
+                    <p className={styles.splitBox}>民族：{ data.national }</p>
+                    <p className={styles.splitBox}>学历：{ data.education }</p>
+                    <p className={styles.splitBox}>政治面貌：{ data.politics }</p>
+                    <p className={styles.splitBox}>籍贯：{ data.native_place }</p>
+                    <p className={styles.splitBox}>婚姻状况：{ data.marital_status }</p>
+                    <p className={styles.splitBox}>身高(cm)/体重(kg)：{ data.height }/{ data.weight }</p>
+                    <p>户口所在地：
+                      {data.household_province_name}&nbsp;
+                      {data.household_city_name}&nbsp;
+                      {data.household_county_name}&nbsp;
+                      {data.household_address}
+                    </p>
+                    <p>银行账户：{ data.account_number }</p>
+                    <p>现住地址：
+                      {data.living_province_name}&nbsp;
+                      {data.living_city_name}&nbsp;
+                      {data.living_county_name}&nbsp;
+                      {data.living_address}
+                    </p>
+                    <p>紧急联系人：{ data.concat_name } ({ data.concat_type }) { data.concat_tel }</p>
+                  </Card>
+                  <Card className={styles.card} bodyStyle={{ padding: '20px' }}>
+                    <p>钉钉编号：{ data.dingtalk_number }</p>
+                    <p>招聘人员：{ data.recruiter_name }</p>
+                    <p>备注：{ data.remark }</p>
+                  </Card>
+                  <Card className={styles.card} bodyStyle={{ padding: '20px' }}>
+                    <p>店铺：{ (data.shop || {}).name }</p>
+                    <p className={styles.splitBox}>店长：{ (data.shop || {}).manager_name }</p>
+                    <p className={styles.splitBox}>
+                      店长手机号：{ (data.shop || {}).manager_mobile}
+                    </p>
+                    <p>地址：{ (data.shop || {}).real_address }</p>
+                  </Card>
                 </Card>
               </div>
             </Card>
           </Col>
           <Col span={15}>
-            <Card>
-              {/* <div style={{ width: 200, flexShrink: 0 }} /> */}
+            <Card bordered={false}>
+              <div style={{ width: 200, flexShrink: 0 }} />
               <div key="userLog">
-                <Tabs defaultActiveKey={checkAuthority(118) ? 'changeLog' : 'userAuth'}>
+                <Tabs defaultActiveKey="timeline">
+                  <TabPane key="timeline" tab="时间轴" >
+                    <Timeline pending="Recording..." reverse={false}>
+                      {timelist && timelist.map((item) => {
+                        const change = item.changes;
+                        return (
+                          <Timeline.Item key={item.id}>
+                            {item.operation_type} {!isEmpty(change) ? ` (${change[0] ? change[0] : '无'} => ${change[1] ? change[1] : '无'})` : ''} {item.created_at}
+                          </Timeline.Item>
+                        );
+                      })}
+                    </Timeline>
+                  </TabPane>
                   {
                     checkAuthority(118) ? (
                       <TabPane key="changeLog" tab="变更记录" >
