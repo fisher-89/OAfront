@@ -105,7 +105,7 @@ export default class extends PureComponent {
       type: 'staffs/fetchStaff',
       payload: {
         ...params,
-        filters: `${params.filters}${withoutLeaving ? 'status_id>0' : ''}`,
+        filters: `${params.filters}${withoutLeaving ? 'status_id>=0' : ''}`,
       },
     });
     this.searchFilter = params;

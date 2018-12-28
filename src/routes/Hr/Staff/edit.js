@@ -415,6 +415,9 @@ export default class EditStaff extends PureComponent {
                           recruiter_sn: 'staff_sn',
                           recruiter_name: 'realname',
                         }}
+                        filters={{
+                          status: ['0', '1', '2', '3', '-1', '-2', '-3', '-4'],
+                        }}
                         showName="recruiter_name"
                       />
                     )}
