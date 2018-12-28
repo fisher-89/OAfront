@@ -41,14 +41,14 @@ const { TabPane } = Tabs;
 const staffProperty = ['无', '108将', '36天罡', '24金刚', '18罗汉'];
 const gender = [{ value: '男', text: '男' }, { value: '女', text: '女' }];
 const status = [
-  { value: 0, text: '离职中' },
-  { value: 1, text: '试用期' },
-  { value: 2, text: '在职' },
-  { value: 3, text: '停薪留职' },
-  { value: -1, text: '离职' },
-  { value: -2, text: '自动离职' },
-  { value: -3, text: '开除' },
-  { value: -4, text: '劝退' },
+  { value: '0', text: '离职中' },
+  { value: '1', text: '试用期' },
+  { value: '2', text: '在职' },
+  { value: '3', text: '停薪留职' },
+  { value: '-1', text: '离职' },
+  { value: '-2', text: '自动离职' },
+  { value: '-3', text: '开除' },
+  { value: '-4', text: '劝退' },
 ];
 
 @connect(({ staffs, brand, department, position, loading }) => ({
