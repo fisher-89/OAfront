@@ -106,6 +106,13 @@ class PCTemplate extends Component {
     }
   }
 
+  handleDragFail = () => {
+    this.setState({
+      onDragging: false,
+      parentGridIndex: null,
+    });
+  }
+
   makeFieldOptions = () => {
     const { fields } = this.props;
     return fields.map((field) => {
@@ -183,8 +190,11 @@ class PCTemplate extends Component {
             startPoint={startPoint}
             onCancel={this.handleDragCancel}
             onConfirm={this.handleDragConfirm}
+            onFail={this.handleDragFail}
             board={this.board}
             parentGrid={parentGridIndex !== null ? grids[parentGridIndex] : null}
+            fields={fields}
+            grids={grids}
           />
         )}
       </Row>

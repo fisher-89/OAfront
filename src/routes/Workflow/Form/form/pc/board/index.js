@@ -32,6 +32,7 @@ class Board extends Component {
             field.y += 1; // eslint-disable-line no-param-reassign
           }
         });
+        options[`grids.${index}.fields`] = grid.fields;
       }
     });
     this.state.lines += 1;
@@ -67,6 +68,7 @@ class Board extends Component {
             field.col = null; // eslint-disable-line no-param-reassign
           }
         });
+        options[`grids.${index}.fields`] = grid.fields;
       } else if (typeof grid.y === 'number' && grid.y + grid.row > row - 1) {
         options[`grids.${index}.x`] = null;
         options[`grids.${index}.y`] = null;

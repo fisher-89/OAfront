@@ -12,6 +12,8 @@ class DraggingFieldTag extends Component {
     data: null,
     relativeX: 0,
     relativeY: 0,
+    usedCell: [],
+    dropAvailable: false,
   }
 
   componentWillMount() {
@@ -37,6 +39,7 @@ class DraggingFieldTag extends Component {
     if (bottom - top >= 75) {
       this.state.onTemplate = true;
     }
+    this.state.usedCell = this.fetchUsedCell();
   }
 
   dragField = (e) => {
@@ -61,6 +64,33 @@ class DraggingFieldTag extends Component {
     }
   }
 
+  fetchUsedCell = () => {
+    const { fields, grids, parentGrid, data } = this.props;
+    const usedCell = [];
+    if (parentGrid) {
+      parentGrid.fields.forEach((item) => {
+        if (item.x !== null && item !== data) {
+          for (let col = item.x; col < item.x + item.col; col += 1) {
+            for (let row = item.y; row < item.y + item.row; row += 1) {
+              usedCell.push({ row, col });
+            }
+          }
+        }
+      });
+    } else {
+      [...fields, ...grids].forEach((item) => {
+        if (item.x !== null && item !== data) {
+          for (let col = item.x; col < item.x + item.col; col += 1) {
+            for (let row = item.y; row < item.y + item.row; row += 1) {
+              usedCell.push({ row, col });
+            }
+          }
+        }
+      });
+    }
+    return usedCell;
+  }
+
   handleDragTag = (clientX, clientY) => {
     const { startPoint: { x, y } } = this.props;
     this.setState({
@@ -81,23 +111,43 @@ class DraggingFieldTag extends Component {
     const newY = Math.min(Math.max(Math.floor((clientY - top) / 76) - pointRow, 0), maxY);
     const offsetX = (newX * 76) + (left - startPosition.left) + 1;
     const offsetY = (newY * 76) + (top - startPosition.top) + 1;
-    this.state.data = { ...data, x: newX, y: newY };
+    data.x = newX;
+    data.y = newY;
     this.setState({
       offset: { x: offsetX, y: offsetY },
       onTemplate: true,
+      dropAvailable: this.checkDropAvailable(data),
     });
+  }
+
+  checkDropAvailable = (data) => {
+    const { usedCell } = this.state;
+    const { x, y, col, row } = data;
+    let response = true;
+    for (const i in usedCell) {
+      if (Object.hasOwnProperty.call(usedCell, i)) {
+        const cell = usedCell[i];
+        if (cell.row >= y && cell.row < y + row && cell.col >= x && cell.col < x + col) {
+          response = false;
+          break;
+        }
+      }
+    }
+    return response;
   }
 
   loosenDrag = (e) => {
     e.preventDefault();
-    const { onCancel, onConfirm } = this.props;
-    const { onTemplate, data } = this.state;
+    const { onCancel, onConfirm, onFail } = this.props;
+    const { onTemplate, data, dropAvailable } = this.state;
     document.removeEventListener('mousemove', this.dragField);
     document.removeEventListener('touchmove', this.dragField);
     document.removeEventListener('mouseup', this.loosenDrag);
     document.removeEventListener('touchend', this.loosenDrag);
-    if (onTemplate) {
+    if (onTemplate && dropAvailable) {
       onConfirm(data);
+    } else if (onTemplate) {
+      onFail();
     } else {
       onCancel(data);
     }
@@ -112,11 +162,13 @@ class DraggingFieldTag extends Component {
 
   render() {
     const { startPoint, startPosition: { top, left } } = this.props;
-    const { offset: { x, y }, onTemplate, data, relativeX, relativeY } = this.state;
+    const { offset: { x, y }, onTemplate, data, relativeX, relativeY, dropAvailable } = this.state;
     const { width, height } = this.calculateSize();
     return onTemplate ? (
       <div style={{ top, left, transform: `translate(${x}px,${y}px)` }} className={styles.dragShadow}>
-        <div style={{ width: `${width}px`, height: `${height}px`, backgroundColor: 'red' }}>
+        <div
+          style={{ width: `${width}px`, height: `${height}px`, backgroundColor: dropAvailable ? 'seagreen' : 'red' }}
+        >
           {data.name}
         </div>
       </div>
