@@ -27,6 +27,11 @@ class Board extends Component {
         options[`grids.${index}.y`] = grid.y + 1;
       } else if (typeof grid.y === 'number' && grid.y + grid.row >= row) {
         options[`grids.${index}.row`] = grid.row + 1;
+        grid.fields.forEach((field) => {
+          if (typeof field.y === 'number' && field.y + grid.y >= row - 2) {
+            field.y += 1; // eslint-disable-line no-param-reassign
+          }
+        });
       }
     });
     this.state.lines += 1;
@@ -52,6 +57,16 @@ class Board extends Component {
         options[`grids.${index}.y`] = grid.y - 1;
       } else if (typeof grid.y === 'number' && grid.y !== row - 1 && grid.y + grid.row > row && grid.row > 3) {
         options[`grids.${index}.row`] = grid.row - 1;
+        grid.fields.forEach((field) => {
+          if (typeof field.y === 'number' && field.y + grid.y > row - 2) {
+            field.y -= 1; // eslint-disable-line no-param-reassign
+          } else if (typeof field.y === 'number' && field.y + grid.y + field.row > row - 2) {
+            field.x = null; // eslint-disable-line no-param-reassign
+            field.y = null; // eslint-disable-line no-param-reassign
+            field.row = null; // eslint-disable-line no-param-reassign
+            field.col = null; // eslint-disable-line no-param-reassign
+          }
+        });
       } else if (typeof grid.y === 'number' && grid.y + grid.row > row - 1) {
         options[`grids.${index}.x`] = null;
         options[`grids.${index}.y`] = null;
@@ -64,13 +79,26 @@ class Board extends Component {
   }
 
   makeControls = () => {
-    const { fields, grids } = this.props;
+    const { fields, grids, onDrag } = this.props;
     return [
       ...fields.filter(item => typeof item.x === 'number').map(item => (
-        <Control key={item.key} data={item} />
+        <Control
+          key={item.key}
+          data={item}
+          onDrag={onDrag}
+          addLine={this.handleAddLine}
+          deleteLine={this.handleDeleteLine}
+        />
       )),
       ...grids.filter(item => typeof item.x === 'number').map(item => (
-        <Control key={item.key} data={item} grid />
+        <Control
+          key={item.key}
+          data={item}
+          onDrag={onDrag}
+          addLine={this.handleAddLine}
+          deleteLine={this.handleDeleteLine}
+          grid
+        />
       )),
     ];
   }
@@ -84,8 +112,8 @@ class Board extends Component {
         <div
           className={styles.mask}
           style={{
-            top: `${(parentGrid.row - 2) * 76}px`,
-            height: `${((lines - parentGrid.y - parentGrid.row) + 2) * 76}px`,
+            top: `${((parentGrid.row - 2) * 76) + 1}px`,
+            height: `${(((lines - parentGrid.y - parentGrid.row) + 2) * 76) - 1}px`,
           }}
         />
       </React.Fragment>

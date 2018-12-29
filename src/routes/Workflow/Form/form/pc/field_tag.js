@@ -20,10 +20,11 @@ class FieldTag extends Component {
 
   mouseDown = (e) => {
     e.preventDefault();
+    if (e.type === 'mousedown' && e.button !== 0) return false;
     const { onDrag, data } = this.props;
     const { disabled } = this.state;
     if (disabled) return false;
-    const { top, left } = e.target.getBoundingClientRect();
+    const startPoint = e.target.getBoundingClientRect();
     let x;
     let y;
     x = e.clientX;
@@ -32,7 +33,7 @@ class FieldTag extends Component {
       x = e.touches[0].clientX;
       y = e.touches[0].clientY;
     }
-    onDrag(data, { x, y }, { top, left });
+    onDrag(data, { x, y }, startPoint);
   }
 
   render() {

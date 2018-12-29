@@ -10,6 +10,8 @@ class DraggingFieldTag extends Component {
     offset: { x: 0, y: 0 },
     onTemplate: false,
     data: null,
+    relativeX: 0,
+    relativeY: 0,
   }
 
   componentWillMount() {
@@ -17,7 +19,7 @@ class DraggingFieldTag extends Component {
     document.addEventListener('touchmove', this.dragField);
     document.addEventListener('mouseup', this.loosenDrag);
     document.addEventListener('touchend', this.loosenDrag);
-    const { data } = this.props;
+    const { data, startPoint: { x, y }, startPosition: { top, bottom, left, right } } = this.props;
     let { col, row } = data;
     if (col && row) {
       //
@@ -30,6 +32,11 @@ class DraggingFieldTag extends Component {
       row = data.is_checkbox ? size.multiple.row : size.row;
     }
     this.state.data = { ...data, col, row };
+    this.state.relativeX = (x - left) / (right - left);
+    this.state.relativeY = (y - top) / (bottom - top);
+    if (bottom - top >= 75) {
+      this.state.onTemplate = true;
+    }
   }
 
   dragField = (e) => {
@@ -43,7 +50,7 @@ class DraggingFieldTag extends Component {
     const { left, right } = boardRect;
     let inGrid = !parentGrid;
     if (parentGrid && parentGrid.x !== null) {
-      top += ((parentGrid.y + 1) * 76) - 1;
+      top += ((parentGrid.y + 1) * 76);
       bottom = top + ((parentGrid.row - 2) * 76);
       inGrid = parentGrid.x !== null && clientY >= top && clientY <= bottom;
     }
@@ -63,18 +70,17 @@ class DraggingFieldTag extends Component {
   }
 
   handleDragControl = (clientX, clientY, { top, bottom, left, right }) => {
-    const { style } = this.props;
-    const { data } = this.state;
+    const { startPosition } = this.props;
+    const { data, relativeX, relativeY } = this.state;
     const { width, height } = this.calculateSize();
-    const newX = Math.floor(
-      (Math.min(clientX, right - width) - left) / 76
-    );
-    const newY = Math.max(Math.floor(
-      (Math.min(clientY, bottom - height) - top) / 76
-    ), 0);
-    console.log(newY, clientY, bottom - height, top);
-    const offsetX = (newX * 76) + (left - style.left) + 1;
-    const offsetY = (newY * 76) + (top - style.top) + 1;
+    const pointCol = Math.floor(data.col * relativeX);
+    const pointRow = Math.floor(data.row * relativeY);
+    const maxX = Math.floor((right - width - left) / 76);
+    const maxY = Math.floor((bottom - height - top) / 76);
+    const newX = Math.min(Math.max(Math.floor((clientX - left) / 76) - pointCol, 0), maxX);
+    const newY = Math.min(Math.max(Math.floor((clientY - top) / 76) - pointRow, 0), maxY);
+    const offsetX = (newX * 76) + (left - startPosition.left) + 1;
+    const offsetY = (newY * 76) + (top - startPosition.top) + 1;
     this.state.data = { ...data, x: newX, y: newY };
     this.setState({
       offset: { x: offsetX, y: offsetY },
@@ -93,7 +99,7 @@ class DraggingFieldTag extends Component {
     if (onTemplate) {
       onConfirm(data);
     } else {
-      onCancel();
+      onCancel(data);
     }
   }
 
@@ -105,20 +111,28 @@ class DraggingFieldTag extends Component {
   }
 
   render() {
-    const { style: { top, left } } = this.props;
-    const { offset: { x, y }, onTemplate, data } = this.state;
+    const { startPoint, startPosition: { top, left } } = this.props;
+    const { offset: { x, y }, onTemplate, data, relativeX, relativeY } = this.state;
     const { width, height } = this.calculateSize();
-    return (
+    return onTemplate ? (
       <div style={{ top, left, transform: `translate(${x}px,${y}px)` }} className={styles.dragShadow}>
-        {
-          onTemplate ?
-            (
-              <div style={{ width: `${width}px`, height: `${height}px`, backgroundColor: 'red' }}>
-                {data.name}
-              </div>
-            ) :
-            (<Tag color="blue">{data.name}</Tag>)
-        }
+        <div style={{ width: `${width}px`, height: `${height}px`, backgroundColor: 'red' }}>
+          {data.name}
+        </div>
+      </div>
+    ) : (
+      <div
+        style={{
+          top: startPoint.y,
+          left: startPoint.x,
+          transform: `translate(${x}px,${y}px)`,
+          height: '22px',
+        }}
+        className={styles.dragShadow}
+      >
+        <Tag style={{ left: `-${relativeX * 100}%`, top: `-${relativeY * 100}%` }} color="blue">
+          {data.name}
+        </Tag>
       </div>
     );
   }

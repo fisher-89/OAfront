@@ -12,7 +12,7 @@ class PCTemplate extends Component {
     dataIndex: null,
     parentGridIndex: null,
     startPoint: { x: null, y: null },
-    tagPosition: { top: 0, left: 0 },
+    startPosition: { top: 0, bottom: 0, left: 0, right: 0 },
     onDragging: false,
   }
 
@@ -32,7 +32,7 @@ class PCTemplate extends Component {
     });
   }
 
-  handleDragStart = (data, startPoint, tagPosition, grid = null) => {
+  handleDragStart = (data, startPoint, startPosition, grid = null) => {
     const { fields, grids } = this.props;
     let index = 'fields' in data ? grids.indexOf(data) : fields.indexOf(data);
     const gridIndex = grid ? grids.indexOf(grid) : null;
@@ -42,15 +42,38 @@ class PCTemplate extends Component {
       onDragging: data,
       parentGridIndex: gridIndex,
       startPoint,
-      tagPosition,
+      startPosition,
     });
   }
 
-  handleDragCancel = () => {
-    this.setState({
-      onDragging: false,
-      parentGridIndex: null,
-    });
+  handleDragCancel = (data) => {
+    const { form, fields, grids } = this.props;
+    const { dataIndex, parentGridIndex } = this.state;
+    this.state.onDragging = false;
+    if ('fields' in data) {
+      form.setFieldsValue({
+        [`grids.${dataIndex}.x`]: null,
+        [`grids.${dataIndex}.y`]: null,
+        [`grids.${dataIndex}.row`]: null,
+        [`grids.${dataIndex}.col`]: null,
+      });
+    } else if (parentGridIndex !== null) {
+      const gridFields = grids[parentGridIndex].fields;
+      gridFields[dataIndex].x = null;
+      gridFields[dataIndex].y = null;
+      gridFields[dataIndex].row = null;
+      gridFields[dataIndex].col = null;
+      this.state.parentGridIndex = null;
+      form.setFieldsValue({
+        [`grids.${parentGridIndex}.fields`]: gridFields,
+      });
+    } else {
+      fields[dataIndex].x = null;
+      fields[dataIndex].y = null;
+      fields[dataIndex].row = null;
+      fields[dataIndex].col = null;
+      form.setFieldsValue({ fields });
+    }
   }
 
   handleDragConfirm = (data) => {
@@ -122,7 +145,7 @@ class PCTemplate extends Component {
 
   render() {
     const { fields, grids, form } = this.props;
-    const { startPoint, tagPosition, onDragging, parentGridIndex } = this.state;
+    const { startPoint, startPosition, onDragging, parentGridIndex } = this.state;
     return (
       <Row className={styles.pcTemplate}>
         <div className={styles.component}>
@@ -145,6 +168,7 @@ class PCTemplate extends Component {
               grids={grids}
               fields={fields}
               form={form}
+              onDrag={this.handleDragStart}
               parentGrid={parentGridIndex !== null ? grids[parentGridIndex] : null}
               bind={(board) => {
                 this.board = board;
@@ -155,7 +179,7 @@ class PCTemplate extends Component {
         {onDragging && (
           <FieldTagShadow
             data={onDragging}
-            style={{ ...tagPosition }}
+            startPosition={startPosition}
             startPoint={startPoint}
             onCancel={this.handleDragCancel}
             onConfirm={this.handleDragConfirm}
