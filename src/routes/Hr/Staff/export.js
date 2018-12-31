@@ -49,6 +49,7 @@ export default class extends PureComponent {
           { department: '部门全称', auth: 0 },
           { position: '职位', auth: 0 },
           { status: '员工状态', auth: 0 },
+          { birthday: '出生日期', auth: 0 },
           { hired_at: '入职时间', auth: 0 },
           { employed_at: '转正时间', auth: 0 },
           { left_at: '离职时间', auth: 0 },
@@ -71,7 +72,7 @@ export default class extends PureComponent {
           { concat_name: '紧急联系人', auth: 1 },
           { concat_tel: '联系人电话', auth: 1 },
           { concat_type: '联系人关系类型', auth: 1 },
-          { birthday: '出生日期', auth: 0 },
+          { recruiter_name: '招聘人', auth: 0 },
           { remark: '备注', auth: 0 },
         ];
         const headMaps = mapWithKey.filter((item) => {
