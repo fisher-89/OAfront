@@ -5,6 +5,7 @@ import { find } from 'lodash';
 import { Button, Tooltip, Divider, Row, Col, Card, Icon } from 'antd';
 import moment from 'moment';
 import OATable from '../../../components/OATable';
+import { echo } from '../../../utils/echo';
 
 @connect(({ currentUser, workflow, loading }) => ({
   currentUserId: currentUser.currentUser.staff_sn,
@@ -33,6 +34,21 @@ export default class List extends PureComponent {
     if (superData.length === 0) {
       dispatch({ type: 'workflow/getSuper' });
     }
+
+    // 监听权限事件
+    echo.channel('role')
+      .listen('RoleUpdateEvent', () => {
+        dispatch({ type: 'workflow/getSuper' });
+        this.fetchForm();
+      })
+      .listen('RoleAddEvent', () => {
+        dispatch({ type: 'workflow/getSuper' });
+        this.fetchForm();
+      })
+      .listen('RoleDeleteEvent', () => {
+        dispatch({ type: 'workflow/getSuper' });
+        this.fetchForm();
+      });
   }
 
   fetchForm = (params) => {
@@ -163,7 +179,11 @@ export default class List extends PureComponent {
               text.handle_id.includes(4) ?
                 (
                   <span>
-                    <Divider type="vertical" />
+                    {
+                      text.handle_id.includes(3) ?
+                        <Divider type="vertical" />
+                        : null
+                    }
                     <a onClick={() => this.handleDelete(id)}>删除</a>
                   </span>
                 )

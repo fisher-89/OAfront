@@ -10,6 +10,7 @@ import {
 } from 'antd';
 import moment from 'moment';
 import { Link } from 'dva/router';
+import { echo } from '../../../utils/echo';
 import OATable from '../../../components/OATable';
 import { getFiltersData } from '../../../utils/utils';
 
@@ -21,6 +22,25 @@ import { getFiltersData } from '../../../utils/utils';
   loading: loading.models.workflow,
 }))
 export default class Flow extends PureComponent {
+  constructor(props) {
+    super(props);
+    const { dispatch } = props;
+    // 权限监听（修改，新增，删除事件）
+    echo.channel('role')
+      .listen('RoleUpdateEvent', () => {
+        dispatch({ type: 'workflow/getSuper' });
+        this.fetchTable();
+      })
+      .listen('RoleAddEvent', () => {
+        dispatch({ type: 'workflow/getSuper' });
+        this.fetchTable();
+      })
+      .listen('RoleDeleteEvent', () => {
+        dispatch({ type: 'workflow/getSuper' });
+        this.fetchTable();
+      });
+  }
+
   componentWillMount() {
     const { dispatch, flowType, superData } = this.props;
     // 模型无流程分类数据
