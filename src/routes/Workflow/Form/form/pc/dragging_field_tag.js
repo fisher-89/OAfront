@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Tag } from 'antd';
 import controlSize from './control_size.json';
+import ControlContent from './controls';
 import styles from './template.less';
 
 const templateArea = { minX: 593, maxX: 1505, minY: 301, maxY: 833 };
@@ -13,7 +14,7 @@ class DraggingFieldTag extends Component {
     relativeX: 0,
     relativeY: 0,
     usedCell: [],
-    dropAvailable: false,
+    dropAvailable: true,
   }
 
   componentWillMount() {
@@ -165,11 +166,20 @@ class DraggingFieldTag extends Component {
     const { offset: { x, y }, onTemplate, data, relativeX, relativeY, dropAvailable } = this.state;
     const { width, height } = this.calculateSize();
     return onTemplate ? (
-      <div style={{ top, left, transform: `translate(${x}px,${y}px)` }} className={styles.dragShadow}>
+      <div
+        style={{
+          top: top - 1,
+          left: left - 1,
+          transform: `translate(${x}px,${y}px)`,
+          backgroundColor: dropAvailable ? 'rgba(24, 144, 255, 0.1)' : 'rgba(255, 0, 0, 0.1)',
+          border: dropAvailable ? '1px solid #1890ff' : '1px solid #f00',
+        }}
+        className={styles.dragShadow}
+      >
         <div
-          style={{ width: `${width}px`, height: `${height}px`, backgroundColor: dropAvailable ? 'seagreen' : 'red' }}
+          style={{ width: `${width}px`, height: `${height}px` }}
         >
-          {data.name}
+          <ControlContent data={data} />
         </div>
       </div>
     ) : (

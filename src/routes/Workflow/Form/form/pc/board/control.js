@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Dropdown, Menu } from 'antd';
+import ControlContent from '../controls';
 import styles from '../template.less';
 
 export default class Control extends Component {
@@ -58,7 +59,6 @@ export default class Control extends Component {
           height: `${(data.row * 76) - 1}px`,
           top: `${(data.y * 76) + 1}px`,
           left: `${(data.x * 76) + 1}px`,
-          backgroundColor: grid ? 'yellowgreen' : 'seagreen',
         }}
       >
         <div
@@ -67,7 +67,8 @@ export default class Control extends Component {
           onTouchStart={this.mouseDown(data)}
           onTouchEnd={this.mouseDown(data)}
         >
-          {data.name}
+          <ControlContent data={data} />
+          <div style={{ position: 'absolute', width: '100%', height: '100%', top: 0 }} />
         </div>
         {grid && (
           <Dropdown
@@ -84,7 +85,6 @@ export default class Control extends Component {
                       height: `${(field.row * 76) - 1}px`,
                       top: `${(field.y * 76) + 1}px`,
                       left: `${field.x * 76}px`,
-                      backgroundColor: 'seagreen',
                     }}
                   >
                     <div
@@ -93,7 +93,7 @@ export default class Control extends Component {
                       onTouchStart={this.mouseDown(field, data)}
                       onTouchEnd={this.mouseDown(field, data)}
                     >
-                      {field.name}
+                      <ControlContent data={field} />
                     </div>
                   </div>
                 ) : null;
