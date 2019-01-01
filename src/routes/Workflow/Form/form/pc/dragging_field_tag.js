@@ -9,12 +9,12 @@ const templateArea = { minX: 593, maxX: 1505, minY: 301, maxY: 833 };
 class DraggingFieldTag extends Component {
   state = {
     offset: { x: 0, y: 0 },
-    onTemplate: false,
+    onTemplate: false, // 当前鼠标是否在模板上
     data: null,
-    relativeX: 0,
-    relativeY: 0,
-    usedCell: [],
-    dropAvailable: true,
+    relativeX: 0, // 点击相对位置（水平）
+    relativeY: 0, // 点击相对位置（垂直）
+    usedCell: [], // 已占用的单元格
+    dropAvailable: true, // 是否可以放置
   }
 
   componentWillMount() {
@@ -43,6 +43,10 @@ class DraggingFieldTag extends Component {
     this.state.usedCell = this.fetchUsedCell();
   }
 
+  /**
+   * 鼠标拖拽
+   * @param e
+   */
   dragField = (e) => {
     e.preventDefault();
     const { parentGrid, board } = this.props;
@@ -65,6 +69,10 @@ class DraggingFieldTag extends Component {
     }
   }
 
+  /**
+   * 获取已占用的单元格
+   * @returns {Array}
+   */
   fetchUsedCell = () => {
     const { fields, grids, parentGrid, data } = this.props;
     const usedCell = [];
@@ -124,6 +132,7 @@ class DraggingFieldTag extends Component {
   checkDropAvailable = (data) => {
     const { usedCell } = this.state;
     const { x, y, col, row } = data;
+    if (x < 0 || y < 0) return false;
     let response = true;
     for (const i in usedCell) {
       if (Object.hasOwnProperty.call(usedCell, i)) {
