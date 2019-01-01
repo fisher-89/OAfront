@@ -68,14 +68,14 @@ export default class Control extends Component {
           onTouchEnd={this.mouseDown(data)}
         >
           <ControlContent data={data} />
-          <div style={{ position: 'absolute', width: '100%', height: '100%', top: 0 }} />
+          <div className={styles.clickBoard} />
         </div>
         {grid && (
           <Dropdown
             trigger={['contextMenu']}
             overlay={this.gridChildrenContextMenu()}
           >
-            <div className={styles.children} style={{ height: `${((data.row - 2) * 76) - 1}px` }}>
+            <div className={styles.children} style={{ height: `${((data.row - 2) * 76) + 1}px` }}>
               {data.fields.map((field) => {
                 return field.x !== null ? (
                   <div
@@ -94,6 +94,7 @@ export default class Control extends Component {
                       onTouchEnd={this.mouseDown(field, data)}
                     >
                       <ControlContent data={field} />
+                      <div className={styles.clickBoard} />
                     </div>
                   </div>
                 ) : null;

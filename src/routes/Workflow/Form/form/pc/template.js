@@ -174,6 +174,7 @@ class PCTemplate extends Component {
             <Board
               grids={grids}
               fields={fields}
+              draggingControl={onDragging}
               form={form}
               onDrag={this.handleDragStart}
               parentGrid={parentGridIndex !== null ? grids[parentGridIndex] : null}

@@ -81,9 +81,9 @@ class Board extends Component {
   }
 
   makeControls = () => {
-    const { fields, grids, onDrag } = this.props;
+    const { fields, grids, onDrag, draggingControl } = this.props;
     return [
-      ...fields.filter(item => typeof item.x === 'number').map(item => (
+      ...fields.filter(item => typeof item.x === 'number' && item !== draggingControl).map(item => (
         <Control
           key={item.key}
           data={item}
@@ -92,7 +92,7 @@ class Board extends Component {
           deleteLine={this.handleDeleteLine}
         />
       )),
-      ...grids.filter(item => typeof item.x === 'number').map(item => (
+      ...grids.filter(item => typeof item.x === 'number' && item !== draggingControl).map(item => (
         <Control
           key={item.key}
           data={item}
@@ -146,7 +146,6 @@ class Board extends Component {
             {this.makeControls()}
             {this.makeMask()}
           </div>
-
         </div>
       </div>
     );

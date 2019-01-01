@@ -66,8 +66,8 @@
   }
   .template {
     padding: 40px 0;
-    background-color: rgba(250, 250, 250, 1);
-    border: 1px dashed rgba(153, 153, 153, 1);
+    background-color: #fafafa;
+    border: 1px dashed #999;
     border-radius: 4px;
     position: relative;
     .scaleHorizontal {
@@ -98,7 +98,7 @@
       position: relative;
       .scroller {
         width: 100%;
-        background-color: #fff;
+        background-color: #fefefe;
         background-image: url(/public/template_background.png);
         background-position: 1px 1px;
         .controls {
@@ -111,12 +111,23 @@
               position: absolute;
               width: 100%;
               height: 100%;
-              cursor: pointer;
+              .clickBoard {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                top: 0;
+              }
+              .clickBoard:hover {
+                box-shadow: #1890ff 0 0 2px 0;
+              }
             }
             .children {
               position: absolute;
               top: 75px;
               width: 100%;
+              background-image: url(/public/template_background.png);
+              background-position: 0 1px;
+              background-color: #fefefe;
             }
           }
           .mask {
@@ -146,7 +157,7 @@
           .boxShadow {
             width: 911px;
             height: 75px;
-            box-shadow: #1890ff 0 0 2px 0;
+            //box-shadow: #1890ff 0 0 2px 0;
           }
         }
       }

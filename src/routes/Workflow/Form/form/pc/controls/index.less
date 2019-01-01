@@ -18,14 +18,67 @@
     padding-top: 10px;
     padding-right: 20px;
     padding-bottom: 25px;
-    //background-color: plum;
     .text {
       border: 1px solid #ccc;
       height: 100%;
       line-height: 38px;
-      padding: 0 10px;
+      padding-left: 10px;
+      padding-right: 11px;
       color: #999;
       background-color: #fff;
+      i, img {
+        font-size: 16px;
+        float: right;
+        margin-top: 11px;
+        margin-left: 11px;
+      }
+    }
+    .upload {
+      width: 115px;
+      height: 115px;
+      border: 1px dashed #ccc;
+      text-align: center;
+      padding: 25px 0;
+      background-color: #fff;
+      > div {
+        margin-top: 8px;
+        color: #666;
+      }
+    }
+    .array {
+      border: 1px dashed #ccc;
+      height: 30px;
+      line-height: 28px;
+      text-align: center;
+      width: 80px;
+      color: #666;
+      background-color: #fff;
+      margin-top: 5px;
+    }
+    .region {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      .regionSelects {
+        width: 100%;
+        height: 40px;
+        display: flex;
+        border-left: 1px solid #ccc;
+        .text {
+          border-left: none;
+          flex-grow: 1;
+        }
+      }
+      .address {
+        border: 1px solid #ccc;
+        border-top: none;
+        line-height: 38px;
+        padding: 0 10px;
+        color: #999;
+        background-color: #fff;
+        flex-grow: 1;
+      }
     }
   }
 }
@@ -33,8 +86,42 @@
 .gridControl {
   width: 100%;
   height: 100%;
-  .gridTitle {
-    height: 75px;
-    background: #fff;
+  display: flex;
+  flex-direction: column;
+  .gridHeader {
+    line-height: 48px;
+    color: #333;
+    height: 49px;
+  }
+  .gridContent {
+    width: 913px;
+    margin-left: -1px;
+    flex-grow: 1;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    .deleteButton {
+      width: 25px;
+      height: 25px;
+      line-height: 25px;
+      color: #999;
+      float: right;
+      text-align: center;
+    }
+  }
+  .gridFooter {
+    height: 64px;
+    line-height: 64px;
+    text-align: center;
+    vertical-align: middle;
+    .addButton {
+      display: inline-block;
+      border: 1px solid #ccc;
+      color: #999;
+      font-size: 16px;
+      width: 149px;
+      height: 40px;
+      line-height: 38px;
+      background-color: #fff;
+    }
   }
 }
