@@ -8,7 +8,6 @@ const echo = new Echo({
   broadcaster: 'socket.io',
   host: env.LARAVEL_ECHO_SERVER_HOST,
 });
-
 // export default echo;
 export { echo };
 
