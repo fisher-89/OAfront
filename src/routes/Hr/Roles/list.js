@@ -48,7 +48,7 @@ export default class extends PureComponent {
       onOk: () => {
         const { dispatch } = this.props;
         dispatch({
-          type: 'roles/deleteRole',
+          type: 'hroles/deleteRole',
           payload: { id },
         });
       },

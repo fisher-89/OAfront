@@ -17,7 +17,7 @@ export default class extends PureComponent {
     const staffSn = params.staff.map(item => item.staff_sn);
 
     dispatch({
-      type: 'roles/editRole',
+      type: 'hroles/editRole',
       payload: {
         ...params,
         staff: staffSn,
