@@ -1,7 +1,7 @@
 /**
  * Created by Administrator on 2018/4/15.
  */
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import {
   Row,
   Col,
@@ -51,27 +51,27 @@ export default class StaffInfo extends PureComponent {
                   <Meta
                     avatar={<Avatar src="/default_avatar.png" size="large" style={{ width: 40, height: 40 }} />}
                     title={
-                      <Fragment>
-                        <div className={styles.splitBox}>{data.realname}&nbsp;&nbsp;
+                      <div className={styles.flexBox}>
+                        <div>{data.realname}&nbsp;&nbsp;
                           {data.gender === '男' ?
                             <Icon type="man" style={{ color: '#4A90E2' }} /> :
                             <Icon type="woman" style={{ color: '#E53A82' }} />
                           }
                         </div>
-                        <div className={styles.splitBox}>
-                          <div className={styles.mobile}><Icon type="mobile" />&nbsp;&nbsp;{data.mobile}</div>
-                        </div>
-                      </Fragment>
+                        <div className={styles.mobile}><Icon type="mobile" />&nbsp;&nbsp;{data.mobile}</div>
+                      </div>
                     }
                     description={
-                      <Fragment>
-                        <p className={styles.splitBox}>编号：{ data.staff_sn }</p>
-                        <p className={styles.splitBox}><Icon type="idcard" />&nbsp;&nbsp;{ data.id_card_number }</p>
-                      </Fragment>
+                      <div className={styles.flexBox}>
+                        <p>编号：{ data.staff_sn }</p>
+                        <p><Icon type="idcard" />&nbsp;&nbsp;{ data.id_card_number }</p>
+                      </div>
                     }
                   />
                   <div className={styles.tags}>
-                    标签: { (data.tags).map(item => <Tag key={item.id}>{item.name}</Tag>) }
+                    标签: { (data.tags).map(item => (
+                      <Tag color={item.category.color} key={item.id}>{item.name}</Tag>
+                    )) }
                   </div>
                   <Card className={styles.card} bodyStyle={{ padding: '20px' }}>
                     <p>状态：{ data.status.name }</p>

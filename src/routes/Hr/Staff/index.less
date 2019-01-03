@@ -20,14 +20,20 @@
   flex-grow: 1;
   text-align: right;
 }
-.splitBox {
+.flexBox {
+  display: flex;
+  justify-content: space-between;
+  letter-spacing: -1px;
   font-weight: 400;
-  display: inline-block;
-  width: 50%;
   .mobile {
     color: rgba(0, 0, 0, 0.45);
     font-size: 14px;
   }
+}
+.splitBox {
+  font-weight: 400;
+  display: inline-block;
+  width: 50%;
 }
 .tags {
   margin-bottom: 14px;
