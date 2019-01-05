@@ -218,10 +218,6 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['department', 'shop', 'stafftags', 'brand'], () => import('../routes/Hr/Shop')),
       authority: '70',
     },
-    '/hr/roles': {
-      component: dynamicWrapper(app, ['brand', 'department', 'hroles'], () => import('../routes/Hr/Roles')),
-      authority: '70',
-    },
     '/hr/staff/edit/:staff_sn': {
       component: dynamicWrapper(app, [], () => import('../routes/Hr/Staff/edit')),
     },
@@ -234,13 +230,13 @@ export const getRouterData = (app) => {
 
     /* 大爱 */
     '/violation/log': {
-      component: dynamicWrapper(app, ['violation'], () => import('../routes/Violation/Log')),
+      component: dynamicWrapper(app, ['violation', 'department', 'brand'], () => import('../routes/Violation/Log')),
     },
-    // '/violation/regime': {
-    //   component: dynamicWrapper(app, ['violation'], () => import('../routes/Violation/Regime')),
-    // },
+    '/violation/regime': {
+      component: dynamicWrapper(app, ['violation'], () => import('../routes/Violation/Regime')),
+    },
     '/violation/statistics': {
-      component: dynamicWrapper(app, ['violation'], () => import('../routes/Violation/Statistics')),
+      component: dynamicWrapper(app, ['violation', 'department', 'brand'], () => import('../routes/Violation/Statistics')),
     },
 
     /**  系统 */

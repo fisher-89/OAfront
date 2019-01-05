@@ -44,13 +44,15 @@ export default {
 
   *editSinglePayment({ payload, onError, onSuccess }, { call, put }) {
     try {
-      const response = yield call(editStaffPayment, payload);
+      const id = payload;
+      const [response] = yield call(editStaffPayment, id);
       if (response.errors && onError) {
         onError(response.errors);
       } else {
         yield put({
           type: 'update',
           payload: {
+            id,
             store,
             data: response,
           },

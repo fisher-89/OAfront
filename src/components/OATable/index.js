@@ -1101,6 +1101,7 @@ class OATable extends PureComponent {
             filters={filters}
             moreSearch={searchObj}
             selectedRowsReal={this.state.selectedRowsReal}
+            selectedRowKeys={this.state.selectedRowKeys}
             selectedRows={selectedRows}
             filtersText={newFiltersText}
             multiOperator={multiOperator}

@@ -33,7 +33,7 @@ export default class extends PureComponent {
   }
 
   makeColumns = () => {
-    const { ruleType, rule, deleted, department, paymentChange, brand, loading } = this.props;
+    const { ruleType, rule, deleted, department, brand, loading } = this.props;
     const columns = [
       {
         title: '编号',
@@ -67,7 +67,7 @@ export default class extends PureComponent {
           parentId: 'parent_id',
         },
         width: 285,
-        render: key => OATable.findRenderKey(department, key).name,
+        render: key => OATable.findRenderKey(department, key).full_name,
       },
       {
         title: '大爱日期',
@@ -83,7 +83,7 @@ export default class extends PureComponent {
       },
       {
         title: '大爱类型',
-        dataIndex: 'rules',
+        dataIndex: 'ruletype',
         loading,
         width: 105,
         render: (_, record) => {
@@ -109,6 +109,10 @@ export default class extends PureComponent {
       {
         title: '支付状态',
         dataIndex: 'has_paid',
+        filters: [
+          { text: '已支付', value: 1 },
+          { text: '未支付', value: 0 },
+        ],
         width: 50,
         render: (key) => {
           if (key) {
@@ -151,7 +155,7 @@ export default class extends PureComponent {
               <Divider type="vertical" />
               <a onClick={() => this.setState({ visible: true, initialValue: rowData })}>编辑</a>
               <Divider type="vertical" />
-              <a onClick={() => paymentChange(rowData.id)}>{payOrRefunder}</a>
+              <a onClick={() => this.paychange(rowData.id, payOrRefunder)}>{payOrRefunder}</a>
               <Divider type="vertical" />
               <a onClick={() => deleted(rowData.id)}>删除</a>
             </Fragment>
@@ -198,9 +202,17 @@ export default class extends PureComponent {
     this.onSelectChange([], []);
   }
 
+  paychange = (id, choice) => {
+    const { paymentChange, refund } = this.props;
+    if (choice === '支付') {
+      paymentChange(id);
+    } else if (choice === '退款') {
+      refund(id);
+    }
+  }
 
   render() {
-    const { finelog, fetchFineLog, loading } = this.props;
+    const { finelog, fetchFineLog, ruleType, rule, loading } = this.props;
     const { detailsVisible, visible, initialValue, selectedRowKeys, selectedRows } = this.state;
     let excelExport = null;
     const extra = [];
@@ -238,7 +250,9 @@ export default class extends PureComponent {
       },
       {
         text: '清空选择',
-        action: () => { this.onSelectChange([], []); },
+        action: () => {
+          this.onSelectChange([], []);
+        },
       },
     ];
 
@@ -279,10 +293,13 @@ export default class extends PureComponent {
           onCancel={this.handleModalVisible}
         />
         <Details
-          paychange={this.paychange}
           visible={detailsVisible}
           initialValue={initialValue}
           onCancel={this.handleDetailsVisible}
+          paymentChange={this.paychange}
+          ruleType={ruleType}
+          rule={rule}
+          finelog={finelog}
         />
       </Fragment>
     );

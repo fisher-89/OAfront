@@ -2,18 +2,24 @@ import React, { PureComponent } from 'react';
 import { Button, Tooltip } from 'antd';
 import OATable from '../../../components/OATable';
 import OAForm, { OAModal } from '../../../components/OAForm';
-import store from './store/store';
 import style from './details.less';
 
 @OAForm.create()
-@store()
 export default class extends PureComponent {
   state = {
     value: {},
   }
   componentWillReceiveProps(nextProps) {
-    if (this.props.initialValue !== nextProps.initialValue) {
-      this.setState({ value: nextProps.initialValue });
+    const midkey = Object.keys(this.state.value);
+    if (midkey.length) {
+      const [nextValue] = nextProps.finelog.data.filter(item => item.id === this.state.value.id);
+      if (this.state.value.id !== nextProps.initialValue.id) {
+        this.setState({ value: { ...nextProps.initialValue } });
+      } else if (this.state.value.has_paid !== nextValue.has_paid) {
+        this.setState({ value: { ...nextValue } });
+      }
+    } else {
+      this.setState({ value: { ...nextProps.initialValue } });
     }
   }
 
@@ -74,7 +80,7 @@ export default class extends PureComponent {
 
         <div className={style.score}>分值：{value.score}</div>
 
-        <div className={style.simple}><div className={style.payment}>支付状态：{payment}</div><div className={style.paychange}><Button onClick={() => paymentChange(value.id)} type="danger" size="small">{pay}</Button></div></div>
+        <div className={style.simple}><div className={style.payment}>支付状态：{payment}</div><div className={style.paychange}><Button onClick={() => paymentChange(value.id, pay)} type="danger" size="small">{pay}</Button></div></div>
 
         <div className={style.normal}>支付时间：{value.paid_at}</div>
 

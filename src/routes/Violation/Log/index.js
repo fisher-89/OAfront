@@ -29,8 +29,3 @@ export default class extends PureComponent {
     );
   }
 }
-/*
-详情页支付后状态更新
-表格表头筛选
-多选后表头清空按钮
- */

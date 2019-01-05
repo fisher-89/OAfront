@@ -118,7 +118,22 @@ export default {
       const id = payload;
       const response = yield call(paymentChange, payload);
       yield put({
-        type: 'update',
+        type: 'pay',
+        payload: {
+          store,
+          id,
+          data: response,
+        },
+      });
+    } catch (err) { return err; }
+  },
+
+  *refund({ payload }, { call, put }) {
+    try {
+      const id = payload;
+      const response = yield call(paymentChange, payload);
+      yield put({
+        type: 'payback',
         payload: {
           store,
           id,

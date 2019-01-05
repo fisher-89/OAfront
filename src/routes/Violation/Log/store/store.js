@@ -63,6 +63,11 @@ export default type => (Component) => {
       dispatch({ type: 'violation/paymentChange', payload: params });
     }
 
+    refund = (params) => {
+      const { dispatch } = this.props;
+      dispatch({ type: 'violation/refund', payload: params });
+    }
+
     deleted = (id, onError, onSuccess) => {
       const { dispatch } = this.props;
       dispatch({
