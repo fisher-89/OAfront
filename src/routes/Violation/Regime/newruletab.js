@@ -1,9 +1,15 @@
 import React, { PureComponent } from 'react';
 import { Form, Select, Button, Input, Row, Col } from 'antd';
+import { connect } from 'dva';
 import InputTags from './InputTags/index';
 
 const FormItem = Form.Item;
 @Form.create()
+@connect(({ loading }) => ({
+  loading: {
+    addRule: loading.effects['violation/addRule'],
+  },
+}))
 export default class extends PureComponent {
   submit = (params) => {
     if (params) {
@@ -21,10 +27,17 @@ export default class extends PureComponent {
       if (!errors) {
         const params = { ...values };
         delete params.typenew;
-        const { ruleSubmit } = this.props;
-        ruleSubmit(params);
-        this.props.remove();
+        this.ruleSubmit(params);
       }
+    });
+  }
+
+  ruleSubmit = (values) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: values.id ? 'violation/editRule' : 'violation/addRule',
+      payload: values,
+      onSuccess: () => this.props.remove(),
     });
   }
 

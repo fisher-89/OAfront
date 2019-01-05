@@ -137,7 +137,6 @@ export default class extends PureComponent {
       fetchRule,
       rule,
       ruletype,
-      ruleSubmit,
       typeSubmit,
       typeDelete,
       loading } = this.props;
@@ -191,7 +190,6 @@ export default class extends PureComponent {
                   initialValue={pane.content}
                   ruletype={ruletype}
                   typeSubmit={typeSubmit}
-                  ruleSubmit={ruleSubmit}
                 />
               </TabPane>
               ))}
