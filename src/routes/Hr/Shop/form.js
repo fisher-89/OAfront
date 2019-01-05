@@ -57,6 +57,8 @@ export default class extends PureComponent {
           county_id: 'shop_address',
           province_id: 'shop_address',
           address: 'shop_address',
+          clock_in: 'clock_in',
+          clock_out: 'clock_out',
         });
         notification.error({ message: '表单错误，请重新填写。' });
       },
