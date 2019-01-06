@@ -48,6 +48,7 @@ export default class extends PureComponent {
           { shop_name: '店铺名称', auth: 0 },
           { department: '部门全称', auth: 0 },
           { position: '职位', auth: 0 },
+          { position_level: '职级', auth: 0 },
           { status: '员工状态', auth: 0 },
           { birthday: '出生日期', auth: 0 },
           { hired_at: '入职时间', auth: 0 },
