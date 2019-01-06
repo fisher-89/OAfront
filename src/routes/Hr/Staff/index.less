@@ -22,12 +22,14 @@
 }
 .flexBox {
   display: flex;
-  justify-content: space-between;
   letter-spacing: -1px;
   font-weight: 400;
   .mobile {
     color: rgba(0, 0, 0, 0.45);
     font-size: 14px;
+  }
+  p:first-child, div:first-child {
+    width: 50%;
   }
 }
 .splitBox {
@@ -47,4 +49,7 @@
   p:last-child {
     margin-bottom: 0;
   }
+}
+.gray {
+  color: #999;
 }

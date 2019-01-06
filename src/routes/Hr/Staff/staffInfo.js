@@ -39,6 +39,7 @@ export default class StaffInfo extends PureComponent {
     // const relatives = data.relatives ? data.relatives.map((item) => {
     //   return `${item.realname}   (${item.relative_type.name})   编号(${item.staff_sn})`;
     // }).join('') : '  ';
+    const defaultVal = (<span className={styles.gray}>未填写</span>);
     const idNumber = data.id_card_number;
     const birthday = idNumber ? [idNumber.substr(6, 4), idNumber.substr(10, 2), idNumber.substr(12, 2)].join('-') : '';
     return (
@@ -80,21 +81,21 @@ export default class StaffInfo extends PureComponent {
                     <p>部门：{ data.department.full_name }</p>
                   </Card>
                   <Card className={styles.card} bodyStyle={{ padding: '20px' }}>
-                    <p className={styles.splitBox}>微信：{ data.wechat_number }</p>
-                    <p className={styles.splitBox}>生日：{ birthday }</p>
-                    <p className={styles.splitBox}>民族：{ data.national }</p>
-                    <p className={styles.splitBox}>学历：{ data.education }</p>
-                    <p className={styles.splitBox}>政治面貌：{ data.politics }</p>
-                    <p className={styles.splitBox}>籍贯：{ data.native_place }</p>
-                    <p className={styles.splitBox}>婚姻状况：{ data.marital_status }</p>
-                    <p className={styles.splitBox}>身高(cm)/体重(kg)：{ data.height }/{ data.weight }</p>
+                    <p className={styles.splitBox}>微信：{ data.wechat_number || defaultVal }</p>
+                    <p className={styles.splitBox}>生日：{ birthday || defaultVal }</p>
+                    <p className={styles.splitBox}>民族：{ data.national || defaultVal }</p>
+                    <p className={styles.splitBox}>学历：{ data.education || defaultVal }</p>
+                    <p className={styles.splitBox}>政治面貌：{ data.politics || defaultVal }</p>
+                    <p className={styles.splitBox}>籍贯：{ data.native_place || defaultVal }</p>
+                    <p className={styles.splitBox}>婚姻状况：{ data.marital_status || defaultVal }</p>
+                    <p className={styles.splitBox}>身高/体重：{ `${data.height || 0}cm` }/{ `${data.weight || 0}kg` }</p>
                     <p>户口所在地：
                       {data.household_province_name}&nbsp;
                       {data.household_city_name}&nbsp;
                       {data.household_county_name}&nbsp;
                       {data.household_address}
                     </p>
-                    <p>银行账户：{ data.account_number }</p>
+                    <p>银行账户：{ data.account_number || defaultVal }</p>
                     <p>现住地址：
                       {data.living_province_name}&nbsp;
                       {data.living_city_name}&nbsp;
@@ -104,12 +105,12 @@ export default class StaffInfo extends PureComponent {
                     <p>紧急联系人：{ data.concat_name } ({ data.concat_type }) { data.concat_tel }</p>
                   </Card>
                   <Card className={styles.card} bodyStyle={{ padding: '20px' }}>
-                    <p>钉钉编号：{ data.dingtalk_number }</p>
-                    <p>招聘人员：{ data.recruiter_name }</p>
-                    <p>备注：{ data.remark }</p>
+                    <p>钉钉编号：{ data.dingtalk_number || defaultVal }</p>
+                    <p>招聘人员：{ data.recruiter_name || defaultVal }</p>
+                    <p>备注：{ data.remark || defaultVal }</p>
                   </Card>
                   <Card className={styles.card} bodyStyle={{ padding: '20px' }}>
-                    <p>店铺：{ (data.shop || {}).name }</p>
+                    <p>店铺：{ (data.shop || {}).name || defaultVal }</p>
                     <p className={styles.splitBox}>店长：{ (data.shop || {}).manager_name }</p>
                     <p className={styles.splitBox}>
                       店长手机号：{ (data.shop || {}).manager_mobile}
