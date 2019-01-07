@@ -48,7 +48,9 @@ export default class extends PureComponent {
           { shop_name: '店铺名称', auth: 0 },
           { department: '部门全称', auth: 0 },
           { position: '职位', auth: 0 },
+          { position_level: '职级', auth: 0 },
           { status: '员工状态', auth: 0 },
+          { birthday: '出生日期', auth: 0 },
           { hired_at: '入职时间', auth: 0 },
           { employed_at: '转正时间', auth: 0 },
           { left_at: '离职时间', auth: 0 },
@@ -76,6 +78,7 @@ export default class extends PureComponent {
           { position_pull: '最后调出岗位', auth: 0 },
           { position_push: '最后调入岗位', auth: 0 },
           { position_push_at: '调动时间', auth: 0 },
+          { recruiter_name: '招聘人', auth: 0 },
           { remark: '备注', auth: 0 },
         ];
         const headMaps = mapWithKey.filter((item) => {
