@@ -70,9 +70,9 @@ export default class StaffInfo extends PureComponent {
                     }
                   />
                   <div className={styles.tags}>
-                    标签: { (data.tags).map(item => (
+                    标签: { !isEmpty(data.tags) ? (data.tags).map(item => (
                       <Tag color={item.category.color} key={item.id}>{item.name}</Tag>
-                    )) }
+                    )) : defaultVal }
                   </div>
                   <Card className={styles.card} bodyStyle={{ padding: '20px' }}>
                     <p>状态：{ data.status.name }</p>
