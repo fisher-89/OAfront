@@ -39,7 +39,7 @@ export default class StaffInfo extends PureComponent {
     // const relatives = data.relatives ? data.relatives.map((item) => {
     //   return `${item.realname}   (${item.relative_type.name})   编号(${item.staff_sn})`;
     // }).join('') : '  ';
-    const defaultVal = (<span className={styles.gray}>未填写</span>);
+    const defaultVal = (<span className={styles.place}>未填写</span>);
     const idNumber = data.id_card_number;
     const birthday = idNumber ? [idNumber.substr(6, 4), idNumber.substr(10, 2), idNumber.substr(12, 2)].join('-') : '';
     return (
@@ -78,7 +78,10 @@ export default class StaffInfo extends PureComponent {
                     <p>状态：{ data.status.name }</p>
                     <p>品牌：{ data.brand.name }</p>
                     <p>职位：{ data.position.name }</p>
-                    <p>部门：{ data.department.full_name }</p>
+                    <div className={styles.item}>
+                      <label>部门：</label>
+                      <div>{ data.department.full_name || defaultVal }</div>
+                    </div>
                   </Card>
                   <Card className={styles.card} bodyStyle={{ padding: '20px' }}>
                     <p className={styles.splitBox}>微信：{ data.wechat_number || defaultVal }</p>
@@ -89,33 +92,63 @@ export default class StaffInfo extends PureComponent {
                     <p className={styles.splitBox}>籍贯：{ data.native_place || defaultVal }</p>
                     <p className={styles.splitBox}>婚姻状况：{ data.marital_status || defaultVal }</p>
                     <p className={styles.splitBox}>身高/体重：{ `${data.height || 0}cm` }/{ `${data.weight || 0}kg` }</p>
-                    <p>户口所在地：
-                      {data.household_province_name}&nbsp;
-                      {data.household_city_name}&nbsp;
-                      {data.household_county_name}&nbsp;
-                      {data.household_address}
-                    </p>
                     <p>银行账户：{ data.account_number || defaultVal }</p>
-                    <p>现住地址：
-                      {data.living_province_name}&nbsp;
-                      {data.living_city_name}&nbsp;
-                      {data.living_county_name}&nbsp;
-                      {data.living_address}
-                    </p>
                     <p>紧急联系人：{ data.concat_name } ({ data.concat_type }) { data.concat_tel }</p>
+                    <div className={styles.item}>
+                      <label>现居地址：</label>
+                      <div>
+                        {(() => {
+                          if (data.living_province_name && data.living_city_name) {
+                            return (
+                              <span>
+                                {data.living_province_name}&nbsp;
+                                {data.living_city_name}&nbsp;
+                                {data.living_county_name}&nbsp;
+                                {data.living_address}
+                              </span>
+                            );
+                          } else {
+                            return defaultVal;
+                          }
+                        })()}
+                      </div>
+                    </div>
+                    <div className={styles.item}>
+                      <label>户口所在地：</label>
+                      <div>
+                        {(() => {
+                          if (data.household_city_name && data.household_province_name) {
+                            return (
+                              <span>
+                                {data.household_province_name}&nbsp;
+                                {data.household_city_name}&nbsp;
+                                {data.household_county_name}&nbsp;
+                                {data.household_address}
+                              </span>
+                            );
+                          } else {
+                            return defaultVal;
+                          }
+                        })()}
+                      </div>
+                    </div>
                   </Card>
                   <Card className={styles.card} bodyStyle={{ padding: '20px' }}>
                     <p>钉钉编号：{ data.dingtalk_number || defaultVal }</p>
                     <p>招聘人员：{ data.recruiter_name || defaultVal }</p>
-                    <p>备注：{ data.remark || defaultVal }</p>
+                    <div className={styles.item}>
+                      <label>备注：</label>
+                      <div>{ data.remark || defaultVal }</div>
+                    </div>
                   </Card>
                   <Card className={styles.card} bodyStyle={{ padding: '20px' }}>
                     <p>店铺：{ (data.shop || {}).name || defaultVal }</p>
-                    <p className={styles.splitBox}>店长：{ (data.shop || {}).manager_name }</p>
-                    <p className={styles.splitBox}>
-                      店长手机号：{ (data.shop || {}).manager_mobile}
-                    </p>
-                    <p>地址：{ (data.shop || {}).real_address }</p>
+                    <p>店长：{ (data.shop || {}).manager_name || defaultVal }</p>
+                    <p>店长手机号：{ (data.shop || {}).manager_mobile || defaultVal }</p>
+                    <div className={styles.item}>
+                      <label>地址：</label>
+                      <div>{ (data.shop || {}).real_address || defaultVal }</div>
+                    </div>
                   </Card>
                 </Card>
               </div>
@@ -126,12 +159,12 @@ export default class StaffInfo extends PureComponent {
               <div style={{ width: 200, flexShrink: 0 }} />
               <div key="userLog">
                 <Tabs defaultActiveKey="timeline">
-                  <TabPane key="timeline" tab="时间轴" >
-                    <Timeline pending="Recording..." reverse={false}>
+                  <TabPane key="timeline" tab="时间轴" style={{ marginLeft: 10 }}>
+                    <Timeline pending="待记录..." pendingDot={<Icon type="flag" style={{ fontSize: '16px' }} />} reverse={false}>
                       {timelist && timelist.map((item) => {
                         const change = item.changes;
                         return (
-                          <Timeline.Item key={item.id}>
+                          <Timeline.Item dot={<Icon type="clock-circle-o" style={{ fontSize: '16px' }} />} key={item.id}>
                             {item.operation_type} {!isEmpty(change) ? ` (${change[0] ? change[0] : '无'} => ${change[1] ? change[1] : '无'})` : ''} {item.created_at}
                           </Timeline.Item>
                         );

@@ -43,13 +43,24 @@
 .card {
   border-radius: 5px;
   margin-bottom: 10px;
-  p {
+  p, .item {
     margin-bottom: 10px;
   }
-  p:last-child {
+  p:last-child, .item:last-child {
     margin-bottom: 0;
   }
+  .item {
+    display: flex;
+    label {
+      flex-grow: 0;
+      flex-shrink: 0;
+      min-width: 42px;
+    }
+    div {
+      flex-grow: 1;
+    }
+  }
 }
-.gray {
+.place {
   color: #999;
 }
