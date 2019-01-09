@@ -108,8 +108,8 @@ class DraggingFieldTag extends Component {
     const maxY = Math.floor((bottom - height - top) / 76);
     const newX = Math.min(Math.max(Math.floor((clientX - left) / 76) - pointCol, 0), maxX);
     const newY = Math.min(Math.max(Math.floor((clientY - top) / 76) - pointRow, 0), maxY);
-    const offsetX = (newX * 76) + (left - startPosition.left) + 1;
-    const offsetY = (newY * 76) + (top - startPosition.top) + 1;
+    const offsetX = (newX * 76) + Math.round(left - startPosition.left) + 1;
+    const offsetY = (newY * 76) + Math.round(top - startPosition.top) + 1;
     data.x = newX;
     data.y = newY;
     this.setState({

@@ -20,7 +20,7 @@ export default class Control extends Component {
     this.target.addEventListener('mouseleave', this.startDrag);
     this.dragTimeout = setTimeout(() => {
       this.startDrag();
-    }, 100);
+    }, 150);
   }
 
   startDrag = () => {
@@ -39,7 +39,8 @@ export default class Control extends Component {
 
   handleSelect = () => {
     document.removeEventListener('mouseup', this.handleSelect);
-    document.removeEventListener('mouseleave', this.handleSelect);
+    this.target.removeEventListener('mouseleave', this.startDrag);
+    this.target.removeEventListener('mouseup', this.cancelDrag);
     const { onSelect, data, grid } = this.props;
     onSelect(data, grid);
   }
@@ -58,7 +59,9 @@ export default class Control extends Component {
     const { x } = this.fetchClientXY(e);
     const { left } = board.getBoundingClientRect();
     const minCol = defaultSize(data).col;
-    const col = Math.round((x - left) / 76);
+    const originCol = direction === 'left' ? data.x : data.x + data.col;
+    const exactCol = (x - left) / 76;
+    const col = Math.round(exactCol + (exactCol < originCol ? 0.1 : -0.1));
     if (col < 0 || col > 12) return false;
     let newCol = data.col;
     let newX = data.x;
