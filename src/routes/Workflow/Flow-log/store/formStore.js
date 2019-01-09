@@ -6,37 +6,35 @@ import { makeProps } from '../../../../utils/utils';
 function makeLoading(loading) {
   return {
     fetchDataSource: (
-      loading.effects['workflow/fetchFlow'] ||
-      loading.effects['workflow/fetchForm'] ||
-      loading.effects['workflow/flowRunLog'] ||
-      loading.effects['workflow/fetchFlowType'] ||
       loading.effects['workflow/fetchFormType'] ||
-      loading.effects['workflow/flowRunLogExport'] ||
-      loading.effects['workflow/flowRunFormVersion'] ||
-      loading.effects['workflow/formVersion']
+      loading.effects['workflow/fetchForm'] ||
+      loading.effects['workflow/fetchFormVersion'] ||
+      loading.effects['workflow/flowRunLog'] ||
+      loading.effects['workflow/flowRunLogExport']
     ),
   };
 }
 
 export default type => (Component) => {
   @connect(({ workflow, loading }) => ({
-    flow: workflow.flow,
-    form: workflow.form,
-    flowType: workflow.flowType,
     formType: workflow.formType,
+    form: workflow.form,
+    fetchFormVersion: workflow.fetchFormVersion,
     flowRunLog: workflow.flowRunLog,
-    formVersion: workflow.formVersionDetails,
-    formVData: workflow.formVDetails,
     exportProgress: workflow.exportProgress,
     loading: makeLoading(loading),
   }))
   class NewComponent extends React.PureComponent {
     componentWillMount() {
       const { dispatch } = this.props;
-      dispatch({ type: 'workflow/fetchFlowType' });
       dispatch({ type: 'workflow/fetchFormType' });
-      dispatch({ type: 'workflow/fetchFlow', payload: {} });
       dispatch({ type: 'workflow/fetchForm', payload: {} });
+    }
+
+    // 获取表单版本
+    formVersion = (number) => {
+      const { dispatch } = this.props;
+      dispatch({ type: 'workflow/fetchFormVersion', payload: number });
     }
 
     fetchDataSource = (params) => {
@@ -44,21 +42,14 @@ export default type => (Component) => {
       dispatch({ type: 'workflow/flowRunLog', payload: params });
     }
 
-    flowRunFormVersion = (id) => {
-      const { dispatch } = this.props;
-      dispatch({ type: 'workflow/flowRunFormVersion', payload: { id } });
-    }
-
-    fetchFormVersion = (id) => {
-      const { dispatch } = this.props;
-      dispatch({ type: 'workflow/formVersion', payload: { id } });
-    }
-
-    exportExcel = (formId, flowId = null) => {
+    exportExcel = (formId, params) => {
       const { dispatch } = this.props;
       if (!formId.length) return message.error('请选择导出的表单!');
-      const payload = { form_id: formId };
-      if (flowId) payload.flow_id = flowId;
+      const payload = {
+        ...params,
+      };
+      delete payload.page;
+      delete payload.pagesize;
       dispatch({ type: 'workflow/flowRunLogExport', payload });
     }
 

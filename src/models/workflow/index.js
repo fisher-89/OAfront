@@ -11,6 +11,7 @@ import approverEffects from './approver';
 import messageEffects from './message';
 import defaultReducers from '../reducers';
 import auth from './auth';
+import flowLog from './flowLog';
 
 
 export default {
@@ -31,7 +32,11 @@ export default {
     apiConfigDetails: {},
     approver: [],
     stepDepartment: {},
-    flowRunLog: {},
+    flowRunLog: [],
+    // 运行记录 流程编号获取的表单列表
+    flowFormVersion: [],
+    // 运行记录 表单编号获取的表单列表
+    fetchFormVersion: [],
     formVersionDetails: {},
     formVDetails: {},
     waitMsg: {},
@@ -59,6 +64,8 @@ export default {
     ...messageEffects,
     // 权限
     ...auth,
+    // 流程运行记录
+    ...flowLog,
   },
   reducers: {
     ...defaultReducers,

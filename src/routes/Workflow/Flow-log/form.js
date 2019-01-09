@@ -1,7 +1,8 @@
 import React from 'react';
 import XLSX from 'xlsx';
+import { find } from 'lodash';
 import { Row, Col, Select, Input, message, Spin, Form, Button, Progress } from 'antd';
-import store from './store/store';
+import store from './store/formStore';
 import OATable from '../../../components/OATable';
 import TagSelect from '../../../components/TagSelect';
 
@@ -21,8 +22,9 @@ const status = [
 export default class extends React.PureComponent {
   state = {
     formId: [],
-    id: undefined,
+    number: undefined,
     category: undefined,
+    params: '',
   }
 
   columns = [
@@ -63,11 +65,12 @@ export default class extends React.PureComponent {
   ]
 
   fetchForm = () => {
-    const { fetchFormVersion } = this.props;
-    const { id } = this.state;
-    const formId = id ? [`${id}`] : [];
+    const { formVersion, form } = this.props;
+    const { number } = this.state;
+    const data = number ? find(form, ['number', parseInt(number, 10)]) : {};
+    const formId = number ? [`${data.id}`] : [];
     this.setState({ formId }, () => {
-      if (id) fetchFormVersion(id);
+      if (number) formVersion(number);
     });
   }
 
@@ -75,11 +78,8 @@ export default class extends React.PureComponent {
     return (e) => {
       const value = e;
       const state = { ...this.state };
-      if (name === 'type') {
-        state.id = undefined;
-        state.category = undefined;
-      } else if (name === 'category') {
-        state.id = undefined;
+      if (name === 'category') {
+        state.number = undefined;
       }
       this.setState({ ...state, [name]: value }, this.fetchForm);
     };
@@ -107,9 +107,9 @@ export default class extends React.PureComponent {
   }
 
   makeExportButton = () => {
-    const { id, formId } = this.state;
+    const { params, formId } = this.state;
     const { exportExcel, exportProgress } = this.props;
-    const view = [<Button key="exportButton" icon="download" onClick={() => exportExcel(formId, id)}>导出</Button>];
+    const view = [<Button key="exportButton" icon="download" onClick={() => exportExcel(formId, params)}>导出</Button>];
     if (exportProgress !== null && exportProgress >= 0) {
       view.push(<div key="exportProgress" style={{ width: 150 }}><Progress percent={exportProgress} /></div>);
     } else if (exportProgress === -1) {
@@ -122,15 +122,20 @@ export default class extends React.PureComponent {
     return view;
   }
 
+  dataSource = (params) => {
+    const { fetchDataSource } = this.props;
+    this.setState({ params });
+    fetchDataSource(params);
+  }
+
   render() {
-    const { category, id, formId } = this.state;
+    const { category, number, formId } = this.state;
     const {
       form,
       loading,
       formType,
-      formVData,
+      fetchFormVersion,
       flowRunLog,
-      fetchDataSource,
     } = this.props;
     const cateData = formType;
     const filters = { form_id: formId };
@@ -138,7 +143,7 @@ export default class extends React.PureComponent {
     const extraOperator = [
       this.makeExportButton(),
     ];
-    const formVersionData = id ? (formVData[id] || []) : [];
+    const formVersionData = number ? (fetchFormVersion || []) : [];
     return (
       <React.Fragment>
         <Row style={{ marginTop: 10, marginBottom: 10 }}>
@@ -163,16 +168,16 @@ export default class extends React.PureComponent {
                 showArrow
                 showSearch
                 allowClear
-                value={id}
+                value={number}
                 placeholder="筛选"
                 notFoundContent="(空)"
                 filterOption={this.handleSearch}
                 defaultActiveFirstOption={false}
-                onChange={this.handleChange('id')}
+                onChange={this.handleChange('number')}
                 style={{ width: 200, maxHeight: 400 }}
               >
                 {filterData.map(item => (
-                  <Option key={item.id}>{item.name}</Option>
+                  <Option key={item.number}>{item.name}</Option>
                 ))}
               </Select>
             </InputGroup>
@@ -206,7 +211,7 @@ export default class extends React.PureComponent {
           dataSource={(formId.length && flowRunLog.data) || []}
           fileExportChange={{ onSuccess: this.exportSuccess }}
           fetchDataSource={params => formId.length > 0 &&
-            (fetchDataSource(params))}
+            (this.dataSource(params))}
         />
       </React.Fragment>
     );

@@ -41,12 +41,12 @@ export async function flowRunLog(params) {
   });
 }
 
-export async function flowRunFormVersion(id) {
-  return request(`/api/workflow/flow-run/form/flow/${id}`, { method: 'GET' });
+export async function flowRunFormVersion(number) {
+  return request(`/api/workflow/flow-run/form/flow/${number}`, { method: 'GET' });
 }
 
-export async function formVersion(id) {
-  return request(`/api/workflow/flow-run/form/${id}`, { method: 'GET' });
+export async function formVersion(number) {
+  return request(`/api/workflow/flow-run/form/${number}`, { method: 'GET' });
 }
 
 export async function startFlowRunLogExport(params) {
