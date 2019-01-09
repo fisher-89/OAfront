@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Tag } from 'antd';
-import controlSize from './control_size.json';
+import defaultSize from './supports/control_size';
 import ControlContent from './controls';
 import styles from './template.less';
 
@@ -8,7 +8,7 @@ const templateArea = { minX: 593, maxX: 1505, minY: 301, maxY: 833 };
 
 class DraggingFieldTag extends Component {
   state = {
-    offset: { x: 0, y: 0 },
+    offset: { x: 1, y: 1 },
     onTemplate: false, // 当前鼠标是否在模板上
     data: null,
     relativeX: 0, // 点击相对位置（水平）
@@ -23,17 +23,7 @@ class DraggingFieldTag extends Component {
     document.addEventListener('mouseup', this.loosenDrag);
     document.addEventListener('touchend', this.loosenDrag);
     const { data, startPoint: { x, y }, startPosition: { top, bottom, left, right } } = this.props;
-    let { col, row } = data;
-    if (col && row) {
-      //
-    } else if ('fields' in data) {
-      col = 12;
-      row = 3;
-    } else {
-      const size = controlSize[data.type];
-      col = data.is_checkbox ? size.multiple.col : size.col;
-      row = data.is_checkbox ? size.multiple.row : size.row;
-    }
+    const { col, row } = data.col !== null ? data : defaultSize(data);
     this.state.data = { ...data, col, row };
     this.state.relativeX = (x - left) / (right - left);
     this.state.relativeY = (y - top) / (bottom - top);
@@ -41,32 +31,6 @@ class DraggingFieldTag extends Component {
       this.state.onTemplate = true;
     }
     this.state.usedCell = this.fetchUsedCell();
-  }
-
-  /**
-   * 鼠标拖拽
-   * @param e
-   */
-  dragField = (e) => {
-    e.preventDefault();
-    const { parentGrid, board } = this.props;
-    const { clientX, clientY, pageX, pageY } = event.type === 'touchmove' ? e.touches[0] : e;
-    const { minX, maxX, minY, maxY } = templateArea;
-    const onTemplate = pageX >= minX && pageX <= maxX && pageY >= minY && pageY <= maxY;
-    const boardRect = board.getBoundingClientRect();
-    let { top, bottom } = boardRect;
-    const { left, right } = boardRect;
-    let inGrid = !parentGrid;
-    if (parentGrid && parentGrid.x !== null) {
-      top += ((parentGrid.y + 1) * 76);
-      bottom = top + ((parentGrid.row - 2) * 76);
-      inGrid = parentGrid.x !== null && clientY >= top && clientY <= bottom;
-    }
-    if (onTemplate && inGrid) {
-      this.handleDragControl(clientX, clientY, { top, bottom, left, right });
-    } else {
-      this.handleDragTag(clientX, clientY);
-    }
   }
 
   /**
@@ -98,6 +62,32 @@ class DraggingFieldTag extends Component {
       });
     }
     return usedCell;
+  }
+
+  /**
+   * 鼠标拖拽
+   * @param e
+   */
+  dragField = (e) => {
+    e.preventDefault();
+    const { parentGrid, board } = this.props;
+    const { clientX, clientY, pageX, pageY } = event.type === 'touchmove' ? e.touches[0] : e;
+    const { minX, maxX, minY, maxY } = templateArea;
+    const onTemplate = pageX >= minX && pageX <= maxX && pageY >= minY && pageY <= maxY;
+    const boardRect = board.getBoundingClientRect();
+    let { top, bottom } = boardRect;
+    const { left, right } = boardRect;
+    let inGrid = !parentGrid;
+    if (parentGrid && parentGrid.x !== null) {
+      top += ((parentGrid.y + 1) * 76);
+      bottom = top + ((parentGrid.row - 2) * 76);
+      inGrid = parentGrid.x !== null && clientY >= top && clientY <= bottom;
+    }
+    if (onTemplate && inGrid) {
+      this.handleDragControl(clientX, clientY, { top, bottom, left, right });
+    } else {
+      this.handleDragTag(clientX, clientY);
+    }
   }
 
   handleDragTag = (clientX, clientY) => {
@@ -180,7 +170,7 @@ class DraggingFieldTag extends Component {
           top: top - 1,
           left: left - 1,
           transform: `translate(${x}px,${y}px)`,
-          backgroundColor: dropAvailable ? 'rgba(24, 144, 255, 0.1)' : 'rgba(255, 0, 0, 0.1)',
+          backgroundColor: dropAvailable ? '#e7f3fe' : '#fee4e4',
           border: dropAvailable ? '1px solid #1890ff' : '1px solid #f00',
         }}
         className={styles.dragShadow}

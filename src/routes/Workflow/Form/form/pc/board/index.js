@@ -1,3 +1,4 @@
+/* eslint no-param-reassign:0 */
 import React, { Component } from 'react';
 import FocusLine from './line_focus';
 import Control from './control';
@@ -18,7 +19,7 @@ class Board extends Component {
     const options = {};
     fields.forEach((field) => {
       if (typeof field.y === 'number' && field.y >= row - 1) {
-        field.y += 1; // eslint-disable-line no-param-reassign
+        field.y += 1;
       }
     });
     options.fields = fields;
@@ -29,7 +30,7 @@ class Board extends Component {
         options[`grids.${index}.row`] = grid.row + 1;
         grid.fields.forEach((field) => {
           if (typeof field.y === 'number' && field.y + grid.y >= row - 2) {
-            field.y += 1; // eslint-disable-line no-param-reassign
+            field.y += 1;
           }
         });
         options[`grids.${index}.fields`] = grid.fields;
@@ -44,12 +45,12 @@ class Board extends Component {
     const options = {};
     fields.forEach((field) => {
       if (typeof field.y === 'number' && field.y > row - 1) {
-        field.y -= 1; // eslint-disable-line no-param-reassign
+        field.y -= 1;
       } else if (typeof field.y === 'number' && field.y + field.row > row - 1) {
-        field.x = null; // eslint-disable-line no-param-reassign
-        field.y = null; // eslint-disable-line no-param-reassign
-        field.row = null; // eslint-disable-line no-param-reassign
-        field.col = null; // eslint-disable-line no-param-reassign
+        field.x = null;
+        field.y = null;
+        field.row = null;
+        field.col = null;
       }
     });
     options.fields = fields;
@@ -60,36 +61,113 @@ class Board extends Component {
         options[`grids.${index}.row`] = grid.row - 1;
         grid.fields.forEach((field) => {
           if (typeof field.y === 'number' && field.y + grid.y > row - 2) {
-            field.y -= 1; // eslint-disable-line no-param-reassign
+            field.y -= 1;
           } else if (typeof field.y === 'number' && field.y + grid.y + field.row > row - 2) {
-            field.x = null; // eslint-disable-line no-param-reassign
-            field.y = null; // eslint-disable-line no-param-reassign
-            field.row = null; // eslint-disable-line no-param-reassign
-            field.col = null; // eslint-disable-line no-param-reassign
+            field.x = null;
+            field.y = null;
+            field.row = null;
+            field.col = null;
           }
         });
         options[`grids.${index}.fields`] = grid.fields;
       } else if (typeof grid.y === 'number' && grid.y + grid.row > row - 1) {
         options[`grids.${index}.x`] = null;
         options[`grids.${index}.y`] = null;
-        options[`grids.${index}.row`] = null;
-        options[`grids.${index}.col`] = null;
       }
     });
     this.state.lines -= 1;
     form.setFieldsValue(options);
   }
 
+  handleResize = (control, parentGrid, newCol, newX) => {
+    const { fields, grids, form } = this.props;
+    const usedCell = this.fetchUsedCell(control, parentGrid);
+    let resizeable = true;
+    for (const i in usedCell) {
+      if (Object.hasOwnProperty.call(usedCell, i)) {
+        const cell = usedCell[i];
+        if (
+          cell.col >= newX &&
+          cell.col < newX + newCol &&
+          cell.row >= control.y &&
+          cell.row < control.y + control.row
+        ) {
+          resizeable = false;
+          break;
+        }
+      }
+    }
+    if (resizeable) {
+      if (parentGrid) {
+        const gridIndex = grids.indexOf(parentGrid);
+        control.x = newX;
+        control.col = newCol;
+        form.setFieldsValue({ [`grids.${gridIndex}.fields`]: parentGrid.fields });
+      } else if ('fields' in control) {
+        const gridIndex = grids.indexOf(control);
+        form.setFieldsValue({
+          [`grids.${gridIndex}.x`]: newX,
+          [`grids.${gridIndex}.col`]: newCol,
+        });
+      } else {
+        control.x = newX;
+        control.col = newCol;
+        form.setFieldsValue({ fields });
+      }
+    }
+  }
+
+  /**
+   * 获取已占用的单元格
+   * @returns {Array}
+   */
+  fetchUsedCell = (data, grid) => {
+    const { fields, grids } = this.props;
+    const usedCell = [];
+    if (grid) {
+      grid.fields.forEach((item) => {
+        if (item.x !== null && item !== data) {
+          for (let col = item.x; col < item.x + item.col; col += 1) {
+            for (let row = item.y; row < item.y + item.row; row += 1) {
+              usedCell.push({ row, col });
+            }
+          }
+        }
+      });
+    } else {
+      [...fields, ...grids].forEach((item) => {
+        if (item.x !== null && item !== data) {
+          for (let col = item.x; col < item.x + item.col; col += 1) {
+            for (let row = item.y; row < item.y + item.row; row += 1) {
+              usedCell.push({ row, col });
+            }
+          }
+        }
+      });
+    }
+    return usedCell;
+  }
+
   makeControls = () => {
-    const { fields, grids, onDrag, draggingControl } = this.props;
+    const {
+      fields,
+      grids,
+      onDrag,
+      draggingControl,
+      selectedControl,
+      onSelect,
+      onCancelSelect,
+    } = this.props;
     return [
       ...fields.filter(item => typeof item.x === 'number' && item !== draggingControl).map(item => (
         <Control
           key={item.key}
           data={item}
           onDrag={onDrag}
-          addLine={this.handleAddLine}
-          deleteLine={this.handleDeleteLine}
+          onSelect={onSelect}
+          onResize={this.handleResize}
+          selectedControl={selectedControl}
+          board={this.board}
         />
       )),
       ...grids.filter(item => typeof item.x === 'number' && item !== draggingControl).map(item => (
@@ -97,18 +175,24 @@ class Board extends Component {
           key={item.key}
           data={item}
           onDrag={onDrag}
+          onSelect={onSelect}
+          onResize={this.handleResize}
+          selectedControl={selectedControl}
+          board={this.board}
           addLine={this.handleAddLine}
           deleteLine={this.handleDeleteLine}
-          grid
+          onCancelSelect={onCancelSelect}
+          draggingControl={draggingControl}
+          isGrid
         />
       )),
     ];
   }
 
   makeMask = () => {
-    const { parentGrid } = this.props;
+    const { draggingControl, parentGrid } = this.props;
     const { lines } = this.state;
-    return parentGrid && parentGrid.x !== null ? (
+    return draggingControl && parentGrid && parentGrid.x !== null ? (
       <React.Fragment>
         <div className={styles.mask} style={{ top: 0, height: `${(parentGrid.y + 1) * 76}px` }} />
         <div
@@ -123,16 +207,13 @@ class Board extends Component {
   }
 
   render() {
+    const { onCancelSelect, selectedControl } = this.props;
     const { lines } = this.state;
     return (
       <div className={styles.board}>
         <div
           className={styles.scroller}
           style={{ height: `${(lines * 76) + 1}px` }}
-          onContextMenu={(e) => {
-            e.preventDefault();
-            return false;
-          }}
           ref={(ele) => {
             this.board = ele;
           }}
@@ -141,6 +222,7 @@ class Board extends Component {
             board={this.board}
             addLine={this.handleAddLine}
             deleteLine={this.handleDeleteLine}
+            onClick={selectedControl && onCancelSelect}
           />
           <div className={styles.controls}>
             {this.makeControls()}

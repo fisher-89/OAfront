@@ -8,6 +8,7 @@ import FieldTagShadow from './dragging_field_tag';
 
 class PCTemplate extends Component {
   state = {
+    selectedControl: null,
     selectedGrid: null,
     dataIndex: null,
     parentGridIndex: null,
@@ -16,13 +17,28 @@ class PCTemplate extends Component {
     onDragging: false,
   }
 
+  componentWillMount() {
+    document.addEventListener('keyup', this.keyboardControl);
+  }
+
   shouldComponentUpdate(nextProps, nextState) {
-    const changeSelectedGrid = nextState.selectedGrid !== this.state.selectedGrid;
-    const changeList = (nextProps.grids !== this.props.grids)
-      || (nextProps.fields !== this.props.fields);
-    const changeDragging = nextState.onDragging !== this.state.onDragging;
-    if (changeSelectedGrid || changeList || changeDragging) return true;
+    if (nextState.selectedGrid !== this.state.selectedGrid) return true;
+    if (nextState.selectedControl !== this.state.selectedControl) return true;
+    if (nextProps.grids !== this.props.grids) return true;
+    if (nextProps.fields !== this.props.fields) return true;
+    if (nextState.onDragging !== this.state.onDragging) return true;
     return false;
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keyup', this.keyboardControl);
+  }
+
+  keyboardControl = (e) => {
+    const { selectedControl } = this.state;
+    if (e.keyCode === 46) {
+      this.deleteSelectedControl(selectedControl);
+    }
   }
 
   toggleGridField = (key) => {
@@ -32,21 +48,23 @@ class PCTemplate extends Component {
     });
   }
 
-  handleDragStart = (data, startPoint, startPosition, grid = null) => {
+  handleSelect = (data, grid) => {
     const { fields, grids } = this.props;
     let index = 'fields' in data ? grids.indexOf(data) : fields.indexOf(data);
     const gridIndex = grid ? grids.indexOf(grid) : null;
     if (grid) index = grid.fields.indexOf(data);
     this.setState({
       dataIndex: index,
-      onDragging: data,
+      selectedControl: data,
       parentGridIndex: gridIndex,
-      startPoint,
-      startPosition,
     });
   }
 
-  handleDragCancel = (data) => {
+  handleCancelSelect = () => {
+    this.setState({ selectedControl: null });
+  }
+
+  deleteSelectedControl = (data) => {
     const { form, fields, grids } = this.props;
     const { dataIndex, parentGridIndex } = this.state;
     this.state.onDragging = false;
@@ -54,8 +72,6 @@ class PCTemplate extends Component {
       form.setFieldsValue({
         [`grids.${dataIndex}.x`]: null,
         [`grids.${dataIndex}.y`]: null,
-        [`grids.${dataIndex}.row`]: null,
-        [`grids.${dataIndex}.col`]: null,
       });
     } else if (parentGridIndex !== null) {
       const gridFields = grids[parentGridIndex].fields;
@@ -63,7 +79,6 @@ class PCTemplate extends Component {
       gridFields[dataIndex].y = null;
       gridFields[dataIndex].row = null;
       gridFields[dataIndex].col = null;
-      this.state.parentGridIndex = null;
       form.setFieldsValue({
         [`grids.${parentGridIndex}.fields`]: gridFields,
       });
@@ -74,6 +89,25 @@ class PCTemplate extends Component {
       fields[dataIndex].col = null;
       form.setFieldsValue({ fields });
     }
+  }
+
+  handleDragStart = (data, startPoint, startPosition, grid = null) => {
+    const { fields, grids } = this.props;
+    let index = 'fields' in data ? grids.indexOf(data) : fields.indexOf(data);
+    const gridIndex = grid ? grids.indexOf(grid) : null;
+    if (grid) index = grid.fields.indexOf(data);
+    this.setState({
+      dataIndex: index,
+      onDragging: data,
+      selectedControl: data,
+      parentGridIndex: gridIndex,
+      startPoint,
+      startPosition,
+    });
+  }
+
+  handleDragCancel = (data) => {
+    this.deleteSelectedControl(data);
   }
 
   handleDragConfirm = (data) => {
@@ -93,7 +127,6 @@ class PCTemplate extends Component {
       gridFields[dataIndex].y = data.y;
       gridFields[dataIndex].row = data.row;
       gridFields[dataIndex].col = data.col;
-      this.state.parentGridIndex = null;
       form.setFieldsValue({
         [`grids.${parentGridIndex}.fields`]: gridFields,
       });
@@ -109,7 +142,6 @@ class PCTemplate extends Component {
   handleDragFail = () => {
     this.setState({
       onDragging: false,
-      parentGridIndex: null,
     });
   }
 
@@ -152,7 +184,7 @@ class PCTemplate extends Component {
 
   render() {
     const { fields, grids, form } = this.props;
-    const { startPoint, startPosition, onDragging, parentGridIndex } = this.state;
+    const { startPoint, startPosition, onDragging, parentGridIndex, selectedControl } = this.state;
     return (
       <Row className={styles.pcTemplate}>
         <div className={styles.component}>
@@ -167,7 +199,13 @@ class PCTemplate extends Component {
         </div>
         <div>
           <h3>表单名称</h3>
-          <div className={styles.template}>
+          <div
+            className={styles.template}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              return false;
+            }}
+          >
             <div className={styles.scaleHorizontal}>
               {this.makeScale()}
             </div>
@@ -176,6 +214,9 @@ class PCTemplate extends Component {
               fields={fields}
               draggingControl={onDragging}
               form={form}
+              selectedControl={selectedControl}
+              onSelect={this.handleSelect}
+              onCancelSelect={this.handleCancelSelect}
               onDrag={this.handleDragStart}
               parentGrid={parentGridIndex !== null ? grids[parentGridIndex] : null}
               bind={(board) => {

@@ -10,7 +10,12 @@ import Region from './region';
 import Array from './array';
 import Search from './search';
 
-export default class ControlContent extends Component {
+export default class extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+
   textInput = () => {
     const { data } = this.props;
     return <Input data={data} />;
@@ -103,3 +108,4 @@ export default class ControlContent extends Component {
     );
   }
 }
+

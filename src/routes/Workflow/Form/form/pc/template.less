@@ -104,6 +104,9 @@
         .controls {
           position: relative;
           height: 0;
+          .control.selected {
+            z-index: 1;
+          }
           .control {
             position: absolute;
             background-color: #fff;
@@ -120,14 +123,45 @@
               .clickBoard:hover {
                 box-shadow: #1890ff 0 0 2px 0;
               }
+              .clickBoardSelected {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                top: -1px;
+                left: -1px;
+                box-sizing: content-box;
+                border: 1px solid #1890ff;
+                > div {
+                  width: 7px;
+                  height: 7px;
+                  border: 1px solid #1890ff;
+                  background-color: #fff;
+                  position: absolute;
+                  margin-top: -4px;
+                  top: 50%;
+                  cursor: ew-resize;
+                  //border-radius: 50%;
+                }
+                .leftResize {
+                  left: -4px;
+                }
+                .rightResize {
+                  right: -4px;
+                }
+              }
+            }
+            .childrenBg {
+              position: absolute;
+              top: 75px;
+              width: 913px;
+              background-image: url(/public/template_background.png);
+              background-position: 1px 1px;
+              margin-left: -1px;
             }
             .children {
               position: absolute;
               top: 75px;
-              width: 100%;
-              background-image: url(/public/template_background.png);
-              background-position: 0 1px;
-              background-color: #fefefe;
+              margin-left: -1px;
             }
           }
           .mask {
@@ -171,6 +205,7 @@
     -webkit-user-select: none;
     user-select: none;
     position: fixed;
+    z-index: 10;
     :global {
       .ant-tag, .ant-tag:hover {
         margin: 0;
