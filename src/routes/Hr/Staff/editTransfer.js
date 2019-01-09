@@ -251,7 +251,7 @@ export default class extends PureComponent {
                 {getFieldDecorator('shop_sn', {
                   initialValue: editStaff.shop_sn ? {
                     shop_sn: editStaff.shop_sn,
-                    shop_name: editStaff.shop.name,
+                    shop_name: (editStaff.shop || {}).name,
                   } : {},
                 })(
                   <SearchTable.Shop />
