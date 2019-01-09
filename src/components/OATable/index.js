@@ -847,7 +847,8 @@ class OATable extends PureComponent {
 
       Object.keys(exportFields).forEach((column) => {
         const columnValue = exportFields[column];
-        if (item[columnValue.dataIndex] === undefined) return;
+        if (item[columnValue.dataIndex] === undefined &&
+           columnValue.exportRender === undefined) return;
         if (columnValue.exportRender) {
           temp[columnValue.dataIndex] = columnValue.exportRender(item);
         } else if (columnValue.render) {
