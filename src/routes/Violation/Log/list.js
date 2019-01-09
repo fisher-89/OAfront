@@ -233,7 +233,7 @@ export default class extends PureComponent {
   }
 
   render() {
-    const { finelog, fetchFineLog, ruleType, rule, loading } = this.props;
+    const { finelog, fetchFineLog, loading } = this.props;
     const { detailsVisible, visible, initialValue, selectedRowKeys, selectedRows } = this.state;
     let excelExport = null;
     const extra = [];
@@ -318,8 +318,6 @@ export default class extends PureComponent {
           initialValue={initialValue}
           onCancel={this.handleDetailsVisible}
           paymentChange={this.paychange}
-          ruleType={ruleType}
-          rule={rule}
           finelog={finelog}
         />
       </Fragment>
