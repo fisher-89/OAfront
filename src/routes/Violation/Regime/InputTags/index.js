@@ -3,7 +3,7 @@ import {
   Tag,
 } from 'antd';
 import ToolBar from './toolBar';
-import './index.less';
+import styles from './index.less';
 
 export default class Index extends PureComponent {
   constructor(props) {
@@ -65,12 +65,18 @@ export default class Index extends PureComponent {
       Object.keys(rules).forEach((color) => {
         if (item.search(rules[color]) !== -1 && contents[item]) {
           const tagProps = { key: `tag-${index}` };
-          if (color !== 'default') {
-            tagProps.color = color;
+          if (color === 'volcano') {
+            temp = (
+              <span {...tagProps} className={styles.fuhao}>{contents[item]}</span>
+            );
+          } else {
+            if (color !== 'default') {
+              tagProps.color = color;
+            }
+            temp = (
+              <Tag {...tagProps}>{contents[item]}</Tag>
+            );
           }
-          temp = (
-            <Tag {...tagProps}>{contents[item]}</Tag>
-          );
         }
       });
     }
@@ -80,7 +86,7 @@ export default class Index extends PureComponent {
 
   render() {
     const html = this.makeContent();
-    const { disabled } = this.props;
+    const { disabled, content } = this.props;
     return (
       <Fragment>
         <textarea
@@ -111,8 +117,8 @@ export default class Index extends PureComponent {
           })}
         </div>
         <ToolBar
+          content={content}
           disabled={disabled}
-          fields={this.props.fields}
           plusItem={this.addTag}
           makeContents={(contents) => {
             this.setState({ contents });

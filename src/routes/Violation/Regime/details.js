@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import OAForm, { OAModal } from '../../../components/OAForm';
-import ShowRule from './showrule/index';
+import ShowRule from './ruleTags';
 import style from './details.less';
 
 @OAForm.create()

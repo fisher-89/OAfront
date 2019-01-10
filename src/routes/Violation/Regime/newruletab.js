@@ -11,16 +11,6 @@ const FormItem = Form.Item;
   },
 }))
 export default class extends PureComponent {
-  submit = (params) => {
-    if (params) {
-      const newtype = { name: params };
-      const { typeSubmit } = this.props;
-      const { setFieldsValue } = this.props.form;
-      typeSubmit(newtype);
-      setFieldsValue({ typenew: '' });
-    }
-  }
-
   handleSubmit = () => {
     const { validateFields } = this.props.form;
     validateFields((errors, values) => {
@@ -33,11 +23,12 @@ export default class extends PureComponent {
   }
 
   ruleSubmit = (values) => {
-    const { dispatch } = this.props;
+    const { dispatch, onError } = this.props;
     dispatch({
       type: values.id ? 'violation/editRule' : 'violation/addRule',
       payload: values,
       onSuccess: () => this.props.remove(),
+      onError,
     });
   }
 
@@ -67,7 +58,7 @@ export default class extends PureComponent {
       },
     };
     const { getFieldDecorator } = this.props.form;
-    const { ruletype, initialValue } = this.props;
+    const { ruletype, content, initialValue } = this.props;
     return (
       <Form>
         {getFieldDecorator('id', {
@@ -94,16 +85,6 @@ export default class extends PureComponent {
                   )}
             </FormItem>
           </Col>
-
-          <Col span={8} offset={-2}>
-            <FormItem {...typeFormItemLayout} label="添加类型" >
-              {getFieldDecorator('typenew', {
-              initialValue: undefined,
-                })(
-                  <Input onBlur={() => this.submit(this.props.form.getFieldValue('typenew'))} />
-              )}
-            </FormItem>
-          </Col>
         </Row>
 
         <FormItem {...formItemLayout} label="大爱原因" required>
@@ -122,7 +103,9 @@ export default class extends PureComponent {
           {getFieldDecorator('money', {
           initialValue: initialValue.money || '',
             })(
-              <InputTags />
+              <InputTags
+                content={content}
+              />
           )}
 
         </FormItem>
@@ -131,7 +114,9 @@ export default class extends PureComponent {
           {getFieldDecorator('score', {
           initialValue: initialValue.score || '',
             })(
-              <InputTags />
+              <InputTags
+                content={content}
+              />
           )}
         </FormItem>
 

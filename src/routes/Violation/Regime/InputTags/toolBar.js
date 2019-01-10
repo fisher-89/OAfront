@@ -1,25 +1,13 @@
 import React, { PureComponent } from 'react';
-import { connect } from 'dva';
 import {
   Tag,
-  Spin,
 } from 'antd';
 import './index.less';
 
-@connect(({ violation, loading }) => ({
-  content: violation.math,
-  fetching: loading.effects['violation/fetchMath'],
-}))
 export default class ToolBar extends PureComponent {
   constructor(props) {
     super(props);
-    const { fields, makeContents } = this.props;
-    const fieldsContent = {};
-    if (fields) {
-      fields.forEach((item) => {
-        fieldsContent[`{?${item.key}?}`] = item.name;
-      });
-    }
+    const { makeContents } = this.props;
     makeContents();
     this.state = {
       rules: {
@@ -33,44 +21,18 @@ export default class ToolBar extends PureComponent {
           title: '系统变量',
           content: {},
         },
-        formFields: {
-          title: '字段类型',
-          content: fieldsContent || {},
-        },
       },
     };
   }
 
 
   componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'violation/fetchMath',
-      payload: {},
-    });
     this.initStateConent(this.props);
   }
 
   componentWillReceiveProps(newProps) {
-    const { rules, rules: { formFields } } = this.state;
     if (newProps.content !== this.props.content) {
       this.initStateConent(newProps);
-    }
-    if (newProps.fields !== this.props.fields) {
-      const { fields } = newProps;
-      const fieldsContent = {};
-      fields.forEach((item) => {
-        fieldsContent[`{?${item.key}?}`] = item.name;
-      });
-      this.setState({
-        rules: {
-          ...rules,
-          formFields: {
-            ...formFields,
-            content: fieldsContent,
-          },
-        },
-      }, this.setPropsContent);
     }
   }
 
@@ -118,10 +80,10 @@ export default class ToolBar extends PureComponent {
 
   render() {
     const { rules } = this.state;
-    const { fetching, plusItem } = this.props;
+    const { plusItem } = this.props;
 
     return (
-      <Spin spinning={fetching} delay={500}>
+      <div>
         {Object.keys(rules).map((key, index) => {
           if (Object.keys(rules[key].content).length === 0) {
             return '';
@@ -145,7 +107,7 @@ export default class ToolBar extends PureComponent {
             </div>
           );
         })}
-      </Spin>
+      </div>
     );
   }
 }
