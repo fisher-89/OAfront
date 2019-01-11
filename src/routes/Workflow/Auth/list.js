@@ -116,7 +116,15 @@ export default class List extends Component {
             <span style={{ padding: '5px 20px' }}>有</span>
           </Tooltip>
         );
-        const value = (record.handle_flow.length > 0 && record.handle_form.length > 0) ? trueText : '无';
+        let value = '无';
+        if (record.is_super === 1) {
+          value = '全部';
+        } else if (
+          record.is_super === 0 &&
+          (record.handle_flow.length > 0 && record.handle_form.length > 0)
+        ) {
+          value = trueText;
+        }
         return value;
       },
     },
