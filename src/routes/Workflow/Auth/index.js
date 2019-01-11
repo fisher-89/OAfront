@@ -4,6 +4,7 @@ import {
   Tabs,
 } from 'antd';
 import { connect } from 'dva';
+import { find } from 'lodash';
 
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 // 列表
@@ -88,15 +89,24 @@ export default class Auth extends Component {
   handleUpdateRole = (id, text) => {
     const { panes } = this.state;
     const activeKey = text.name;
-    panes.push({
-      title: activeKey,
-      key: activeKey,
-      content: <Add onCancel={() => this.remove(activeKey)} data={text} />,
+    const check = find(panes, (pane) => {
+      return pane.key === activeKey;
     });
-    this.setState({
-      panes,
-      activeKey,
-    });
+    if (check) {
+      this.setState({
+        activeKey,
+      });
+    } else {
+      panes.push({
+        title: activeKey,
+        key: activeKey,
+        content: <Add onCancel={() => this.remove(activeKey)} data={text} />,
+      });
+      this.setState({
+        panes,
+        activeKey,
+      });
+    }
   };
   // 删除角色
   handleDeleteRole = (id) => {
