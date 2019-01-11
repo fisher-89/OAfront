@@ -78,7 +78,15 @@ export default {
   update(state, action) {
     const { store, data } = action.payload;
     const staffSn = action.payload.staff_sn;
-
+    if (data.message) {
+      notification.error({
+        message: data.message,
+      });
+      return;
+    }
+    notification.success({
+      message: '操作成功',
+    });
     const dataSource = Array.isArray(state[store]) ? state[store] : (state[store].data || []);
     let updated = false;
     const newStore = dataSource.map((item) => {
@@ -92,9 +100,6 @@ export default {
     if (!updated) {
       newStore.push(data);
     }
-    notification.success({
-      message: '操作成功',
-    });
     return {
       ...state,
       [store]: Array.isArray(state[store]) ? newStore : { ...state[store], data: newStore },

@@ -8,6 +8,7 @@ export default type => (Component) => {
     rule: violation.rule,
     ruletype: violation.ruletype,
     loading: {
+      mathFetch: loading.effects['violation/fetchMath'],
       fetchRule: loading.effects['violation/fetchRule'],
       fetchRuleType: loading.effects['violation/fetchRuleType'],
     },

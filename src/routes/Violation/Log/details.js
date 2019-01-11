@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import { Button, Tooltip } from 'antd';
-import OATable from '../../../components/OATable';
 import OAForm, { OAModal } from '../../../components/OAForm';
 import style from './details.less';
 
@@ -27,17 +26,13 @@ export default class extends PureComponent {
     const {
       visible,
       onCancel,
-      ruleType,
-      rule,
       paymentChange,
     } = this.props;
     const { value } = this.state;
-
     const payment = value.has_paid ? '已支付' : '未支付';
     const pay = value.has_paid ? '退款' : '支付';
-    const rulename = OATable.findRenderKey(rule, value.rule_id).name;
-    const typename = OATable.findRenderKey(
-      ruleType, OATable.findRenderKey(rule, value.rule_id).type_id).name;
+    const rulename = { ...value.rules }.name;
+    const typename = { ...{ ...value.rules }.rule_types }.name;
     return (
       <OAModal
         visible={visible}

@@ -1,6 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Form, Input, Button, List } from 'antd';
 import ListItem from './listitem';
+import './index.less';
 
 @Form.create()
 export default class extends PureComponent {

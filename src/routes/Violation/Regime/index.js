@@ -6,13 +6,13 @@ import RuleType from './Type/index';
 import store from './store/store';
 import RuleForm from './details';
 import NewRule from './newruletab';
+import RuleTag from './tableTags';
 
 const { TabPane } = Tabs;
 @store()
 export default class extends PureComponent {
   state= {
     panes: [],
-    newpane: 0,
     visible: false,
     activeKey: 'ruleList',
     details: {},
@@ -38,10 +38,13 @@ export default class extends PureComponent {
     const newPanes = panes.filter(pane => pane.key !== targetKey);
     if (lastIndex >= 0 && activeKey === targetKey) {
       activeKey = panes[lastIndex].key;
-    } else { activeKey = 'ruleList'; }
-    if (newPanes.length === 0) {
+    } else if (lastIndex >= 0 && activeKey !== targetKey) {
+      const midkey = this.state.activeKey;
+      activeKey = midkey;
+    } else if (lastIndex < 0) {
       activeKey = 'ruleList';
     }
+
     this.setState({ panes: [...newPanes], activeKey });
   }
 
@@ -72,20 +75,38 @@ export default class extends PureComponent {
     this.handleModalVisible(true);
   }
 
-  add = (params) => {
-    const { panes, newpane } = this.state;
-    const activeKey = `${newpane + 1}`;
-    if (params) {
-      panes.push({ title: '编辑制度', content: params, key: activeKey });
-    } else {
-      panes.push({ title: '新建制度', content: '', key: activeKey });
+  add = () => {
+    const { panes } = this.state;
+    let pushAble = true;
+    const activeKey = 'newrule';
+    panes.forEach((item) => {
+      if (item.key === 'newrule') {
+        pushAble = false;
+      }
+    });
+    if (pushAble) {
+      panes.push({ title: '新建制度', content: '', key: 'newrule' });
     }
-    this.setState({ panes: [...panes], activeKey, newpane: activeKey });
+    this.setState({ panes: [...panes], activeKey });
   }
 
+  edit = (params) => {
+    const { panes } = this.state;
+    let pushAble = true;
+    const activeKey = `${params.id}`;
+    panes.forEach((item) => {
+      if (item.key === params.id.toString()) {
+        pushAble = false;
+      }
+    });
+    if (pushAble) {
+      panes.push({ title: '编辑制度', content: params, key: `${params.id}` });
+    }
+    this.setState({ panes: [...panes], activeKey });
+  }
 
   makeColumns = () => {
-    const { ruleDelete } = this.props;
+    const { ruletype, ruleDelete, content, loading } = this.props;
     const columns = [
       {
         title: '序号',
@@ -98,14 +119,35 @@ export default class extends PureComponent {
       {
         title: '类型',
         dataIndex: 'type_id',
+        render: key => OATable.findRenderKey(ruletype, key).name,
       },
       {
         title: '扣分规则',
         dataIndex: 'score',
+        loading,
+        render: (RowData) => {
+          const tags = (
+            <Fragment>
+              <RuleTag
+                value={RowData}
+                content={content}
+              />
+            </Fragment>);
+          return tags;
+        },
       },
       {
         title: '扣钱规则',
         dataIndex: 'money',
+        loading,
+        render: (RowData) => {
+          const tags = (
+            <RuleTag
+              value={RowData}
+              content={content}
+            />);
+          return tags;
+        },
       },
       {
         title: '记录时间',
@@ -119,7 +161,7 @@ export default class extends PureComponent {
             <Fragment>
               <a onClick={() => this.details(RowData)}>查看</a>
               <Divider type="vertical" />
-              <a onClick={() => this.add(RowData)}>编辑</a>
+              <a onClick={() => this.edit(RowData)}>编辑</a>
               <Divider type="vertical" />
               <a onClick={() => ruleDelete(RowData.id)}>删除</a>
             </Fragment>
@@ -186,6 +228,7 @@ export default class extends PureComponent {
             {panes.map(pane => (
               <TabPane tab={pane.title} key={pane.key}>
                 <NewRule
+                  content={content}
                   remove={() => this.remove(pane.key)}
                   initialValue={pane.content}
                   ruletype={ruletype}
