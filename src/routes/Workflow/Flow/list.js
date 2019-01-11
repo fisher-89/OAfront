@@ -150,7 +150,7 @@ export default class Flow extends PureComponent {
               <a>克隆</a>
             </Popconfirm>
             {
-              text.handle_id.includes(3) ?
+              text.handle_id.includes(2) ?
                 (
                   <span>
                     <Divider type="vertical" />
@@ -160,7 +160,7 @@ export default class Flow extends PureComponent {
                 : null
             }
             {
-              text.handle_id.includes(4) ?
+              text.handle_id.includes(3) ?
                 (
                   <span>
                     <Divider type="vertical" />

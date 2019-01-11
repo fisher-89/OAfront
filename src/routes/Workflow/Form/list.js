@@ -160,7 +160,7 @@ export default class List extends PureComponent {
                 : null
             }
             {
-              text.handle_id.includes(3) ?
+              text.handle_id.includes(2) ?
                 (
                   <span>
                     {
@@ -176,11 +176,11 @@ export default class List extends PureComponent {
                 : null
             }
             {
-              text.handle_id.includes(4) ?
+              text.handle_id.includes(3) ?
                 (
                   <span>
                     {
-                      text.handle_id.includes(3) ?
+                      text.handle_id.includes(2) ?
                         <Divider type="vertical" />
                         : null
                     }

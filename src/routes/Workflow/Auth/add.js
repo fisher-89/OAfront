@@ -6,8 +6,11 @@ import {
   Button,
   Icon,
   Tag,
+  Tabs,
+  Divider,
 } from 'antd';
 import { connect } from 'dva';
+import { pick } from 'lodash';
 import OAForm from '../../../components/OAForm';
 import SearchTable from '../../../components/OAForm/SearchTable';
 import style from './add.less';
@@ -16,12 +19,12 @@ import FormAuthModal from './formAuthModal';
 
 const FormItem = OAForm.Item;
 const CheckboxGroup = Checkbox.Group;
+const { TabPane } = Tabs;
 
 const checkBoxGroupOptions = [
   { label: '查看', value: 1 },
-  { label: '编辑', value: 3 },
-  { label: '添加', value: 2 },
-  { label: '删除', value: 4 },
+  { label: '编辑', value: 2 },
+  { label: '删除', value: 3 },
 ];
 
 @connect(({ loading }) => ({
@@ -41,28 +44,34 @@ export default class Add extends Component {
       name: '',
       is_super: 0,
       staff: [],
-      handle: [],
-      flow_auth: [],
-      form_auth: [],
+      handle_flow: [],
+      handle_flow_type: [],
+      handle_form: [],
+      handle_form_type: [],
+      export_flow: [],
+      export_form: [],
     };
+
     // 流程关联modal 默认关闭
     const flowVisible = false;
-    // 关联流程data
-    const flowAuthData = [];
     // 流程关联modal 默认关闭
     const formVisible = false;
-    // 关联流程data
-    const formAuthData = [];
+    // 可导出流程modal关闭
+    const exportFlowVisible = false;
+    // 可导出表单modal关闭
+    const exportFormVisible = false;
 
     // 是否编辑
     const isEdit = data ? 1 : 0;
 
     this.state = {
       initialForm,
+      // 权限选中tab
+      tabActiveKey: 'handle',
       flowVisible,
-      flowAuthData,
       formVisible,
-      formAuthData,
+      exportFlowVisible,
+      exportFormVisible,
       isEdit,
     };
   }
@@ -74,30 +83,25 @@ export default class Add extends Component {
     if (isEdit) {
       this.setState({
         initialForm: {
-          name: data.name,
-          is_super: data.is_super,
-          staff: data.staff,
-          handle: data.handle,
-          flow_auth: data.flow_auth,
-          form_auth: data.form_auth,
+          ...data,
         },
-        flowAuthData: data.flow_auth_data,
-        formAuthData: data.form_auth_data,
       });
     }
   }
 
   // 删除关联流程tag
   onCloseFlowTag = (number) => {
+    const { initialForm } = this.state;
     const { getFieldValue, setFieldsValue } = this.props.form;
-    const flowAuth = getFieldValue('flow_auth');
-    const index = flowAuth.indexOf(number);
-    flowAuth.splice(index, 1);
-    const newFlowAuthData = this.state.flowAuthData.filter(flow => flow.number !== number);
+    const flowAuth = getFieldValue('handle_flow');
+    const newHandleFlow = flowAuth.filter(flow => flow.number !== number);
     this.setState({
-      flowAuthData: newFlowAuthData,
+      initialForm: {
+        ...initialForm,
+        handle_flow: newHandleFlow,
+      },
     });
-    setFieldsValue({ flow_auth: flowAuth });
+    setFieldsValue({ handle_flow: newHandleFlow });
   };
   // 关闭流程 modal
   onCancelFlow = () => {
@@ -107,20 +111,64 @@ export default class Add extends Component {
   };
   // 删除表单流程tag
   onCloseFormTag = (number) => {
+    const { initialForm } = this.state;
     const { getFieldValue, setFieldsValue } = this.props.form;
-    const formAuth = getFieldValue('form_auth');
-    const index = formAuth.indexOf(number);
-    formAuth.splice(index, 1);
-    const newFormAuthData = this.state.formAuthData.filter(form => form.number !== number);
+    const handleForm = getFieldValue('handle_form');
+    const newHandleForm = handleForm.filter(form => form.number !== number);
     this.setState({
-      formAuthData: newFormAuthData,
+      initialForm: {
+        ...initialForm,
+        handle_form: newHandleForm,
+      },
     });
-    setFieldsValue({ form_auth: formAuth });
+    setFieldsValue({ handle_form: newHandleForm });
   };
   // 关闭表单 modal
   onCancelForm = () => {
     this.setState({
       formVisible: false,
+    });
+  };
+
+  // 删除导出流程tag
+  onCloseExportFlowTag = (number) => {
+    const { initialForm } = this.state;
+    const { getFieldValue, setFieldsValue } = this.props.form;
+    const exportFlow = getFieldValue('export_flow');
+    const newExportFlow = exportFlow.filter(flow => flow.number !== number);
+    this.setState({
+      initialForm: {
+        ...initialForm,
+        export_flow: newExportFlow,
+      },
+    });
+    setFieldsValue({ export_flow: newExportFlow });
+  };
+  // 关闭导出流程 modal
+  onCancelExportFlow = () => {
+    this.setState({
+      exportFlowVisible: false,
+    });
+  };
+
+  // 删除导出表单流程tag
+  onCloseExportFormTag = (number) => {
+    const { initialForm } = this.state;
+    const { getFieldValue, setFieldsValue } = this.props.form;
+    const exportForm = getFieldValue('export_form');
+    const newExportForm = exportForm.filter(form => form.number !== number);
+    this.setState({
+      initialForm: {
+        ...initialForm,
+        handle_form: newExportForm,
+      },
+    });
+    setFieldsValue({ export_form: newExportForm });
+  };
+  // 关闭导出表单 modal
+  onCancelExportForm = () => {
+    this.setState({
+      exportFormVisible: false,
     });
   };
 
@@ -134,13 +182,36 @@ export default class Add extends Component {
   // 关联流程确定
   flowAuthOnOk = (selectedRowKeys, selectedRows) => {
     const { setFieldsValue } = this.props.form;
-    setFieldsValue({ flow_auth: selectedRowKeys });
+    const { initialForm } = this.state;
+    const handleFlow = selectedRows.map(flow => pick(flow, ['name', 'number']));
+    setFieldsValue({ handle_flow: handleFlow });
     this.setState({
       flowVisible: false,
-      // initialForm: {
-      //   flow_auth: selectedRowKeys,
-      // },
-      flowAuthData: selectedRows,
+      initialForm: {
+        ...initialForm,
+        handle_flow: handleFlow,
+      },
+    });
+  };
+
+  // 显示导出流程 modal
+  showExportFlowModal = () => {
+    this.setState({
+      exportFlowVisible: true,
+    });
+  };
+  // 导出流程确定
+  exportFlowOnOk = (selectedRowKeys, selectedRows) => {
+    const { setFieldsValue } = this.props.form;
+    const { initialForm } = this.state;
+    const exportFlow = selectedRows.map(flow => pick(flow, ['name', 'number']));
+    setFieldsValue({ export_flow: exportFlow });
+    this.setState({
+      exportFlowVisible: false,
+      initialForm: {
+        ...initialForm,
+        export_flow: exportFlow,
+      },
     });
   };
 
@@ -155,17 +226,40 @@ export default class Add extends Component {
 
   // 关联表单确定
   formAuthOnOk = (selectedRowKeys, selectedRows) => {
+    const { initialForm } = this.state;
     const { setFieldsValue } = this.props.form;
-    setFieldsValue({ form_auth: selectedRowKeys });
+    const handleForm = selectedRows.map(form => pick(form, ['name', 'number']));
+    setFieldsValue({ handle_form: handleForm });
     this.setState({
       formVisible: false,
-      // initialForm: {
-      //   flow_auth: selectedRowKeys,
-      // },
-      formAuthData: selectedRows,
+      initialForm: {
+        ...initialForm,
+        handle_form: handleForm,
+      },
     });
   };
 
+  // 显示导出表单 modal
+  showExportFormModal = () => {
+    this.setState({
+      exportFormVisible: true,
+    });
+  };
+
+  // 关联导出表单确定
+  exportFormOnOk = (selectedRowKeys, selectedRows) => {
+    const { initialForm } = this.state;
+    const { setFieldsValue } = this.props.form;
+    const exportForm = selectedRows.map(form => pick(form, ['name', 'number']));
+    setFieldsValue({ export_form: exportForm });
+    this.setState({
+      exportFormVisible: false,
+      initialForm: {
+        ...initialForm,
+        export_form: exportForm,
+      },
+    });
+  };
 
   // 添加提交
   handleSubmit = (params, onError) => {
@@ -205,7 +299,7 @@ export default class Add extends Component {
       });
     }
   };
-  // 操作权限点击
+  // 操作类型点击
   checkBoxOnChange = (checkedList) => {
     this.setState(checkedList);
   };
@@ -229,6 +323,10 @@ export default class Add extends Component {
       />
     );
   };
+  // 操作权限、导出权限tab切换
+  tabChange = (activeKey) => {
+    this.setState({ tabActiveKey: activeKey });
+  };
 
   render() {
     // 表单字段布局
@@ -248,9 +346,15 @@ export default class Add extends Component {
       form: { getFieldDecorator },
       validateFields,
     } = this.props;
-    const { initialForm, flowVisible, flowAuthData, formVisible, formAuthData } = this.state;
+    const {
+      initialForm,
+      flowVisible,
+      formVisible,
+      exportFlowVisible,
+      exportFormVisible,
+    } = this.state;
     // 流程tags
-    const getFlowTags = flowAuthData.map(flow => (
+    const getFlowTags = initialForm.handle_flow.map(flow => (
       <Tag
         key={flow.number}
         closable
@@ -260,11 +364,33 @@ export default class Add extends Component {
       </Tag>
     ));
     // 表单tags
-    const getFormTags = formAuthData.map(form => (
+    const getFormTags = initialForm.handle_form.map(form => (
       <Tag
         key={form.number}
         closable
         onClose={() => this.onCloseFormTag(form.number)}
+      >
+        {form.name}
+      </Tag>
+    ));
+
+    // 导出流程tags
+    const getExportFlowTags = initialForm.export_flow.map(flow => (
+      <Tag
+        key={flow.number}
+        closable
+        onClose={() => this.onCloseExportFlowTag(flow.number)}
+      >
+        {flow.name}
+      </Tag>
+    ));
+
+    // 导出表单tags
+    const getExportFormTags = initialForm.export_form.map(form => (
+      <Tag
+        key={form.number}
+        closable
+        onClose={() => this.onCloseExportFormTag(form.number)}
       >
         {form.name}
       </Tag>
@@ -293,38 +419,6 @@ export default class Add extends Component {
           </FormItem>
           <FormItem
             {...formItemLayout}
-            label="超级管理员"
-            required
-          >
-            {
-              getFieldDecorator('is_super', {
-                rules: [{
-                  required: true,
-                  message: '请选择是或否',
-                }],
-                initialValue: initialForm.is_super,
-              })(
-                <Switch defaultChecked={!!initialForm.is_super} />
-              )
-            }
-          </FormItem>
-          <FormItem
-            {...formItemLayout}
-            label="操作权限"
-          >
-            {
-              getFieldDecorator('handle', {
-                initialValue: initialForm.handle,
-              })(
-                <CheckboxGroup
-                  options={checkBoxGroupOptions}
-                  onChange={this.checkBoxOnChange}
-                />
-              )
-            }
-          </FormItem>
-          <FormItem
-            {...formItemLayout}
             label="关联员工"
           >
             {
@@ -340,38 +434,126 @@ export default class Add extends Component {
           </FormItem>
           <FormItem
             {...formItemLayout}
-            label="关联流程"
+            label="超级管理员"
+            required
           >
             {
-              getFieldDecorator('flow_auth', {
-                initialValue: initialForm.flow_auth,
+              getFieldDecorator('is_super', {
+                rules: [{
+                  required: true,
+                  message: '请选择是或否',
+                }],
+                initialValue: initialForm.is_super,
               })(
-                <span>
-                  {getFlowTags}
-                  <Button type="dashed" className={style.relateButton} onClick={this.showFlowAuthModal}>
-                    <Icon type="plus" />
-                  </Button>
-                </span>
+                <Switch defaultChecked={!!initialForm.is_super} />
               )
             }
           </FormItem>
-          <FormItem
-            {...formItemLayout}
-            label="关联表单"
-          >
-            {
-              getFieldDecorator('form_auth', {
-                initialValue: initialForm.form_auth,
-              })(
-                <span>
-                  {getFormTags}
-                  <Button type="dashed" className={style.relateButton} onClick={this.showFormAuthModal}>
-                    <Icon type="plus" />
-                  </Button>
-                </span>
-              )
-            }
-          </FormItem>
+          <Tabs activeKey={this.state.tabActiveKey} onChange={this.tabChange}>
+            <TabPane tab="操作权限" key="handle">
+              <FormItem
+                {...formItemLayout}
+                label="可操作流程"
+              >
+                {
+                  getFieldDecorator('handle_flow', {
+                    initialValue: initialForm.handle_flow,
+                  })(
+                    <span>
+                      {getFlowTags}
+                      <Button type="dashed" className={style.relateButton} onClick={this.showFlowAuthModal}>
+                        <Icon type="plus" />
+                      </Button>
+                    </span>
+                  )
+                }
+              </FormItem>
+              <FormItem
+                {...formItemLayout}
+                label="操作类型"
+              >
+                {
+                  getFieldDecorator('handle_flow_type', {
+                    initialValue: initialForm.handle_flow_type,
+                  })(
+                    <CheckboxGroup
+                      options={checkBoxGroupOptions}
+                      onChange={this.checkBoxOnChange}
+                    />
+                  )
+                }
+              </FormItem>
+              <Divider dashed />
+              <FormItem
+                {...formItemLayout}
+                label="可操作表单"
+              >
+                {
+                  getFieldDecorator('handle_form', {
+                    initialValue: initialForm.handle_form,
+                  })(
+                    <span>
+                      {getFormTags}
+                      <Button type="dashed" className={style.relateButton} onClick={this.showFormAuthModal}>
+                        <Icon type="plus" />
+                      </Button>
+                    </span>
+                  )
+                }
+              </FormItem>
+              <FormItem
+                {...formItemLayout}
+                label="操作类型"
+              >
+                {
+                  getFieldDecorator('handle_form_type', {
+                    initialValue: initialForm.handle_form_type,
+                  })(
+                    <CheckboxGroup
+                      options={checkBoxGroupOptions}
+                      onChange={this.checkBoxOnChange}
+                    />
+                  )
+                }
+              </FormItem>
+            </TabPane>
+            <TabPane tab="导出权限" key="export">
+              <FormItem
+                {...formItemLayout}
+                label="可导出流程"
+              >
+                {
+                  getFieldDecorator('export_flow', {
+                    initialValue: initialForm.export_flow,
+                  })(
+                    <span>
+                      {getExportFlowTags}
+                      <Button type="dashed" className={style.relateButton} onClick={this.showExportFlowModal}>
+                        <Icon type="plus" />
+                      </Button>
+                    </span>
+                  )
+                }
+              </FormItem>
+              <FormItem
+                {...formItemLayout}
+                label="可导出表单"
+              >
+                {
+                  getFieldDecorator('export_form', {
+                    initialValue: initialForm.export_form,
+                  })(
+                    <span>
+                      {getExportFormTags}
+                      <Button type="dashed" className={style.relateButton} onClick={this.showExportFormModal}>
+                        <Icon type="plus" />
+                      </Button>
+                    </span>
+                  )
+                }
+              </FormItem>
+            </TabPane>
+          </Tabs>
           <FormItem
             labelCol={{ xs: { span: 24 }, sm: { span: 6 } }}
             wrapperCol={{ span: 24, offset: 6 }}
@@ -383,13 +565,25 @@ export default class Add extends Component {
           visible={flowVisible}
           onCancel={this.onCancelFlow}
           onOk={this.flowAuthOnOk}
-          selectedRowKeys={initialForm.flow_auth}
+          selectedRowKeys={initialForm.handle_flow}
         />
         <FormAuthModal
           visible={formVisible}
           onCancel={this.onCancelForm}
           onOk={this.formAuthOnOk}
-          selectedRowKeys={initialForm.form_auth}
+          selectedRowKeys={initialForm.handle_form}
+        />
+        <FlowAuthModal
+          visible={exportFlowVisible}
+          onCancel={this.onCancelExportFlow}
+          onOk={this.exportFlowOnOk}
+          selectedRowKeys={initialForm.export_flow}
+        />
+        <FlowAuthModal
+          visible={exportFormVisible}
+          onCancel={this.onCancelExportForm}
+          onOk={this.exportFormOnOk}
+          selectedRowKeys={initialForm.export_form}
         />
       </div>
     );

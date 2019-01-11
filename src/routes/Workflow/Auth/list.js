@@ -5,6 +5,7 @@ import {
   Button,
   Divider,
   Popconfirm,
+  Tooltip,
 } from 'antd';
 import OATable from '../../../components/OATable';
 
@@ -62,39 +63,6 @@ export default class List extends Component {
       },
     },
     {
-      title: '操作权限',
-      align: 'center',
-      dataIndex: 'handle',
-      searcher: true,
-      render: (text) => {
-        let value = '';
-        if (text.length > 0) {
-          const handleName = text.map((item) => {
-            let name = '';
-            switch (item) {
-              case 1:
-                name = '查看';
-                break;
-              case 2:
-                name = '添加';
-                break;
-              case 3:
-                name = '编辑';
-                break;
-              case 4:
-                name = '删除';
-                break;
-              default:
-                name = '';
-            }
-            return name;
-          });
-          value = handleName.join('、');
-        }
-        return OATable.renderEllipsis(value, true);
-      },
-    },
-    {
       title: '关联员工',
       align: 'center',
       dataIndex: 'staff',
@@ -111,8 +79,50 @@ export default class List extends Component {
       },
     },
     {
-      title: '关联流程',
-      dataIndex: 'flow_auth_data',
+      title: '操作权限',
+      align: 'center',
+      // dataIndex: 'handle',
+      // searcher: true,
+      render: (text, record) => {
+        const type = {
+          1: '查看',
+          2: '编辑',
+          3: '删除',
+        };
+        const flowNameText = record.handle_flow.map(flow => flow.name);
+        const flowHandleType = record.handle_flow_type.map(value => type[value]);
+        const formNameText = record.handle_form.map(form => form.name);
+        const formHandleType = record.handle_form_type.map(value => type[value]);
+        const style = { lineHeight: '20px', width: '200px', marginTop: '10px' };
+        const content = (
+          <div>
+            <div>
+              <span>可操作流程：</span>
+              <p style={style}>{flowNameText.join('、')}</p>
+              <span>操作类型：</span>
+              <p style={style}>{flowHandleType.join('、')}</p>
+            </div>
+            <Divider dashed />
+            <div>
+              <span>可操作表单：</span>
+              <p style={style}>{formNameText.join('、')}</p>
+              <span>操作类型：</span>
+              <p style={style}>{formHandleType.join('、')}</p>
+            </div>
+          </div>
+        );
+        const trueText = (
+          <Tooltip title={content} placement="left">
+            <span style={{ padding: '5px 20px' }}>有</span>
+          </Tooltip>
+        );
+        const value = (record.handle_flow.length > 0 && record.handle_form.length > 0) ? trueText : '无';
+        return value;
+      },
+    },
+    {
+      title: '可导出流程',
+      dataIndex: 'export_flow',
       align: 'center',
       searcher: true,
       render: (text) => {
@@ -127,8 +137,8 @@ export default class List extends Component {
       },
     },
     {
-      title: '关联表单',
-      dataIndex: 'form_auth_data',
+      title: '可导出表单',
+      dataIndex: 'export_form',
       align: 'center',
       searcher: true,
       render: (text) => {
