@@ -7,7 +7,7 @@ function makeLoading(loading) {
   return {
     fetchDataSource: (
       loading.effects['workflow/fetchFormType'] ||
-      loading.effects['workflow/fetchForm'] ||
+      loading.effects['workflow/flowRunFormList'] ||
       loading.effects['workflow/fetchFormVersion'] ||
       loading.effects['workflow/flowRunLog'] ||
       loading.effects['workflow/flowRunLogExport']
@@ -18,7 +18,7 @@ function makeLoading(loading) {
 export default type => (Component) => {
   @connect(({ workflow, loading }) => ({
     formType: workflow.formType,
-    form: workflow.form,
+    form: workflow.flowRunFormList,
     fetchFormVersion: workflow.fetchFormVersion,
     flowRunLog: workflow.flowRunLog,
     exportProgress: workflow.exportProgress,
@@ -28,7 +28,7 @@ export default type => (Component) => {
     componentWillMount() {
       const { dispatch } = this.props;
       dispatch({ type: 'workflow/fetchFormType' });
-      dispatch({ type: 'workflow/fetchForm', payload: {} });
+      dispatch({ type: 'workflow/flowRunFormList', payload: {} });
     }
 
     // 获取表单版本

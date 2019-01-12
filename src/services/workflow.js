@@ -41,6 +41,16 @@ export async function flowRunLog(params) {
   });
 }
 
+// 流程运行 获取流程列表
+export async function flowRunFlowList() {
+  return request('/api/workflow/flow-run/flow', { method: 'GET' });
+}
+
+// 流程运行 获取表单列表
+export async function flowRunFormList() {
+  return request('/api/workflow/flow-run/form', { method: 'GET' });
+}
+
 export async function flowRunFormVersion(number) {
   return request(`/api/workflow/flow-run/form/flow/${number}`, { method: 'GET' });
 }

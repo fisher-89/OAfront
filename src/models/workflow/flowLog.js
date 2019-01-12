@@ -6,12 +6,36 @@ import {
   flowRunLog,
   formVersion,
   startFlowRunLogExport,
+  flowRunFlowList,
+  flowRunFormList,
 } from '../../services/workflow';
 
 
 const store = 'flowRunLog';
 
 export default {
+  // 流程运行 流程列表
+  * flowRunFlowList({ payload }, { call, put }) {
+    const response = yield call(flowRunFlowList, payload);
+    yield put({
+      type: 'save',
+      payload: {
+        store: 'flowRunFlowList',
+        data: response,
+      },
+    });
+  },
+  // 流程运行 表单列表
+  * flowRunFormList({ payload }, { call, put }) {
+    const response = yield call(flowRunFormList, payload);
+    yield put({
+      type: 'save',
+      payload: {
+        store: 'flowRunFlowList',
+        data: response,
+      },
+    });
+  },
   * flowFormVersion({ payload }, { call, put }) {
     const response = yield call(flowRunFormVersion, payload);
     yield put({

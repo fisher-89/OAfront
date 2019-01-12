@@ -33,6 +33,10 @@ export default {
     approver: [],
     stepDepartment: {},
     flowRunLog: [],
+    // 流程运行 流程列表
+    flowRunFlowList: [],
+    // 流程运行 流程列表
+    flowRunFormList: [],
     // 运行记录 流程编号获取的表单列表
     flowFormVersion: [],
     // 运行记录 表单编号获取的表单列表

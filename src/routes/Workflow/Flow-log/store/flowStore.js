@@ -7,7 +7,7 @@ function makeLoading(loading) {
   return {
     fetchDataSource: (
       loading.effects['workflow/fetchFlowType'] ||
-      loading.effects['workflow/fetchFlow'] ||
+      loading.effects['workflow/flowRunFlowList'] ||
       loading.effects['workflow/flowFormVersion'] ||
       loading.effects['workflow/flowRunLog'] ||
       loading.effects['workflow/flowRunLogExport']
@@ -18,7 +18,7 @@ function makeLoading(loading) {
 export default type => (Component) => {
   @connect(({ workflow, loading }) => ({
     flowType: workflow.flowType,
-    flow: workflow.flow,
+    flow: workflow.flowRunFlowList,
     flowFormVersion: workflow.flowFormVersion,
     flowRunLog: workflow.flowRunLog,
     exportProgress: workflow.exportProgress,
@@ -30,7 +30,7 @@ export default type => (Component) => {
       // 获取流程分类
       dispatch({ type: 'workflow/fetchFlowType' });
       // 获取流程列表（不带权限）
-      dispatch({ type: 'workflow/fetchFlow', payload: {} });
+      dispatch({ type: 'workflow/flowRunFlowList', payload: {} });
     }
 
     // 获取表单版本
