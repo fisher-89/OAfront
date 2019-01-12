@@ -31,7 +31,7 @@ export default {
     yield put({
       type: 'save',
       payload: {
-        store: 'flowRunFlowList',
+        store: 'flowRunFormList',
         data: response,
       },
     });
