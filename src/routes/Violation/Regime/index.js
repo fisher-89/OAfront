@@ -106,7 +106,7 @@ export default class extends PureComponent {
   }
 
   makeColumns = () => {
-    const { ruletype, ruleDelete, content, loading } = this.props;
+    const { ruleDelete, content, loading } = this.props;
     const columns = [
       {
         title: '序号',
@@ -119,7 +119,7 @@ export default class extends PureComponent {
       {
         title: '类型',
         dataIndex: 'type_id',
-        render: key => OATable.findRenderKey(ruletype, key).name,
+        render: key => OATable.findRenderKey(this.props.ruletype, key).name,
       },
       {
         title: '扣分规则',
