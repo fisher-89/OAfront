@@ -121,7 +121,7 @@ export default class List extends Component {
           value = '全部';
         } else if (
           record.is_super === 0 &&
-          (record.handle_flow.length > 0 && record.handle_form.length > 0)
+          (record.handle_flow.length > 0 || record.handle_form.length > 0)
         ) {
           value = trueText;
         }

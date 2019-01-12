@@ -50,6 +50,8 @@ export default class Add extends Component {
       handle_form_type: [],
       export_flow: [],
       export_form: [],
+      // tabs 显示
+      tabsClassName: style.tabsBlock,
     };
 
     // 流程关联modal 默认关闭
@@ -81,10 +83,12 @@ export default class Add extends Component {
     const { isEdit } = this.state;
     // 编辑
     if (isEdit) {
+      const tabsClassName = (data.is_super === 1) ? style.tabsNone : style.tabsBlock;
       this.setState({
         initialForm: {
           ...data,
         },
+        tabsClassName,
       });
     }
   }
@@ -261,13 +265,34 @@ export default class Add extends Component {
     });
   };
 
+  // 超级管理员onChange
+  superOnChange = (checked) => {
+    const tabsClassName = checked ? style.tabsNone : style.tabsBlock;
+    this.setState({
+      tabsClassName,
+    });
+  }
+
   // 添加提交
   handleSubmit = (params, onError) => {
     const { data } = this.props;
-    const newParams = {
+    let newParams = {
       ...params,
       is_super: params.is_super ? 1 : 0,
     };
+
+    // 超级管理员 清除操作权限与导出权限数据
+    if (newParams.is_super) {
+      newParams = {
+        ...newParams,
+        handle_flow: [],
+        handle_flow_type: [],
+        handle_form: [],
+        handle_form_type: [],
+        export_flow: [],
+        export_form: [],
+      };
+    }
     if (data) {
       // 编辑
       const url = 'workflow/authUpdate';
@@ -352,7 +377,16 @@ export default class Add extends Component {
       formVisible,
       exportFlowVisible,
       exportFormVisible,
+      tabsClassName,
     } = this.state;
+    // 操作权限 可用流程key
+    const handleFlowSelectedRowKeys = initialForm.handle_flow.map(flow => flow.number);
+    // 操作权限 可用表单key
+    const handleFormSelectedRowKeys = initialForm.handle_form.map(form => form.number);
+    // 导出权限 可导出流程key
+    const exportFlowSelectedRowKeys = initialForm.export_flow.map(flow => flow.number);
+    // 导出权限 可导出表单key
+    const exportFormSelectedRowKeys = initialForm.export_form.map(form => form.number);
     // 流程tags
     const getFlowTags = initialForm.handle_flow.map(flow => (
       <Tag
@@ -445,11 +479,15 @@ export default class Add extends Component {
                 }],
                 initialValue: initialForm.is_super,
               })(
-                <Switch defaultChecked={!!initialForm.is_super} />
+                <Switch defaultChecked={!!initialForm.is_super} onChange={this.superOnChange} />
               )
             }
           </FormItem>
-          <Tabs activeKey={this.state.tabActiveKey} onChange={this.tabChange}>
+          <Tabs
+            activeKey={this.state.tabActiveKey}
+            onChange={this.tabChange}
+            className={tabsClassName}
+          >
             <TabPane tab="操作权限" key="handle">
               <FormItem
                 {...formItemLayout}
@@ -565,25 +603,25 @@ export default class Add extends Component {
           visible={flowVisible}
           onCancel={this.onCancelFlow}
           onOk={this.flowAuthOnOk}
-          selectedRowKeys={initialForm.handle_flow}
+          selectedRowKeys={handleFlowSelectedRowKeys}
         />
         <FormAuthModal
           visible={formVisible}
           onCancel={this.onCancelForm}
           onOk={this.formAuthOnOk}
-          selectedRowKeys={initialForm.handle_form}
+          selectedRowKeys={handleFormSelectedRowKeys}
         />
         <FlowAuthModal
           visible={exportFlowVisible}
           onCancel={this.onCancelExportFlow}
           onOk={this.exportFlowOnOk}
-          selectedRowKeys={initialForm.export_flow}
+          selectedRowKeys={exportFlowSelectedRowKeys}
         />
         <FlowAuthModal
           visible={exportFormVisible}
           onCancel={this.onCancelExportForm}
           onOk={this.exportFormOnOk}
-          selectedRowKeys={initialForm.export_form}
+          selectedRowKeys={exportFormSelectedRowKeys}
         />
       </div>
     );
