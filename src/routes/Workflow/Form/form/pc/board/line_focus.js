@@ -94,9 +94,9 @@ class DraggingFieldTag extends Component {
   }
 
   render() {
-    const { onClick } = this.props;
+    const { onClick, lines } = this.props;
     const { row, offsetY } = this.state;
-    return row > 0 && (
+    return row > 0 && row <= lines && (
       <Dropdown
         trigger={['contextMenu']}
         onVisibleChange={this.handleContextMenuToggle}

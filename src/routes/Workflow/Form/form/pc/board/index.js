@@ -79,7 +79,7 @@ class Board extends Component {
     form.setFieldsValue(options);
   }
 
-  handleResize = (control, parentGrid, newCol, newX) => {
+  handleResize = (control, parentGrid, newCol, newRow, newX, newY) => {
     const { fields, grids, form } = this.props;
     const usedCell = this.fetchUsedCell(control, parentGrid);
     let resizeable = true;
@@ -89,8 +89,8 @@ class Board extends Component {
         if (
           cell.col >= newX &&
           cell.col < newX + newCol &&
-          cell.row >= control.y &&
-          cell.row < control.y + control.row
+          cell.row >= newY &&
+          cell.row < newY + newRow
         ) {
           resizeable = false;
           break;
@@ -101,17 +101,29 @@ class Board extends Component {
       if (parentGrid) {
         const gridIndex = grids.indexOf(parentGrid);
         control.x = newX;
+        control.y = newY;
         control.col = newCol;
+        control.row = newRow;
         form.setFieldsValue({ [`grids.${gridIndex}.fields`]: parentGrid.fields });
       } else if ('fields' in control) {
         const gridIndex = grids.indexOf(control);
-        form.setFieldsValue({
-          [`grids.${gridIndex}.x`]: newX,
-          [`grids.${gridIndex}.col`]: newCol,
+        let minRow = 0;
+        control.fields.forEach((field) => {
+          minRow = (field.y + field.row + 2) > minRow ? field.y + field.row + 2 : minRow;
         });
+        if (newRow >= minRow) {
+          form.setFieldsValue({
+            [`grids.${gridIndex}.x`]: newX,
+            [`grids.${gridIndex}.y`]: newY,
+            [`grids.${gridIndex}.col`]: newCol,
+            [`grids.${gridIndex}.row`]: newRow,
+          });
+        }
       } else {
         control.x = newX;
+        control.y = newY;
         control.col = newCol;
+        control.row = newRow;
         form.setFieldsValue({ fields });
       }
     }
@@ -148,6 +160,15 @@ class Board extends Component {
     return usedCell;
   }
 
+  makeRowScales = () => {
+    const { lines } = this.state;
+    const scales = [];
+    for (let i = 1; i <= lines; i += 1) {
+      scales.push(<div key={`row_scale_${i}`} className={styles.rowScale}>{i}</div>);
+    }
+    return scales;
+  }
+
   makeControls = () => {
     const {
       fields,
@@ -158,6 +179,7 @@ class Board extends Component {
       onSelect,
       onCancelSelect,
     } = this.props;
+    const { lines } = this.state;
     return [
       ...fields.filter(item => typeof item.x === 'number' && item !== draggingControl).map(item => (
         <Control
@@ -168,6 +190,7 @@ class Board extends Component {
           onResize={this.handleResize}
           selectedControl={selectedControl}
           board={this.board}
+          lines={lines}
         />
       )),
       ...grids.filter(item => typeof item.x === 'number' && item !== draggingControl).map(item => (
@@ -179,6 +202,7 @@ class Board extends Component {
           onResize={this.handleResize}
           selectedControl={selectedControl}
           board={this.board}
+          lines={lines}
           addLine={this.handleAddLine}
           deleteLine={this.handleDeleteLine}
           onCancelSelect={onCancelSelect}
@@ -211,6 +235,8 @@ class Board extends Component {
     const { lines } = this.state;
     return (
       <div className={styles.board}>
+        <div className={styles.leftScale}>{this.makeRowScales()}</div>
+        <div className={styles.rightScale}>{this.makeRowScales()}</div>
         <div
           className={styles.scroller}
           style={{ height: `${(lines * 76) + 1}px` }}
@@ -220,6 +246,7 @@ class Board extends Component {
         >
           <FocusLine
             board={this.board}
+            lines={lines}
             addLine={this.handleAddLine}
             deleteLine={this.handleDeleteLine}
             onClick={selectedControl && onCancelSelect}

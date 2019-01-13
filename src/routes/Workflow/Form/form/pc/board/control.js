@@ -12,7 +12,7 @@ export default class Control extends Component {
   mouseDown = (e) => {
     if (e.type === 'mousedown' && e.button !== 0) return false;
     const { className } = e.target;
-    if (className === styles.leftResize || className === styles.rightResize) return false;
+    if (className.indexOf('Resize') !== -1) return false;
     this.target = e.target;
     this.client = this.fetchClientXY(e);
     document.addEventListener('mouseup', this.handleSelect);
@@ -54,6 +54,35 @@ export default class Control extends Component {
   }
 
   handleResizeMove = (e) => {
+    const { direction } = this.state;
+    if (direction === 'top' || direction === 'bottom') this.nsMove(e);
+    if (direction === 'left' || direction === 'right') this.ewMove(e);
+  }
+
+  nsMove = (e) => {
+    const { data, grid, onResize, board, lines } = this.props;
+    const { direction } = this.state;
+    const { y } = this.fetchClientXY(e);
+    const { top } = board.getBoundingClientRect();
+    const minRow = defaultSize(data).row;
+    const originRow = direction === 'top' ? data.y : data.y + data.row;
+    const exactRow = (y - top) / 76;
+    const row = Math.round(exactRow + (exactRow < originRow ? 0.1 : -0.1));
+    if (row < 0 || row > lines) return false;
+    let newRow = data.row;
+    let newY = data.y;
+    if (direction === 'top' && row !== data.y) {
+      newRow -= row - data.y;
+      newY = row;
+    } else if (direction === 'bottom' && row !== data.y + newRow) {
+      newRow = row - data.y;
+    }
+    if ((newRow !== data.row || newY !== data.y) && newRow >= minRow) {
+      onResize(data, grid, data.col, newRow, data.x, newY);
+    }
+  }
+
+  ewMove = (e) => {
     const { data, grid, onResize, board } = this.props;
     const { direction } = this.state;
     const { x } = this.fetchClientXY(e);
@@ -72,7 +101,7 @@ export default class Control extends Component {
       newCol = col - data.x;
     }
     if ((newCol !== data.col || newX !== data.x) && newCol >= minCol) {
-      onResize(data, grid, newCol, newX);
+      onResize(data, grid, newCol, data.row, newX, data.y);
     }
   }
 
@@ -124,6 +153,10 @@ export default class Control extends Component {
 
   makeContent = () => {
     const { selectedControl, isGrid, data } = this.props;
+    const isSelected = selectedControl && (
+      selectedControl === data ||
+      ('fields' in selectedControl && 'fields' in data && selectedControl.key === data.key)
+    );
     return (
       <div
         className={styles.content}
@@ -132,8 +165,24 @@ export default class Control extends Component {
         onTouchEnd={this.mouseDown}
       >
         <ControlContent data={data} />
-        {selectedControl === data ? (
+        {isSelected ? (
           <div className={styles.clickBoardSelected}>
+            {(isGrid || data.is_checkbox || data.type === 'array') ? (
+              <React.Fragment>
+                <div
+                  className={styles.topResize}
+                  onMouseDown={this.handleResize('top')}
+                  onTouchStart={this.handleResize('top')}
+                  onTouchEnd={this.handleResize('top')}
+                />
+                <div
+                  className={styles.bottomResize}
+                  onMouseDown={this.handleResize('bottom')}
+                  onTouchStart={this.handleResize('bottom')}
+                  onTouchEnd={this.handleResize('bottom')}
+                />
+              </React.Fragment>
+            ) : null}
             {!isGrid && (
               <React.Fragment>
                 <div
@@ -160,9 +209,13 @@ export default class Control extends Component {
 
   render() {
     const { isGrid, selectedControl, onCancelSelect, data, draggingControl } = this.props;
+    const isSelected = selectedControl && (
+      selectedControl === data ||
+      ('fields' in selectedControl && 'fields' in data && selectedControl.key === data.key)
+    );
     return (
       <div
-        className={`${styles.control} ${selectedControl === data ? styles.selected : ''}`}
+        className={`${styles.control} ${isSelected ? styles.selected : ''}`}
         style={{
           width: `${(data.col * 76) - 1}px`,
           height: `${(data.row * 76) - 1}px`,
@@ -180,6 +233,9 @@ export default class Control extends Component {
               <div
                 className={styles.childrenBg}
                 onClick={selectedControl && onCancelSelect}
+                // onMouseDown={this.mouseDown}
+                // onTouchStart={this.mouseDown}
+                // onTouchEnd={this.mouseDown}
                 style={{ height: `${((data.row - 2) * 76) + 1}px` }}
               />
             </Dropdown>

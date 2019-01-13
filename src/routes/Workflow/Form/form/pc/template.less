@@ -65,7 +65,7 @@
     }
   }
   .template {
-    padding: 40px 0;
+    padding: 37px 0;
     background-color: #fafafa;
     border: 1px dashed #999;
     border-radius: 4px;
@@ -91,11 +91,32 @@
       }
     }
     .board {
-      padding: 1px 40px;
+      padding: 3px 40px;
       width: 993px;
-      height: 535px;
+      height: 536px;
       overflow: scroll;
       position: relative;
+      .leftScale, .rightScale {
+        position: absolute;
+        top: 4px;
+        .rowScale {
+          width: 41px;
+          line-height: 75px;
+          margin-bottom: 1px;
+          font-size: 24px;
+          text-align: center;
+          font-weight: 700;
+          color: #fff;
+          opacity: 0.2;
+          background-color: #1890ff;
+        }
+      }
+      .leftScale {
+        left: 0;
+      }
+      .rightScale {
+        right: 0;
+      }
       .scroller {
         width: 100%;
         background-color: #fefefe;
@@ -138,15 +159,29 @@
                   border: 1px solid #1890ff;
                   background-color: #fff;
                   position: absolute;
-                  margin-top: -4px;
-                  top: 50%;
-                  cursor: ew-resize;
-                  //border-radius: 50%;
+                }
+                .topResize {
+                  cursor: ns-resize;
+                  margin-left: -4px;
+                  left: 50%;
+                  top: -4px;
+                }
+                .bottomResize {
+                  cursor: ns-resize;
+                  margin-left: -4px;
+                  left: 50%;
+                  bottom: -4px;
                 }
                 .leftResize {
+                  cursor: ew-resize;
+                  margin-top: -4px;
+                  top: 50%;
                   left: -4px;
                 }
                 .rightResize {
+                  cursor: ew-resize;
+                  margin-top: -4px;
+                  top: 50%;
                   right: -4px;
                 }
               }
@@ -174,7 +209,7 @@
         .lineFocus {
           position: absolute;
           width: 100%;
-          top: 2px;
+          top: 4px;
           left: 0;
           > div {
             float: left;
@@ -192,7 +227,6 @@
           .boxShadow {
             width: 911px;
             height: 75px;
-            //box-shadow: #1890ff 0 0 2px 0;
           }
         }
       }
