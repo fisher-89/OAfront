@@ -77,6 +77,10 @@ export default class List extends Component {
         }
         return OATable.renderEllipsis(staffText, true);
       },
+      onFilter: (value, record) => {
+        const staffStr = record.staff.map(item => item.realname);
+        return staffStr.indexOf(value) !== -1;
+      },
     },
     {
       title: '操作权限',
@@ -143,6 +147,10 @@ export default class List extends Component {
         }
         return OATable.renderEllipsis(value, true);
       },
+      onFilter: (value, record) => {
+        const nameStr = record.export_flow.map(item => item.name);
+        return nameStr.indexOf(value) !== -1;
+      },
     },
     {
       title: '可导出表单',
@@ -158,6 +166,10 @@ export default class List extends Component {
           value = formAuth.join('、');
         }
         return OATable.renderEllipsis(value, true);
+      },
+      onFilter: (value, record) => {
+        const nameStr = record.export_form.map(item => item.name);
+        return nameStr.indexOf(value) !== -1;
       },
     },
     {
