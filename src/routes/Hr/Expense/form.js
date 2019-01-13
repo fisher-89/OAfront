@@ -75,10 +75,9 @@ export default class extends PureComponent {
             <Input placeholder="请输入" />
             )}
         </FormItem>
-        <FormItem label="品牌" {...formItemLayout} required>
+        <FormItem label="品牌" {...formItemLayout}>
           {getFieldDecorator('brands', {
             initialValue: brandId || [],
-            rules: [validatorRequired],
           })(
             <Select mode="multiple" placeholder="请选择" >
               {brands.map(item => (

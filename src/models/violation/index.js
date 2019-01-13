@@ -5,24 +5,27 @@ import scoreEffects from './score';
 import moneyEffects from './money';
 import staffViolationEffects from './staffviolation';
 import departmentViolationEffects from './departmentviolation';
-import defaultReducers from '../reducers';
+import mathEffects from './math';
+import defaultReducers from '../reducers/violation';
 
 export default {
   namespace: 'violation',
   state: {
+    departmentviolation: [],
     finelog: [],
     rule: [],
     ruletype: [],
     money: {},
+    math: [],
     score: {},
     staffviolation: [],
-    departmentviolation: [],
   },
   effects: {
     ...fineLogEffects,
     ...ruleEffects,
     ...ruleTypeEffects,
     ...moneyEffects,
+    ...mathEffects,
     ...scoreEffects,
     ...staffViolationEffects,
     ...departmentViolationEffects,

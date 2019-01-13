@@ -7,6 +7,7 @@ export default {
     staff: [],
     staffDetails: {},
     staffLogDetails: {},
+    formatLogDetails: {},
     staffBespokeDetails: {},
     tableResult: {},
     totalResult: {},

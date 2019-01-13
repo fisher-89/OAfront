@@ -88,7 +88,7 @@ export default class extends PureComponent {
         render: (val) => {
           let brandStr = '';
           val.forEach((item) => {
-            brandStr += `${item.name},`;
+            brandStr += `${item.name}，`;
           });
           return brandStr.slice(0, -1);
         },

@@ -15,6 +15,7 @@ import {
   leave,
   leaving,
   fetchStaffLog,
+  fetchFormatLog,
   fetchBespokeStaff,
   deleteBespokeStaff,
 } from '../../services/user';
@@ -22,6 +23,22 @@ import {
 const store = 'staff';
 
 export default {
+  * fetchFormatLog({ payload }, { call, put }) {
+    try {
+      const params = { ...payload };
+      const response = yield call(fetchFormatLog, params.id || '');
+      yield put({
+        type: 'save',
+        payload: {
+          data: response,
+          store: 'formatLog',
+          staffSn: params.id,
+        },
+      });
+    } catch (err) {
+      return err;
+    }
+  },
   * fetchStaffLog({ payload }, { call, put }) {
     try {
       const params = { ...payload };

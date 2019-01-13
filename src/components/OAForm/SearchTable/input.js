@@ -35,7 +35,7 @@ export default class SearchInput extends React.Component {
       showName,
     } = this.props;
 
-    const buttonBefore = (
+    const buttonBefore = disabled ? undefined : (
       <Icon
         type="close-circle"
         onClick={clearValue}

@@ -247,7 +247,7 @@ export default class extends PureComponent {
         </Button>
       );
     }
-    if (checkAuthority(196)) {
+    if (checkAuthority(210)) {
       extra.push(<ExportShop key="exportBtn" filters={this.searchFilter} total={total} />);
     }
 

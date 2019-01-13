@@ -69,7 +69,7 @@ class Operator extends PureComponent {
       moreSearch,
       resetFilter,
       filtersText,
-      selectedRowsReal,
+      selectedRowKeys,
       multiOperator,
       extraOperator,
       extraOperatorRight,
@@ -126,18 +126,18 @@ class Operator extends PureComponent {
             )
           }
           {
-            selectedRowsReal.length > 0 && multiOperator && (
-              <React.Fragment>
-                <Dropdown overlay={this.makeMultiOperator()} trigger={['click']}>
-                  <Button
-                    icon="menu-fold"
-                    style={{ fontSize: '12px' }}
-                  >
+             selectedRowKeys.length > 0 && multiOperator && (
+             <React.Fragment>
+               <Dropdown overlay={this.makeMultiOperator()} trigger={['click']}>
+                 <Button
+                   icon="menu-fold"
+                   style={{ fontSize: '12px' }}
+                 >
                     批量操作
-                  </Button>
-                </Dropdown>
-                <span>{`已选择${selectedRowsReal.length}条`}</span>
-              </React.Fragment>
+                 </Button>
+               </Dropdown>
+               <span>{`已选择${selectedRowKeys.length}条`}</span>
+             </React.Fragment>
             )
           }
         </div>

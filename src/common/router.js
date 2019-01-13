@@ -230,13 +230,13 @@ export const getRouterData = (app) => {
 
     /* 大爱 */
     '/violation/log': {
-      component: dynamicWrapper(app, ['violation'], () => import('../routes/Violation/Log')),
+      component: dynamicWrapper(app, ['violation', 'department', 'brand'], () => import('../routes/Violation/Log')),
     },
-    // '/violation/regime': {
-    //   component: dynamicWrapper(app, ['violation'], () => import('../routes/Violation/Regime')),
-    // },
+    '/violation/regime': {
+      component: dynamicWrapper(app, ['violation'], () => import('../routes/Violation/Regime')),
+    },
     '/violation/statistics': {
-      component: dynamicWrapper(app, ['violation'], () => import('../routes/Violation/Statistics')),
+      component: dynamicWrapper(app, ['violation', 'department', 'brand'], () => import('../routes/Violation/Statistics')),
     },
 
     /**  系统 */

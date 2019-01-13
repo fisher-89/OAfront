@@ -490,6 +490,27 @@ export function findTreeParent(data, id, key = 'id', pid = 'parent_id') {
 }
 
 /**
+ * 获取id的所有下级数据
+ * @param {数据源} data
+ * @param {查找的id} id
+ */
+export function findTreeChildren(data = [], id, key = 'id', pid = 'parent_id') {
+  const tree = [];
+  data.forEach((item) => {
+    if (item[pid] === id) {
+      const temp = [];
+      temp.push(item);
+      const children = findTreeChildren(data, item[key], key, pid);
+      if (children.length > 0) {
+        tree.push(...children);
+      }
+      tree.push(temp);
+    }
+  });
+  return tree;
+}
+
+/**
  * 容器容纳字数
  * @param {容器宽度} width
  * @param {字数} fontSize

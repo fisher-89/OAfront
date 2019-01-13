@@ -9,6 +9,8 @@ import OAForm, { OAModal } from 'components/OAForm';
 const { Option } = Select;
 const FormItem = OAForm.Item;
 const mapWithKey = [
+  { key: 'minister_sn', name: '部长' },
+  { key: 'province_id', name: '省份' },
   { key: 'area_manager_sn', name: '区域经理' },
   { key: 'regional_manager_sn', name: '大区经理' },
   { key: 'personnel_manager_sn', name: '人事负责人' },

@@ -46,17 +46,15 @@ export default class extends PureComponent {
       {
         title: '名称',
         dataIndex: 'name',
-        align: 'center',
         searcher: true,
       },
       {
         title: '关联品牌',
-        align: 'center',
         dataIndex: 'brands',
         searcher: true,
         render: (_, record) => {
-          const name = (record.brands || []).map(item => item.name);
-          return name.join(',');
+          const name = (record.brands || []).map(item => item.name).join('，');
+          return name;
         },
       },
       {

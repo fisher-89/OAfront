@@ -16,11 +16,6 @@ export default type => (Component) => {
       fetchRule: loading.effects['violation/fetchRule'],
       fetchFineLog: loading.effects['violation/fetchFineLog'],
       deleted: loading.effects['violation/deleteFineLog'],
-      submit: (
-        loading.effects['violation/editFineLog'] ||
-        loading.effects['violation/addFineLog']
-      ),
-
     },
   }))
   class NewCopmonent extends PureComponent {
@@ -54,8 +49,14 @@ export default type => (Component) => {
 
     fetchMoneyAndScore = (params) => {
       const { dispatch } = this.props;
-      dispatch({ type: 'violation/fetchFineMoney', payload: params });
-      dispatch({ type: 'violation/fetchFineScore', payload: params });
+      dispatch({
+        type: 'violation/fetchFineMoney',
+        payload: params,
+      });
+      dispatch({
+        type: 'violation/fetchFineScore',
+        payload: params,
+      });
     }
 
     paymentChange = (params) => {
@@ -63,21 +64,16 @@ export default type => (Component) => {
       dispatch({ type: 'violation/paymentChange', payload: params });
     }
 
+    refund = (params) => {
+      const { dispatch } = this.props;
+      dispatch({ type: 'violation/refund', payload: params });
+    }
+
     deleted = (id, onError, onSuccess) => {
       const { dispatch } = this.props;
       dispatch({
         type: 'violation/deleteFineLog',
         payload: { id },
-        onSuccess,
-        onError,
-      });
-    }
-
-    submit = (values, onError, onSuccess) => {
-      const { dispatch } = this.props;
-      dispatch({
-        type: values.id ? 'violation/editFineLog' : 'violation/addFineLog',
-        payload: values,
         onSuccess,
         onError,
       });

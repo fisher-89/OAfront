@@ -20,3 +20,47 @@
   flex-grow: 1;
   text-align: right;
 }
+.flexBox {
+  display: flex;
+  letter-spacing: -1px;
+  font-weight: 400;
+  .mobile {
+    color: rgba(0, 0, 0, 0.45);
+    font-size: 14px;
+  }
+  p:first-child, div:first-child {
+    width: 50%;
+  }
+}
+.splitBox {
+  font-weight: 400;
+  display: inline-block;
+  width: 50%;
+}
+.tags {
+  margin-bottom: 14px;
+}
+.card {
+  border-radius: 5px;
+  margin-bottom: 10px;
+  p, .item {
+    margin-bottom: 10px;
+  }
+  p:last-child, .item:last-child {
+    margin-bottom: 0;
+  }
+  .item {
+    display: flex;
+    label {
+      flex-grow: 0;
+      flex-shrink: 0;
+      min-width: 42px;
+    }
+    div {
+      flex-grow: 1;
+    }
+  }
+}
+.place {
+  color: #999;
+}

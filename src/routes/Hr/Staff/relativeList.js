@@ -45,6 +45,9 @@ export default class extends PureComponent {
                     relative_sn: 'staff_sn',
                     relative_name: 'realname',
                   }}
+                  filters={{
+                    status: ['0', '1', '2', '3', '-1', '-2', '-3', '-4'],
+                  }}
                   valueIndex="relative_sn"
                   showName="relative_name"
                   placeholder="请选择关系人"

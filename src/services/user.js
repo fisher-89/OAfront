@@ -154,6 +154,13 @@ export async function againEntry(params) {
   });
 }
 
+// 格式化后的操作记录
+export async function fetchFormatLog(id) {
+  return request(`/api/hr/staff/${id}/format-logs`, {
+    method: 'GET',
+  });
+}
+
 // 操作记录
 export async function fetchStaffLog(id) {
   return request(`/api/hr/staff/${id}/logs`, { method: 'GET' });

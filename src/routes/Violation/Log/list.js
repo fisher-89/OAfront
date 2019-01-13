@@ -32,8 +32,27 @@ export default class extends PureComponent {
     this.setState({ detailsVisible: !!flag });
   }
 
+  handleEdit = (data) => {
+    const now = new Date();
+    const time = now.getTime();
+    this.setState({
+      initialValue: {
+        ...data,
+        staff: {
+          staff_name: data.staff_name,
+          staff_sn: data.staff_sn,
+        },
+        billing: {
+          billing_sn: data.billing_sn,
+          billing_name: data.billing_name,
+        },
+        time,
+      },
+    }, () => this.handleModalVisible(true));
+  }
+
   makeColumns = () => {
-    const { ruleType, rule, deleted, department, paymentChange, brand, loading } = this.props;
+    const { deleted, department, brand } = this.props;
     const columns = [
       {
         title: '编号',
@@ -67,7 +86,7 @@ export default class extends PureComponent {
           parentId: 'parent_id',
         },
         width: 285,
-        render: key => OATable.findRenderKey(department, key).name,
+        render: key => OATable.findRenderKey(department, key).full_name,
       },
       {
         title: '大爱日期',
@@ -77,18 +96,20 @@ export default class extends PureComponent {
       },
       {
         title: '大爱原因',
-        dataIndex: 'rule_id',
+        dataIndex: 'rules.name',
         width: 120,
-        render: key => OATable.findRenderKey(rule, key).name,
+        exportRender: (record) => {
+          const { name } = record.rules;
+          return name;
+        },
       },
       {
         title: '大爱类型',
-        dataIndex: 'rules',
-        loading,
+        dataIndex: 'rules.rule_types.name',
         width: 105,
-        render: (_, record) => {
-          const type = OATable.findRenderKey(rule, record.rule_id).type_id;
-          return OATable.findRenderKey(ruleType, type).name;
+        exportRender: (record) => {
+          const { name } = record.rules.rule_types;
+          return name;
         },
       },
       {
@@ -109,6 +130,10 @@ export default class extends PureComponent {
       {
         title: '支付状态',
         dataIndex: 'has_paid',
+        filters: [
+          { text: '已支付', value: 1 },
+          { text: '未支付', value: 0 },
+        ],
         width: 50,
         render: (key) => {
           if (key) {
@@ -149,9 +174,9 @@ export default class extends PureComponent {
               >查看
               </a>
               <Divider type="vertical" />
-              <a onClick={() => this.setState({ visible: true, initialValue: rowData })}>编辑</a>
+              <a onClick={() => this.handleEdit(rowData)}>编辑</a>
               <Divider type="vertical" />
-              <a onClick={() => paymentChange(rowData.id)}>{payOrRefunder}</a>
+              <a onClick={() => this.paychange(rowData.id, payOrRefunder)}>{payOrRefunder}</a>
               <Divider type="vertical" />
               <a onClick={() => deleted(rowData.id)}>删除</a>
             </Fragment>
@@ -198,6 +223,14 @@ export default class extends PureComponent {
     this.onSelectChange([], []);
   }
 
+  paychange = (id, choice) => {
+    const { paymentChange, refund } = this.props;
+    if (choice === '支付') {
+      paymentChange(id);
+    } else if (choice === '退款') {
+      refund(id);
+    }
+  }
 
   render() {
     const { finelog, fetchFineLog, loading } = this.props;
@@ -238,7 +271,9 @@ export default class extends PureComponent {
       },
       {
         text: '清空选择',
-        action: () => { this.onSelectChange([], []); },
+        action: () => {
+          this.onSelectChange([], []);
+        },
       },
     ];
 
@@ -279,10 +314,11 @@ export default class extends PureComponent {
           onCancel={this.handleModalVisible}
         />
         <Details
-          paychange={this.paychange}
           visible={detailsVisible}
           initialValue={initialValue}
           onCancel={this.handleDetailsVisible}
+          paymentChange={this.paychange}
+          finelog={finelog}
         />
       </Fragment>
     );
