@@ -17,9 +17,8 @@ class DraggingFieldTag extends Component {
 
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (nextState.row !== this.state.row) {
-      return true;
-    }
+    if (nextState.row !== this.state.row) return true;
+    if (nextProps.onClick !== this.props.onClick) return true;
     return false;
   }
 
@@ -95,8 +94,9 @@ class DraggingFieldTag extends Component {
   }
 
   render() {
+    const { onClick, lines } = this.props;
     const { row, offsetY } = this.state;
-    return row > 0 && (
+    return row > 0 && row <= lines && (
       <Dropdown
         trigger={['contextMenu']}
         onVisibleChange={this.handleContextMenuToggle}
@@ -105,6 +105,7 @@ class DraggingFieldTag extends Component {
         <div
           style={{ transform: `translate(0px,${offsetY}px)` }}
           className={styles.lineFocus}
+          onClick={onClick}
         >
           <div className={styles.leftControl}>{row}</div>
           <div className={styles.boxShadow} />

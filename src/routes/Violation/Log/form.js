@@ -311,7 +311,7 @@ export default class extends PureComponent {
            <Col {...colSpan}>
              <FormItem label="开单日期" {...formItemLayout} required>
                {getFieldDecorator('billing_at', {
-                initialValue: initialValue.billing_at || undefined,
+                initialValue: initialValue.billing_at || moment().format('YYYY-MM-DD'),
               })(<DatePicker
                 disabledDate={this.disabledDate}
               />)}
