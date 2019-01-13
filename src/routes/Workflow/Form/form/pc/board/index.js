@@ -1,12 +1,12 @@
 /* eslint no-param-reassign:0 */
 import React, { Component } from 'react';
-import FocusLine from './line_focus';
+import Line from './line';
 import Control from './control';
 import styles from '../template.less';
 
 class Board extends Component {
   state = {
-    lines: 7,
+    lines: ['1', '2', '3', '4', '5', '6', '7'],
   }
 
   componentDidMount() {
@@ -15,6 +15,7 @@ class Board extends Component {
   }
 
   handleAddLine = (row) => {
+    const { lines } = this.state;
     const { fields, grids, form } = this.props;
     const options = {};
     fields.forEach((field) => {
@@ -36,11 +37,13 @@ class Board extends Component {
         options[`grids.${index}.fields`] = grid.fields;
       }
     });
-    this.state.lines += 1;
+    lines.splice(row - 1, 0, new Date().getTime());
     form.setFieldsValue(options);
   }
 
   handleDeleteLine = (row) => {
+    const { lines } = this.state;
+    if (lines.length <= 7) return false;
     const { fields, grids, form } = this.props;
     const options = {};
     fields.forEach((field) => {
@@ -75,7 +78,7 @@ class Board extends Component {
         options[`grids.${index}.y`] = null;
       }
     });
-    this.state.lines -= 1;
+    lines.splice(row - 1, 1);
     form.setFieldsValue(options);
   }
 
@@ -160,13 +163,20 @@ class Board extends Component {
     return usedCell;
   }
 
-  makeRowScales = () => {
+  makeLines = () => {
+    const { onCancelSelect, selectedControl } = this.props;
     const { lines } = this.state;
-    const scales = [];
-    for (let i = 1; i <= lines; i += 1) {
-      scales.push(<div key={`row_scale_${i}`} className={styles.rowScale}>{i}</div>);
-    }
-    return scales;
+    return lines.map((line, index) => {
+      return (
+        <Line
+          key={`line_${line}`}
+          index={index}
+          addLine={this.handleAddLine}
+          deleteLine={this.handleDeleteLine}
+          onClick={selectedControl && onCancelSelect}
+        />
+      );
+    });
   }
 
   makeControls = () => {
@@ -190,7 +200,7 @@ class Board extends Component {
           onResize={this.handleResize}
           selectedControl={selectedControl}
           board={this.board}
-          lines={lines}
+          lines={lines.length}
         />
       )),
       ...grids.filter(item => typeof item.x === 'number' && item !== draggingControl).map(item => (
@@ -202,7 +212,7 @@ class Board extends Component {
           onResize={this.handleResize}
           selectedControl={selectedControl}
           board={this.board}
-          lines={lines}
+          lines={lines.length}
           addLine={this.handleAddLine}
           deleteLine={this.handleDeleteLine}
           onCancelSelect={onCancelSelect}
@@ -223,7 +233,7 @@ class Board extends Component {
           className={styles.mask}
           style={{
             top: `${((parentGrid.row - 2) * 76) + 1}px`,
-            height: `${(((lines - parentGrid.y - parentGrid.row) + 2) * 76) - 1}px`,
+            height: `${(((lines.length - parentGrid.y - parentGrid.row) + 2) * 76) - 1}px`,
           }}
         />
       </React.Fragment>
@@ -231,26 +241,17 @@ class Board extends Component {
   }
 
   render() {
-    const { onCancelSelect, selectedControl } = this.props;
     const { lines } = this.state;
     return (
       <div className={styles.board}>
-        <div className={styles.leftScale}>{this.makeRowScales()}</div>
-        <div className={styles.rightScale}>{this.makeRowScales()}</div>
         <div
           className={styles.scroller}
-          style={{ height: `${(lines * 76) + 1}px` }}
+          style={{ height: `${(lines.length * 76) + 1}px` }}
           ref={(ele) => {
             this.board = ele;
           }}
         >
-          <FocusLine
-            board={this.board}
-            lines={lines}
-            addLine={this.handleAddLine}
-            deleteLine={this.handleDeleteLine}
-            onClick={selectedControl && onCancelSelect}
-          />
+          {this.makeLines()}
           <div className={styles.controls}>
             {this.makeControls()}
             {this.makeMask()}

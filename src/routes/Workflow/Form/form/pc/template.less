@@ -1,3 +1,10 @@
+@import "~antd/lib/style/themes/default.less";
+
+@public_path: "../../../../../../public";
+@cell: 75px;
+@board_width: 913px;
+@ew_padding: 40px;
+@template_primary_color: @primary-color;
 .pcTemplate {
   -moz-user-select: none;
   -webkit-user-select: none;
@@ -26,7 +33,7 @@
           float: left;
           margin-top: 9px;
           margin-right: 4px;
-          color: #1890ff;
+          color: @template_primary_color;
         }
         .horizontalLine {
           float: left;
@@ -76,7 +83,7 @@
       left: 0;
       padding-left: 2px;
       > div {
-        width: 75px;
+        width: @cell;
         float: left;
         text-align: center;
         margin-left: 1px;
@@ -91,39 +98,47 @@
       }
     }
     .board {
-      padding: 3px 40px;
+      padding: 3px @ew_padding;
       width: 993px;
       height: 536px;
       overflow: scroll;
       position: relative;
-      .leftScale, .rightScale {
-        position: absolute;
-        top: 4px;
-        .rowScale {
-          width: 41px;
-          line-height: 75px;
-          margin-bottom: 1px;
-          font-size: 24px;
-          text-align: center;
-          font-weight: 700;
-          color: #fff;
-          opacity: 0.2;
-          background-color: #1890ff;
-        }
-      }
-      .leftScale {
-        left: 0;
-      }
-      .rightScale {
-        right: 0;
-      }
       .scroller {
         width: 100%;
         background-color: #fefefe;
-        background-image: url(/public/template_background.png);
-        background-position: 1px 1px;
+        .line {
+          width: @board_width;
+          height: @cell + 1px;
+          background-image: url("@{public_path}/template_background.png");
+          background-position: 1px 0;
+          background-clip: content-box;
+          position: absolute;
+          box-sizing: content-box;
+          transition: top 0.2s ease;
+          .leftScale, .rightScale {
+            position: absolute;
+            width: @ew_padding + 1px;
+            line-height: @cell;
+            font-size: 24px;
+            text-align: center;
+            font-weight: 700;
+            background-color: @template_primary_color;
+            color: #fff;
+            opacity: 0.2;
+          }
+          .leftScale {
+            left: -@ew_padding - 1px;
+          }
+          .rightScale {
+            right: -@ew_padding - 1px;
+          }
+        }
+        .line:first-child {
+          border-top: 1px dashed #ccc;
+        }
         .controls {
-          position: relative;
+          position: absolute;
+          top: 3px;
           height: 0;
           .control.selected {
             z-index: 1;
@@ -131,7 +146,7 @@
           .control {
             position: absolute;
             background-color: #fff;
-            transition: width 0.05s ease;
+            transition: left 0.05s ease, width 0.05s ease, top 0.2s ease, height 0.2s ease;
             .content {
               position: absolute;
               width: 100%;
@@ -143,7 +158,7 @@
                 top: 0;
               }
               .clickBoard:hover {
-                box-shadow: #1890ff 0 0 2px 0;
+                box-shadow: @template_primary_color 0 0 2px 0;
               }
               .clickBoardSelected {
                 position: absolute;
@@ -152,11 +167,11 @@
                 top: -1px;
                 left: -1px;
                 box-sizing: content-box;
-                border: 1px solid #1890ff;
+                border: 1px solid @template_primary_color;
                 > div {
                   width: 7px;
                   height: 7px;
-                  border: 1px solid #1890ff;
+                  border: 1px solid @template_primary_color;
                   background-color: #fff;
                   position: absolute;
                 }
@@ -188,45 +203,21 @@
             }
             .childrenBg {
               position: absolute;
-              top: 75px;
-              width: 913px;
-              background-image: url(/public/template_background.png);
-              background-position: 1px 1px;
-              margin-left: -1px;
+              top: @cell;
+              width: @board_width - 2px;
+              background-image: url("@{public_path}/template_background.png");
+              background-position: 0 1px;
             }
             .children {
               position: absolute;
-              top: 75px;
+              top: @cell;
               margin-left: -1px;
             }
           }
           .mask {
             background-color: rgba(0, 0, 0, 0.2);
             position: relative;
-            width: 913px;
-          }
-        }
-        .lineFocus {
-          position: absolute;
-          width: 100%;
-          top: 4px;
-          left: 0;
-          > div {
-            float: left;
-          }
-          .leftControl, .rightControl {
-            width: 41px;
-            line-height: 75px;
-            font-size: 24px;
-            text-align: center;
-            font-weight: 700;
-            color: #fff;
-            opacity: 0.2;
-            background-color: #1890ff;
-          }
-          .boxShadow {
-            width: 911px;
-            height: 75px;
+            width: @board_width;
           }
         }
       }

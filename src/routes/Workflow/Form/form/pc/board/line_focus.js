@@ -39,7 +39,7 @@ class DraggingFieldTag extends Component {
             addLine(row);
           }}
         >
-          在上方插入行
+          插入行
         </Menu.Item>
         <Menu.Item
           onClick={() => {
