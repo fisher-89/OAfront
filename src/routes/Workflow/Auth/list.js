@@ -73,9 +73,21 @@ export default class List extends Component {
           const staffArr = text.map((staff) => {
             return staff.realname;
           });
-          staffText = staffArr.join('、');
+          const title = staffArr.join('、');
+
+          staffText = (staffArr.length > 7) ? `${staffArr.slice(0, 7).join('、')}...` : title;
+          staffText = (
+            <Tooltip title={title}>
+              {staffText}
+            </Tooltip>
+          );
         }
-        return OATable.renderEllipsis(staffText, true);
+        return staffText;
+        // return OATable.renderEllipsis(staffText, true);
+      },
+      onFilter: (value, record) => {
+        const staffStr = record.staff.map(item => item.realname);
+        return staffStr.indexOf(value) !== -1;
       },
     },
     {
@@ -143,6 +155,10 @@ export default class List extends Component {
         }
         return OATable.renderEllipsis(value, true);
       },
+      onFilter: (value, record) => {
+        const nameStr = record.export_flow.map(item => item.name);
+        return nameStr.indexOf(value) !== -1;
+      },
     },
     {
       title: '可导出表单',
@@ -158,6 +174,10 @@ export default class List extends Component {
           value = formAuth.join('、');
         }
         return OATable.renderEllipsis(value, true);
+      },
+      onFilter: (value, record) => {
+        const nameStr = record.export_form.map(item => item.name);
+        return nameStr.indexOf(value) !== -1;
       },
     },
     {
