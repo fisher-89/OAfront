@@ -73,9 +73,17 @@ export default class List extends Component {
           const staffArr = text.map((staff) => {
             return staff.realname;
           });
-          staffText = staffArr.join('、');
+          const title = staffArr.join('、');
+
+          staffText = (staffArr.length > 7) ? `${staffArr.slice(0, 7).join('、')}...` : title;
+          staffText = (
+            <Tooltip title={title}>
+              {staffText}
+            </Tooltip>
+          );
         }
-        return OATable.renderEllipsis(staffText, true);
+        return staffText;
+        // return OATable.renderEllipsis(staffText, true);
       },
       onFilter: (value, record) => {
         const staffStr = record.staff.map(item => item.realname);
