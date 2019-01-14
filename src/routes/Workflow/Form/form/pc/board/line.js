@@ -3,6 +3,14 @@ import { Dropdown, Menu } from 'antd';
 import styles from '../template.less';
 
 class DraggingFieldTag extends Component {
+  state = { opacity: 0, color: '#ccc' }
+
+  componentDidMount() {
+    setTimeout(() => {
+      this.setState({ opacity: 1 });
+    }, 10);
+  }
+
   contextMenu = () => {
     const { addLine, deleteLine, index } = this.props;
     const row = index + 1;
@@ -41,15 +49,17 @@ class DraggingFieldTag extends Component {
 
   render() {
     const { onClick, index } = this.props;
+    const { opacity, color } = this.state;
+
     return (
       <Dropdown
         trigger={['contextMenu']}
         onVisibleChange={this.handleContextMenuToggle}
         overlay={this.contextMenu()}
       >
-        <div className={styles.line} onClick={onClick} style={{ top: `${(76 * index) + (index && 1) + 3}px` }}>
-          <div className={styles.leftScale}>{index + 1}</div>
-          <div className={styles.rightScale}>{index + 1}</div>
+        <div className={styles.line} onClick={onClick} style={{ top: `${(76 * index)}px`, opacity }}>
+          <div className={styles.leftScale} style={{ color }}>{index + 1}</div>
+          <div className={styles.rightScale} style={{ color }}>{index + 1}</div>
         </div>
       </Dropdown>
     );

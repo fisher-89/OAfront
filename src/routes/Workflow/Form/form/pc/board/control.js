@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Dropdown, Menu } from 'antd';
+import { Menu } from 'antd';
 import ControlContent from '../controls';
 import defaultSize from '../supports/control_size';
 import styles from '../template.less';
@@ -226,19 +226,11 @@ export default class Control extends Component {
         {this.makeContent()}
         {isGrid && (
           <React.Fragment>
-            <Dropdown
-              trigger={['contextMenu']}
-              overlay={this.gridChildrenContextMenu()}
-            >
-              <div
-                className={styles.childrenBg}
-                onClick={selectedControl && onCancelSelect}
-                // onMouseDown={this.mouseDown}
-                // onTouchStart={this.mouseDown}
-                // onTouchEnd={this.mouseDown}
-                style={{ height: `${((data.row - 2) * 76) + 1}px` }}
-              />
-            </Dropdown>
+            <div
+              className={styles.childrenBg}
+              onClick={selectedControl && onCancelSelect}
+              style={{ height: `${((data.row - 2) * 76) + 1}px` }}
+            />
             <div className={styles.children}>
               {data.fields.map((field) => {
                 return field.x !== null && field !== draggingControl ? (

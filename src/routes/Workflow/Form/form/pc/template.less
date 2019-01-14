@@ -98,23 +98,21 @@
       }
     }
     .board {
-      padding: 3px @ew_padding;
+      padding: 0 @ew_padding;
       width: 993px;
-      height: 536px;
-      overflow: scroll;
       position: relative;
       .scroller {
         width: 100%;
         background-color: #fefefe;
         .line {
           width: @board_width;
-          height: @cell + 1px;
+          height: @cell + 2px;
           background-image: url("@{public_path}/template_background.png");
-          background-position: 1px 0;
+          background-position: 1px 1px;
           background-clip: content-box;
           position: absolute;
           box-sizing: content-box;
-          transition: top 0.2s ease;
+          transition: top 0.2s ease, opacity 0.5s ease;
           .leftScale, .rightScale {
             position: absolute;
             width: @ew_padding + 1px;
@@ -122,9 +120,7 @@
             font-size: 24px;
             text-align: center;
             font-weight: 700;
-            background-color: @template_primary_color;
-            color: #fff;
-            opacity: 0.2;
+            color: #ccc;
           }
           .leftScale {
             left: -@ew_padding - 1px;
@@ -133,12 +129,8 @@
             right: -@ew_padding - 1px;
           }
         }
-        .line:first-child {
-          border-top: 1px dashed #ccc;
-        }
         .controls {
           position: absolute;
-          top: 3px;
           height: 0;
           .control.selected {
             z-index: 1;

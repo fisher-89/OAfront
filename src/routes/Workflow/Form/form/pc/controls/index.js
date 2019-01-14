@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Icon } from 'antd';
 import styles from './index.less';
+import Grid from './grid';
 import Input from './input';
 import Select from './select';
 import Upload from './upload';
@@ -81,21 +81,7 @@ export default class extends Component {
   render() {
     const { data } = this.props;
     return 'fields' in data ? (
-      <div className={styles.gridControl}>
-        <div className={styles.gridHeader}>
-          {data.name}
-        </div>
-        <div className={styles.gridContent}>
-          <div className={styles.deleteButton}>
-            <Icon type="close" />
-          </div>
-        </div>
-        <div className={styles.gridFooter}>
-          <div className={styles.addButton}>
-            <Icon type="plus" />
-          </div>
-        </div>
-      </div>
+      <Grid data={data} />
     ) : (
       <div className={styles.control}>
         <div className={styles.label}>

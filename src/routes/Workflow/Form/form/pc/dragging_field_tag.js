@@ -71,12 +71,11 @@ class DraggingFieldTag extends Component {
   dragField = (e) => {
     e.preventDefault();
     const { parentGrid, board } = this.props;
-    const { clientX, clientY, pageX, pageY } = event.type === 'touchmove' ? e.touches[0] : e;
-    const { minX, maxX, minY, maxY } = templateArea;
-    const onTemplate = pageX >= minX && pageX <= maxX && pageY >= minY && pageY <= maxY;
+    const { clientX, clientY } = event.type === 'touchmove' ? e.touches[0] : e;
     const boardRect = board.getBoundingClientRect();
     let { top, bottom } = boardRect;
     const { left, right } = boardRect;
+    const onTemplate = clientX >= left && clientX <= right && clientY >= top && clientY <= bottom;
     let inGrid = !parentGrid;
     if (parentGrid && parentGrid.x !== null) {
       top += ((parentGrid.y + 1) * 76);
@@ -172,6 +171,7 @@ class DraggingFieldTag extends Component {
           transform: `translate(${x}px,${y}px)`,
           backgroundColor: dropAvailable ? '#e7f3fe' : '#fee4e4',
           border: dropAvailable ? '1px solid #1890ff' : '1px solid #f00',
+          overflow: 'hidden',
         }}
         className={styles.dragShadow}
       >
@@ -200,3 +200,4 @@ class DraggingFieldTag extends Component {
 }
 
 export default DraggingFieldTag;
+export { templateArea };

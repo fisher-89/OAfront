@@ -2,7 +2,12 @@ import React, { Component } from 'react';
 import { Tag } from 'antd';
 
 class FieldTag extends Component {
-  state = { disabled: false }
+  constructor(props) {
+    super(props);
+    this.state = {
+      disabled: typeof props.data.x === 'number',
+    };
+  }
 
   componentWillReceiveProps(nextProps) {
     this.setState({
