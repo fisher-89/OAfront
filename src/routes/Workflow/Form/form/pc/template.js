@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row } from 'antd';
+import { Row, Affix } from 'antd';
 import styles from './template.less';
 import Board from './board/index';
 import FieldTag from './field_tag';
@@ -187,16 +187,18 @@ class PCTemplate extends Component {
     const { startPoint, startPosition, onDragging, parentGridIndex, selectedControl } = this.state;
     return (
       <Row className={styles.pcTemplate}>
-        <div className={styles.component}>
-          <h3>字段</h3>
-          <div className={styles.fields}>
-            {this.makeFieldOptions()}
+        <Affix offsetTop={16}>
+          <div className={styles.component} style={{ height: '800px', overflow: 'auto' }}>
+            <h3>字段</h3>
+            <div className={styles.fields}>
+              {this.makeFieldOptions()}
+            </div>
+            {grids.length > 0 && (<h3>列表控件</h3>)}
+            <div className={styles.grids}>
+              {this.makeGridOptions()}
+            </div>
           </div>
-          {grids.length > 0 && (<h3>列表控件</h3>)}
-          <div className={styles.grids}>
-            {this.makeGridOptions()}
-          </div>
-        </div>
+        </Affix>
         <div>
           <h3>表单名称</h3>
           <div
