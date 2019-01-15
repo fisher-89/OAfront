@@ -14,30 +14,32 @@ class Board extends Component {
     bind(this.board);
   }
 
-  handleAddLine = (row) => {
+  handleAddLine = (row, addRow) => {
     const { lines } = this.state;
     const { fields, grids, form } = this.props;
     const options = {};
     fields.forEach((field) => {
       if (typeof field.y === 'number' && field.y >= row - 1) {
-        field.y += 1;
+        field.y += parseInt(addRow, 0);
       }
     });
     options.fields = fields;
     grids.forEach((grid, index) => {
       if (typeof grid.y === 'number' && grid.y >= row - 1) {
-        options[`grids.${index}.y`] = grid.y + 1;
+        options[`grids.${index}.y`] = grid.y + parseInt(addRow, 0);
       } else if (typeof grid.y === 'number' && grid.y + grid.row >= row) {
-        options[`grids.${index}.row`] = grid.row + 1;
+        options[`grids.${index}.row`] = grid.row + parseInt(addRow, 0);
         grid.fields.forEach((field) => {
           if (typeof field.y === 'number' && field.y + grid.y >= row - 2) {
-            field.y += 1;
+            field.y += parseInt(addRow, 0);
           }
         });
         options[`grids.${index}.fields`] = grid.fields;
       }
     });
-    lines.splice(row - 1, 0, new Date().getTime());
+    for (let i = 1; i <= addRow; i += 1) {
+      lines.splice(row - 1, 0, `${new Date().getTime()}${i}`);
+    }
     form.setFieldsValue(options);
   }
 
