@@ -89,7 +89,7 @@ export default class extends PureComponent {
         render: key => OATable.findRenderKey(department, key).full_name,
       },
       {
-        title: '大爱日期',
+        title: '违纪日期',
         dateFilters: true,
         dataIndex: 'violate_at',
         width: 100,
