@@ -5,8 +5,21 @@ import Control from './control';
 import styles from '../template.less';
 
 class Board extends Component {
-  state = {
-    lines: ['1', '2', '3', '4', '5', '6', '7'],
+  constructor(props) {
+    super(props);
+    const { fields, grids } = props;
+    let rowMax = 7;
+    fields.forEach((field) => {
+      rowMax = Math.max(field.y + field.row, rowMax);
+    });
+    grids.forEach((grid) => {
+      rowMax = Math.max(grid.y + grid.row, rowMax);
+    });
+    const lines = [];
+    for (let i = 1; i <= rowMax; i += 1) {
+      lines.push(i);
+    }
+    this.state = { lines };
   }
 
   componentDidMount() {
@@ -114,7 +127,7 @@ class Board extends Component {
         const gridIndex = grids.indexOf(control);
         let minRow = 0;
         control.fields.forEach((field) => {
-          minRow = (field.y + field.row + 2) > minRow ? field.y + field.row + 2 : minRow;
+          minRow = Math.max(field.y + field.row + 2, minRow);
         });
         if (newRow >= minRow) {
           form.setFieldsValue({
