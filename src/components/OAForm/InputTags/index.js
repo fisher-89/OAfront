@@ -89,41 +89,43 @@ export default class Index extends PureComponent {
     const { disabled } = this.props;
     return (
       <Fragment>
-        <textarea
-          disabled={disabled}
-          readOnly={disabled}
-          {...this.props}
-          ref={(e) => {
+        <div className={styles.class}>
+          <textarea
+            disabled={disabled}
+            readOnly={disabled}
+            {...this.props}
+            ref={(e) => {
             this.input = e;
           }}
-          className="ant-input"
-          style={{
+            className="ant-input"
+            style={{
             height: 'auto',
           }}
-          value={this.props.value || ''}
-          onChange={this.onChange}
-        />
-        <div
-          className="ant-input"
-          disabled={disabled}
-          readOnly={disabled}
-          style={{
+            value={this.props.value || ''}
+            onChange={this.onChange}
+          />
+          <div
+            className="ant-input"
+            disabled={disabled}
+            readOnly={disabled}
+            style={{
             height: 'auto',
           }}
-        >
-          <label>表达式 ：</label>
-          {html.map((item, index) => {
+          >
+            <label>表达式 ：</label>
+            {html.map((item, index) => {
             return this.compileHtml(item, index);
           })}
-        </div>
-        <ToolBar
-          disabled={disabled}
-          fields={this.props.fields}
-          plusItem={this.addTag}
-          makeContents={(contents) => {
+          </div>
+          <ToolBar
+            disabled={disabled}
+            fields={this.props.fields}
+            plusItem={this.addTag}
+            makeContents={(contents) => {
             this.setState({ contents });
           }}
-        />
+          />
+        </div>
       </Fragment>
     );
   }
