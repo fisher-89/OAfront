@@ -11,7 +11,7 @@ import QueueAnim from 'rc-queue-anim';
 import AuthForm from './form';
 import TreeSort from '../../../components/TreeSort';
 import { checkAuthority } from '../../../utils/utils';
-import './authority.less';
+import style from './authority.less';
 
 const { TreeNode } = Tree;
 
@@ -150,7 +150,7 @@ export default class extends PureComponent {
     const { visible, editInfo } = this.state;
     const { dataSource, loading } = this.props;
     return (
-      <QueueAnim type="left">
+      <QueueAnim type="left" className={style.tree}>
         {
           checkAuthority(138) &&
           (

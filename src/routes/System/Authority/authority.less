@@ -1,38 +1,40 @@
-:global {
-  .add-event-type {
-    margin-bottom: 16px;
-    padding-right: 8px;
-    text-align: 'center';
-  }
-  .tree-view {
-    background-color: #fafafa;
-    height: 759px;
-    border-top: 1px solid #e8e8e8;
-    overflow: auto;
-  }
-  .icon-delete,.icon-form {
-    cursor: pointer;
-  }
-  .icon-delete:hover {
-    color: #ff4d4f;
-  }
-  .icon-form:hover {
-    color: #40a9ff;
-  }
-  .title-content {
-    color: rgba(0, 0, 0, 0.65);
-  }
-  .ant-tree {
-    li {
-      .ant-tree-node-content-wrapper {
-        cursor: default;
-      }
-      .selected-Icon {
-        display: none;
-      }
-      .ant-tree-node-content-wrapper:hover {
+.tree {
+  :global {
+    .add-event-type {
+      margin-bottom: 16px;
+      padding-right: 8px;
+      text-align: 'center';
+    }
+    .tree-view {
+      background-color: #fafafa;
+      height: 759px;
+      border-top: 1px solid #e8e8e8;
+      overflow: auto;
+    }
+    .icon-delete,.icon-form {
+      cursor: pointer;
+    }
+    .icon-delete:hover {
+      color: #ff4d4f;
+    }
+    .icon-form:hover {
+      color: #40a9ff;
+    }
+    .title-content {
+      color: rgba(0, 0, 0, 0.65);
+    }
+    .ant-tree {
+      li {
+        .ant-tree-node-content-wrapper {
+          cursor: default;
+        }
         .selected-Icon {
-          display: inline-block;
+          display: none;
+        }
+        .ant-tree-node-content-wrapper:hover {
+          .selected-Icon {
+            display: inline-block;
+          }
         }
       }
     }
