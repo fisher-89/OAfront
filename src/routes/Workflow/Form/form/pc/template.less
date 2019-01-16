@@ -16,6 +16,9 @@
   }
   .component {
     width: 240px;
+    max-height: 900px;
+    overflow: auto;
+    margin-right: 30px;
     .fields {
       margin-bottom: 40px;
     }
@@ -70,6 +73,16 @@
         }
       }
     }
+  }
+  .component::-webkit-scrollbar {
+    width: 3px;
+    height: 100%;
+  }
+  .component::-webkit-scrollbar-track {
+    border-right: 1px solid #eee;
+  }
+  .component::-webkit-scrollbar-thumb {
+    background-color: #eee;
   }
   .template {
     padding: 37px 0;
@@ -213,9 +226,6 @@
           }
         }
       }
-    }
-    .board::-webkit-scrollbar {
-      display: none;
     }
   }
   .dragShadow {

@@ -188,7 +188,7 @@ class PCTemplate extends Component {
     return (
       <Row className={styles.pcTemplate}>
         <Affix offsetTop={16}>
-          <div className={styles.component} style={{ height: '800px', overflow: 'auto' }}>
+          <div className={styles.component}>
             <h3>字段</h3>
             <div className={styles.fields}>
               {this.makeFieldOptions()}
