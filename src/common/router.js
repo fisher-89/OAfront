@@ -358,7 +358,7 @@ export const getRouterData = (app) => {
       authority: '116',
     },
   };
-  // Get name from ./menu.js or just set it in the router data.
+  // Get name from ./index.js or just set it in the router data.
   const menuData = getFlatMenuData(getMenuData());
   const routerData = {};
   Object.keys(routerConfig).forEach((item) => {

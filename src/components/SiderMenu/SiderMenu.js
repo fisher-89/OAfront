@@ -6,7 +6,7 @@ import styles from './index.less';
 const { Sider } = Layout;
 const { SubMenu } = Menu;
 
-// Allow menu.js config icon as string or ReactNode
+// Allow menu/index.js config icon as string or ReactNode
 //   icon: 'setting',
 //   icon: 'http://demo.com/icon.png',
 //   icon: <Icon type="setting" />,
