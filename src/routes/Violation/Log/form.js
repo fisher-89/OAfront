@@ -164,6 +164,7 @@ export default class extends PureComponent {
      const { selectrule, money, score } = this.state;
      const staffChoice = !!initialValue.id;
      const { getFieldDecorator } = this.props.form;
+     const payTrue = { ...initialValue }.has_paid === 1;
      return (
        <OAModal
          title="编辑大爱"
@@ -260,6 +261,7 @@ export default class extends PureComponent {
                {getFieldDecorator('has_paid', {
                 initialValue: initialValue.has_paid,
               })(<Switch
+                disabled={payTrue}
                 defaultChecked={!!initialValue.has_paid}
               />)}
              </FormItem>

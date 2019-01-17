@@ -122,15 +122,17 @@ export default class Index extends PureComponent {
   render() {
     const html = this.makeContent();
     return (
-      <div className={styles.kuandu}>
-        <div>
-          <label>{this.props.title} ： {this.props.value}</label>
-        </div>
-        <div className={styles.textkuang}>
-          <label>表达式 ：</label>
-          {html.map((item, index) => {
+      <div className={styles.class}>
+        <div className={styles.kuandu}>
+          <div>
+            <label>{this.props.title} ： {this.props.value}</label>
+          </div>
+          <div className={styles.textkuang}>
+            <label>表达式 ：</label>
+            {html.map((item, index) => {
             return this.compileHtml(item, index);
           })}
+          </div>
         </div>
       </div>
     );
