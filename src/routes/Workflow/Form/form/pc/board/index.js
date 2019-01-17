@@ -8,6 +8,22 @@ class Board extends Component {
   constructor(props) {
     super(props);
     const { fields, grids } = props;
+    this.state = { lines: this.initLine(fields, grids) };
+  }
+
+  componentDidMount() {
+    const { bind } = this.props;
+    bind(this.board);
+  }
+
+  componentWillReceiveProps(newProps) {
+    const { fields } = this.props;
+    if (fields.length === 0 && newProps.fields.length > 0) {
+      this.setState({ lines: this.initLine(newProps.fields, newProps.grids) });
+    }
+  }
+
+  initLine = (fields, grids) => {
     let rowMax = 7;
     fields.forEach((field) => {
       rowMax = Math.max(field.y + field.row, rowMax);
@@ -19,12 +35,7 @@ class Board extends Component {
     for (let i = 1; i <= rowMax; i += 1) {
       lines.push(i);
     }
-    this.state = { lines };
-  }
-
-  componentDidMount() {
-    const { bind } = this.props;
-    bind(this.board);
+    return lines;
   }
 
   handleAddLine = (row, addRow) => {
