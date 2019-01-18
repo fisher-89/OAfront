@@ -60,6 +60,7 @@ export default class Flow extends React.PureComponent {
       },
     ];
     const formData = {
+      icon: '',
       name: '',
       description: '',
       flow_type_id: null,
