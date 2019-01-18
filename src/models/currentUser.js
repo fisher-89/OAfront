@@ -14,6 +14,7 @@ export default {
         if (!Object.keys(currentUser).length) {
           const response = yield call(queryCurrent);
           if (response) {
+            response.staff_sn = parseInt(response.staff_sn, 10);
             yield put({
               type: 'save',
               payload: response,
