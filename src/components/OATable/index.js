@@ -305,7 +305,7 @@ class OATable extends PureComponent {
       [styles['table-filter-active']]: filtered.indexOf(key) !== -1,
     });
     const searchFilterOption = {
-      filterIcon: <Icon type="search" className={cls} />,
+      filterIcon: <Icon type="search" className={cls} title="搜索" />,
       filterDropdown: (
         <Input.Search
           ref={(ele) => {
@@ -334,13 +334,17 @@ class OATable extends PureComponent {
   }
 
   makeFilterOption = (key, column) => {
-    const { filterDropdownVisible } = this.state;
+    const { filtered, filterDropdownVisible } = this.state;
     const { serverSide } = this.props;
+    const cls = classNames({
+      [styles['table-filter-active']]: filtered.indexOf(key) !== -1,
+    });
     const filterOption = {
+      filterIcon: <Icon type="filter" className={cls} />,
       filterDropdown: (
         <Filter
           filters={column.filters}
-          handleConfirm={this.handleTreeFilter(key)}
+          handleConfirm={this.handleFilter(key)}
         />
       ),
       filterDropdownVisible: filterDropdownVisible === key,
@@ -357,13 +361,17 @@ class OATable extends PureComponent {
   }
 
   makeTreeFilterOption = (key, column) => {
-    const { filterDropdownVisible } = this.state;
+    const { filtered, filterDropdownVisible } = this.state;
     const { serverSide } = this.props;
+    const cls = classNames({
+      [styles['table-filter-active']]: filtered.indexOf(key) !== -1,
+    });
     const treeFilterOption = {
+      filterIcon: <Icon type="filter" className={cls} />,
       filterDropdown: (
         <TreeFilter
           treeFilters={column.treeFilters}
-          handleConfirm={this.handleTreeFilter(key)}
+          handleConfirm={this.handleFilter(key)}
         />
       ),
       filterDropdownVisible: filterDropdownVisible === key,
@@ -499,9 +507,10 @@ class OATable extends PureComponent {
     };
   }
 
-  handleTreeFilter = (key) => {
+  handleFilter = (key) => {
     return (checkedKeys) => {
-      const { pagination, filters, sorter } = this.state;
+      const { pagination, filters, sorter, filtered } = this.state;
+      const filteredState = filtered.filter(item => item !== key);
       const newFilters = {
         ...filters,
         [key]: checkedKeys,
@@ -510,9 +519,14 @@ class OATable extends PureComponent {
         ...this.state.filtersText,
         ...this.makerFiltersText(key, checkedKeys),
       };
-      if (!checkedKeys.length) delete filtersText[key];
+      if (checkedKeys.length) {
+        filteredState.push(key);
+      } else {
+        delete filtersText[key];
+      }
       this.setState({
         filtersText,
+        filtered: filteredState,
         filterDropdownVisible: false,
       }, () => {
         this.handleTableChange(pagination, newFilters, sorter);
@@ -759,8 +773,7 @@ class OATable extends PureComponent {
         selectedRowsReal: selectedRowKeys.map((item) => {
           const [mid] = midArray.filter(midkey => midkey.id === item);
           return mid;
-        }
-        ),
+        }),
       });
       if (rowSelection && rowSelection.onChange) {
         rowSelection.onChange(selectedRowKeys, this.state.selectedRowsReal);
@@ -848,7 +861,7 @@ class OATable extends PureComponent {
       Object.keys(exportFields).forEach((column) => {
         const columnValue = exportFields[column];
         if (item[columnValue.dataIndex] === undefined &&
-           columnValue.exportRender === undefined) return;
+          columnValue.exportRender === undefined) return;
         if (columnValue.exportRender) {
           temp[columnValue.dataIndex] = columnValue.exportRender(item);
         } else if (columnValue.render) {
@@ -1056,7 +1069,9 @@ class OATable extends PureComponent {
           trigger="click"
           placement="bottom"
           content={this.makeVisibleColumnsList()}
-          onVisibleChange={(eyeVisible) => { this.setState({ eyeVisible }); }}
+          onVisibleChange={(eyeVisible) => {
+            this.setState({ eyeVisible });
+          }}
         >
           <Button icon="eye">可见信息</Button>
         </Popover>
