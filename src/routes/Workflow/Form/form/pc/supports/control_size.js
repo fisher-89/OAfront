@@ -1,24 +1,24 @@
 const defaultSize = {
-  int: { col: 4, row: 1 },
-  text: { col: 4, row: 1, multiple: { col: 8, row: 2 } },
-  date: { col: 4, row: 1 },
-  datetime: { col: 4, row: 1 },
-  time: { col: 4, row: 1 },
+  int: { col: 5, row: 1 },
+  text: { col: 5, row: 1, multiple: { col: 8, row: 2 } },
+  date: { col: 5, row: 1 },
+  datetime: { col: 5, row: 1 },
+  time: { col: 5, row: 1 },
   file: { col: 8, row: 2 },
   array: { col: 8, row: 1 },
-  select: { col: 4, row: 1, multiple: { col: 8, row: 1 } },
-  department: { col: 4, row: 1, multiple: { col: 8, row: 1 } },
-  staff: { col: 4, row: 1, multiple: { col: 8, row: 1 } },
-  shop: { col: 4, row: 1, multiple: { col: 8, row: 1 } },
+  select: { col: 5, row: 1, multiple: { col: 8, row: 1 } },
+  department: { col: 5, row: 1, multiple: { col: 8, row: 1 } },
+  staff: { col: 5, row: 1, multiple: { col: 8, row: 1 } },
+  shop: { col: 5, row: 1, multiple: { col: 8, row: 1 } },
   region: { col: 8, row: 2 },
-  api: { col: 4, row: 1, multiple: { col: 8, row: 1 } },
+  api: { col: 5, row: 1, multiple: { col: 8, row: 1 } },
 };
 
 export default function (data) {
   let col;
   let row;
   if ('fields' in data) {
-    col = 12;
+    col = 20;
     row = 3;
   } else if (data.type === 'text') {
     const size = defaultSize[data.type];

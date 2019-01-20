@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Affix } from 'antd';
+import { Row, Affix, Tag } from 'antd';
 import styles from './template.less';
 import Board from './board/index';
 import FieldTag from './field_tag';
@@ -172,7 +172,7 @@ class PCTemplate extends Component {
 
   makeScale = () => {
     const scale = [];
-    for (let i = 0; i <= 12; i += 1) {
+    for (let i = 0; i <= 20; i += 1) {
       scale.push(
         <div key={`scale_${i}`}>
           <span />{i}
@@ -189,6 +189,10 @@ class PCTemplate extends Component {
       <Row className={styles.pcTemplate}>
         <Affix offsetTop={16}>
           <div className={styles.component}>
+            <h3>通用工具</h3>
+            <div className={styles.fields}>
+              <Tag>分割线</Tag>
+            </div>
             <h3>字段</h3>
             <div className={styles.fields}>
               {this.makeFieldOptions()}

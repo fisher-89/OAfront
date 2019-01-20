@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import Line from './line';
 import Control from './control';
+import { topResize, bottomResize, leftResize, rightResize } from './resize_control';
 import styles from '../template.less';
 
 class Board extends Component {
@@ -108,85 +109,23 @@ class Board extends Component {
     form.setFieldsValue(options);
   }
 
-  handleResize = (control, parentGrid, newCol, newRow, newX, newY) => {
-    const { fields, grids, form } = this.props;
-    const usedCell = this.fetchUsedCell(control, parentGrid);
-    let resizeable = true;
-    for (const i in usedCell) {
-      if (Object.hasOwnProperty.call(usedCell, i)) {
-        const cell = usedCell[i];
-        if (
-          cell.col >= newX &&
-          cell.col < newX + newCol &&
-          cell.row >= newY &&
-          cell.row < newY + newRow
-        ) {
-          resizeable = false;
-          break;
-        }
-      }
+  handleResize = (data, grid, direction, x, y) => {
+    switch (direction) {
+      case 'top':
+        topResize.call(this, data, grid, y);
+        break;
+      case 'bottom':
+        bottomResize.call(this, data, grid, y);
+        break;
+      case 'left':
+        leftResize.call(this, data, grid, x);
+        break;
+      case 'right':
+        rightResize.call(this, data, grid, x);
+        break;
+      default:
+        return false;
     }
-    if (resizeable) {
-      if (parentGrid) {
-        const gridIndex = grids.indexOf(parentGrid);
-        control.x = newX;
-        control.y = newY;
-        control.col = newCol;
-        control.row = newRow;
-        form.setFieldsValue({ [`grids.${gridIndex}.fields`]: parentGrid.fields });
-      } else if ('fields' in control) {
-        const gridIndex = grids.indexOf(control);
-        let minRow = 0;
-        control.fields.forEach((field) => {
-          minRow = Math.max(field.y + field.row + 2, minRow);
-        });
-        if (newRow >= minRow) {
-          form.setFieldsValue({
-            [`grids.${gridIndex}.x`]: newX,
-            [`grids.${gridIndex}.y`]: newY,
-            [`grids.${gridIndex}.col`]: newCol,
-            [`grids.${gridIndex}.row`]: newRow,
-          });
-        }
-      } else {
-        control.x = newX;
-        control.y = newY;
-        control.col = newCol;
-        control.row = newRow;
-        form.setFieldsValue({ fields });
-      }
-    }
-  }
-
-  /**
-   * 获取已占用的单元格
-   * @returns {Array}
-   */
-  fetchUsedCell = (data, grid) => {
-    const { fields, grids } = this.props;
-    const usedCell = [];
-    if (grid) {
-      grid.fields.forEach((item) => {
-        if (item.x !== null && item !== data) {
-          for (let col = item.x; col < item.x + item.col; col += 1) {
-            for (let row = item.y; row < item.y + item.row; row += 1) {
-              usedCell.push({ row, col });
-            }
-          }
-        }
-      });
-    } else {
-      [...fields, ...grids].forEach((item) => {
-        if (item.x !== null && item !== data) {
-          for (let col = item.x; col < item.x + item.col; col += 1) {
-            for (let row = item.y; row < item.y + item.row; row += 1) {
-              usedCell.push({ row, col });
-            }
-          }
-        }
-      });
-    }
-    return usedCell;
   }
 
   makeLines = () => {
@@ -252,18 +191,19 @@ class Board extends Component {
   makeMask = () => {
     const { draggingControl, parentGrid } = this.props;
     const { lines } = this.state;
-    return draggingControl && parentGrid && parentGrid.x !== null ? (
-      <React.Fragment>
-        <div className={styles.mask} style={{ top: 0, height: `${(parentGrid.y + 1) * 76}px` }} />
-        <div
-          className={styles.mask}
-          style={{
-            top: `${((parentGrid.row - 2) * 76) + 1}px`,
-            height: `${(((lines.length - parentGrid.y - parentGrid.row) + 2) * 76) - 1}px`,
-          }}
-        />
-      </React.Fragment>
-    ) : null;
+    if (draggingControl && parentGrid && parentGrid.x !== null) {
+      const topMaskHeight = (parentGrid.y + 1) * 61;
+      const bottomMaskTop = ((parentGrid.row - 2) * 61) + 1;
+      const bottomMastHeight = (((lines.length - parentGrid.y - parentGrid.row) + 2) * 61) - 1;
+      return (
+        <React.Fragment>
+          <div className={styles.mask} style={{ top: 0, height: `${topMaskHeight}px` }} />
+          <div className={styles.mask} style={{ top: `${bottomMaskTop}px`, height: `${bottomMastHeight}px` }} />
+        </React.Fragment>
+      );
+    } else {
+      return null;
+    }
   }
 
   render() {
@@ -272,7 +212,7 @@ class Board extends Component {
       <div className={styles.board}>
         <div
           className={styles.scroller}
-          style={{ height: `${(lines.length * 76) + 1}px` }}
+          style={{ height: `${(lines.length * 61) + 1}px` }}
           ref={(ele) => {
             this.board = ele;
           }}

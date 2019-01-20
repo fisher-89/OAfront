@@ -104,7 +104,7 @@ class DraggingFieldTag extends Component {
           this.setState({ dropdownVisible: visible });
         }}
       >
-        <div className={styles.line} onClick={onClick} style={{ top: `${(76 * index)}px`, opacity }}>
+        <div className={styles.line} onClick={onClick} style={{ top: `${(61 * index)}px`, opacity }}>
           <div className={styles.leftScale} style={{ color }}>{index + 1}</div>
           <div className={styles.rightScale} style={{ color }}>{index + 1}</div>
         </div>

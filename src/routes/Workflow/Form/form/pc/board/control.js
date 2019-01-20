@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import { Menu } from 'antd';
 import ControlContent from '../controls';
-import defaultSize from '../supports/control_size';
 import styles from '../template.less';
 
 export default class Control extends Component {
@@ -54,61 +52,16 @@ export default class Control extends Component {
   }
 
   handleResizeMove = (e) => {
+    const { data, grid, onResize } = this.props;
     const { direction } = this.state;
-    if (direction === 'top' || direction === 'bottom') this.nsMove(e);
-    if (direction === 'left' || direction === 'right') this.ewMove(e);
-  }
-
-  nsMove = (e) => {
-    const { data, grid, onResize, board, lines } = this.props;
-    const { direction } = this.state;
-    const { y } = this.fetchClientXY(e);
-    const { top } = board.getBoundingClientRect();
-    const minRow = defaultSize(data).row;
-    const originRow = direction === 'top' ? data.y : data.y + data.row;
-    const exactRow = (y - top) / 76;
-    const row = Math.round(exactRow + (exactRow < originRow ? 0.1 : -0.1));
-    if (row < 0 || row > lines) return false;
-    let newRow = data.row;
-    let newY = data.y;
-    if (direction === 'top' && row !== data.y) {
-      newRow -= row - data.y;
-      newY = row;
-    } else if (direction === 'bottom' && row !== data.y + newRow) {
-      newRow = row - data.y;
-    }
-    if ((newRow !== data.row || newY !== data.y) && newRow >= minRow) {
-      onResize(data, grid, data.col, newRow, data.x, newY);
-    }
-  }
-
-  ewMove = (e) => {
-    const { data, grid, onResize, board } = this.props;
-    const { direction } = this.state;
-    const { x } = this.fetchClientXY(e);
-    const { left } = board.getBoundingClientRect();
-    const minCol = defaultSize(data).col;
-    const originCol = direction === 'left' ? data.x : data.x + data.col;
-    const exactCol = (x - left) / 76;
-    const col = Math.round(exactCol + (exactCol < originCol ? 0.1 : -0.1));
-    if (col < 0 || col > 12) return false;
-    let newCol = data.col;
-    let newX = data.x;
-    if (direction === 'left' && col !== data.x) {
-      newCol -= col - data.x;
-      newX = col;
-    } else if (direction === 'right' && col !== data.x + newCol) {
-      newCol = col - data.x;
-    }
-    if ((newCol !== data.col || newX !== data.x) && newCol >= minCol) {
-      onResize(data, grid, newCol, data.row, newX, data.y);
-    }
+    const { x, y } = this.fetchClientXY(e);
+    onResize(data, grid, direction, x, y);
   }
 
   handleResizeConfirm = () => {
     document.removeEventListener('mousemove', this.handleResizeMove);
     document.removeEventListener('mouseup', this.handleResizeConfirm);
-    this.state.direction = null;
+    this.setState({ direction: null });
   }
 
   fetchClientXY = (e) => {
@@ -121,34 +74,6 @@ export default class Control extends Component {
       y = e.touches[0].clientY;
     }
     return { x, y };
-  }
-
-  gridChildrenContextMenu = () => {
-    return (
-      <Menu>
-        <Menu.Item
-          onClick={() => {
-            // addLine(row);
-          }}
-        >
-          在上方插入行
-        </Menu.Item>
-        <Menu.Item
-          onClick={() => {
-            // addLine(row + 1);
-          }}
-        >
-          在下方插入行
-        </Menu.Item>
-        <Menu.Item
-          onClick={() => {
-            // deleteLine(row);
-          }}
-        >
-          删除行
-        </Menu.Item>
-      </Menu>
-    );
   }
 
   makeContent = () => {
@@ -209,6 +134,7 @@ export default class Control extends Component {
 
   render() {
     const { isGrid, selectedControl, onCancelSelect, data, draggingControl } = this.props;
+    const { direction } = this.state;
     const isSelected = selectedControl && (
       selectedControl === data ||
       ('fields' in selectedControl && 'fields' in data && selectedControl.key === data.key)
@@ -217,10 +143,10 @@ export default class Control extends Component {
       <div
         className={`${styles.control} ${isSelected ? styles.selected : ''}`}
         style={{
-          width: `${(data.col * 76) - 1}px`,
-          height: `${(data.row * 76) - 1}px`,
-          top: `${(data.y * 76) + 1}px`,
-          left: `${(data.x * 76) + 1}px`,
+          width: `${(data.col * 61) - 1}px`,
+          height: `${(data.row * 61) - 1}px`,
+          top: `${(data.y * 61) + 1}px`,
+          left: `${(data.x * 61) + 1}px`,
         }}
       >
         {this.makeContent()}
@@ -229,7 +155,7 @@ export default class Control extends Component {
             <div
               className={styles.childrenBg}
               onClick={selectedControl && onCancelSelect}
-              style={{ height: `${((data.row - 2) * 76) + 1}px` }}
+              style={{ height: `${((data.row - 2) * 61) + 1}px` }}
             />
             <div className={styles.children}>
               {data.fields.map((field) => {
@@ -245,6 +171,19 @@ export default class Control extends Component {
               })}
             </div>
           </React.Fragment>
+        )}
+        {direction && (
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
+              cursor: direction === 'left' || direction === 'right' ? 'ew-resize' : 'ns-resize',
+              zIndex: 1000,
+            }}
+          />
         )}
       </div>
     );

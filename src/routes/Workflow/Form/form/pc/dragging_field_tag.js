@@ -4,8 +4,6 @@ import defaultSize from './supports/control_size';
 import ControlContent from './controls';
 import styles from './template.less';
 
-const templateArea = { minX: 593, maxX: 1505, minY: 301, maxY: 833 };
-
 class DraggingFieldTag extends Component {
   state = {
     offset: { x: 1, y: 1 },
@@ -27,7 +25,7 @@ class DraggingFieldTag extends Component {
     this.state.data = { ...data, col, row };
     this.state.relativeX = (x - left) / (right - left);
     this.state.relativeY = (y - top) / (bottom - top);
-    if (bottom - top >= 75) {
+    if (bottom - top >= 60) {
       this.state.onTemplate = true;
     }
     this.state.usedCell = this.fetchUsedCell();
@@ -78,8 +76,8 @@ class DraggingFieldTag extends Component {
     const onTemplate = clientX >= left && clientX <= right && clientY >= top && clientY <= bottom;
     let inGrid = !parentGrid;
     if (parentGrid && parentGrid.x !== null) {
-      top += ((parentGrid.y + 1) * 76);
-      bottom = top + ((parentGrid.row - 2) * 76);
+      top += ((parentGrid.y + 1) * 61);
+      bottom = top + ((parentGrid.row - 2) * 61);
       inGrid = parentGrid.x !== null && clientY >= top && clientY <= bottom;
     }
     if (onTemplate && inGrid) {
@@ -103,12 +101,12 @@ class DraggingFieldTag extends Component {
     const { width, height } = this.calculateSize();
     const pointCol = Math.floor(data.col * relativeX);
     const pointRow = Math.floor(data.row * relativeY);
-    const maxX = Math.floor((right - width - left) / 76);
-    const maxY = Math.floor((bottom - height - top) / 76);
-    const newX = Math.min(Math.max(Math.floor((clientX - left) / 76) - pointCol, 0), maxX);
-    const newY = Math.min(Math.max(Math.floor((clientY - top) / 76) - pointRow, 0), maxY);
-    const offsetX = (newX * 76) + Math.round(left - startPosition.left) + 1;
-    const offsetY = (newY * 76) + Math.round(top - startPosition.top) + 1;
+    const maxX = Math.floor((right - width - left) / 61);
+    const maxY = Math.floor((bottom - height - top) / 61);
+    const newX = Math.min(Math.max(Math.floor((clientX - left) / 61) - pointCol, 0), maxX);
+    const newY = Math.min(Math.max(Math.floor((clientY - top) / 61) - pointRow, 0), maxY);
+    const offsetX = (newX * 61) + Math.round(left - startPosition.left) + 1;
+    const offsetY = (newY * 61) + Math.round(top - startPosition.top) + 1;
     data.x = newX;
     data.y = newY;
     this.setState({
@@ -154,8 +152,8 @@ class DraggingFieldTag extends Component {
 
   calculateSize = () => {
     const { data: { col, row } } = this.state;
-    const colWidth = 76;
-    const rowHeight = 76;
+    const colWidth = 61;
+    const rowHeight = 61;
     return { width: (colWidth * col) - 1, height: (rowHeight * row) - 1 };
   }
 
@@ -200,4 +198,3 @@ class DraggingFieldTag extends Component {
 }
 
 export default DraggingFieldTag;
-export { templateArea };

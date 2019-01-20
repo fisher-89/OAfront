@@ -1,10 +1,12 @@
 @import "~antd/lib/style/themes/default.less";
 
 @public_path: "../../../../../../public";
-@cell: 75px;
-@board_width: 913px;
+@col-number: 20;
+@cell: 60px;
+@board_width: @col-number*(@cell + 1px) + 1px;
 @ew_padding: 40px;
 @template_primary_color: @primary-color;
+
 .pcTemplate {
   -moz-user-select: none;
   -webkit-user-select: none;
@@ -15,10 +17,16 @@
     flex: 0 0 auto;
   }
   .component {
-    width: 240px;
+    width: 220px;
     max-height: 900px;
     overflow: auto;
-    margin-right: 30px;
+    margin-right: 10px;
+    :global {
+      .ant-tag {
+        margin-top: 4px;
+        margin-bottom: 4px;
+      }
+    }
     .fields {
       margin-bottom: 40px;
     }
@@ -94,7 +102,7 @@
       position: absolute;
       top: 0;
       left: 0;
-      padding-left: 2px;
+      padding-left: ((@board_width + @ew_padding * 2) - ((@cell + 1px) * (@col-number + 1)))/2;
       > div {
         width: @cell;
         float: left;
@@ -112,7 +120,7 @@
     }
     .board {
       padding: 0 @ew_padding;
-      width: 993px;
+      width: @board_width + @ew_padding*2;
       position: relative;
       .scroller {
         width: 100%;
@@ -209,7 +217,7 @@
             .childrenBg {
               position: absolute;
               top: @cell;
-              width: @board_width - 2px;
+              width: 100%;
               background-image: url("@{public_path}/template_background.png");
               background-position: 0 1px;
             }

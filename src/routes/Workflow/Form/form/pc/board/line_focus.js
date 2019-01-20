@@ -83,8 +83,8 @@ class DraggingFieldTag extends Component {
     let row = 0;
     if (pageX >= minX && pageX <= maxX && pageY >= minY && pageY <= maxY) {
       const boardGeo = board.getBoundingClientRect();
-      const index = Math.floor((clientY - boardGeo.top) / 76);
-      offsetY = index * 76;
+      const index = Math.floor((clientY - boardGeo.top) / 61);
+      offsetY = index * 61;
       row = index + 1;
     }
     this.setState({

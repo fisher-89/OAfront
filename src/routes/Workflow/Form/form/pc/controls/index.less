@@ -4,8 +4,8 @@
   height: 100%;
   .label {
     width: 120px;
-    height: 40px;
-    line-height: 40px;
+    height: 30px;
+    line-height: 32px;
     text-align: right;
     font-size: 14px;
     margin-top: 10px;
@@ -17,43 +17,46 @@
     height: 100%;
     padding-top: 10px;
     padding-right: 20px;
-    padding-bottom: 25px;
+    padding-bottom: 18px;
     .text {
       border: 1px solid #ccc;
       height: 100%;
-      line-height: 38px;
-      padding-left: 10px;
-      padding-right: 11px;
+      line-height: 30px;
+      padding-left: 9px;
+      padding-right: 8px;
       color: #999;
       background-color: #fff;
       i, img {
         font-size: 16px;
         float: right;
-        margin-top: 11px;
-        margin-left: 11px;
+        margin-top: 8px;
+        margin-left: 8px;
       }
     }
     .upload {
-      width: 115px;
-      height: 115px;
+      width: 92px;
+      height: 92px;
       border: 1px dashed #ccc;
       text-align: center;
       padding: 25px 0;
       background-color: #fff;
+      > i {
+        color: #999;
+        font-size: 28px;
+      }
       > div {
-        margin-top: 8px;
+        margin-top: 4px;
         color: #666;
       }
     }
     .array {
       border: 1px dashed #ccc;
-      height: 30px;
-      line-height: 28px;
+      height: 32px;
+      line-height: 30px;
       text-align: center;
       width: 80px;
       color: #666;
       background-color: #fff;
-      margin-top: 5px;
     }
     .region {
       width: 100%;
@@ -62,7 +65,7 @@
       flex-direction: column;
       .regionSelects {
         width: 100%;
-        height: 40px;
+        height: 32px;
         display: flex;
         border-left: 1px solid #ccc;
         .text {
@@ -73,7 +76,7 @@
       .address {
         border: 1px solid #ccc;
         border-top: none;
-        line-height: 38px;
+        line-height: 30px;
         padding: 0 10px;
         color: #999;
         background-color: #fff;
@@ -89,38 +92,47 @@
   display: flex;
   flex-direction: column;
   .gridHeader {
-    line-height: 48px;
+    line-height: 36px;
     color: #333;
-    height: 49px;
+    height: 37px;
+    font-weight: 700;
+    text-align: center;
   }
   .gridContent {
-    width: 913px;
-    margin-left: -1px;
+    position: absolute;
+    left: -1px;
+    right: -1px;
+    top: 40px;
+    bottom: 50px;
     flex-grow: 1;
     border: 1px solid #ccc;
     background-color: #fff;
     .deleteButton {
-      width: 25px;
-      height: 25px;
-      line-height: 25px;
+      width: 20px;
+      height: 20px;
+      line-height: 20px;
       color: #999;
       float: right;
       text-align: center;
     }
   }
   .gridFooter {
-    height: 64px;
-    line-height: 64px;
+    height: 50px;
+    line-height: 50px;
     text-align: center;
     vertical-align: middle;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 0 10px;
     .addButton {
       display: inline-block;
-      border: 1px solid #ccc;
+      border: 1px dashed #ccc;
       color: #999;
       font-size: 16px;
-      width: 149px;
-      height: 40px;
-      line-height: 38px;
+      width: 100%;
+      height: 32px;
+      line-height: 30px;
       background-color: #fff;
     }
   }
