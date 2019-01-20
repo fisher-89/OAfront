@@ -1,6 +1,6 @@
 .treeView {
   background-color: #fafafa;
-  height: 759px;
+  height: 700px;
   border-top: 1px solid #e8e8e8;
   overflow: auto;
   :global {
@@ -32,4 +32,17 @@
       }
     }
   }
+}
+
+.treeView::-webkit-scrollbar {
+  width: 3px;
+  height: 100%;
+}
+
+.treeView::-webkit-scrollbar-track {
+  border-right: 1px solid #eee;
+}
+
+.treeView::-webkit-scrollbar-thumb {
+  background-color: #ccc;
 }
