@@ -248,9 +248,9 @@ class addForm extends PureComponent {
       (formError.name || formError.form_type_id || formError.fields || listError.fields) && { style: { color: 'red' } };
     const gridsError = listError.grids || formError.grids || {};
     return (
-      <Tabs>
-        <TabPane tab="表单配置" key="basic">
-          <OAForm onSubmit={validateFields(isEdit ? this.handleEditSubmit : this.handleAddSubmit)}>
+      <OAForm onSubmit={validateFields(isEdit ? this.handleEditSubmit : this.handleAddSubmit)}>
+        <Tabs>
+          <TabPane tab="表单配置" key="basic">
             <Tabs
               tabPosition="left"
               activeKey={activeKey}
@@ -441,18 +441,18 @@ class addForm extends PureComponent {
                 );
               })}
             </Tabs>
-            <FooterToolbar>
-              <Button type="primary" htmlType="submit">提交</Button>
-            </FooterToolbar>
-          </OAForm>
-        </TabPane>
-        <TabPane tab="PC端模板" key="pc">
-          <PCTemplate fields={getFieldValue('fields')} grids={getFieldsValue().grids || []} form={form} />
-        </TabPane>
-        <TabPane tab="移动端模板" key="mobile">
-          <MobileTemplate fields={getFieldValue('fields')} grids={getFieldsValue().grids || []} form={form} />
-        </TabPane>
-      </Tabs>
+          </TabPane>
+          <TabPane tab="PC端模板" key="pc">
+            <PCTemplate fields={getFieldValue('fields')} grids={getFieldsValue().grids || []} form={form} />
+          </TabPane>
+          <TabPane tab="移动端模板" key="mobile">
+            <MobileTemplate fields={getFieldValue('fields')} grids={getFieldsValue().grids || []} form={form} />
+          </TabPane>
+        </Tabs>
+        <FooterToolbar>
+          <Button type="primary" htmlType="submit">提交</Button>
+        </FooterToolbar>
+      </OAForm>
     );
   }
 }
