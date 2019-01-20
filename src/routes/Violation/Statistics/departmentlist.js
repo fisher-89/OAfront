@@ -1,10 +1,8 @@
 import React, { PureComponent } from 'react';
 import { Tree } from 'antd';
 import TreeSort from '../../../components/TreeSort';
-import store from './store/store';
 
 const { TreeNode } = Tree;
-@store(['department', 'loading'])
 export default class extends PureComponent {
   renderTreeNodes = (data) => {
     return data.map((item) => {
@@ -35,7 +33,6 @@ export default class extends PureComponent {
         key="treeSort"
         renderTreeNodes={this.renderTreeNodes}
         dataSource={department}
-        fetch
       />
     );
   }

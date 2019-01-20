@@ -2,26 +2,61 @@
   width: 210px;
   position: relative;
   float: left;
-  margin-top: -10px;
+  margin-top: 1px;
   padding: 0;
   height: 0;
   border-bottom: 1px solid  #bbb;
 }
 
+.biaoti {
+  margin-top: 7px;
+  color: #646464;
+}
+
 .departTree {
-  width: 280px;
-  height: 880px;
+  min-width: 280px;
+  min-height: 880px;
 }
 
 .detail {
-  width: 1325px;
-  height: 880px;
+  min-width: 1325px;
+  min-height: 880px;
   margin-left: 20px;
 }
 
-.alltab {
-  margin-left: -35px;
-  .ant-tabs-bar {
-    width: 120px;
+.full {
+  :global {
+    .ant-tabs {
+      overflow: visible;
+    }
+    .ant-tabs-vertical.ant-tabs-card.ant-tabs-left > .ant-tabs-bar .ant-tabs-tab {
+      border: none;
+      text-align: center;
+    }
+    .ant-tabs-vertical > .ant-tabs-bar .ant-tabs-nav > div {
+      background: #fafafa;
+    }
+    .ant-tabs-vertical.ant-tabs-card > .ant-tabs-bar .ant-tabs-tab-active {
+      padding-bottom: 0;
+    }
+    .ant-tabs-vertical.ant-tabs-left > .ant-tabs-bar {
+      min-height: 880px;
+      background: #fafafa;
+      border: none;
+      min-width: 120px;
+      margin-top: -24px;
+      padding-bottom: 24px;
+      margin-bottom: -24px;
+      margin-left: -32px;
+    }
+    .ant-tabs-vertical.ant-tabs-card.ant-tabs-left > .ant-tabs-bar .ant-tabs-tab >.ant-tabs-tab-unclosable {
+      height: 64px;
+      line-height: 100px;
+      margin-left: -16px;
+    }
+    .ant-tabs.ant-tabs-card > .ant-tabs-bar .ant-tabs-tab .anticon-close {
+      float: right;
+      margin-top: 13px;
+    }
   }
 }

@@ -9,13 +9,19 @@ const { TabPane } = Tabs;
 const { MonthPicker } = DatePicker;
 export default class extends PureComponent {
   state= {
-    month: moment().format('YYYYMM'),
     panes: [],
+    month: moment().format('YYYYMM'),
     activeKey: 'allstaff',
+    selectedRows: [],
+    selectedRowKeys: [],
   }
 
   onEdit = (targetKey, action) => {
     this[action](targetKey);
+  }
+
+  onSelectChange = (selectedRowKeys, selectedRows) => {
+    this.setState({ selectedRows, selectedRowKeys });
   }
 
   tabsChange = (activeKey) => {
@@ -45,13 +51,12 @@ export default class extends PureComponent {
   staffInfo = (info) => {
     const { panes, month } = this.state;
     let pushAble = true;
-    const activeKey = `${info.staff_sn}`;
     panes.forEach((item) => {
       if (item.key === info.staff_sn.toString()) {
         pushAble = false;
       }
     });
-
+    const activeKey = `${info.staff_sn}`;
     if (pushAble) {
       panes.push({ title: info.staff_name, content: month, key: activeKey });
     }
@@ -115,20 +120,29 @@ export default class extends PureComponent {
   }
 
   selectMonth= (time) => {
-    const { fetchStaffViolation } = this.props;
+    const { fetchStaffViolation, departmentId } = this.props;
     const month = time.format('YYYYMM');
-    const item = { filters: '', page: 1, pagesize: 10, month, department_id: 'all' };
+    const item = { filters: '', page: 1, pagesize: 10, month, department_id: departmentId };
     this.setState({ month });
     fetchStaffViolation(item);
   }
 
+  sendPay = (payload, onError) => {
+    const { singleStaffPay } = this.props;
+    let selectId = [];
+    selectId = payload.map(item => item.id);
+    singleStaffPay(selectId, onError);
+    this.onSelectChange([], []);
+  }
+
   fetchDataSource = (item) => {
-    const { fetchStaffViolation } = this.props;
+    const { fetchStaffViolation, departmentId } = this.props;
     const { month } = this.state;
     const term = {
+      filters: '',
       ...item,
       month,
-      department_id: 'all',
+      department_id: departmentId,
     };
     fetchStaffViolation(term);
   }
@@ -150,16 +164,52 @@ export default class extends PureComponent {
     const {
       rule,
       ruleType,
+      departmentId,
+      departname,
       dataSource,
       loading,
       staffMultiPay,
       fetchStaffViolation } = this.props;
-    const { panes, month, activeKey } = this.state;
-    const realData = ({ ...dataSource }.all || {})[month];
+    const { panes, month, activeKey, selectedRowKeys, selectedRows } = this.state;
+    const realData = ({ ...dataSource }[departmentId] || {})[month];
     let excelExport = null;
     excelExport = { actionType: 'violation/downloadDepartmentExcel',
-      fileName: `${month}月大爱记录.xlsx`,
-      filter: `month=${month}` };
+      fileName: `${month}月${departname}大爱记录.xlsx`,
+      filter: `month=${month};department_id=${departmentId}` };
+    let wholeMoney = 0;
+    let paidMoney = 0;
+    let wholeScore = 0;
+    if (realData && realData.length > 1) {
+      realData.forEach((item) => {
+        wholeMoney += item.money;
+        paidMoney += item.paid_money;
+        wholeScore += item.score;
+      });
+    }
+
+    const multiOperator = [
+      {
+        text: '已支付',
+        action: (selectedRowsReal) => {
+          this.sendPay(selectedRowsReal);
+        },
+      },
+      {
+        text: '清空选择',
+        action: () => {
+          this.onSelectChange([], []);
+        },
+      },
+    ];
+
+    const rowSelection = {
+      selectedRows,
+      selectedRowKeys,
+      onChange: this.onSelectChange,
+      getCheckboxProps: record => ({
+        disabled: record.has_settle === 1,
+      }),
+    };
     return (
       <Tabs
         hideAdd
@@ -175,27 +225,30 @@ export default class extends PureComponent {
         >
           <OATable
             columns={this.makeColumns()}
-            dataSource={{ ...realData }.data}
-            serverSide
+            dataSource={realData}
+            multiOperator={multiOperator}
             excelExport={excelExport}
-            total={{ ...realData }.total}
+            rowSelection={rowSelection}
             extraOperator={this.makeExtraOperator()}
             loading={loading}
             fetchDataSource={this.fetchDataSource}
           />
+          <p>部门大爱金额: {wholeMoney}元&nbsp;&nbsp;&nbsp;已支付金额：{paidMoney}元
+          &nbsp;&nbsp;&nbsp; 部门总分值：{wholeScore}
+          </p>
         </TabPane>
         {panes.map(pane => (
           <TabPane tab={pane.title} key={pane.key} >
             <StaffInfo
-              staffMultiPay={staffMultiPay}
               ruleType={ruleType}
               rule={rule}
-              dataSource={dataSource}
+              id={pane.key}
               staffname={pane.title}
-              id={pane.key} // id是staff_sn
+              dataSource={dataSource}
+              staffMultiPay={staffMultiPay}
               time={pane.content}
+              departmentId={departmentId}
               fetchStaffViolation={fetchStaffViolation}
-              departmentId="all"
             />
           </TabPane>
         ))}

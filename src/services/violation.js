@@ -105,7 +105,15 @@ export async function editStaffPayment(params) {
 }
 
 export async function downloadDepartmentExcel(params) {
-  return request('/api/violation/count-department-excel', {
+  return request('/api/violation/count-excel', {
+    method: 'GET',
+    body: params,
+    headers: { Accept: '*' },
+  });
+}
+
+export async function downloadStaffExcel(params) {
+  return request('/api/violation/count-staff-excel', {
     method: 'GET',
     body: params,
     headers: { Accept: '*' },
