@@ -3,6 +3,7 @@ import {
   Tree,
   Spin,
 } from 'antd';
+import styles from './index.less';
 
 const { TreeNode } = Tree;
 
@@ -21,7 +22,7 @@ const defaultProps = {
     return data.map((item) => {
       if (item.children && item.children.length) {
         return (
-          <TreeNode title={item.title} key={item.key} >
+          <TreeNode title={item.title} key={item.key}>
             {this.renderTreeNodes(item.children)}
           </TreeNode>
         );
@@ -29,7 +30,8 @@ const defaultProps = {
       return <TreeNode {...item} />;
     });
   },
-  onChange: () => { },
+  onChange: () => {
+  },
 };
 export default class TreeSorter extends PureComponent {
   constructor(props) {
@@ -148,7 +150,7 @@ export default class TreeSorter extends PureComponent {
     const { loading } = this.props;
     return (
       <Spin spinning={loading || false} delay={500}>
-        <div key="content" className="tree-view" >
+        <div key="content" className={styles.treeView}>
           <Tree {...this.makeTreeProps()}>
             {this.props.renderTreeNodes(treeData)}
           </Tree>

@@ -11,7 +11,7 @@ import QueueAnim from 'rc-queue-anim';
 import DepartForm from './departForm';
 import TreeSort from '../../../components/TreeSort';
 import { checkAuthority } from '../../../utils/utils';
-import './department.less';
+import styles from './department.less';
 
 const { TreeNode } = Tree;
 
@@ -111,32 +111,32 @@ export default class extends PureComponent {
             !item.is_locked ? (
               <div className="selected-Icon">
                 {checkAuthority(40) &&
-                  (
-                    <Icon
-                      className="icon-edit"
-                      type="edit"
-                      style={{ marginLeft: '10px' }}
-                      onClick={e => this.handleEidtEvent(e, item)}
-                    />
-                  )
+                (
+                  <Icon
+                    className="icon-edit"
+                    type="edit"
+                    style={{ marginLeft: '10px' }}
+                    onClick={e => this.handleEidtEvent(e, item)}
+                  />
+                )
                 }
                 {checkAuthority(41) &&
-                  (
-                    <Icon
-                      className="icon-delete"
-                      type="delete"
-                      style={{ marginLeft: '10px' }}
-                      onClick={e => this.handleDelete(e, item.id)}
-                    />
-                  )
+                (
+                  <Icon
+                    className="icon-delete"
+                    type="delete"
+                    style={{ marginLeft: '10px' }}
+                    onClick={e => this.handleDelete(e, item.id)}
+                  />
+                )
                 }
               </div>
-          ) : null}
+            ) : null}
         </React.Fragment>
       );
       if (item.children && item.children.length) {
         return (
-          <TreeNode title={content} key={item.key} >
+          <TreeNode title={content} key={item.key}>
             {this.renderTreeNodes(item.children)}
           </TreeNode>
         );
@@ -157,7 +157,7 @@ export default class extends PureComponent {
           (
             <div
               key="add"
-              className="add-event-type"
+              className={styles.addEventType}
             >
               <Button
                 icon="plus"
@@ -181,15 +181,15 @@ export default class extends PureComponent {
           onChange={this.handleOnchange}
         />
         {(checkAuthority(39) || checkAuthority(40)) &&
-          (
-            <DepartForm
-              visible={visible}
-              initialValue={editInfo}
-              onCancel={this.handleModalVisible}
-              treeData={department}
-              onClose={() => this.setState({ editInfo: {} })}
-            />
-          )
+        (
+          <DepartForm
+            visible={visible}
+            initialValue={editInfo}
+            onCancel={this.handleModalVisible}
+            treeData={department}
+            onClose={() => this.setState({ editInfo: {} })}
+          />
+        )
         }
       </QueueAnim>
     );

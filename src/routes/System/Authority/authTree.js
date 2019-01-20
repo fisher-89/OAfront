@@ -150,13 +150,13 @@ export default class extends PureComponent {
     const { visible, editInfo } = this.state;
     const { dataSource, loading } = this.props;
     return (
-      <QueueAnim type="left" className={style.tree}>
+      <QueueAnim type="left">
         {
           checkAuthority(138) &&
           (
             <div
               key="add"
-              className="add-event-type"
+              className={style.addEventType}
             >
               <Button
                 icon="plus"

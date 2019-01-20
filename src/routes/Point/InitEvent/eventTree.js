@@ -10,7 +10,7 @@ import QueueAnim from 'rc-queue-anim';
 import TypeForm from './typeForm';
 import TreeSort from '../../../components/TreeSort';
 import { checkAuthority } from '../../../utils/utils';
-import './event.less';
+import styles from './event.less';
 
 const { TreeNode } = Tree;
 
@@ -109,31 +109,31 @@ export default class extends PureComponent {
           <a className="title-content" onClick={() => fetchDataSource(item.id)}>{item.name}</a>
           <div className="selected-Icon">
             {checkAuthority(151) &&
-              (
-                <Icon
-                  className="icon-form"
-                  type="form"
-                  style={{ marginLeft: '10px' }}
-                  onClick={e => this.handleEidtEvent(e, item)}
-                />
-              )
+            (
+              <Icon
+                className="icon-form"
+                type="form"
+                style={{ marginLeft: '10px' }}
+                onClick={e => this.handleEidtEvent(e, item)}
+              />
+            )
             }
             {checkAuthority(152) &&
-              (
-                <Icon
-                  className="icon-delete"
-                  type="delete"
-                  style={{ marginLeft: '10px' }}
-                  onClick={e => this.handleDelete(e, item.id)}
-                />
-              )
+            (
+              <Icon
+                className="icon-delete"
+                type="delete"
+                style={{ marginLeft: '10px' }}
+                onClick={e => this.handleDelete(e, item.id)}
+              />
+            )
             }
           </div>
         </React.Fragment>
       );
       if (item.children && item.children.length) {
         return (
-          <TreeNode title={content} key={item.key} >
+          <TreeNode title={content} key={item.key}>
             {this.renderTreeNodes(item.children)}
           </TreeNode>
         );
@@ -154,7 +154,7 @@ export default class extends PureComponent {
           (
             <div
               key="add"
-              className="add-event-type"
+              className={styles.addEventType}
             >
               <Button
                 icon="plus"
@@ -184,15 +184,15 @@ export default class extends PureComponent {
           onChange={this.handleOnchange}
         />
         {(checkAuthority(151) || checkAuthority(138)) &&
-          (
-            <TypeForm
-              visible={visible}
-              initialValue={editInfo}
-              onCancel={this.handleModalVisible}
-              treeData={dataSource}
-              onClose={() => this.setState({ editInfo: {} })}
-            />
-          )
+        (
+          <TypeForm
+            visible={visible}
+            initialValue={editInfo}
+            onCancel={this.handleModalVisible}
+            treeData={dataSource}
+            onClose={() => this.setState({ editInfo: {} })}
+          />
+        )
         }
       </QueueAnim>
     );
