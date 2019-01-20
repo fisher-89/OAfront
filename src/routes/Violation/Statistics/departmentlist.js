@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Tree } from 'antd';
-import TreeSort from '../../../components/TreeSort';
+import TreeSort from './TreeSort';
 
 const { TreeNode } = Tree;
 export default class extends PureComponent {

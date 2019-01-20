@@ -1,0 +1,44 @@
+.treeView {
+  margin-top: 20px;
+  overflow: auto;
+  height: 750px;
+  :global {
+    .icon-delete, .icon-form {
+      cursor: pointer;
+    }
+    .icon-form:hover {
+      color: #40a9ff;
+    }
+    .title-content {
+      color: rgba(0, 0, 0, 0.65);
+    }
+    .ant-tree {
+      li {
+        .ant-tree-node-content-wrapper {
+          cursor: default;
+        }
+        .selected-Icon {
+          display: none;
+        }
+        .ant-tree-node-content-wrapper:hover {
+          .selected-Icon {
+            display: inline-block;
+          }
+        }
+      }
+    }
+  }
+}
+
+.treeView::-webkit-scrollbar {
+  width: 3px;
+  height: 100%;
+}
+
+.treeView::-webkit-scrollbar-track {
+  border-right: 1px solid #eee;
+}
+
+.treeView::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+}
