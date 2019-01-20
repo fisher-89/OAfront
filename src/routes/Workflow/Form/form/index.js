@@ -15,7 +15,7 @@ import OAForm from 'components/OAForm';
 import FooterToolbar from 'components/FooterToolbar';
 import FieldList from '../fieldList';
 import PCTemplate from './pc/template';
-import MobileTemplate from './mobile_template';
+import MobileTemplate from './mobile/mobile_template';
 
 const FormItem = OAForm.Item;
 const { Option } = Select;
@@ -248,9 +248,9 @@ class addForm extends PureComponent {
       (formError.name || formError.form_type_id || formError.fields || listError.fields) && { style: { color: 'red' } };
     const gridsError = listError.grids || formError.grids || {};
     return (
-      <OAForm onSubmit={validateFields(isEdit ? this.handleEditSubmit : this.handleAddSubmit)}>
-        <Tabs>
-          <TabPane tab="表单配置" key="basic">
+      <Tabs>
+        <TabPane tab="表单配置" key="basic">
+          <OAForm onSubmit={validateFields(isEdit ? this.handleEditSubmit : this.handleAddSubmit)}>
             <Tabs
               tabPosition="left"
               activeKey={activeKey}
@@ -427,22 +427,32 @@ class addForm extends PureComponent {
                     })(
                       <Input type="hidden" />
                     )}
+                    {getFieldDecorator(`grids.${index}.mobile_x`, {
+                      initialValue: grids && grids[index] ? grids[index].mobile_x : null,
+                    })(
+                      <Input type="hidden" />
+                    )}
+                    {getFieldDecorator(`grids.${index}.mobile_y`, {
+                      initialValue: grids && grids[index] ? grids[index].mobile_y : null,
+                    })(
+                      <Input type="hidden" />
+                    )}
                   </TabPane>
                 );
               })}
             </Tabs>
-          </TabPane>
-          <TabPane tab="PC端模板" key="pc">
-            <PCTemplate fields={getFieldValue('fields')} grids={getFieldsValue().grids || []} form={form} />
-          </TabPane>
-          <TabPane tab="移动端模板" key="mobile">
-            <MobileTemplate />
-          </TabPane>
-        </Tabs>
-        <FooterToolbar>
-          <Button type="primary" htmlType="submit">提交</Button>
-        </FooterToolbar>
-      </OAForm>
+            <FooterToolbar>
+              <Button type="primary" htmlType="submit">提交</Button>
+            </FooterToolbar>
+          </OAForm>
+        </TabPane>
+        <TabPane tab="PC端模板" key="pc">
+          <PCTemplate fields={getFieldValue('fields')} grids={getFieldsValue().grids || []} form={form} />
+        </TabPane>
+        <TabPane tab="移动端模板" key="mobile">
+          <MobileTemplate fields={getFieldValue('fields')} grids={getFieldsValue().grids || []} form={form} />
+        </TabPane>
+      </Tabs>
     );
   }
 }
