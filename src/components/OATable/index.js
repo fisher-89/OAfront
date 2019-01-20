@@ -910,13 +910,27 @@ class OATable extends PureComponent {
   }
 
   handleExportExcel = () => {
-    const { excelExport: { actionType }, dispatch, fileExportChange } = this.props;
+    const { excelExport: { actionType, filter }, dispatch, fileExportChange } = this.props;
     const params = this.fetchTableDataSource(true);
     delete params.page;
     delete params.pagesize;
+    let filters = {};
+    if (filter) {
+      if (params) {
+        if (params.filters) {
+          filters = { ...params, filters: `${params.filters};${filter}` };
+        } else {
+          filters = { ...params, filters: `${filter}` };
+        }
+      } else {
+        filters = { filters: `${filter}` };
+      }
+    } else {
+      filters = params;
+    }
     dispatch({
       type: actionType,
-      payload: params,
+      payload: filters,
       onError: (errors) => {
         if (fileExportChange.onError) {
           fileExportChange.onError(errors);
