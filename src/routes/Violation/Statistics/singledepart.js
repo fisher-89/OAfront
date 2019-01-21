@@ -151,6 +151,7 @@ export default class extends PureComponent {
     const extra = [];
     extra.push((
       <MonthPicker
+        allowClear={false}
         key="monthPicker"
         defaultValue={moment()}
         placeholder="Select month"

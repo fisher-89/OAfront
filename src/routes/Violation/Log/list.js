@@ -86,7 +86,7 @@ export default class extends PureComponent {
           parentId: 'parent_id',
         },
         width: 285,
-        render: key => OATable.findRenderKey(department, key).full_name,
+        render: key => OATable.renderEllipsis(findRenderKey(department, key).full_name, true),
       },
       {
         title: '违纪日期',
@@ -102,6 +102,7 @@ export default class extends PureComponent {
           const { name } = record.rules;
           return name;
         },
+        render: key => OATable.renderEllipsis(key, true),
       },
       {
         title: '大爱类型',
@@ -135,13 +136,7 @@ export default class extends PureComponent {
           { text: '未支付', value: 0 },
         ],
         width: 50,
-        render: (key) => {
-          if (key) {
-            return '已支付';
-          } else {
-            return '未支付';
-          }
-        },
+        render: key => (key ? '已支付' : '未支付'),
       },
       {
         title: '开单日期',
