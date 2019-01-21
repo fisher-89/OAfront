@@ -4,6 +4,7 @@ import OATable from '../../../components/OATable';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 import RuleType from './Type/index';
 import store from './store/store';
+import { checkAuthority } from '../../../utils/utils';
 import RuleForm from './details';
 import NewRule from './newruletab';
 import RuleTag from './tableTags';
@@ -50,19 +51,21 @@ export default class extends PureComponent {
 
   makeExtraOperator = () => {
     const extra = [];
-    extra.push((
-      <Button
-        icon="plus"
-        key="plus"
-        type="primary"
-        style={{ marginLeft: '10px' }}
-        onClick={() => {
+    if (checkAuthority(206)) {
+      extra.push((
+        <Button
+          icon="plus"
+          key="plus"
+          type="primary"
+          style={{ marginLeft: '10px' }}
+          onClick={() => {
           this.add();
         }}
-      >
+        >
           新建制度
-      </Button>
-    ));
+        </Button>
+      ));
+    }
     return extra;
   }
 
@@ -115,6 +118,7 @@ export default class extends PureComponent {
       {
         title: '原因',
         dataIndex: 'name',
+        render: key => OATable.renderEllipsis(key, true),
       },
       {
         title: '类型',
@@ -160,10 +164,10 @@ export default class extends PureComponent {
           return (
             <Fragment>
               <a onClick={() => this.details(RowData)}>查看</a>
-              <Divider type="vertical" />
-              <a onClick={() => this.edit(RowData)}>编辑</a>
-              <Divider type="vertical" />
-              <a onClick={() => ruleDelete(RowData.id)}>删除</a>
+              {checkAuthority(207) && <Divider type="vertical" />}
+              {checkAuthority(207) && <a onClick={() => this.edit(RowData)}>编辑</a>}
+              {checkAuthority(208) && <Divider type="vertical" />}
+              {checkAuthority(208) && <a onClick={() => ruleDelete(RowData.id)}>删除</a>}
             </Fragment>
           );
         },

@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Input, Button, List } from 'antd';
+import { checkAuthority } from '../../../../utils/utils';
 import OAForm from '../../../../components/OAForm';
 import ListItem from './listitem';
 import './index.less';
@@ -31,6 +32,7 @@ export default class extends PureComponent {
     const { textType } = this.state;
     return (
       <Fragment>
+        {checkAuthority(209) && (
         <Button
           icon="plus"
           type="dashed"
@@ -40,6 +42,7 @@ export default class extends PureComponent {
         >
     添加类型
         </Button>
+         )}
         <List
           dataSource={ruletype}
           bordered
