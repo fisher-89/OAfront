@@ -6,6 +6,7 @@ import Details from './details';
 import {
   getFiltersData,
   findRenderKey,
+  checkAuthority,
 } from '../../../utils/utils';
 import store from './store/store';
 
@@ -168,12 +169,13 @@ export default class extends PureComponent {
               })}
               >查看
               </a>
-              <Divider type="vertical" />
-              <a onClick={() => this.handleEdit(rowData)}>编辑</a>
-              <Divider type="vertical" />
-              <a onClick={() => this.paychange(rowData.id, payOrRefunder)}>{payOrRefunder}</a>
-              <Divider type="vertical" />
-              <a onClick={() => deleted(rowData.id)}>删除</a>
+              {checkAuthority(204) && <Divider type="vertical" />}
+              {checkAuthority(204) && <a onClick={() => this.handleEdit(rowData)}>编辑</a>}
+              {checkAuthority(203) && <Divider type="vertical" />}
+              {checkAuthority(203) &&
+                <a onClick={() => this.paychange(rowData.id, payOrRefunder)}>{payOrRefunder}</a>}
+              {checkAuthority(202) && <Divider type="vertical" />}
+              {checkAuthority(202) && <a onClick={() => deleted(rowData.id)}>删除</a>}
             </Fragment>
           );
         },
@@ -181,34 +183,6 @@ export default class extends PureComponent {
     ];
     return columns;
   }
-  makeExtraOperator = () => {
-    const extra = [];
-    extra.push((
-      <Button
-        icon="plus"
-        key="plus"
-        type="primary"
-        style={{ marginLeft: '10px' }}
-        onClick={() => {
-          this.handleModalVisible(true);
-          this.setState({ initialValue: {} });
-        }}
-      >
-        新建大爱
-      </Button>),
-      (
-        <Button
-          key="download-temp"
-          icon="cloud-download"
-        >
-          <a href="/api/violation/punish/example" style={{ color: 'rgba(0, 0, 0, 0.65)', marginLeft: 5 }}>下载模板</a>
-        </Button>
-      ),
-
-    );
-    return extra;
-  }
-
 
   sendPay = (payload, onError) => {
     const { payFine } = this.props;
@@ -232,7 +206,8 @@ export default class extends PureComponent {
     const { detailsVisible, visible, initialValue, selectedRowKeys, selectedRows } = this.state;
     let excelExport = null;
     const extra = [];
-    extra.push((
+    extra.push(
+      checkAuthority(200) && (
       <Button
         icon="plus"
         key="plus"
@@ -297,9 +272,9 @@ export default class extends PureComponent {
               total={finelog.total}
               scroll={{ x: 1685 }}
               rowSelection={rowSelection}
-              multiOperator={multiOperator}
-              excelInto={excelInto}
-              excelExport={excelExport}
+              multiOperator={checkAuthority(203) && multiOperator}
+              excelInto={checkAuthority(201) && excelInto}
+              excelExport={checkAuthority(205) && excelExport}
             />
           </TabPane>
         </Tabs>

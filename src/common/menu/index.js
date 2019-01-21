@@ -50,18 +50,21 @@ const menuData = [
     name: '大爱',
     icon: 'heart',
     path: 'violation',
-    authority: '76',
+    authority: '196',
     children: [
       {
         name: '大爱记录',
+        authority: '197',
         path: 'log',
       },
       {
         name: '制度管理',
+        authority: '198',
         path: 'regime',
       },
       {
-        name: '员工统计',
+        name: '月统计',
+        authority: '199',
         path: 'statistics',
       },
     ],

@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Button, Tooltip } from 'antd';
 import OAForm, { OAModal } from '../../../components/OAForm';
+import { checkAuthority } from '../../../utils/utils';
 import style from './details.less';
 
 @OAForm.create()
@@ -75,7 +76,7 @@ export default class extends PureComponent {
 
         <div className={style.score}>分值：{value.score}</div>
 
-        <div className={style.simple}><div className={style.payment}>支付状态：{payment}</div><div className={style.paychange}><Button onClick={() => paymentChange(value.id, pay)} type="danger" size="small">{pay}</Button></div></div>
+        <div className={style.simple}><div className={style.payment}>支付状态：{payment}</div>{checkAuthority(203) && <div className={style.paychange}><Button onClick={() => paymentChange(value.id, pay)} type="danger" size="small">{pay}</Button></div>}</div>
 
         <div className={style.normal}>支付时间：{value.paid_at}</div>
 

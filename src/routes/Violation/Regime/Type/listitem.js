@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Icon, Input } from 'antd';
 import OAForm from '../../../../components/OAForm';
+import { checkAuthority } from '../../../../utils/utils';
 import Ellipsis from '../../../../components/Ellipsis';
 import styles from './index.less';
 
@@ -52,16 +53,20 @@ export default class extends PureComponent {
         </OAForm>
         <Ellipsis tooltip length={6} style={{ display: 'inline' }}>{initialValue.name}</Ellipsis>
         <div style={{ float: 'right' }}>
+          {checkAuthority(209) && (
           <Icon
             className={styles.edit}
             type="edit"
             onClick={() => { this.onEdit(); }}
           />
+          )}
+          {checkAuthority(209) && (
           <Icon
             className={styles.edit}
             type="close"
             onClick={() => { this.delete(initialValue.id); }}
           />
+          )}
         </div>
       </div>
     );
