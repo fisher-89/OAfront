@@ -115,6 +115,7 @@ export default class extends PureComponent {
       {
         title: '原因',
         dataIndex: 'name',
+        render: key => OATable.renderEllipsis(key, true),
       },
       {
         title: '类型',
