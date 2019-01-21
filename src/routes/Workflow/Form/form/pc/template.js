@@ -77,16 +77,12 @@ class PCTemplate extends Component {
       const gridFields = grids[parentGridIndex].fields;
       gridFields[dataIndex].x = null;
       gridFields[dataIndex].y = null;
-      gridFields[dataIndex].row = null;
-      gridFields[dataIndex].col = null;
       form.setFieldsValue({
         [`grids.${parentGridIndex}.fields`]: gridFields,
       });
     } else {
       fields[dataIndex].x = null;
       fields[dataIndex].y = null;
-      fields[dataIndex].row = null;
-      fields[dataIndex].col = null;
       form.setFieldsValue({ fields });
     }
   }
