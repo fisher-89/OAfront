@@ -6,7 +6,7 @@ import styles from './template.less';
 
 class DraggingFieldTag extends Component {
   state = {
-    offset: { x: 1, y: 1 },
+    offset: { x: 0, y: 0 },
     onTemplate: false, // 当前鼠标是否在模板上
     data: null,
     relativeX: 0, // 点击相对位置（水平）
