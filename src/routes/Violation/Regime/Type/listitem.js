@@ -1,9 +1,10 @@
 import React, { PureComponent } from 'react';
-import { Icon, Input, Form } from 'antd';
+import { Icon, Input } from 'antd';
+import OAForm from '../../../../components/OAForm';
 import Ellipsis from '../../../../components/Ellipsis';
 import styles from './index.less';
 
-@Form.create()
+@OAForm.create()
 export default class extends PureComponent {
   state = {
     midmid: 'hidden',
@@ -17,8 +18,8 @@ export default class extends PureComponent {
   submit = (params) => {
     const { initialValue } = this.props;
     if (params.name && params.name !== initialValue.name) {
-      const { typeSubmit } = this.props;
-      typeSubmit(params);
+      const { typeSubmit, onError } = this.props;
+      typeSubmit(params, onError);
     }
     this.setState({ midmid: 'hidden' });
   }
@@ -34,7 +35,7 @@ export default class extends PureComponent {
     const { initialValue } = this.props;
     return (
       <div className={styles.tags}>
-        <Form>
+        <OAForm>
           {getFieldDecorator('id',
       { initialValue: initialValue.id || null,
     })(<Input type="hidden" />)}
@@ -48,7 +49,7 @@ export default class extends PureComponent {
         className={styles.typeinput}
       />
       )}
-        </Form>
+        </OAForm>
         <Ellipsis tooltip length={6} style={{ display: 'inline' }}>{initialValue.name}</Ellipsis>
         <div style={{ float: 'right' }}>
           <Icon

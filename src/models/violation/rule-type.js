@@ -1,3 +1,4 @@
+import { notification } from 'antd';
 import {
   fetchRuleType,
   addRuleType,
@@ -25,7 +26,10 @@ export default {
     try {
       const params = { ...payload };
       const response = yield call(addRuleType, params);
-      if (response.errors) { onError(response.errors); return; }
+      if (response.errors && onError) {
+        notification.error({ message: response.errors.name });
+        return;
+      }
       yield put({
         type: 'add',
         payload: {
@@ -45,7 +49,7 @@ export default {
       delete params.id;
       const response = yield call(editRuleType, params, id);
       if (response.errors && onError) {
-        onError(response.errors);
+        notification.error({ message: response.errors.name });
       } else {
         yield put({
           type: 'update',

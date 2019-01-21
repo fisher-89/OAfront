@@ -1,10 +1,11 @@
 import React, { PureComponent } from 'react';
-import { Form, Select, Button, Input, Row, Col } from 'antd';
+import { Select, Button, Input, Row, Col } from 'antd';
 import { connect } from 'dva';
+import OAForm from '../../../components/OAForm';
 import InputTags from './InputTags/index';
 
-const FormItem = Form.Item;
-@Form.create()
+const FormItem = OAForm.Item;
+@OAForm.create()
 @connect(({ loading }) => ({
   loading: {
     addRule: loading.effects['violation/addRule'],
@@ -60,7 +61,7 @@ export default class extends PureComponent {
     const { getFieldDecorator } = this.props.form;
     const { ruletype, content, initialValue } = this.props;
     return (
-      <Form>
+      <OAForm>
         {getFieldDecorator('id', {
         initialValue: initialValue.id || undefined,
           })(<Input type="hidden" />)}
@@ -140,7 +141,7 @@ export default class extends PureComponent {
             </FormItem>
           </Col>
         </Row>
-      </Form>
+      </OAForm>
     );
   }
 }

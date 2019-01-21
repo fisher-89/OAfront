@@ -210,18 +210,6 @@ export default {
           };
         }
       } else if (params.department_id === 'all') {
-        console.log({
-          ...state,
-          [store]: {
-            ...state[store],
-            [`${params.department_id}`]: {
-              ...{ ...state[store] }[`${params.department_id}`],
-              [`${params.month}`]: {
-                ...data,
-              },
-            },
-          },
-        }, 'all');
         return {
           ...state,
           [store]: {

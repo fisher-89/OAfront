@@ -1,9 +1,10 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Form, Input, Button, List } from 'antd';
+import { Input, Button, List } from 'antd';
+import OAForm from '../../../../components/OAForm';
 import ListItem from './listitem';
 import './index.less';
 
-@Form.create()
+@OAForm.create()
 export default class extends PureComponent {
   state = {
     textType: 'hidden',
@@ -16,9 +17,9 @@ export default class extends PureComponent {
 
   submit = (params) => {
     if (params.name) {
-      const { typeSubmit } = this.props;
+      const { typeSubmit, onError } = this.props;
       const { setFieldsValue } = this.props.form;
-      typeSubmit(params);
+      typeSubmit(params, onError);
       setFieldsValue({ name: '' });
     }
     this.setState({ textType: 'hidden' });
@@ -51,7 +52,7 @@ export default class extends PureComponent {
           );
         }}
         />
-        <Form>
+        <OAForm>
           {getFieldDecorator('name',
       { initialValue: '',
     })(
@@ -61,7 +62,7 @@ export default class extends PureComponent {
         onBlur={() => this.submit(this.props.form.getFieldsValue())}
       />
     )}
-        </Form>
+        </OAForm>
       </Fragment>
     );
   }
