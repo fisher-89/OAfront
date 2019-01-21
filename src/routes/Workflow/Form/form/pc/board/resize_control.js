@@ -1,5 +1,5 @@
 /* eslint no-param-reassign:0 */
-import defaultSize from '../supports/control_size';
+import { getMinSize } from '../supports/control_size';
 
 export { topResize, bottomResize, leftResize, rightResize };
 
@@ -70,7 +70,7 @@ function fetchRowAndMin(y, data, grid) {
     row = Math.min(row, lines.length);
   }
   row = Math.max(row, 0);
-  let min = defaultSize(data).row;
+  let min = getMinSize(data).row;
   if ('fields' in data) {
     data.fields.forEach((field) => {
       min = Math.max(field.y + field.row + 2, min);
@@ -84,7 +84,12 @@ function fetchColAndMin(x, data) {
   let col = Math.round((x - left) / 61);
   col = Math.max(col, 0);
   col = Math.min(col, 20);
-  const min = defaultSize(data).col;
+  let min = getMinSize(data).col;
+  if ('fields' in data) {
+    data.fields.forEach((field) => {
+      min = Math.max(field.x + field.col, min);
+    });
+  }
   return { col, min };
 }
 

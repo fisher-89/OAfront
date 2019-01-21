@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Tag } from 'antd';
-import defaultSize from './supports/control_size';
+import { getDefaultSize } from './supports/control_size';
 import ControlContent from './controls';
 import styles from './template.less';
 
@@ -21,7 +21,7 @@ class DraggingFieldTag extends Component {
     document.addEventListener('mouseup', this.loosenDrag);
     document.addEventListener('touchend', this.loosenDrag);
     const { data, startPoint: { x, y }, startPosition: { top, bottom, left, right } } = this.props;
-    const { col, row } = data.col !== null ? data : defaultSize(data);
+    const { col, row } = data.col !== null ? data : getDefaultSize(data);
     this.state.data = { ...data, col, row };
     this.state.relativeX = (x - left) / (right - left);
     this.state.relativeY = (y - top) / (bottom - top);

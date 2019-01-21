@@ -18,8 +18,11 @@ class Board extends Component {
   }
 
   componentWillReceiveProps(newProps) {
-    const { fields } = this.props;
+    const { fields, grids } = this.props;
     if (fields.length === 0 && newProps.fields.length > 0) {
+      this.setState({ lines: this.initLine(newProps.fields, newProps.grids) });
+    }
+    if (grids.length === 0 && newProps.grids.length > 0) {
       this.setState({ lines: this.initLine(newProps.fields, newProps.grids) });
     }
   }
@@ -27,10 +30,10 @@ class Board extends Component {
   initLine = (fields, grids) => {
     let rowMax = 7;
     fields.forEach((field) => {
-      rowMax = Math.max(field.y + field.row, rowMax);
+      if (field.y !== null) rowMax = Math.max(field.y + field.row, rowMax);
     });
     grids.forEach((grid) => {
-      rowMax = Math.max(grid.y + grid.row, rowMax);
+      if (grid.y !== null) rowMax = Math.max(grid.y + grid.row, rowMax);
     });
     const lines = [];
     for (let i = 1; i <= rowMax; i += 1) {

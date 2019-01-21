@@ -82,6 +82,7 @@ export default class Control extends Component {
       selectedControl === data ||
       ('fields' in selectedControl && 'fields' in data && selectedControl.key === data.key)
     );
+    const typesWithMultipleRow = ['array', 'file', 'text'];
     return (
       <div
         className={styles.content}
@@ -92,7 +93,7 @@ export default class Control extends Component {
         <ControlContent data={data} />
         {isSelected ? (
           <div className={styles.clickBoardSelected}>
-            {(isGrid || data.is_checkbox || data.type === 'array') ? (
+            {(isGrid || data.is_checkbox || typesWithMultipleRow.indexOf(data.type) !== -1) ? (
               <React.Fragment>
                 <div
                   className={styles.topResize}
@@ -108,22 +109,20 @@ export default class Control extends Component {
                 />
               </React.Fragment>
             ) : null}
-            {!isGrid && (
-              <React.Fragment>
-                <div
-                  className={styles.leftResize}
-                  onMouseDown={this.handleResize('left')}
-                  onTouchStart={this.handleResize('left')}
-                  onTouchEnd={this.handleResize('left')}
-                />
-                <div
-                  className={styles.rightResize}
-                  onMouseDown={this.handleResize('right')}
-                  onTouchStart={this.handleResize('right')}
-                  onTouchEnd={this.handleResize('right')}
-                />
-              </React.Fragment>
-            )}
+            <React.Fragment>
+              <div
+                className={styles.leftResize}
+                onMouseDown={this.handleResize('left')}
+                onTouchStart={this.handleResize('left')}
+                onTouchEnd={this.handleResize('left')}
+              />
+              <div
+                className={styles.rightResize}
+                onMouseDown={this.handleResize('right')}
+                onTouchStart={this.handleResize('right')}
+                onTouchEnd={this.handleResize('right')}
+              />
+            </React.Fragment>
           </div>
         ) : (
           <div className={styles.clickBoard} />
