@@ -132,7 +132,6 @@ class Board extends Component {
   }
 
   makeLines = () => {
-    const { onCancelSelect, selectedControl } = this.props;
     const { lines } = this.state;
     return lines.map((line, index) => {
       return (
@@ -141,7 +140,6 @@ class Board extends Component {
           index={index}
           addLine={this.handleAddLine}
           deleteLine={this.handleDeleteLine}
-          onClick={selectedControl && onCancelSelect}
         />
       );
     });
@@ -155,7 +153,6 @@ class Board extends Component {
       draggingControl,
       selectedControl,
       onSelect,
-      onCancelSelect,
     } = this.props;
     const { lines } = this.state;
     return [
@@ -183,7 +180,6 @@ class Board extends Component {
           lines={lines.length}
           addLine={this.handleAddLine}
           deleteLine={this.handleDeleteLine}
-          onCancelSelect={onCancelSelect}
           draggingControl={draggingControl}
           isGrid
         />

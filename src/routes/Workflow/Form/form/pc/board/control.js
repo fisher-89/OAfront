@@ -132,7 +132,7 @@ export default class Control extends Component {
   }
 
   render() {
-    const { isGrid, selectedControl, onCancelSelect, data, draggingControl } = this.props;
+    const { isGrid, selectedControl, data, draggingControl } = this.props;
     const { direction } = this.state;
     const isSelected = selectedControl && (
       selectedControl === data ||
@@ -153,7 +153,6 @@ export default class Control extends Component {
           <React.Fragment>
             <div
               className={styles.childrenBg}
-              onClick={selectedControl && onCancelSelect}
               style={{ height: `${((data.row - 2) * 61) + 1}px` }}
             />
             <div className={styles.children}>

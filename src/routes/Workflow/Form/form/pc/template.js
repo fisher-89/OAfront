@@ -22,8 +22,15 @@ class PCTemplate extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
+    if (nextState.selectedControl && !this.state.selectedControl) {
+      document.addEventListener('mousedown', this.handleCancelSelect);
+      return true;
+    }
+    if (!nextState.selectedControl && this.state.selectedControl) {
+      document.removeEventListener('mousedown', this.handleCancelSelect);
+      return true;
+    }
     if (nextState.selectedGrid !== this.state.selectedGrid) return true;
-    if (nextState.selectedControl !== this.state.selectedControl) return true;
     if (nextProps.grids !== this.props.grids) return true;
     if (nextProps.fields !== this.props.fields) return true;
     if (nextState.onDragging !== this.state.onDragging) return true;
@@ -60,8 +67,8 @@ class PCTemplate extends Component {
     });
   }
 
-  handleCancelSelect = () => {
-    this.setState({ selectedControl: null });
+  handleCancelSelect = (e) => {
+    if (e.button === 0) this.setState({ selectedControl: null });
   }
 
   deleteSelectedControl = (data) => {
@@ -143,23 +150,34 @@ class PCTemplate extends Component {
 
   makeFieldOptions = () => {
     const { fields } = this.props;
+    const { selectedControl } = this.state;
     return fields.map((field) => {
-      return (<FieldTag key={field.id} data={field} onDrag={this.handleDragStart} />);
+      return (
+        <FieldTag
+          key={field.id}
+          data={field}
+          onDrag={this.handleDragStart}
+          onSelect={this.handleSelect}
+          selectedControl={selectedControl}
+        />
+      );
     });
   }
 
   makeGridOptions = () => {
     const { grids } = this.props;
-    const { selectedGrid } = this.state;
+    const { selectedGrid, selectedControl } = this.state;
     return grids.map((grid) => {
       const { key } = grid;
-      const selected = selectedGrid === key;
+      const unfolded = selectedGrid === key;
       return (
         <GridTag
           key={key}
           data={grid}
-          selected={selected}
+          unfolded={unfolded}
           onDrag={this.handleDragStart}
+          onSelect={this.handleSelect}
+          selectedControl={selectedControl}
           toggleGridField={this.toggleGridField}
         />
       );
@@ -218,7 +236,6 @@ class PCTemplate extends Component {
               form={form}
               selectedControl={selectedControl}
               onSelect={this.handleSelect}
-              onCancelSelect={this.handleCancelSelect}
               onDrag={this.handleDragStart}
               parentGrid={parentGridIndex !== null ? grids[parentGridIndex] : null}
               bind={(board) => {

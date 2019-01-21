@@ -16,19 +16,21 @@ class FieldTag extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    const changeData = nextProps.data !== this.props.data;
-    const changeColor = nextProps.color !== this.props.color;
-    const changeDisabled = nextState.disabled !== this.state.disabled;
-    if (changeData || changeColor || changeDisabled) return true;
+    if (nextProps.data !== this.props.data) return true;
+    if (nextState.disabled !== this.state.disabled) return true;
+    if (nextProps.selectedControl !== this.props.selectedControl) return true;
     return false;
   }
 
   mouseDown = (e) => {
     e.preventDefault();
     if (e.type === 'mousedown' && e.button !== 0) return false;
-    const { onDrag, data } = this.props;
+    const { onDrag, onSelect, data } = this.props;
     const { disabled } = this.state;
-    if (disabled) return false;
+    if (disabled) {
+      onSelect(data);
+      return false;
+    }
     const startPoint = e.target.getBoundingClientRect();
     let x;
     let y;
@@ -42,13 +44,13 @@ class FieldTag extends Component {
   }
 
   render() {
-    const { data } = this.props;
+    const { data, selectedControl } = this.props;
     const { disabled } = this.state;
     return (
       <React.Fragment>
         <Tag
           color={disabled ? '' : 'blue'}
-          style={disabled && { cursor: 'default' }}
+          style={disabled && selectedControl === data && { borderColor: '#1890ff', boxShadow: '#1890ff 0 0 2px 0' }}
           onMouseDown={this.mouseDown}
           onTouchStart={this.mouseDown}
           onTouchEnd={this.mouseDown}
