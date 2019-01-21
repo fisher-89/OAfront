@@ -116,6 +116,11 @@ export default class Flow extends PureComponent {
         searcher: true,
       },
       {
+        title: '表名',
+        dataIndex: 'form_id',
+        render: key => `form_data_${key}`,
+      },
+      {
         title: '类型',
         dataIndex: 'flow_type_id',
         filters: getFiltersData(flowType),
