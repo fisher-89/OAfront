@@ -76,7 +76,10 @@ export default class extends PureComponent {
             <Card className={style.departTree} bordered={false}>
               <p className={style.biaoti}>选择部门</p>
               <div className={style.xuxian} />
-              <DepartmentTree setDepartment={this.setDepartment} department={department} />
+              <DepartmentTree
+                setDepartment={this.setDepartment}
+                department={department}
+              />
             </Card>
           </Col>
           <Col span={20}>

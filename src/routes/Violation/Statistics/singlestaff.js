@@ -116,6 +116,7 @@ export default class extends PureComponent {
     const defalutMonth = moment(month, 'YYYYMM');
     extra.push((
       <MonthPicker
+        allowClear={false}
         key="monthPicker"
         defaultValue={defalutMonth}
         placeholder="Select month"
