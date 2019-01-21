@@ -84,7 +84,7 @@ export default class Flow extends PureComponent {
   render() {
     const { list, loading, flowType, superData, currentUserId } = this.props;
     const status = ['停用', '启用'];
-
+    const isClient = ['否', '是'];
     const statusMap = ['default', 'processing', 'success', 'error'];
 
     const multiOperator = [
@@ -140,6 +140,22 @@ export default class Flow extends PureComponent {
           },
         ],
         render: val => <Badge status={statusMap[val]} text={status[val]} />,
+      },
+      {
+        title: '客服端可见',
+        dataIndex: 'is_client',
+        align: 'center',
+        filters: [
+          {
+            text: isClient[1],
+            value: 1,
+          },
+          {
+            text: isClient[0],
+            value: 0,
+          },
+        ],
+        render: val => <span style={val ? null : { color: 'red' }}>{isClient[val]}</span>,
       },
       {
         title: '更新时间',
