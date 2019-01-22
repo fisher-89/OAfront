@@ -31,6 +31,7 @@ class PCTemplate extends Component {
       return true;
     }
     if (nextState.selectedGrid !== this.state.selectedGrid) return true;
+    if (nextState.selectedControl !== this.state.selectedControl) return true;
     if (nextProps.grids !== this.props.grids) return true;
     if (nextProps.fields !== this.props.fields) return true;
     if (nextState.onDragging !== this.state.onDragging) return true;
