@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import styles from './index.less';
-import dropDown from '../../../../../../../public/drop_down.png';
+import dropDown from '../../../../../../../../public/drop_down.png';
 
 export default class extends Component {
   render() {

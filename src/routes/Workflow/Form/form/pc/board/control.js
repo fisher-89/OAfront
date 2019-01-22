@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import ControlContent from '../controls';
+import ControlContent from './controls';
 import styles from '../template.less';
 
 export default class Control extends Component {

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Tag } from 'antd';
 import { getDefaultSize } from './supports/control_size';
-import ControlContent from './controls';
+import ControlContent from './board/controls';
 import styles from './template.less';
 
 class DraggingFieldTag extends Component {
