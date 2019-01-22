@@ -12,10 +12,10 @@ class GridTag extends Component {
   }
 
   render() {
-    const { data: { key, fields }, data, onDrag, selected, toggleGridField} = this.props;
+    const { data: { key, fields }, data, onDrag, selected, toggleGridField } = this.props;
     return (
       <div>
-        <FieldTag data={data}  onDrag={onDrag} />
+        <FieldTag data={data} onDrag={onDrag} />
         <div>
           <Icon
             type={selected ? 'minus-circle' : 'plus-circle-o'}

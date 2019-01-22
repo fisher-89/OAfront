@@ -427,11 +427,6 @@ class addForm extends PureComponent {
                     })(
                       <Input type="hidden" />
                     )}
-                    {getFieldDecorator(`grids.${index}.mobile_x`, {
-                      initialValue: grids && grids[index] ? grids[index].mobile_x : null,
-                    })(
-                      <Input type="hidden" />
-                    )}
                     {getFieldDecorator(`grids.${index}.mobile_y`, {
                       initialValue: grids && grids[index] ? grids[index].mobile_y : null,
                     })(
@@ -446,7 +441,7 @@ class addForm extends PureComponent {
             <PCTemplate fields={getFieldValue('fields')} grids={getFieldsValue().grids || []} form={form} />
           </TabPane>
           <TabPane tab="移动端模板" key="mobile">
-            <MobileTemplate fields={getFieldValue('fields')} grids={getFieldsValue().grids || []} form={form} />
+            <MobileTemplate fields={getFieldValue('fields')} grids={getFieldsValue().grids || []} form={form} formname={getFieldsValue().name || ''} />
           </TabPane>
         </Tabs>
         <FooterToolbar>

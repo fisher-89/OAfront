@@ -5,13 +5,13 @@ class FieldTag extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      disabled: typeof props.data.mobile_y === 'string',
+      disabled: typeof props.data.mobile_y === 'number',
     };
   }
 
   componentWillReceiveProps(nextProps) {
     this.setState({
-      disabled: typeof nextProps.data.mobile_y ==="string" ,
+      disabled: typeof nextProps.data.mobile_y === 'number',
     });
   }
 
@@ -25,7 +25,7 @@ class FieldTag extends Component {
 
   mouseDown = (e) => {
     e.preventDefault();
-    document.addEventListener("mouseup",this.mouseUp);
+    document.addEventListener('mouseup', this.mouseUp);
     const { onDrag, data } = this.props;
     const { disabled } = this.state;
     if (disabled) return false;
@@ -39,9 +39,7 @@ class FieldTag extends Component {
       y = e.touches[0].clientY;
     }
     onDrag(data, { x, y }, { top, left });
-
   }
-
 
   render() {
     const { data } = this.props;
