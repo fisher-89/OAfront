@@ -28,7 +28,7 @@ class Board extends Component {
   }
 
   initLine = (fields, grids) => {
-    let rowMax = 7;
+    let rowMax = 9;
     fields.forEach((field) => {
       if (field.y !== null) rowMax = Math.max(field.y + field.row, rowMax);
     });

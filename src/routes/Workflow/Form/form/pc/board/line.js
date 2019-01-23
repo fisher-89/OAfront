@@ -3,7 +3,7 @@ import { Dropdown, Menu, Input } from 'antd';
 import styles from '../template.less';
 
 class DraggingFieldTag extends Component {
-  state = { opacity: 0, color: '#ccc', dropdownVisible: false, addRow: 1 }
+  state = { opacity: 0, dropdownVisible: false, addRow: 1 }
 
   componentDidMount() {
     setTimeout(() => {
@@ -92,7 +92,7 @@ class DraggingFieldTag extends Component {
 
   render() {
     const { onClick, index } = this.props;
-    const { opacity, color, dropdownVisible } = this.state;
+    const { opacity, dropdownVisible } = this.state;
 
     return (
       <Dropdown
@@ -105,8 +105,8 @@ class DraggingFieldTag extends Component {
         }}
       >
         <div className={styles.line} onClick={onClick} style={{ top: `${(61 * index)}px`, opacity }}>
-          <div className={styles.leftScale} style={{ color }}>{index + 1}</div>
-          <div className={styles.rightScale} style={{ color }}>{index + 1}</div>
+          <div className={styles.leftScale}>{index + 1}</div>
+          <div className={styles.rightScale}>{index + 1}</div>
         </div>
       </Dropdown>
     );
