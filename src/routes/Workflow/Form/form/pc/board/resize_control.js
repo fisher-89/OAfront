@@ -1,5 +1,6 @@
 /* eslint no-param-reassign:0 */
 import { getMinSize } from '../supports/control_size';
+import _fetchUsedCell from '../supports/fetch_used_cell';
 
 export { topResize, bottomResize, leftResize, rightResize };
 
@@ -9,8 +10,9 @@ function topResize(data, grid, y) {
   let newY = (data.y + data.row) - newRow;
   const usedCell = fetchUsedCell.call(this, data, grid);
   usedCell.forEach((cell) => {
-    if (cell.col >= data.x && cell.col < data.x + data.col
-      && cell.row >= newY && cell.row < newY + newRow) {
+    const rowIsUsed = cell.row >= newY && cell.row < newY + newRow;
+    const colIsUsed = cell.col >= data.x && cell.col < data.x + data.col;
+    if (rowIsUsed && ('fields' in data || colIsUsed)) {
       newY = cell.row + 1;
       newRow = (data.y + data.row) - newY;
     }
@@ -23,8 +25,9 @@ function bottomResize(data, grid, y) {
   let newRow = Math.max(row - data.y, min);
   const usedCell = fetchUsedCell.call(this, data, grid);
   usedCell.forEach((cell) => {
-    if (cell.col >= data.x && cell.col < data.x + data.col
-      && cell.row >= data.y && cell.row < data.y + newRow) {
+    const rowIsUsed = cell.row >= data.y && cell.row < data.y + newRow;
+    const colIsUsed = cell.col >= data.x && cell.col < data.x + data.col;
+    if (rowIsUsed && ('fields' in data || colIsUsed)) {
       newRow = cell.row - data.y;
     }
   });
@@ -32,30 +35,34 @@ function bottomResize(data, grid, y) {
 }
 
 function leftResize(data, grid, x) {
-  const { col, min } = fetchColAndMin.call(this, x, data);
+  const { col, min } = fetchColAndMin.call(this, x, data, grid);
   let newCol = Math.max((data.x + data.col) - col, min);
   let newX = (data.x + data.col) - newCol;
-  const usedCell = fetchUsedCell.call(this, data, grid);
-  usedCell.forEach((cell) => {
-    if (cell.row >= data.y && cell.row < data.y + data.row
-      && cell.col >= newX && cell.col < newX + newCol) {
-      newX = cell.col + 1;
-      newCol = (data.x + data.col) - newX;
-    }
-  });
+  if (!('fields' in data)) {
+    const usedCell = fetchUsedCell.call(this, data, grid);
+    usedCell.forEach((cell) => {
+      if (cell.row >= data.y && cell.row < data.y + data.row
+        && cell.col >= newX && cell.col < newX + newCol) {
+        newX = cell.col + 1;
+        newCol = (data.x + data.col) - newX;
+      }
+    });
+  }
   if (newX !== data.x) submitResize.call(this, data, grid, { x: newX, col: newCol });
 }
 
 function rightResize(data, grid, x) {
-  const { col, min } = fetchColAndMin.call(this, x, data);
+  const { col, min } = fetchColAndMin.call(this, x, data, grid);
   let newCol = Math.max(col - data.x, min);
-  const usedCell = fetchUsedCell.call(this, data, grid);
-  usedCell.forEach((cell) => {
-    if (cell.row >= data.y && cell.row < data.y + data.row
-      && cell.col >= data.x && cell.col < data.x + newCol) {
-      newCol = cell.col - data.x;
-    }
-  });
+  if (!('fields' in data)) {
+    const usedCell = fetchUsedCell.call(this, data, grid);
+    usedCell.forEach((cell) => {
+      if (cell.row >= data.y && cell.row < data.y + data.row
+        && cell.col >= data.x && cell.col < data.x + newCol) {
+        newCol = cell.col - data.x;
+      }
+    });
+  }
   if (newCol !== data.col) submitResize.call(this, data, grid, { col: newCol });
 }
 
@@ -79,11 +86,16 @@ function fetchRowAndMin(y, data, grid) {
   return { row, min };
 }
 
-function fetchColAndMin(x, data) {
+function fetchColAndMin(x, data, grid) {
   const { left } = this.board.getBoundingClientRect();
   let col = Math.round((x - left) / 61);
+  if (grid) {
+    col -= grid.x;
+    col = Math.min(col, grid.col);
+  } else {
+    col = Math.min(col, 20);
+  }
   col = Math.max(col, 0);
-  col = Math.min(col, 20);
   let min = getMinSize(data).col;
   if ('fields' in data) {
     data.fields.forEach((field) => {
@@ -99,29 +111,7 @@ function fetchColAndMin(x, data) {
  */
 function fetchUsedCell(data, grid) {
   const { fields, grids } = this.props;
-  const usedCell = [];
-  if (grid) {
-    grid.fields.forEach((item) => {
-      if (item.x !== null && item !== data) {
-        for (let col = item.x; col < item.x + item.col; col += 1) {
-          for (let row = item.y; row < item.y + item.row; row += 1) {
-            usedCell.push({ row, col });
-          }
-        }
-      }
-    });
-  } else {
-    [...fields, ...grids].forEach((item) => {
-      if (item.x !== null && item !== data) {
-        for (let col = item.x; col < item.x + item.col; col += 1) {
-          for (let row = item.y; row < item.y + item.row; row += 1) {
-            usedCell.push({ row, col });
-          }
-        }
-      }
-    });
-  }
-  return usedCell;
+  return _fetchUsedCell(data, grid, fields, grids);
 }
 
 function submitResize(data, grid, options) {

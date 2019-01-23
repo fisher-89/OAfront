@@ -218,6 +218,13 @@
                 }
               }
             }
+            .gridRow {
+              position: absolute;
+              background-color: #fff;
+              height: 100%;
+              top: 0;
+              transition: all 0.05s ease;
+            }
             .childrenBg {
               position: absolute;
               top: @cell;
@@ -232,9 +239,12 @@
             }
           }
           .mask {
-            background-color: rgba(0, 0, 0, 0.2);
-            position: relative;
-            width: @board_width;
+            position: absolute;
+            -webkit-box-sizing: content-box;
+            -moz-box-sizing: content-box;
+            box-sizing: content-box;
+            border-color: rgba(0, 0, 0, 0.1);
+            border-style: solid;
           }
         }
       }
@@ -246,6 +256,20 @@
     user-select: none;
     position: fixed;
     z-index: 10;
+    .dragBorder {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+    .gridRow {
+      position: absolute;
+      height: 100%;
+      top: 0;
+      padding: 1px 0;
+      background-clip: content-box;
+    }
     :global {
       .ant-tag, .ant-tag:hover {
         margin: 0;

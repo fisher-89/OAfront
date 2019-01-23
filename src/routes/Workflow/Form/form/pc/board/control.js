@@ -79,8 +79,7 @@ export default class Control extends Component {
   makeContent = () => {
     const { selectedControl, isGrid, data } = this.props;
     const isSelected = selectedControl && (
-      selectedControl === data ||
-      ('fields' in selectedControl && 'fields' in data && selectedControl.key === data.key)
+      selectedControl === data || ('fields' in selectedControl && isGrid && selectedControl.key === data.key)
     );
     const typesWithMultipleRow = ['array', 'file', 'text'];
     return (
@@ -135,8 +134,7 @@ export default class Control extends Component {
     const { isGrid, selectedControl, data, draggingControl } = this.props;
     const { direction } = this.state;
     const isSelected = selectedControl && (
-      selectedControl === data ||
-      ('fields' in selectedControl && 'fields' in data && selectedControl.key === data.key)
+      selectedControl === data || ('fields' in selectedControl && isGrid && selectedControl.key === data.key)
     );
     return (
       <div
@@ -151,6 +149,20 @@ export default class Control extends Component {
         {this.makeContent()}
         {isGrid && (
           <React.Fragment>
+            <div
+              className={styles.gridRow}
+              style={{
+                left: `-${data.x * 61}px`,
+                width: `${Math.max((data.x * 61) - 1, 0)}px`,
+              }}
+            />
+            <div
+              className={styles.gridRow}
+              style={{
+                right: `-${(20 - data.x - data.col) * 61}px`,
+                width: `${Math.max(((20 - data.x - data.col) * 61) - 1, 0)}px`,
+              }}
+            />
             <div
               className={styles.childrenBg}
               style={{ height: `${((data.row - 2) * 61) + 1}px` }}

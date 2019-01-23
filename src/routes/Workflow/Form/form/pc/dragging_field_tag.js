@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Tag } from 'antd';
 import { getDefaultSize } from './supports/control_size';
+import _fetchUsedCell from './supports/fetch_used_cell';
 import ControlContent from './board/controls';
 import styles from './template.less';
 
@@ -25,10 +26,28 @@ class DraggingFieldTag extends Component {
     this.state.data = { ...data, col, row };
     this.state.relativeX = (x - left) / (right - left);
     this.state.relativeY = (y - top) / (bottom - top);
-    if (bottom - top >= 60) {
+    if (data.x !== null) {
       this.state.onTemplate = true;
+      this.state.offset = { x: data.x * 61, y: data.y * 61 };
     }
     this.state.usedCell = this.fetchUsedCell();
+    this.fetchTemplatePosition();
+  }
+
+  fetchTemplatePosition = () => {
+    const { board, parentGrid } = this.props;
+    const boardRect = board.getBoundingClientRect();
+    let { top, bottom, left, right } = boardRect;
+    if (parentGrid && parentGrid.x !== null) {
+      top += (parentGrid.y + 1) * 61;
+      bottom = top + ((parentGrid.row - 2) * 61);
+      left += parentGrid.x * 61;
+      right = left + (parentGrid.col * 61);
+    }
+    this.templateTop = top;
+    this.templateBottom = bottom;
+    this.templateLeft = left;
+    this.templateRight = right;
   }
 
   /**
@@ -37,29 +56,7 @@ class DraggingFieldTag extends Component {
    */
   fetchUsedCell = () => {
     const { fields, grids, parentGrid, data } = this.props;
-    const usedCell = [];
-    if (parentGrid) {
-      parentGrid.fields.forEach((item) => {
-        if (item.x !== null && item !== data) {
-          for (let col = item.x; col < item.x + item.col; col += 1) {
-            for (let row = item.y; row < item.y + item.row; row += 1) {
-              usedCell.push({ row, col });
-            }
-          }
-        }
-      });
-    } else {
-      [...fields, ...grids].forEach((item) => {
-        if (item.x !== null && item !== data) {
-          for (let col = item.x; col < item.x + item.col; col += 1) {
-            for (let row = item.y; row < item.y + item.row; row += 1) {
-              usedCell.push({ row, col });
-            }
-          }
-        }
-      });
-    }
-    return usedCell;
+    return _fetchUsedCell(data, parentGrid, fields, grids);
   }
 
   /**
@@ -68,20 +65,15 @@ class DraggingFieldTag extends Component {
    */
   dragField = (e) => {
     e.preventDefault();
-    const { parentGrid, board } = this.props;
+    const { parentGrid } = this.props;
     const { clientX, clientY } = event.type === 'touchmove' ? e.touches[0] : e;
-    const boardRect = board.getBoundingClientRect();
-    let { top, bottom } = boardRect;
-    const { left, right } = boardRect;
-    const onTemplate = clientX >= left && clientX <= right && clientY >= top && clientY <= bottom;
-    let inGrid = !parentGrid;
-    if (parentGrid && parentGrid.x !== null) {
-      top += ((parentGrid.y + 1) * 61);
-      bottom = top + ((parentGrid.row - 2) * 61);
-      inGrid = parentGrid.x !== null && clientY >= top && clientY <= bottom;
-    }
-    if (onTemplate && inGrid) {
-      this.handleDragControl(clientX, clientY, { top, bottom, left, right });
+    let onTemplate = clientX >= this.templateLeft
+      && clientX <= this.templateRight
+      && clientY >= this.templateTop
+      && clientY <= this.templateBottom;
+    if (parentGrid && parentGrid.x === null) onTemplate = false;
+    if (onTemplate) {
+      this.handleDragControl(clientX, clientY);
     } else {
       this.handleDragTag(clientX, clientY);
     }
@@ -95,18 +87,21 @@ class DraggingFieldTag extends Component {
     });
   }
 
-  handleDragControl = (clientX, clientY, { top, bottom, left, right }) => {
-    const { startPosition } = this.props;
+  handleDragControl = (clientX, clientY) => {
     const { data, relativeX, relativeY } = this.state;
     const { width, height } = this.calculateSize();
     const pointCol = Math.floor(data.col * relativeX);
     const pointRow = Math.floor(data.row * relativeY);
-    const maxX = Math.floor((right - width - left) / 61);
-    const maxY = Math.floor((bottom - height - top) / 61);
-    const newX = Math.min(Math.max(Math.floor((clientX - left) / 61) - pointCol, 0), maxX);
-    const newY = Math.min(Math.max(Math.floor((clientY - top) / 61) - pointRow, 0), maxY);
-    const offsetX = (newX * 61) + Math.round(left - startPosition.left) + 1;
-    const offsetY = (newY * 61) + Math.round(top - startPosition.top) + 1;
+    const maxX = Math.floor((this.templateRight - width - this.templateLeft) / 61);
+    const maxY = Math.floor((this.templateBottom - height - this.templateTop) / 61);
+    const newX = Math.min(Math.max(
+      Math.floor((clientX - this.templateLeft) / 61) - pointCol, 0
+    ), maxX);
+    const newY = Math.min(Math.max(
+      Math.floor((clientY - this.templateTop) / 61) - pointRow, 0
+    ), maxY);
+    const offsetX = newX * 61;
+    const offsetY = newY * 61;
     data.x = newX;
     data.y = newY;
     this.setState({
@@ -124,7 +119,9 @@ class DraggingFieldTag extends Component {
     for (const i in usedCell) {
       if (Object.hasOwnProperty.call(usedCell, i)) {
         const cell = usedCell[i];
-        if (cell.row >= y && cell.row < y + row && cell.col >= x && cell.col < x + col) {
+        const rowIsUsed = cell.row >= y && cell.row < y + row;
+        const colIsUsed = cell.col >= x && cell.col < x + col;
+        if (rowIsUsed && ('fields' in data || colIsUsed)) {
           response = false;
           break;
         }
@@ -158,26 +155,50 @@ class DraggingFieldTag extends Component {
   }
 
   render() {
-    const { startPoint, startPosition: { top, left } } = this.props;
+    const { startPoint } = this.props;
     const { offset: { x, y }, onTemplate, data, relativeX, relativeY, dropAvailable } = this.state;
     const { width, height } = this.calculateSize();
     return onTemplate ? (
       <div
         style={{
-          top: top - 1,
-          left: left - 1,
+          top: this.templateTop,
+          left: this.templateLeft,
           transform: `translate(${x}px,${y}px)`,
           backgroundColor: dropAvailable ? '#e7f3fe' : '#fee4e4',
-          border: dropAvailable ? '1px solid #1890ff' : '1px solid #f00',
-          overflow: 'hidden',
         }}
         className={styles.dragShadow}
       >
         <div
-          style={{ width: `${width}px`, height: `${height}px` }}
+          style={{ width: `${width}px`, height: `${height}px`, margin: '1px', position: 'relative' }}
         >
           <ControlContent data={data} />
         </div>
+        <div
+          className={styles.dragBorder}
+          style={{ border: dropAvailable ? '1px solid #1890ff' : '1px solid #f00' }}
+        />
+        {'fields' in data && (
+          <React.Fragment>
+            <div
+              className={styles.gridRow}
+              style={{
+                left: `-${data.x * 61}px`,
+                width: `${Math.max((data.x * 61) - 1, 0)}px`,
+                backgroundColor: dropAvailable ? '#e7f3fe' : '#fee4e4',
+                paddingLeft: '1px',
+              }}
+            />
+            <div
+              className={styles.gridRow}
+              style={{
+                right: `-${(20 - data.x - data.col) * 61}px`,
+                width: `${Math.max(((20 - data.x - data.col) * 61) - 1, 0)}px`,
+                backgroundColor: dropAvailable ? '#e7f3fe' : '#fee4e4',
+                paddingRight: '1px',
+              }}
+            />
+          </React.Fragment>
+        )}
       </div>
     ) : (
       <div

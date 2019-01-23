@@ -191,14 +191,24 @@ class Board extends Component {
     const { draggingControl, parentGrid } = this.props;
     const { lines } = this.state;
     if (draggingControl && parentGrid && parentGrid.x !== null) {
-      const topMaskHeight = (parentGrid.y + 1) * 61;
-      const bottomMaskTop = ((parentGrid.row - 2) * 61) + 1;
-      const bottomMastHeight = (((lines.length - parentGrid.y - parentGrid.row) + 2) * 61) - 1;
+      const maskWidth = (parentGrid.col * 61) + 1;
+      const maskHeight = ((parentGrid.row - 2) * 61) + 1;
+      const maskTop = (parentGrid.y + 1) * 61;
+      const maskBottom = (((lines.length - parentGrid.y - parentGrid.row) + 2) * 61) - 1;
+      const maskLeft = (parentGrid.x * 61);
+      const maskRight = ((20 - parentGrid.x - parentGrid.col) * 61) - 1;
       return (
-        <React.Fragment>
-          <div className={styles.mask} style={{ top: 0, height: `${topMaskHeight}px` }} />
-          <div className={styles.mask} style={{ top: `${bottomMaskTop}px`, height: `${bottomMastHeight}px` }} />
-        </React.Fragment>
+        <div
+          className={styles.mask}
+          style={{
+            width: `${maskWidth}px`,
+            height: `${maskHeight}px`,
+            borderTopWidth: `${maskTop}px`,
+            borderBottomWidth: `${maskBottom}px`,
+            borderLeftWidth: `${maskLeft}px`,
+            borderRightWidth: `${maskRight}px`,
+          }}
+        />
       );
     } else {
       return null;
