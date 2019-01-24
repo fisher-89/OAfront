@@ -67,6 +67,11 @@ const menuData = [
         authority: '199',
         path: 'statistics',
       },
+      {
+        name: '权限管理',
+        authority: '211',
+        path: 'fineauth',
+      },
     ],
   },
   {
