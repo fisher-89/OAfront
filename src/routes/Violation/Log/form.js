@@ -167,9 +167,10 @@ export default class extends PureComponent {
      const payTrue = { ...initialValue }.has_paid === 1;
      return (
        <OAModal
-         title="编辑大爱"
+         title="大爱"
          visible={visible}
          loading={loading}
+         actionType={initialValue.id !== undefined}
          onCancel={() => onCancel(false)}
          onSubmit={validateFields(this.handleSubmit)}
          afterClose={this.clear}

@@ -23,7 +23,6 @@ export default type => (Component) => {
 
     deletePushAuth = (id) => {
       const { dispatch } = this.props;
-      console.log(this.props);
       dispatch({ type: 'violation/deletePushAuth', payload: { id } });
     }
 

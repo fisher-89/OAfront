@@ -118,6 +118,7 @@ export default class extends PureComponent {
       {
         title: '原因',
         dataIndex: 'name',
+        width: 120,
         render: key => OATable.renderEllipsis(key, true),
       },
       {
@@ -156,10 +157,12 @@ export default class extends PureComponent {
       {
         title: '记录时间',
         dataIndex: 'created_at',
+        render: key => OATable.renderEllipsis(key, true),
       },
 
       {
         title: '操作',
+        width: 140,
         render: (RowData) => {
           return (
             <Fragment>
