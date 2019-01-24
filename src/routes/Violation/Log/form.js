@@ -63,7 +63,6 @@ export default class extends PureComponent {
       const midkey = { ...nextProps.initialValue.rules }.type_id;
       this.setState({ selectrule: midkey ? rule.filter(item => `${item.type_id}` === `${midkey}`) : [] });
     }
-    console.log(nextProps);
     if (JSON.stringify(this.props.initialValue) !== JSON.stringify(nextProps.initialValue)) {
       setFieldsValue({ money: nextProps.initialValue.money, score: nextProps.initialValue.score });
       this.setState({ moneyable: true, scoreable: true });
@@ -97,6 +96,9 @@ export default class extends PureComponent {
       staff_sn: 'staff',
       billing_name: 'billing',
       billing_sn: 'billing',
+      score: 'score',
+      money: 'money',
+
     });
   }
 
@@ -209,6 +211,8 @@ export default class extends PureComponent {
                {getFieldDecorator('violate_at', {
                 initialValue: initialValue.violate_at || undefined,
               })(<DatePicker
+                disabled={staffChoice}
+                allowClear={false}
                 disabledDate={this.disabledDate}
               />)}
              </FormItem>
@@ -220,6 +224,7 @@ export default class extends PureComponent {
                 initialValue: { ...initialValue.rules }.type_id || undefined,
               })(
                 <Select
+                  disabled={staffChoice}
                   onSelect={this.selectRuleType}
                 >
                   {ruleType.map(item => (
@@ -239,7 +244,9 @@ export default class extends PureComponent {
                {getFieldDecorator('rule_id', {
                 initialValue: { ...initialValue }.rule_id || undefined,
               })(
-                <Select >
+                <Select
+                  disabled={staffChoice}
+                >
                   {(selectrule || []).map(item => (
                     <Option key={item.id} value={item.id}>
                       {item.name}
@@ -321,6 +328,7 @@ export default class extends PureComponent {
                 initialValue: initialValue.billing || [],
               })(
                 <SearchTable.Staff
+                  disabled={staffChoice}
                   name={{
                     billing_sn: 'staff_sn',
                     billing_name: 'realname',
@@ -337,6 +345,8 @@ export default class extends PureComponent {
                {getFieldDecorator('billing_at', {
                 initialValue: initialValue.billing_at || moment().format('YYYY-MM-DD'),
               })(<DatePicker
+                disabled={staffChoice}
+                allowClear={false}
                 disabledDate={this.disabledDate}
               />)}
              </FormItem>
