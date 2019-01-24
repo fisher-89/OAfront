@@ -354,6 +354,11 @@ class addForm extends PureComponent {
                     />
                   )}
                 </FormItem>
+                {getFieldDecorator('field_group', {
+                  initialValue: initialFieldsValue.field_group || [],
+                })(
+                  <Input type="hidden" />
+                )}
               </TabPane>
               {panes.map((pane, index) => {
                 let colorAble = false;
@@ -441,7 +446,12 @@ class addForm extends PureComponent {
             <PCTemplate fields={getFieldValue('fields')} grids={getFieldsValue().grids || []} form={form} />
           </TabPane>
           <TabPane tab="移动端模板" key="mobile">
-            <MobileTemplate fields={getFieldValue('fields')} grids={getFieldsValue().grids || []} form={form} formname={getFieldsValue().name || ''} />
+            <MobileTemplate
+              fields={getFieldValue('fields')}
+              grids={getFieldsValue().grids || []}
+              form={form}
+              formname={getFieldsValue().name || ''}
+            />
           </TabPane>
         </Tabs>
         <FooterToolbar>
