@@ -1,4 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
+import { Row, Col } from 'antd';
 import OAForm, { OAModal } from '../../../components/OAForm';
 import ShowRule from './ruleTags';
 import style from './details.less';
@@ -39,9 +40,10 @@ export default class extends PureComponent {
             <div className={style.pointrule}>
               <ShowRule content={content} title="扣分规则" value={initialValue.score} />
             </div>
-            <div className={style.remark}>
-              <label> 备注：{initialValue.remark}</label>
-            </div>
+            <Row className={style.remark}>
+              <Col span={3} offset={3}><label>备注 ：</label></Col>
+              <Col span={18}><label>{initialValue.remark}</label></Col>
+            </Row>
           </div>
         </OAModal>
       </Fragment>
