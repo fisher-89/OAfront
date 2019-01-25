@@ -355,7 +355,7 @@ class addForm extends PureComponent {
                   )}
                 </FormItem>
                 {getFieldDecorator('field_groups', {
-                  initialValue: initialFieldsValue.field_group || [],
+                  initialValue: initialFieldsValue.field_groups || [],
                 })(
                   <Input type="hidden" />
                 )}
