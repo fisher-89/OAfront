@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Dropdown, Menu } from 'antd';
-import styles from '../template.less';
+import styles from './index.less';
 
 const templateArea = { minX: 553, maxX: 1545, minY: 301, maxY: 833 };
 

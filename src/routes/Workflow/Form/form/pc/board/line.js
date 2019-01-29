@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Dropdown, Menu, Input } from 'antd';
-import styles from '../template.less';
+import styles from './index.less';
 
-class DraggingFieldTag extends Component {
+class Line extends Component {
   state = { opacity: 0, dropdownVisible: false, addRow: 1 }
 
   componentDidMount() {
@@ -27,14 +27,58 @@ class DraggingFieldTag extends Component {
           >
             插入行
           </div>
+          <div style={{ position: 'absolute', right: 0, top: '8px', width: '85px', fontSize: '12px' }}>
+            行数
+            <Input
+              type="number"
+              size="small"
+              value={addRow}
+              onChange={(e) => {
+                this.setState({ addRow: e.target.value });
+              }}
+              style={{
+                display: 'inline-block',
+                width: '40px',
+                paddingLeft: '5px',
+                paddingRight: 0,
+                height: '21px',
+                marginLeft: '5px',
+                position: 'relative',
+                top: '1px',
+              }}
+            />
+          </div>
         </Menu.Item>
-        <Menu.Item
-          onClick={() => {
-            this.setState({ dropdownVisible: false });
-            addLine(row + 1, addRow);
-          }}
-        >
-          在下方插入行
+        <Menu.Item>
+          <div
+            onClick={() => {
+              this.setState({ dropdownVisible: false });
+              addLine(row + 1, addRow);
+            }}
+          >
+            在下方插入行
+          </div>
+          <div style={{ position: 'absolute', right: 0, top: '40px', width: '85px', fontSize: '12px' }}>
+            行数
+            <Input
+              type="number"
+              size="small"
+              value={addRow}
+              onChange={(e) => {
+                this.setState({ addRow: e.target.value });
+              }}
+              style={{
+                display: 'inline-block',
+                width: '40px',
+                paddingLeft: '5px',
+                paddingRight: 0,
+                height: '21px',
+                marginLeft: '5px',
+                position: 'relative',
+                top: '1px',
+              }}
+            />
+          </div>
         </Menu.Item>
         <Menu.Item
           onClick={() => {
@@ -44,48 +88,6 @@ class DraggingFieldTag extends Component {
         >
           删除行
         </Menu.Item>
-        <div style={{ position: 'absolute', right: 0, top: '8px', width: '85px', fontSize: '12px' }}>
-          行数
-          <Input
-            type="number"
-            size="small"
-            value={addRow}
-            onChange={(e) => {
-              this.setState({ addRow: e.target.value });
-            }}
-            style={{
-              display: 'inline-block',
-              width: '40px',
-              paddingLeft: '5px',
-              paddingRight: 0,
-              height: '21px',
-              marginLeft: '5px',
-              position: 'relative',
-              top: '1px',
-            }}
-          />
-        </div>
-        <div style={{ position: 'absolute', right: 0, top: '40px', width: '85px', fontSize: '12px' }}>
-          行数
-          <Input
-            type="number"
-            size="small"
-            value={addRow}
-            onChange={(e) => {
-              this.setState({ addRow: e.target.value });
-            }}
-            style={{
-              display: 'inline-block',
-              width: '40px',
-              paddingLeft: '5px',
-              paddingRight: 0,
-              height: '21px',
-              marginLeft: '5px',
-              position: 'relative',
-              top: '1px',
-            }}
-          />
-        </div>
       </Menu>
     );
   }
@@ -113,4 +115,4 @@ class DraggingFieldTag extends Component {
   }
 }
 
-export default DraggingFieldTag;
+export default Line;

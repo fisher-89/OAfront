@@ -1,0 +1,44 @@
+@import "./template.less";
+
+@group-header-color: #e7f3fe;
+@group-header-color-forbidden: #fee4e4;
+@group-border-color: @template_primary_color;
+@group-border-color-forbidden: #f00;
+
+.shadow {
+  position: absolute;
+  box-sizing: content-box;
+  cursor: not-allowed;
+  z-index: 11;
+  top: -500px;
+  left: -500px;
+  border-color: rgba(0, 0, 0, 0.2);
+  border-style: solid;
+  border-top-width: 537px;
+  border-bottom-width: 500px;
+  border-left-width: 540px;
+  border-right-width: 500px;
+  .table {
+    cursor: crosshair;
+    width: 100%;
+    height: 100%;
+    .group {
+      position: absolute;
+      border: 1px solid @group-border-color;
+      background-color: #fff;
+      .header {
+        width: 100%;
+        height: 61px;
+        background: @group-header-color;
+        border-bottom: 1px solid @group-border-color;
+      }
+    }
+    .group.forbidden {
+      border-color: @group-border-color-forbidden;
+      .header {
+        background-color: @group-header-color-forbidden;
+        border-color: @group-border-color-forbidden;
+      }
+    }
+  }
+}

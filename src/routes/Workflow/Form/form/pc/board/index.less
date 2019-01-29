@@ -1,0 +1,182 @@
+@import "../template.less";
+
+.board {
+  padding: 0 @ew_padding;
+  width: @board_width + @ew_padding*2;
+  position: relative;
+  .scroller {
+    width: 100%;
+    background-color: #fefefe;
+    .line {
+      width: @board_width;
+      height: @cell + 2px;
+      background-image: url("../@{public_path}/template_background.png");
+      background-position: 1px 1px;
+      background-clip: content-box;
+      position: absolute;
+      box-sizing: content-box;
+      transition: top 0.2s ease, opacity 0.5s ease;
+      .leftScale, .rightScale {
+        position: absolute;
+        width: @ew_padding + 1px;
+        line-height: @cell;
+        font-size: 24px;
+        text-align: center;
+        font-weight: 700;
+        color: #ccc;
+      }
+      .leftScale:hover, .rightScale:hover {
+        color: #999;
+      }
+      .leftScale {
+        left: -@ew_padding - 1px;
+      }
+      .rightScale {
+        right: -@ew_padding - 1px;
+      }
+    }
+    .fieldGroup {
+      position: absolute;
+      transition: left 0.05s ease, width 0.05s ease, top 0.2s ease, height 0.2s ease;
+      .header {
+        height: 61px;
+        background-color: #fff;
+        border-bottom: 1px solid #999;
+      }
+      .topResize, .bottomResize, .leftResize, .rightResize {
+        width: 7px;
+        height: 7px;
+        border: 1px solid @template_primary_color;
+        background-color: #fff;
+        position: absolute;
+        z-index: 5;
+      }
+      .topResize {
+        cursor: ns-resize;
+        margin-left: -4px;
+        left: 50%;
+        top: -4px;
+      }
+      .bottomResize {
+        cursor: ns-resize;
+        margin-left: -4px;
+        left: 50%;
+        bottom: -4px;
+      }
+      .leftResize {
+        cursor: ew-resize;
+        margin-top: -4px;
+        top: 50%;
+        left: -4px;
+      }
+      .rightResize {
+        cursor: ew-resize;
+        margin-top: -4px;
+        top: 50%;
+        right: -4px;
+      }
+    }
+    .controls {
+      position: absolute;
+      height: 0;
+      .control.selected {
+        z-index: 1;
+      }
+      .control {
+        position: absolute;
+        background-color: #fff;
+        transition: left 0.05s ease, width 0.05s ease, top 0.2s ease, height 0.2s ease;
+        .content {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          .clickBoard {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+          }
+          .clickBoard:hover {
+            box-shadow: @template_primary_color 0 0 2px 0;
+          }
+          .clickBoardSelected {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: -1px;
+            left: -1px;
+            box-sizing: content-box;
+            border: 1px solid @template_primary_color;
+            > div {
+              width: 7px;
+              height: 7px;
+              border: 1px solid @template_primary_color;
+              background-color: #fff;
+              position: absolute;
+              z-index: 5;
+            }
+            .topResize {
+              cursor: ns-resize;
+              margin-left: -4px;
+              left: 50%;
+              top: -4px;
+            }
+            .bottomResize {
+              cursor: ns-resize;
+              margin-left: -4px;
+              left: 50%;
+              bottom: -4px;
+            }
+            .leftResize {
+              cursor: ew-resize;
+              margin-top: -4px;
+              top: 50%;
+              left: -4px;
+            }
+            .rightResize {
+              cursor: ew-resize;
+              margin-top: -4px;
+              top: 50%;
+              right: -4px;
+            }
+          }
+        }
+        .gridRow {
+          position: absolute;
+          background-color: #fff;
+          height: 100%;
+          top: 0;
+          transition: all 0.05s ease;
+        }
+        .childrenBg {
+          position: absolute;
+          top: @cell;
+          width: 100%;
+          background-image: url("../@{public_path}/template_background.png");
+          background-position: 0 1px;
+        }
+        .children {
+          position: absolute;
+          top: @cell;
+          margin-left: -1px;
+        }
+      }
+      .mask {
+        position: absolute;
+        -webkit-box-sizing: content-box;
+        -moz-box-sizing: content-box;
+        box-sizing: content-box;
+        border-color: rgba(0, 0, 0, 0.1);
+        border-style: solid;
+      }
+    }
+    .resizingBoard {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+  }
+}

@@ -443,7 +443,12 @@ class addForm extends PureComponent {
             </Tabs>
           </TabPane>
           <TabPane tab="PC端模板" key="pc">
-            <PCTemplate fields={getFieldValue('fields')} grids={getFieldsValue().grids || []} form={form} />
+            <PCTemplate
+              fields={getFieldValue('fields')}
+              grids={getFieldsValue().grids || []}
+              fieldGroups={getFieldValue('field_groups')}
+              form={form}
+            />
           </TabPane>
           <TabPane tab="移动端模板" key="mobile">
             <MobileTemplate

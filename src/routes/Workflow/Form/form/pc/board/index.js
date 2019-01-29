@@ -2,8 +2,11 @@
 import React, { Component } from 'react';
 import Line from './line';
 import Control from './control';
+import FieldGroup from './field_group';
 import { topResize, bottomResize, leftResize, rightResize } from './resize_control';
-import styles from '../template.less';
+import groupResize from './resize_group';
+import fetchFieldsInGroup from '../supports/fetch_fields_in_group';
+import styles from './index.less';
 
 class Board extends Component {
   constructor(props) {
@@ -44,7 +47,7 @@ class Board extends Component {
 
   handleAddLine = (row, addRow) => {
     const { lines } = this.state;
-    const { fields, grids, form } = this.props;
+    const { fields, grids, fieldGroups, form } = this.props;
     const options = {};
     fields.forEach((field) => {
       if (typeof field.y === 'number' && field.y >= row - 1) {
@@ -65,6 +68,15 @@ class Board extends Component {
         options[`grids.${index}.fields`] = grid.fields;
       }
     });
+    fieldGroups.forEach((group) => {
+      if (group.top >= row - 1) {
+        group.top += parseInt(addRow, 0);
+        group.bottom += parseInt(addRow, 0);
+      } else if (group.bottom >= row - 1) {
+        group.bottom += parseInt(addRow, 0);
+      }
+    });
+    options.fieldGroups = fieldGroups;
     for (let i = 1; i <= addRow; i += 1) {
       lines.splice(row - 1, 0, `${new Date().getTime()}${i}`);
     }
@@ -73,8 +85,8 @@ class Board extends Component {
 
   handleDeleteLine = (row) => {
     const { lines } = this.state;
-    if (lines.length <= 7) return false;
-    const { fields, grids, form } = this.props;
+    if (lines.length <= 9) return false;
+    const { fields, grids, fieldGroups, form } = this.props;
     const options = {};
     fields.forEach((field) => {
       if (typeof field.y === 'number' && field.y > row - 1) {
@@ -108,6 +120,17 @@ class Board extends Component {
         options[`grids.${index}.y`] = null;
       }
     });
+    fieldGroups.forEach((group, index) => {
+      if (group.top === row - 1) {
+        fieldGroups.splice(index, 1);
+      } else if (group.top > row - 1) {
+        group.top -= 1;
+        group.bottom -= 1;
+      } else if (group.bottom >= row - 1) {
+        group.bottom -= 1;
+      }
+    });
+    options.fieldGroups = fieldGroups;
     lines.splice(row - 1, 1);
     form.setFieldsValue(options);
   }
@@ -125,6 +148,25 @@ class Board extends Component {
         break;
       case 'right':
         rightResize.call(this, data, grid, x);
+        break;
+      default:
+        return false;
+    }
+  }
+
+  handleGroupResize = (data, direction, x, y) => {
+    switch (direction) {
+      case 'top':
+        groupResize.top.call(this, data, y);
+        break;
+      case 'bottom':
+        groupResize.bottom.call(this, data, y);
+        break;
+      case 'left':
+        groupResize.left.call(this, data, x);
+        break;
+      case 'right':
+        groupResize.right.call(this, data, x);
         break;
       default:
         return false;
@@ -149,25 +191,44 @@ class Board extends Component {
     const {
       fields,
       grids,
+      fieldGroups,
       onDrag,
+      onDragGroup,
       draggingControl,
+      draggingGroup,
       selectedControl,
       onSelect,
     } = this.props;
     const { lines } = this.state;
+    const fieldsInGroup = draggingGroup ?
+      fetchFieldsInGroup(draggingGroup, fields, grids, fieldGroups) : [];
     return [
-      ...fields.filter(item => typeof item.x === 'number' && item !== draggingControl).map(item => (
-        <Control
-          key={item.key}
-          data={item}
-          onDrag={onDrag}
-          onSelect={onSelect}
-          onResize={this.handleResize}
-          selectedControl={selectedControl}
-          board={this.board}
-          lines={lines.length}
-        />
-      )),
+      ...fieldGroups.filter(item => item !== draggingGroup).map((item) => {
+        return (
+          <FieldGroup
+            key={`group_${item.created_at}`}
+            data={item}
+            onDrag={onDragGroup}
+            onSelect={onSelect}
+            onResize={this.handleGroupResize}
+            selectedControl={selectedControl}
+          />
+        );
+      }),
+      ...fields
+        .filter(item => typeof item.x === 'number' && item !== draggingControl && fieldsInGroup.indexOf(item) === -1)
+        .map(item => (
+          <Control
+            key={item.key}
+            data={item}
+            onDrag={onDrag}
+            onSelect={onSelect}
+            onResize={this.handleResize}
+            selectedControl={selectedControl}
+            board={this.board}
+            lines={lines.length}
+          />
+        )),
       ...grids.filter(item => typeof item.x === 'number' && item !== draggingControl).map(item => (
         <Control
           key={item.key}
