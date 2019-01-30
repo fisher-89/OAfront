@@ -745,7 +745,6 @@ export default class extends React.PureComponent {
             name={{ value: 'id', text: 'full_name' }}
             getPopupContainer={triggerNode => (triggerNode)}
             dropdownStyle={{ maxHeight: '300px', overflow: 'auto' }}
-            onChange={() => this.handleDefaultValueChange()}
           />
         )}
       </FormItem>
@@ -766,7 +765,6 @@ export default class extends React.PureComponent {
             valueName="value"
             placeholder="请选择"
             name={{ value: 'staff_sn', text: 'realname' }}
-            onChange={() => this.handleDefaultValueChange()}
           />
         )}
       </FormItem>
@@ -785,12 +783,8 @@ export default class extends React.PureComponent {
             multiple
             showName="text"
             placeholder="请选择"
-            name={{
-              value: 'shop_sn',
-              text: 'name',
-            }}
+            name={{ value: 'shop_sn', text: 'name' }}
             valueName="value"
-            onChange={() => this.handleDefaultValueChange()}
           />
         )}
       </FormItem>
@@ -867,12 +861,10 @@ export default class extends React.PureComponent {
                 (typeValue === 'date' || typeValue === 'datetime') ? (
                   <DatePicker format={format} showTime={typeValue !== 'date'} />
                 ) : typeValue === 'time' ?
-                    (
-                      <TimePicker />
-                    ) :
-                    (
-                      <Input placeholder="请输入" min={0} style={{ width: '100%' }} />
-                    )
+                  (<TimePicker />) :
+                  (
+                    <Input placeholder="请输入" min={0} style={{ width: '100%' }} />
+                  )
               )
             }
           </FormItem>
@@ -889,12 +881,10 @@ export default class extends React.PureComponent {
                 (typeValue === 'date' || typeValue === 'datetime') ? (
                   <DatePicker format={format} showTime={typeValue !== 'date'} />
                 ) : typeValue === 'time' ?
-                    (
-                      <TimePicker />
-                    ) :
-                    (
-                      <Input placeholder="请输入" min={0} style={{ width: '100%' }} />
-                    )
+                  (<TimePicker />) :
+                  (
+                    <Input placeholder="请输入" min={0} style={{ width: '100%' }} />
+                  )
               )
             }
           </FormItem>
@@ -1059,7 +1049,11 @@ export default class extends React.PureComponent {
               </FormItem>
             </Col>
             <Col span={24} className={fieldApi}>
-              <FormItem label={labelValue.field_api_configuration_id} {...fieldsRowItemLayout} required={fieldType === 'api'}>
+              <FormItem
+                label={labelValue.field_api_configuration_id}
+                {...fieldsRowItemLayout}
+                required={fieldType === 'api'}
+              >
                 {
                   getFieldDecorator('field_api_configuration_id', {
                     initialValue: initialValue.field_api_configuration_id ? `${initialValue.field_api_configuration_id}` : null,
@@ -1092,6 +1086,7 @@ export default class extends React.PureComponent {
                 {
                   getFieldDecorator('scale', {
                     initialValue: initialValue.scale || 0,
+                    rules: [{ validator: this.validateFiledsScale }],
                   })(
                     <InputNumber placeholder="请输入" min={0} style={{ width: '100%' }} />
                   )
