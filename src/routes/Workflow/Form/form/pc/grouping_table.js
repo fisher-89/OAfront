@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import fetchInsideFields from './supports/fetch_fields_in_group';
+import { checkGroup } from './supports/drop_checking';
 import styles from './grouping_table.less';
 
 export default class extends Component {
@@ -66,9 +67,9 @@ export default class extends Component {
     const { data: { top, bottom, left, right } } = this.props;
     const lines = Math.floor((this.templateBottom - this.templateTop) / this.cellSize);
     const minX = -left;
-    const maxX = 20 - right - 1;
+    const maxX = 20 - right;
     const minY = -top;
-    const maxY = lines - bottom - 1;
+    const maxY = lines - bottom;
     this.offsetX = Math.min(Math.max(
       Math.floor((clientX - this.templateLeft) / this.cellSize) - this.startX, minX
     ), maxX);
@@ -99,54 +100,7 @@ export default class extends Component {
 
   checkDropAvailable = (newData) => {
     const { data, fields, grids, fieldGroups } = this.props;
-    const insideFields = fetchInsideFields(data, fields, grids, fieldGroups);
-    const insideCell = this.fetchNewInsideCell(newData);
-    let response = true;
-    fields.forEach((item) => {
-      if (item.x !== null && insideFields.indexOf(item) === -1) {
-        insideCell.forEach((cell) => {
-          if (cell.x >= item.x && cell.x < item.x + item.col
-            && cell.y >= item.y && cell.y < item.y + item.row) {
-            response = false;
-          }
-        });
-      }
-    });
-    grids.forEach((item) => {
-      if (item.x !== null) {
-        insideCell.forEach((cell) => {
-          if (cell.y >= item.y && cell.y < item.y + item.row) {
-            response = false;
-          }
-        });
-      }
-    });
-    fieldGroups.forEach((item) => {
-      if (item !== data) {
-        insideCell.forEach((cell) => {
-          if (cell.x >= item.left && cell.x <= item.right
-            && cell.y >= item.top && cell.y <= item.bottom) {
-            response = false;
-          }
-        });
-      }
-    });
-    return response;
-  }
-
-  fetchNewInsideCell = (group) => {
-    const cells = [];
-    for (let x = group.left; x <= group.right; x += 1) {
-      for (let y = group.top; y <= group.bottom; y += 1) {
-        cells.push({ x, y });
-      }
-    }
-    return cells;
-  }
-
-  cellInside = (cell, item) => {
-    return cell.x >= item.x && cell.x < item.x + item.col
-      && cell.y >= item.y && cell.y < item.y + item.row;
+    return checkGroup(data, newData, { fields, grids, fieldGroups });
   }
 
   startDrawing = (e) => {
@@ -175,9 +129,9 @@ export default class extends Component {
     const { clientX, clientY } = e;
     const { fields, grids, fieldGroups } = this.props;
     const { right, bottom } = this.state;
-    const x = Math.floor(Math.max(
+    const x = Math.ceil(Math.max(
       Math.min(clientX, this.templateRight - 2) - this.templateLeft, 0) / 61);
-    const y = Math.floor(Math.max(
+    const y = Math.ceil(Math.max(
       Math.min(clientY, this.templateBottom - 2) - this.templateTop, 0) / 61);
     if (x !== right || y !== bottom) {
       this.state.right = x;
@@ -216,7 +170,7 @@ export default class extends Component {
   }
 
   render() {
-    const { left, top, right, bottom, available } = this.state;
+    const { left, top, right, bottom, available, isDrag } = this.state;
     return (
       <div
         className={styles.shadow}
@@ -232,8 +186,9 @@ export default class extends Component {
               style={{
                 top: `${Math.min(top, bottom) * 61}px`,
                 left: `${Math.min(left, right) * 61}px`,
-                height: `${((Math.abs(bottom - top) + 1) * 61) + 1}px`,
-                width: `${((Math.abs(right - left) + 1) * 61) + 1}px`,
+                height: `${(Math.abs(bottom - top) * 61) + 1}px`,
+                width: `${(Math.abs(right - left) * 61) + 1}px`,
+                cursor: isDrag ? 'default' : 'inherit',
               }}
             >
               <div className={styles.header} />

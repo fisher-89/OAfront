@@ -319,6 +319,7 @@ class PCTemplate extends Component {
             parentGrid={parentGridIndex !== null ? grids[parentGridIndex] : null}
             fields={fields}
             grids={grids}
+            fieldGroups={fieldGroups}
           />
         )}
       </Row>

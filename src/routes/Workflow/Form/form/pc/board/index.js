@@ -72,7 +72,7 @@ class Board extends Component {
       if (group.top >= row - 1) {
         group.top += parseInt(addRow, 0);
         group.bottom += parseInt(addRow, 0);
-      } else if (group.bottom >= row - 1) {
+      } else if (group.bottom > row - 1) {
         group.bottom += parseInt(addRow, 0);
       }
     });
@@ -126,7 +126,7 @@ class Board extends Component {
       } else if (group.top > row - 1) {
         group.top -= 1;
         group.bottom -= 1;
-      } else if (group.bottom >= row - 1) {
+      } else if (group.bottom > row - 1) {
         group.bottom -= 1;
       }
     });

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Tag } from 'antd';
 import { getDefaultSize } from './supports/control_size';
-import _fetchUsedCell from './supports/fetch_used_cell';
+import { checkField, checkGrid } from './supports/drop_checking';
 import ControlContent from './board/controls';
 import styles from './template.less';
 
@@ -12,7 +12,6 @@ class DraggingFieldTag extends Component {
     data: null,
     relativeX: 0, // 点击相对位置（水平）
     relativeY: 0, // 点击相对位置（垂直）
-    usedCell: [], // 已占用的单元格
     dropAvailable: true, // 是否可以放置
   }
 
@@ -30,7 +29,6 @@ class DraggingFieldTag extends Component {
       this.state.onTemplate = true;
       this.state.offset = { x: data.x * 61, y: data.y * 61 };
     }
-    this.state.usedCell = this.fetchUsedCell();
     this.fetchTemplatePosition();
   }
 
@@ -48,15 +46,6 @@ class DraggingFieldTag extends Component {
     this.templateBottom = bottom;
     this.templateLeft = left;
     this.templateRight = right;
-  }
-
-  /**
-   * 获取已占用的单元格
-   * @returns {Array}
-   */
-  fetchUsedCell = () => {
-    const { fields, grids, parentGrid, data } = this.props;
-    return _fetchUsedCell(data, parentGrid, fields, grids);
   }
 
   /**
@@ -111,23 +100,13 @@ class DraggingFieldTag extends Component {
     });
   }
 
-  checkDropAvailable = (data) => {
-    const { usedCell } = this.state;
-    const { x, y, col, row } = data;
-    if (x < 0 || y < 0) return false;
-    let response = true;
-    for (const i in usedCell) {
-      if (Object.hasOwnProperty.call(usedCell, i)) {
-        const cell = usedCell[i];
-        const rowIsUsed = cell.row >= y && cell.row < y + row;
-        const colIsUsed = cell.col >= x && cell.col < x + col;
-        if (rowIsUsed && ('fields' in data || colIsUsed)) {
-          response = false;
-          break;
-        }
-      }
+  checkDropAvailable = (newData) => {
+    const { data, fields, grids, fieldGroups, parentGrid } = this.props;
+    if ('fields' in data) {
+      return checkGrid(data, newData, { fields, grids, fieldGroups });
+    } else {
+      return checkField(data, newData, { fields, grids, fieldGroups }, parentGrid);
     }
-    return response;
   }
 
   loosenDrag = (e) => {

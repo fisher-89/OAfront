@@ -1,49 +1,97 @@
 /* eslint no-param-reassign:0 */
 import { getMinSize } from '../supports/control_size';
-import _fetchUsedCell from '../supports/fetch_used_cell';
+import {
+  fetchUsedCell as _fetchUsedCell,
+  fetchUsedRow as _fetchUsedRow,
+  hasCell,
+  insideGroup,
+} from '../supports/drop_checking';
 
 export { topResize, bottomResize, leftResize, rightResize };
 
 function topResize(data, grid, y) {
+  const { fieldGroups } = this.props;
   const { row, min } = fetchRowAndMin.call(this, y, data, grid);
   let newRow = Math.max((data.y + data.row) - row, min);
   let newY = (data.y + data.row) - newRow;
-  const usedCell = fetchUsedCell.call(this, data, grid);
-  usedCell.forEach((cell) => {
-    const rowIsUsed = cell.row >= newY && cell.row < newY + newRow;
-    const colIsUsed = cell.col >= data.x && cell.col < data.x + data.col;
-    if (rowIsUsed && ('fields' in data || colIsUsed)) {
-      newY = cell.row + 1;
-      newRow = (data.y + data.row) - newY;
-    }
-  });
+  if ('fields' in data) {
+    const usedRow = fetchUsedRow.call(this, data);
+    usedRow.forEach((item) => {
+      if (item >= newY && item < newY + newRow) {
+        newY = item + 1;
+        newRow = (data.y + data.row) - newY;
+      }
+    });
+  } else {
+    const usedCell = fetchUsedCell.call(this, data, grid);
+    usedCell.forEach((cell) => {
+      const newData = { ...data, y: newY, row: newRow };
+      if (hasCell(cell, newData)) {
+        newY = cell.y + 1;
+        newRow = (data.y + data.row) - newY;
+      }
+    });
+    fieldGroups.forEach((item) => {
+      const inside = insideGroup(data, item);
+      const newData = { ...data, y: newY, row: newRow };
+      if (!inside && (inside !== insideGroup(newData, item))) {
+        newY = item.bottom;
+        newRow = (data.y + data.row) - newY;
+      }
+    });
+  }
   if (newY !== data.y) submitResize.call(this, data, grid, { y: newY, row: newRow });
 }
 
 function bottomResize(data, grid, y) {
+  const { fieldGroups } = this.props;
   const { row, min } = fetchRowAndMin.call(this, y, data, grid);
   let newRow = Math.max(row - data.y, min);
-  const usedCell = fetchUsedCell.call(this, data, grid);
-  usedCell.forEach((cell) => {
-    const rowIsUsed = cell.row >= data.y && cell.row < data.y + newRow;
-    const colIsUsed = cell.col >= data.x && cell.col < data.x + data.col;
-    if (rowIsUsed && ('fields' in data || colIsUsed)) {
-      newRow = cell.row - data.y;
-    }
-  });
+  if ('fields' in data) {
+    const usedRow = fetchUsedRow.call(this, data);
+    usedRow.forEach((item) => {
+      if (item >= data.y && item < data.y + newRow) {
+        newRow = item - data.y;
+      }
+    });
+  } else {
+    const usedCell = fetchUsedCell.call(this, data, grid);
+    usedCell.forEach((cell) => {
+      if (hasCell(cell, { ...data, row: newRow })) {
+        newRow = cell.y - data.y;
+      }
+    });
+    fieldGroups.forEach((item) => {
+      const inside = insideGroup(data, item);
+      if (inside && item.bottom < data.y + newRow) {
+        newRow = item.bottom - data.y;
+      }
+    });
+  }
   if (newRow !== data.row) submitResize.call(this, data, grid, { row: newRow });
 }
 
 function leftResize(data, grid, x) {
+  const { fieldGroups } = this.props;
   const { col, min } = fetchColAndMin.call(this, x, data, grid);
   let newCol = Math.max((data.x + data.col) - col, min);
   let newX = (data.x + data.col) - newCol;
   if (!('fields' in data)) {
     const usedCell = fetchUsedCell.call(this, data, grid);
     usedCell.forEach((cell) => {
-      if (cell.row >= data.y && cell.row < data.y + data.row
-        && cell.col >= newX && cell.col < newX + newCol) {
-        newX = cell.col + 1;
+      if (hasCell(cell, { ...data, x: newX, col: newCol })) {
+        newX = cell.x + 1;
+        newCol = (data.x + data.col) - newX;
+      }
+    });
+    fieldGroups.forEach((item) => {
+      const inside = insideGroup(data, item);
+      const newData = { ...data, x: newX, col: newCol };
+      if (inside && item.left > newX) {
+        newX = item.left;
+        newCol = (data.x + data.col) - newX;
+      } else if (!inside && (inside !== insideGroup(newData, item))) {
+        newX = item.right;
         newCol = (data.x + data.col) - newX;
       }
     });
@@ -52,14 +100,23 @@ function leftResize(data, grid, x) {
 }
 
 function rightResize(data, grid, x) {
+  const { fieldGroups } = this.props;
   const { col, min } = fetchColAndMin.call(this, x, data, grid);
   let newCol = Math.max(col - data.x, min);
   if (!('fields' in data)) {
     const usedCell = fetchUsedCell.call(this, data, grid);
     usedCell.forEach((cell) => {
-      if (cell.row >= data.y && cell.row < data.y + data.row
-        && cell.col >= data.x && cell.col < data.x + newCol) {
-        newCol = cell.col - data.x;
+      if (hasCell(cell, { ...data, col: newCol })) {
+        newCol = cell.x - data.x;
+      }
+    });
+    fieldGroups.forEach((item) => {
+      const inside = insideGroup(data, item);
+      const newData = { ...data, col: newCol };
+      if (inside && item.right < data.x + newCol) {
+        newCol = item.right - data.x;
+      } else if (!inside && (inside !== insideGroup(newData, item))) {
+        newCol = item.left - data.x;
       }
     });
   }
@@ -110,8 +167,13 @@ function fetchColAndMin(x, data, grid) {
  * @returns {Array}
  */
 function fetchUsedCell(data, grid) {
-  const { fields, grids } = this.props;
-  return _fetchUsedCell(data, grid, fields, grids);
+  const { fields, grids, fieldGroups } = this.props;
+  return _fetchUsedCell(data, { fields, grids, fieldGroups }, grid);
+}
+
+function fetchUsedRow(data) {
+  const { fields, grids, fieldGroups } = this.props;
+  return _fetchUsedRow(data, { fields, grids, fieldGroups });
 }
 
 function submitResize(data, grid, options) {

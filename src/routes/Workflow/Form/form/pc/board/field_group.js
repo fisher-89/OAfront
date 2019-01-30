@@ -84,8 +84,8 @@ export default class extends Component {
         style={{
           top: `${data.top * 61}px`,
           left: `${data.left * 61}px`,
-          width: `${(((data.right - data.left) + 1) * 61) + 1}px`,
-          height: `${(((data.bottom - data.top) + 1) * 61) + 1}px`,
+          width: `${((data.right - data.left) * 61) + 1}px`,
+          height: `${((data.bottom - data.top) * 61) + 1}px`,
           border: isSelected ? '1px solid #1890ff' : '1px solid #999',
           zIndex: isSelected ? 1 : 0,
         }}

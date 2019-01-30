@@ -47,14 +47,14 @@ export default function (group, fields, grids, groups) {
     if (item !== group) {
       let inside = false;
       insideCell.forEach((cell) => {
-        if (cell.x >= item.left && cell.x <= item.right
-          && cell.y >= item.top && cell.y <= item.bottom) {
+        if (cell.x >= item.left && cell.x < item.right
+          && cell.y >= item.top && cell.y < item.bottom) {
           inside = true;
         }
       });
       headerCell.forEach((cell) => {
-        if (cell.x >= item.left && cell.x <= item.right
-          && cell.y >= item.top && cell.y <= item.bottom) {
+        if (cell.x >= item.left && cell.x < item.right
+          && cell.y >= item.top && cell.y < item.bottom) {
           inside = true;
         }
       });
@@ -68,8 +68,8 @@ export default function (group, fields, grids, groups) {
 
 function getInsideCell(group) {
   const cells = [];
-  for (let x = group.left; x <= group.right; x += 1) {
-    for (let y = group.top + 1; y <= group.bottom; y += 1) {
+  for (let x = group.left; x < group.right; x += 1) {
+    for (let y = group.top + 1; y < group.bottom; y += 1) {
       cells.push({ x, y });
     }
   }
@@ -78,7 +78,7 @@ function getInsideCell(group) {
 
 function getHeaderCell(group) {
   const cells = [];
-  for (let x = group.left; x <= group.right; x += 1) {
+  for (let x = group.left; x < group.right; x += 1) {
     cells.push({ x, y: group.top });
   }
   return cells;
