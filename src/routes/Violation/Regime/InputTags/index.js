@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import {
-  Tag,
+  Tag, Button,
 } from 'antd';
 import ToolBar from './toolBar';
 import styles from './index.less';
@@ -25,6 +25,16 @@ export default class Index extends PureComponent {
       onChange(value);
     }
   };
+
+  clear = () => {
+    const { onChange } = this.props;
+    const src = 'CustomSettings';
+    const newValue = src;
+    this.input.value = src;
+    if (onChange) {
+      onChange(newValue);
+    }
+  }
 
   addTag = (src) => {
     const { value, onChange, disabled } = this.props;
@@ -52,8 +62,12 @@ export default class Index extends PureComponent {
     const { value } = this.props;
     let newValue = [];
     if (value) {
-      newValue = value.split(/(\{\{\w+\}\})|(\{\?\w+\?\})|(\{\?\w+\.\*\.\w*\?\})|(\{<\d+>\})/);
-      newValue = newValue.filter(item => item !== undefined);
+      if (value === 'CustomSettings') {
+        newValue = ['CustomSettings'];
+      } else {
+        newValue = value.split(/(\{\{\w+\}\})|(\{\?\w+\?\})|(\{\?\w+\.\*\.\w*\?\})|(\{<\d+>\})/);
+        newValue = newValue.filter(item => item !== undefined);
+      }
     }
     return newValue;
   };
@@ -62,25 +76,30 @@ export default class Index extends PureComponent {
     const { rules, contents } = this.state;
     let temp = item;
     if (contents) {
-      Object.keys(rules).forEach((color) => {
-        if (item.search(rules[color]) !== -1 && contents[item]) {
-          const tagProps = { key: `tag-${index}` };
-          if (color === 'volcano') {
-            temp = (
-              <span {...tagProps} className={styles.fuhao}>{contents[item]}</span>
-            );
-          } else {
-            if (color !== 'default') {
-              tagProps.color = color;
+      if (item === 'CustomSettings') {
+        temp = (
+          <Tag key="CustomSettings" >自定义数据</Tag>
+        );
+      } else {
+        Object.keys(rules).forEach((color) => {
+          if (item.search(rules[color]) !== -1 && contents[item]) {
+            const tagProps = { key: `tag-${index}` };
+            if (color === 'volcano') {
+              temp = (
+                <span {...tagProps} className={styles.fuhao}>{contents[item]}</span>
+              );
+            } else {
+              if (color !== 'default') {
+                tagProps.color = color;
+              }
+              temp = (
+                <Tag {...tagProps}>{contents[item]}</Tag>
+              );
             }
-            temp = (
-              <Tag {...tagProps}>{contents[item]}</Tag>
-            );
           }
-        }
-      });
+        });
+      }
     }
-
     return temp;
   };
 
@@ -125,6 +144,7 @@ export default class Index extends PureComponent {
             this.setState({ contents });
           }}
           />
+          <Button type="primary" icon="highlight" onClick={() => this.clear()} >自定义</Button>
         </div>
       </Fragment>
     );

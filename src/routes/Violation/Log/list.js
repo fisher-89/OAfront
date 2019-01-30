@@ -3,6 +3,7 @@ import { Tabs, Button, Divider } from 'antd';
 import OATable from '../../../components/OATable';
 import BigLove from './form';
 import Details from './details';
+import PushLog from './logpush';
 import {
   getFiltersData,
   findRenderKey,
@@ -19,10 +20,32 @@ export default class extends PureComponent {
     initialValue: {},
     selectedRows: [],
     selectedRowKeys: [],
+    panes: [],
+    activeKey: '1',
+  }
+
+  onEdit = (targetKey, action) => {
+    this[action](targetKey);
   }
 
   onSelectChange = (selectedRowKeys, selectedRows) => {
     this.setState({ selectedRows, selectedRowKeys });
+  }
+
+  pushLog = () => {
+    const { panes } = this.state;
+    if (JSON.stringify(panes) !== JSON.stringify([{ title: '补充推送', key: '2' }])) {
+      panes.push({ title: '补充推送', key: '2' });
+    }
+    this.setState({ panes: [...panes], activeKey: '2' });
+  }
+
+  tabsChange = (activeKey) => {
+    this.setState({ activeKey });
+  }
+
+  remove = () => {
+    this.setState({ panes: [], activeKey: '1' });
   }
 
   handleModalVisible = (flag) => {
@@ -202,8 +225,14 @@ export default class extends PureComponent {
   }
 
   render() {
-    const { finelog, fetchFineLog, loading } = this.props;
-    const { detailsVisible, visible, initialValue, selectedRowKeys, selectedRows } = this.state;
+    const { finelog, fetchFineLog, loading, department, brand } = this.props;
+    const { detailsVisible,
+      visible,
+      initialValue,
+      selectedRowKeys,
+      selectedRows,
+      panes,
+      activeKey } = this.state;
     let excelExport = null;
     const extra = [];
     extra.push(
@@ -220,6 +249,18 @@ export default class extends PureComponent {
       >
         新建大爱
       </Button>),
+      (
+        <Button
+          key="pushLog"
+          type="primary"
+          icon="mail"
+          onClick={() => {
+            this.pushLog();
+          }}
+        >
+        补充推送
+        </Button>
+      ),
       (
         <Button
           key="download-temp"
@@ -246,7 +287,6 @@ export default class extends PureComponent {
         },
       },
     ];
-
     const rowSelection = {
       selectedRows,
       selectedRowKeys,
@@ -259,9 +299,13 @@ export default class extends PureComponent {
     return (
       <Fragment>
         <Tabs
-          type="card"
+          type="editable-card"
+          hideAdd
+          activeKey={activeKey}
+          onChange={this.tabsChange}
+          onEdit={this.onEdit}
         >
-          <TabPane key="1" tab="大爱记录" >
+          <TabPane closable={false} key="1" tab="大爱记录" >
             <OATable
               loading={loading}
               columns={this.makeColumns()}
@@ -277,6 +321,18 @@ export default class extends PureComponent {
               excelExport={checkAuthority(205) && excelExport}
             />
           </TabPane>
+          {panes.map(pane => (
+            <TabPane tab={pane.title} key={pane.key} >
+              <PushLog
+                finelog={finelog}
+                fetchFineLog={fetchFineLog}
+                loading={loading}
+                department={department}
+                brand={brand}
+              />
+            </TabPane>
+          ))
+          }
         </Tabs>
         <BigLove
           visible={visible}

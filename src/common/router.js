@@ -238,6 +238,9 @@ export const getRouterData = (app) => {
     '/violation/statistics': {
       component: dynamicWrapper(app, ['violation', 'department', 'brand'], () => import('../routes/Violation/Statistics')),
     },
+    '/violation/fineauth': {
+      component: dynamicWrapper(app, ['violation'], () => import('../routes/Violation/Fauth')),
+    },
 
     /**  系统 */
     '/system/authority': {

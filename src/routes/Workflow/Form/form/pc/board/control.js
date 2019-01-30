@@ -1,11 +1,18 @@
 import React, { Component } from 'react';
 import ControlContent from './controls';
-import styles from '../template.less';
+import styles from './index.less';
 
 export default class Control extends Component {
   state = {
     direction: null,
   };
+
+  checkSelected = () => {
+    const { selectedControl, data, isGrid } = this.props;
+    return selectedControl && (
+      selectedControl === data || ('fields' in selectedControl && isGrid && selectedControl.key === data.key)
+    );
+  }
 
   mouseDown = (e) => {
     if (e.type === 'mousedown' && e.button !== 0) return false;
@@ -77,18 +84,13 @@ export default class Control extends Component {
   }
 
   makeContent = () => {
-    const { selectedControl, isGrid, data } = this.props;
-    const isSelected = selectedControl && (
-      selectedControl === data ||
-      ('fields' in selectedControl && 'fields' in data && selectedControl.key === data.key)
-    );
+    const { isGrid, data } = this.props;
+    const isSelected = this.checkSelected();
     const typesWithMultipleRow = ['array', 'file', 'text'];
     return (
       <div
         className={styles.content}
         onMouseDown={this.mouseDown}
-        onTouchStart={this.mouseDown}
-        onTouchEnd={this.mouseDown}
       >
         <ControlContent data={data} />
         {isSelected ? (
@@ -98,14 +100,10 @@ export default class Control extends Component {
                 <div
                   className={styles.topResize}
                   onMouseDown={this.handleResize('top')}
-                  onTouchStart={this.handleResize('top')}
-                  onTouchEnd={this.handleResize('top')}
                 />
                 <div
                   className={styles.bottomResize}
                   onMouseDown={this.handleResize('bottom')}
-                  onTouchStart={this.handleResize('bottom')}
-                  onTouchEnd={this.handleResize('bottom')}
                 />
               </React.Fragment>
             ) : null}
@@ -113,14 +111,10 @@ export default class Control extends Component {
               <div
                 className={styles.leftResize}
                 onMouseDown={this.handleResize('left')}
-                onTouchStart={this.handleResize('left')}
-                onTouchEnd={this.handleResize('left')}
               />
               <div
                 className={styles.rightResize}
                 onMouseDown={this.handleResize('right')}
-                onTouchStart={this.handleResize('right')}
-                onTouchEnd={this.handleResize('right')}
               />
             </React.Fragment>
           </div>
@@ -132,12 +126,9 @@ export default class Control extends Component {
   }
 
   render() {
-    const { isGrid, selectedControl, data, draggingControl } = this.props;
+    const { isGrid, data, draggingControl } = this.props;
     const { direction } = this.state;
-    const isSelected = selectedControl && (
-      selectedControl === data ||
-      ('fields' in selectedControl && 'fields' in data && selectedControl.key === data.key)
-    );
+    const isSelected = this.checkSelected();
     return (
       <div
         className={`${styles.control} ${isSelected ? styles.selected : ''}`}
@@ -151,6 +142,20 @@ export default class Control extends Component {
         {this.makeContent()}
         {isGrid && (
           <React.Fragment>
+            <div
+              className={styles.gridRow}
+              style={{
+                left: `-${data.x * 61}px`,
+                width: `${Math.max((data.x * 61) - 1, 0)}px`,
+              }}
+            />
+            <div
+              className={styles.gridRow}
+              style={{
+                right: `-${(20 - data.x - data.col) * 61}px`,
+                width: `${Math.max(((20 - data.x - data.col) * 61) - 1, 0)}px`,
+              }}
+            />
             <div
               className={styles.childrenBg}
               style={{ height: `${((data.row - 2) * 61) + 1}px` }}
@@ -172,14 +177,9 @@ export default class Control extends Component {
         )}
         {direction && (
           <div
+            className={styles.resizingBoard}
             style={{
-              position: 'fixed',
-              top: 0,
-              bottom: 0,
-              left: 0,
-              right: 0,
               cursor: direction === 'left' || direction === 'right' ? 'ew-resize' : 'ns-resize',
-              zIndex: 1000,
             }}
           />
         )}

@@ -119,3 +119,20 @@ export async function downloadStaffExcel(params) {
     headers: { Accept: '*' },
   });
 }
+
+// 大爱推送
+export async function fetchPushAuth(params) {
+  return request('/api/violation/pushing_auth', { method: 'GET', body: params });
+}
+
+export async function addPushAuth(params) {
+  return request('/api/violation/pushing_auth', { method: 'POST', body: params });
+}
+
+export async function editPushAuth(params, id) {
+  return request(`/api/violation/pushing_auth/${id}`, { method: 'PUT', body: params });
+}
+
+export async function deletePushAuth(id) {
+  return request(`/api/violation/pushing_auth/${id}`, { method: 'DELETE' });
+}

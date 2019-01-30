@@ -1,5 +1,7 @@
 import React, { PureComponent } from 'react';
 import {
+  Row,
+  Col,
   Tag,
 } from 'antd';
 import styles from './index.less';
@@ -87,8 +89,12 @@ export default class Index extends PureComponent {
     const { value } = this.props;
     let newValue = [];
     if (value) {
-      newValue = value.split(/(\{\{\w+\}\})|(\{\?\w+\?\})|(\{\?\w+\.\*\.\w*\?\})|(\{<\d+>\})/);
-      newValue = newValue.filter(item => item !== undefined);
+      if (value === 'CustomSettings') {
+        newValue = ['CustomSettings'];
+      } else {
+        newValue = value.split(/(\{\{\w+\}\})|(\{\?\w+\?\})|(\{\?\w+\.\*\.\w*\?\})|(\{<\d+>\})/);
+        newValue = newValue.filter(item => item !== undefined);
+      }
     }
     return newValue;
   };
@@ -97,23 +103,29 @@ export default class Index extends PureComponent {
     const { rules, contents } = this.state;
     let temp = item;
     if (contents) {
-      Object.keys(rules).forEach((color) => {
-        if (item.search(rules[color]) !== -1 && contents[item]) {
-          const tagProps = { key: `tag-${index}` };
-          if (color === 'volcano') {
-            temp = (
-              <span {...tagProps} className={styles.fuhao}>{contents[item]}</span>
-            );
-          } else {
-            if (color !== 'default') {
-              tagProps.color = color;
+      if (item === 'CustomSettings') {
+        temp = (
+          <Tag key="CustomSettings" >自定义数据</Tag>
+        );
+      } else {
+        Object.keys(rules).forEach((color) => {
+          if (item.search(rules[color]) !== -1 && contents[item]) {
+            const tagProps = { key: `tag-${index}` };
+            if (color === 'volcano') {
+              temp = (
+                <span {...tagProps} className={styles.fuhao}>{contents[item]}</span>
+              );
+            } else {
+              if (color !== 'default') {
+                tagProps.color = color;
+              }
+              temp = (
+                <Tag {...tagProps}>{contents[item]}</Tag>
+              );
             }
-            temp = (
-              <Tag {...tagProps}>{contents[item]}</Tag>
-            );
           }
-        }
-      });
+        });
+      }
     }
 
     return temp;
@@ -123,17 +135,18 @@ export default class Index extends PureComponent {
     const html = this.makeContent();
     return (
       <div className={styles.class}>
-        <div className={styles.kuandu}>
-          <div>
-            <label>{this.props.title} ： {this.props.value}</label>
-          </div>
-          <div className={styles.textkuang}>
-            <label>表达式 ：</label>
-            {html.map((item, index) => {
-            return this.compileHtml(item, index);
-          })}
-          </div>
-        </div>
+        <Row>
+          <Col span={6}>
+            <div className={styles.biaoti}>{this.props.title}表达式 ：</div>
+          </Col>
+          <Col span={18}>
+            <div>
+              {html.map((item, index) => {
+              return this.compileHtml(item, index);
+              })}
+            </div>
+          </Col>
+        </Row>
       </div>
     );
   }

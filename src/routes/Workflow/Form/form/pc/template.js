@@ -5,6 +5,8 @@ import Board from './board/index';
 import FieldTag from './field_tag';
 import GridTag from './grid_tag';
 import FieldTagShadow from './dragging_field_tag';
+import GroupingTable from './grouping_table';
+import { handleDragGroupStart, handleDragGroupConfirm } from './supports/drag_group';
 
 class PCTemplate extends Component {
   state = {
@@ -15,6 +17,8 @@ class PCTemplate extends Component {
     startPoint: { x: null, y: null },
     startPosition: { top: 0, bottom: 0, left: 0, right: 0 },
     onDragging: false,
+    onGroupDragging: false,
+    onGrouping: false,
   }
 
   componentWillMount() {
@@ -34,7 +38,10 @@ class PCTemplate extends Component {
     if (nextState.selectedControl !== this.state.selectedControl) return true;
     if (nextProps.grids !== this.props.grids) return true;
     if (nextProps.fields !== this.props.fields) return true;
+    if (nextProps.fieldGroups !== this.props.fieldGroups) return true;
     if (nextState.onDragging !== this.state.onDragging) return true;
+    if (nextState.onGroupDragging !== this.state.onGroupDragging) return true;
+    if (nextState.onGrouping !== this.state.onGrouping) return true;
     return false;
   }
 
@@ -57,10 +64,19 @@ class PCTemplate extends Component {
   }
 
   handleSelect = (data, grid) => {
-    const { fields, grids } = this.props;
-    let index = 'fields' in data ? grids.indexOf(data) : fields.indexOf(data);
-    const gridIndex = grid ? grids.indexOf(grid) : null;
-    if (grid) index = grid.fields.indexOf(data);
+    const { fields, grids, fieldGroups } = this.props;
+    let index;
+    let gridIndex = null;
+    if ('fields' in data) {
+      index = grids.indexOf(data);
+    } else if ('top' in data) {
+      index = fieldGroups.indexOf(data);
+    } else if (grid) {
+      gridIndex = grids.indexOf(grid);
+      index = grid.fields.indexOf(data);
+    } else {
+      index = fields.indexOf(data);
+    }
     this.setState({
       dataIndex: index,
       selectedControl: data,
@@ -69,8 +85,8 @@ class PCTemplate extends Component {
   }
 
   handleCancelSelect = (e) => {
-    const controlReg = /template__clickBoard(Selected)?___/;
-    const resizeReg = /template__(top|bottom|left|right)Resize___/;
+    const controlReg = /__clickBoard(Selected)?___/;
+    const resizeReg = /__(top|bottom|left|right)Resize___/;
     const tagReg = /ant-tag/;
     if (controlReg.test(e.target.className)) return false;
     if (resizeReg.test(e.target.className)) return false;
@@ -79,9 +95,8 @@ class PCTemplate extends Component {
   }
 
   deleteSelectedControl = (data) => {
-    const { form, fields, grids } = this.props;
+    const { form, fields, fieldGroups, grids } = this.props;
     const { dataIndex, parentGridIndex } = this.state;
-    this.state.onDragging = false;
     if ('fields' in data) {
       form.setFieldsValue({
         [`grids.${dataIndex}.x`]: null,
@@ -94,6 +109,9 @@ class PCTemplate extends Component {
       form.setFieldsValue({
         [`grids.${parentGridIndex}.fields`]: gridFields,
       });
+    } else if ('top' in data) {
+      fieldGroups.splice(dataIndex, 1);
+      form.setFieldsValue({ fieldGroups });
     } else {
       fields[dataIndex].x = null;
       fields[dataIndex].y = null;
@@ -108,7 +126,7 @@ class PCTemplate extends Component {
     if (grid) index = grid.fields.indexOf(data);
     this.setState({
       dataIndex: index,
-      onDragging: data,
+      onDragging: true,
       selectedControl: data,
       parentGridIndex: gridIndex,
       startPoint,
@@ -116,11 +134,7 @@ class PCTemplate extends Component {
     });
   }
 
-  handleDragCancel = (data) => {
-    this.deleteSelectedControl(data);
-  }
-
-  handleDragConfirm = (data) => {
+  handleDragOnBoard = (data) => {
     const { form, fields, grids } = this.props;
     const { dataIndex, parentGridIndex } = this.state;
     this.state.onDragging = false;
@@ -149,10 +163,28 @@ class PCTemplate extends Component {
     }
   }
 
+  handleDragOffBoard = (data) => {
+    this.state.onDragging = false;
+    this.deleteSelectedControl(data);
+  }
+
   handleDragFail = () => {
-    this.setState({
-      onDragging: false,
-    });
+    this.setState({ onDragging: false });
+  }
+
+  handleGroupingStart = () => {
+    this.setState({ onGrouping: true });
+  }
+
+  handleGroupingConfirm = (data) => {
+    const { form, fieldGroups } = this.props;
+    fieldGroups.push({ ...data, title: '', background: '', created_at: new Date().getTime() });
+    form.setFieldsValue({ field_groups: fieldGroups });
+    this.setState({ onGrouping: false });
+  }
+
+  handleGroupingCancel = () => {
+    this.setState({ onGrouping: false, onGroupDragging: false });
   }
 
   makeFieldOptions = () => {
@@ -204,15 +236,23 @@ class PCTemplate extends Component {
   }
 
   render() {
-    const { fields, grids, form } = this.props;
-    const { startPoint, startPosition, onDragging, parentGridIndex, selectedControl } = this.state;
+    const { fields, grids, fieldGroups, form } = this.props;
+    const {
+      startPoint,
+      startPosition,
+      onDragging,
+      onGroupDragging,
+      onGrouping,
+      parentGridIndex,
+      selectedControl,
+    } = this.state;
     return (
       <Row className={styles.pcTemplate}>
         <Affix offsetTop={16}>
           <div className={styles.component}>
             <h3>通用工具</h3>
             <div className={styles.fields}>
-              <Tag>分割线</Tag>
+              <Tag onClick={this.handleGroupingStart} type={onDragging ? 'blue' : null}>分组</Tag>
             </div>
             <h3>字段</h3>
             <div className={styles.fields}>
@@ -239,25 +279,41 @@ class PCTemplate extends Component {
             <Board
               grids={grids}
               fields={fields}
-              draggingControl={onDragging}
+              fieldGroups={fieldGroups}
+              draggingControl={onDragging ? selectedControl : null}
+              draggingGroup={onGroupDragging ? selectedControl : null}
               form={form}
               selectedControl={selectedControl}
               onSelect={this.handleSelect}
               onDrag={this.handleDragStart}
+              onDragGroup={handleDragGroupStart.bind(this)}
               parentGrid={parentGridIndex !== null ? grids[parentGridIndex] : null}
               bind={(board) => {
                 this.board = board;
               }}
             />
+            {(onGrouping || onGroupDragging) && (
+              <GroupingTable
+                data={onGroupDragging ? selectedControl : null}
+                startPoint={startPoint}
+                board={this.board}
+                grids={grids}
+                fields={fields}
+                fieldGroups={fieldGroups}
+                onConfirm={this.handleGroupingConfirm}
+                onDragConfirm={handleDragGroupConfirm.bind(this)}
+                onCancel={this.handleGroupingCancel}
+              />
+            )}
           </div>
         </div>
         {onDragging && (
           <FieldTagShadow
-            data={onDragging}
+            data={selectedControl}
             startPosition={startPosition}
             startPoint={startPoint}
-            onCancel={this.handleDragCancel}
-            onConfirm={this.handleDragConfirm}
+            onCancel={this.handleDragOffBoard}
+            onConfirm={this.handleDragOnBoard}
             onFail={this.handleDragFail}
             board={this.board}
             parentGrid={parentGridIndex !== null ? grids[parentGridIndex] : null}

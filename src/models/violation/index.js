@@ -6,6 +6,7 @@ import scoreEffects from './score';
 import moneyEffects from './money';
 import staffViolationEffects from './staffviolation';
 import mathEffects from './math';
+import pushAuthEffects from './pushAuth';
 import defaultReducers from '../reducers';
 
 
@@ -19,6 +20,7 @@ export default {
     math: [],
     score: {},
     staffviolation: [],
+    pushauth: [],
   },
   effects: {
     ...fineLogEffects,
@@ -26,6 +28,7 @@ export default {
     ...ruleTypeEffects,
     ...moneyEffects,
     ...mathEffects,
+    ...pushAuthEffects,
     ...scoreEffects,
     ...staffViolationEffects,
   },

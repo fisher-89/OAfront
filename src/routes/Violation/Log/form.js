@@ -52,28 +52,39 @@ const { Option } = Select;
 export default class extends PureComponent {
   state = {
     selectrule: undefined,
-    money: null,
-    score: null,
+    moneyable: true,
+    scoreable: true,
   }
 
   componentWillReceiveProps(nextProps) {
     const { rule } = this.props;
-    const { setFields } = nextProps.form;
+    const { setFields, setFieldsValue } = nextProps.form;
     if (JSON.stringify(this.props.initialValue) !== JSON.stringify(nextProps.initialValue)) {
       const midkey = { ...nextProps.initialValue.rules }.type_id;
       this.setState({ selectrule: midkey ? rule.filter(item => `${item.type_id}` === `${midkey}`) : [] });
     }
-
     if (JSON.stringify(this.props.initialValue) !== JSON.stringify(nextProps.initialValue)) {
-      this.setState({ money: nextProps.initialValue.money, score: nextProps.initialValue.score });
+      setFieldsValue({ money: nextProps.initialValue.money, score: nextProps.initialValue.score });
+      this.setState({ moneyable: true, scoreable: true });
     } else if (JSON.stringify(this.props.money) !== JSON.stringify(nextProps.money) ||
     JSON.stringify(this.props.score) !== JSON.stringify(nextProps.score)) {
       if (({ ...nextProps.money.money } || {}).errors ||
       ({ ...nextProps.score.score } || {}).errors) {
-        this.setState({ money: null, score: null });
+        setFieldsValue({ money: null, score: null });
+        this.setState({ moneyable: true, scoreable: true });
         setFields({ violate_at: { value: null, errors: [new Error('违纪日期 必须早于现在!')] } });
+      } else if (nextProps.money.money === 'CustomSettings' && nextProps.score.score !== 'CustomSettings') {
+        this.setState({ moneyable: false, scoreable: true });
+        setFieldsValue({ money: null, score: nextProps.score.score });
+      } else if (nextProps.money.money !== 'CustomSettings' && nextProps.score.score === 'CustomSettings') {
+        this.setState({ moneyable: true, scoreable: false });
+        setFieldsValue({ money: nextProps.money.money, score: null });
+      } else if (nextProps.money.money === 'CustomSettings' && nextProps.score.score === 'CustomSettings') {
+        this.setState({ moneyable: false, scoreable: false });
+        setFieldsValue({ money: null, score: null });
       } else {
-        this.setState({ money: nextProps.money.money, score: nextProps.score.score });
+        this.setState({ moneyable: true, scoreable: true });
+        setFieldsValue({ money: nextProps.money.money, score: nextProps.score.score });
       }
     }
   }
@@ -85,19 +96,19 @@ export default class extends PureComponent {
       staff_sn: 'staff',
       billing_name: 'billing',
       billing_sn: 'billing',
+      score: 'score',
+      money: 'money',
+
     });
   }
 
   handleSubmit = (values) => {
     const { dispatch, initialValue, onCancel } = this.props;
-    const { money, score } = this.state;
     const params = {
       ...initialValue,
       ...values,
       ...values.billing,
       ...values.staff,
-      money,
-      score,
       has_paid: values.has_paid ? 1 : 0,
       sync_point: values.sync_point ? 1 : 0,
     };
@@ -119,7 +130,7 @@ export default class extends PureComponent {
   clear = () => {
     const { rule, initialValue } = this.props;
     const midkey = { ...initialValue.rules }.type_id || null;
-    this.setState({ money: null, score: null });
+    this.setState({ moneyable: true, scoreable: true });
     if (initialValue) {
       this.setState({ selectrule: rule.filter(item => `${item.type_id}` === `${midkey}`) });
     } else {
@@ -161,15 +172,16 @@ export default class extends PureComponent {
        ruleType,
        validateFields,
      } = this.props;
-     const { selectrule, money, score } = this.state;
+     const { selectrule, moneyable, scoreable } = this.state;
      const staffChoice = !!initialValue.id;
      const { getFieldDecorator } = this.props.form;
      const payTrue = { ...initialValue }.has_paid === 1;
      return (
        <OAModal
-         title="编辑大爱"
+         title="大爱"
          visible={visible}
          loading={loading}
+         actionType={initialValue.id !== undefined}
          onCancel={() => onCancel(false)}
          onSubmit={validateFields(this.handleSubmit)}
          afterClose={this.clear}
@@ -199,6 +211,8 @@ export default class extends PureComponent {
                {getFieldDecorator('violate_at', {
                 initialValue: initialValue.violate_at || undefined,
               })(<DatePicker
+                disabled={staffChoice}
+                allowClear={false}
                 disabledDate={this.disabledDate}
               />)}
              </FormItem>
@@ -210,6 +224,7 @@ export default class extends PureComponent {
                 initialValue: { ...initialValue.rules }.type_id || undefined,
               })(
                 <Select
+                  disabled={staffChoice}
                   onSelect={this.selectRuleType}
                 >
                   {ruleType.map(item => (
@@ -229,7 +244,9 @@ export default class extends PureComponent {
                {getFieldDecorator('rule_id', {
                 initialValue: { ...initialValue }.rule_id || undefined,
               })(
-                <Select >
+                <Select
+                  disabled={staffChoice}
+                >
                   {(selectrule || []).map(item => (
                     <Option key={item.id} value={item.id}>
                       {item.name}
@@ -244,13 +261,25 @@ export default class extends PureComponent {
          <Row>
            <Col {...colSpan}>
              <FormItem label="大爱金额" {...formItemLayout}>
-               {money}
+               {getFieldDecorator('money', {
+              initialValue: initialValue.money || null,
+              })(
+                <Input
+                  disabled={moneyable}
+                />
+              )}
              </FormItem>
            </Col>
 
            <Col {...colSpan}>
              <FormItem label="分值" {...formItemLayout}>
-               {score}
+               {getFieldDecorator('score', {
+              initialValue: initialValue.score || null,
+              })(
+                <Input
+                  disabled={scoreable}
+                />
+              )}
              </FormItem>
            </Col>
          </Row>
@@ -299,6 +328,7 @@ export default class extends PureComponent {
                 initialValue: initialValue.billing || [],
               })(
                 <SearchTable.Staff
+                  disabled={staffChoice}
                   name={{
                     billing_sn: 'staff_sn',
                     billing_name: 'realname',
@@ -315,6 +345,8 @@ export default class extends PureComponent {
                {getFieldDecorator('billing_at', {
                 initialValue: initialValue.billing_at || moment().format('YYYY-MM-DD'),
               })(<DatePicker
+                disabled={staffChoice}
+                allowClear={false}
                 disabledDate={this.disabledDate}
               />)}
              </FormItem>
