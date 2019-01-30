@@ -124,23 +124,9 @@ class MobileTemplate extends Component {
 
   handleDragConfirm = (data) => {
     let { fields, grids } = this.props;
-    console.log('this.props', this.props);
     const { form } = this.props;
     const { parentGridIndex } = this.state;
     this.state.onDragging = false;
-    // let isCancle = false;
-    // [...fields,...grids].filter(item=>typeof item.x==='number').sort(compare("y"))
-    //   .map((item)=>{
-    //     if(item.y<data.y && data.y<item.y+item.row &&item.key !== data.key){
-    //       // this.handleDragCancel(data)
-    //       isCancle = true;
-    //       return item;
-    //     }})
-    // if(isCancle && parentGridIndex === null){
-    //   setFilds(fields,grids,form);
-    //   this.state.parentGridIndex = null;
-    //   return void 0;
-    // }
 
     if (parentGridIndex !== null) {
       const results = handleChildsort(data, grids, parentGridIndex);
@@ -227,7 +213,6 @@ class MobileTemplate extends Component {
       childDirection,
       childdataindex,
       activeKeyoption } = this.state;
-    // const option = parentGridIndex===null?{}:{activeKey:grids[parentGridIndex].key};
     return (
       <Tabs
         className={styles.childtemplatetabs}

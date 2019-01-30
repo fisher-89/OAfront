@@ -12,7 +12,7 @@ export function compare(property) {
 export function handleSort(data, fieldsData, gridsData) {
   const list = makeTagarray(fieldsData, gridsData);
   list.splice(data.mobile_y, 0, data);
-  for (const item in list) { // 删除操作
+  for (let item = 0; item < list.length; item += 1) { // 删除操作
     if (list[item].key === data.key && list[item].mobile_y !== data.mobile_y) {
       list.splice(item, 1);
     }
@@ -21,7 +21,7 @@ export function handleSort(data, fieldsData, gridsData) {
     list[item].mobile_y = item;
   }
   for (let item = 0; item < [...fieldsData, ...gridsData].length; item += 1) {
-    for (const i in list) {
+    for (let i = 0; i < list.length; i += 1) {
       if (list[i].key === [...fieldsData, ...gridsData][item].key) {
         if ('fields' in list[i]) {
           gridsData.splice(gridsData.indexOf([...fieldsData, ...gridsData][item]), 1, list[i]);
@@ -40,7 +40,7 @@ export function handleChildsort(data, gridsData, parentGridIndex) {
   const field = typeof parentGridIndex === 'number' ? gridsData[parentGridIndex].fields : parentGridIndex.fields;
   const list = makeTagarray(field);
   list.splice(data.mobile_y, 0, data);
-  for (const item in list) { // 删除操作
+  for (let item = 0; item < list.length; item += 1) { // 删除操作
     if (list[item].key === data.key && list[item].mobile_y !== data.mobile_y) {
       list.splice(item, 1);
     }
@@ -49,7 +49,7 @@ export function handleChildsort(data, gridsData, parentGridIndex) {
     list[item].mobile_y = item;
   }
   for (let item = 0; item < field.length; item += 1) {
-    for (const i in list) {
+    for (let i = 0; i < list.length; i += 1) {
       if (list[i].key === field[item].key) {
         field[item].mobile_y = list[i].mobile_y;
       }
