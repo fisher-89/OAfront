@@ -1,5 +1,5 @@
 export default function (group, fields, grids, groups) {
-  if (group.top === group.bottom) return false;
+  // if (group.top === group.bottom) return false;
   const fieldsInGroup = [];
   let available = true;
   const insideCell = getInsideCell(group);

@@ -136,8 +136,9 @@ export default class extends Component {
     if (x !== right || y !== bottom) {
       this.state.right = x;
       this.state.bottom = y;
+      const overMinSize = y - this.state.top >= 2 && x - this.state.left >= 4;
       const insideFields = fetchInsideFields(this.fetchPosition(), fields, grids, fieldGroups);
-      this.setState({ available: !!insideFields });
+      this.setState({ available: insideFields && overMinSize });
     }
   }
 

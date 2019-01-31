@@ -5,7 +5,7 @@ export default { top: topResize, bottom: bottomResize, left: leftResize, right: 
 
 function topResize(data, y) {
   const row = fetchRow.call(this, y);
-  if (row !== data.top && row < data.bottom) {
+  if (row !== data.top && row < data.bottom - 1) {
     const origin = data.top;
     data.top = row;
     const insideField = fetchInsideFields.call(this, data);
@@ -19,7 +19,7 @@ function topResize(data, y) {
 
 function bottomResize(data, y) {
   const row = fetchRow.call(this, y);
-  if (row !== data.bottom && row > data.top) {
+  if (row !== data.bottom && row > data.top + 1) {
     const origin = data.bottom;
     data.bottom = row;
     const insideField = fetchInsideFields.call(this, data);
@@ -33,7 +33,7 @@ function bottomResize(data, y) {
 
 function leftResize(data, x) {
   const col = fetchCol.call(this, x);
-  if (col !== data.left && col < data.right) {
+  if (col !== data.left && col < data.right - 3) {
     const origin = data.left;
     data.left = col;
     const insideField = fetchInsideFields.call(this, data);
@@ -47,7 +47,7 @@ function leftResize(data, x) {
 
 function rightResize(data, x) {
   const col = fetchCol.call(this, x);
-  if (col !== data.right && col > data.left) {
+  if (col !== data.right && col > data.left + 3) {
     const origin = data.right;
     data.right = col;
     const insideField = fetchInsideFields.call(this, data);
