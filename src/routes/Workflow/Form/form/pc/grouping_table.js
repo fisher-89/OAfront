@@ -56,6 +56,8 @@ export default class extends Component {
   }
 
   cellSize = 61;
+  offsetX = 0;
+  offsetY = 0;
 
   /**
    * 鼠标拖拽
