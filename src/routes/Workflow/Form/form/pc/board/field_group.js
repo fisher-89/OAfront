@@ -91,7 +91,7 @@ export default class extends Component {
         <div className={`${styles.header} is-control`} onMouseDown={this.mouseDown}>
           {data.title}
         </div>
-        <div className={styles.shadow} />
+        {!isSelected && <div className={styles.shadow} />}
         <div
           className={isSelected ? styles.borderSelected : styles.border}
           style={{ top: 0, width: '100%' }}
