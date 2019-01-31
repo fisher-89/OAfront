@@ -11,7 +11,7 @@ function checkField(data, newData, controls, grid = null) {
       response = false;
     }
   });
-  if (response) {
+  if (response && !grid) {
     fieldGroups.forEach((item) => {
       if (insideGroup(newData, item) === undefined) {
         response = false;

@@ -85,11 +85,9 @@ class PCTemplate extends Component {
   }
 
   handleCancelSelect = (e) => {
-    const controlReg = /__clickBoard(Selected)?___/;
-    const resizeReg = /__(top|bottom|left|right)Resize___/;
+    const controlReg = /is-control/;
     const tagReg = /ant-tag/;
     if (controlReg.test(e.target.className)) return false;
-    if (resizeReg.test(e.target.className)) return false;
     if (tagReg.test(e.target.className)) return false;
     if (e.button === 0) this.setState({ selectedControl: null });
   }

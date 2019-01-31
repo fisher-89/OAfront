@@ -31,14 +31,16 @@ function topResize(data, grid, y) {
         newRow = (data.y + data.row) - newY;
       }
     });
-    fieldGroups.forEach((item) => {
-      const inside = insideGroup(data, item);
-      const newData = { ...data, y: newY, row: newRow };
-      if (!inside && (inside !== insideGroup(newData, item))) {
-        newY = item.bottom;
-        newRow = (data.y + data.row) - newY;
-      }
-    });
+    if (!grid) {
+      fieldGroups.forEach((item) => {
+        const inside = insideGroup(data, item);
+        const newData = { ...data, y: newY, row: newRow };
+        if (!inside && (inside !== insideGroup(newData, item))) {
+          newY = item.bottom;
+          newRow = (data.y + data.row) - newY;
+        }
+      });
+    }
   }
   if (newY !== data.y) submitResize.call(this, data, grid, { y: newY, row: newRow });
 }
@@ -61,12 +63,14 @@ function bottomResize(data, grid, y) {
         newRow = cell.y - data.y;
       }
     });
-    fieldGroups.forEach((item) => {
-      const inside = insideGroup(data, item);
-      if (inside && item.bottom < data.y + newRow) {
-        newRow = item.bottom - data.y;
-      }
-    });
+    if (!grid) {
+      fieldGroups.forEach((item) => {
+        const inside = insideGroup(data, item);
+        if (inside && item.bottom < data.y + newRow) {
+          newRow = item.bottom - data.y;
+        }
+      });
+    }
   }
   if (newRow !== data.row) submitResize.call(this, data, grid, { row: newRow });
 }
@@ -84,17 +88,19 @@ function leftResize(data, grid, x) {
         newCol = (data.x + data.col) - newX;
       }
     });
-    fieldGroups.forEach((item) => {
-      const inside = insideGroup(data, item);
-      const newData = { ...data, x: newX, col: newCol };
-      if (inside && item.left > newX) {
-        newX = item.left;
-        newCol = (data.x + data.col) - newX;
-      } else if (!inside && (inside !== insideGroup(newData, item))) {
-        newX = item.right;
-        newCol = (data.x + data.col) - newX;
-      }
-    });
+    if (!grid) {
+      fieldGroups.forEach((item) => {
+        const inside = insideGroup(data, item);
+        const newData = { ...data, x: newX, col: newCol };
+        if (inside && item.left > newX) {
+          newX = item.left;
+          newCol = (data.x + data.col) - newX;
+        } else if (!inside && (inside !== insideGroup(newData, item))) {
+          newX = item.right;
+          newCol = (data.x + data.col) - newX;
+        }
+      });
+    }
   }
   if (newX !== data.x) submitResize.call(this, data, grid, { x: newX, col: newCol });
 }
@@ -110,15 +116,17 @@ function rightResize(data, grid, x) {
         newCol = cell.x - data.x;
       }
     });
-    fieldGroups.forEach((item) => {
-      const inside = insideGroup(data, item);
-      const newData = { ...data, col: newCol };
-      if (inside && item.right < data.x + newCol) {
-        newCol = item.right - data.x;
-      } else if (!inside && (inside !== insideGroup(newData, item))) {
-        newCol = item.left - data.x;
-      }
-    });
+    if (!grid) {
+      fieldGroups.forEach((item) => {
+        const inside = insideGroup(data, item);
+        const newData = { ...data, col: newCol };
+        if (inside && item.right < data.x + newCol) {
+          newCol = item.right - data.x;
+        } else if (!inside && (inside !== insideGroup(newData, item))) {
+          newCol = item.left - data.x;
+        }
+      });
+    }
   }
   if (newCol !== data.col) submitResize.call(this, data, grid, { col: newCol });
 }

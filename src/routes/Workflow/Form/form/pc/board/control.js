@@ -98,22 +98,22 @@ export default class Control extends Component {
             {(isGrid || data.is_checkbox || typesWithMultipleRow.indexOf(data.type) !== -1) ? (
               <React.Fragment>
                 <div
-                  className={styles.topResize}
+                  className={`${styles.topResize} is-control`}
                   onMouseDown={this.handleResize('top')}
                 />
                 <div
-                  className={styles.bottomResize}
+                  className={`${styles.bottomResize} is-control`}
                   onMouseDown={this.handleResize('bottom')}
                 />
               </React.Fragment>
             ) : null}
             <React.Fragment>
               <div
-                className={styles.leftResize}
+                className={`${styles.leftResize} is-control`}
                 onMouseDown={this.handleResize('left')}
               />
               <div
-                className={styles.rightResize}
+                className={`${styles.rightResize} is-control`}
                 onMouseDown={this.handleResize('right')}
               />
             </React.Fragment>
@@ -131,12 +131,13 @@ export default class Control extends Component {
     const isSelected = this.checkSelected();
     return (
       <div
-        className={`${styles.control} ${isSelected ? styles.selected : ''}`}
+        className={`${styles.control} is-control`}
         style={{
           width: `${(data.col * 61) - 1}px`,
           height: `${(data.row * 61) - 1}px`,
           top: `${(data.y * 61) + 1}px`,
           left: `${(data.x * 61) + 1}px`,
+          zIndex: isSelected ? 1 : 0,
         }}
       >
         {this.makeContent()}

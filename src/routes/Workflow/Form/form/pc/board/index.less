@@ -39,9 +39,24 @@
       position: absolute;
       transition: left 0.05s ease, width 0.05s ease, top 0.2s ease, height 0.2s ease;
       .header {
-        height: 61px;
+        height: 62px;
         background-color: #fff;
         border-bottom: 1px solid #999;
+      }
+      .border {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        background-color: #999;
+        top: 0;
+      }
+      .borderSelected {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        background-color: #1890ff;
+        top: 0;
+        transition: top 0.2s ease, height 0.2s ease;
       }
       .topResize, .bottomResize, .leftResize, .rightResize {
         width: 7px;
@@ -50,38 +65,32 @@
         background-color: #fff;
         position: absolute;
         z-index: 5;
+        margin-top: -4px;
+        transition: top 0.2s ease;
       }
       .topResize {
         cursor: ns-resize;
         margin-left: -4px;
         left: 50%;
-        top: -4px;
+        top: 1px;
       }
       .bottomResize {
         cursor: ns-resize;
         margin-left: -4px;
         left: 50%;
-        bottom: -4px;
       }
       .leftResize {
         cursor: ew-resize;
-        margin-top: -4px;
-        top: 50%;
-        left: -4px;
+        left: -3px;
       }
       .rightResize {
         cursor: ew-resize;
-        margin-top: -4px;
-        top: 50%;
-        right: -4px;
+        right: -3px;
       }
     }
     .controls {
       position: absolute;
       height: 0;
-      .control.selected {
-        z-index: 1;
-      }
       .control {
         position: absolute;
         background-color: #fff;
