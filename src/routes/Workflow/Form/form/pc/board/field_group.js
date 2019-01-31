@@ -78,30 +78,35 @@ export default class extends Component {
     const { data, selectedControl } = this.props;
     const { resizing } = this.state;
     const isSelected = selectedControl && selectedControl === data;
-    const height = ((data.bottom - data.top) * 61) + 1;
     return (
       <div
-        className={`${styles.fieldGroup} is-control`}
+        className={styles.fieldGroup}
         style={{
           top: `${data.top * 61}px`,
           left: `${data.left * 61}px`,
           width: `${((data.right - data.left) * 61) + 1}px`,
-          zIndex: isSelected ? 1 : 0,
+          height: `${((data.bottom - data.top) * 61) + 1}px`,
         }}
       >
-        <div className={styles.header} onMouseDown={this.mouseDown}>{data.title}</div>
-        <div className={isSelected ? styles.borderSelected : styles.border} style={{ width: '100%' }} />
+        <div className={`${styles.header} is-control`} onMouseDown={this.mouseDown}>
+          {data.title}
+        </div>
+        <div className={styles.shadow} />
         <div
           className={isSelected ? styles.borderSelected : styles.border}
-          style={{ left: 0, height: `${height}px` }}
+          style={{ top: 0, width: '100%' }}
         />
         <div
           className={isSelected ? styles.borderSelected : styles.border}
-          style={{ right: 0, height: `${height}px` }}
+          style={{ top: 0, left: 0, height: '100%' }}
         />
         <div
           className={isSelected ? styles.borderSelected : styles.border}
-          style={{ top: `${height - 1}px`, width: '100%' }}
+          style={{ top: 0, right: 0, height: '100%' }}
+        />
+        <div
+          className={isSelected ? styles.borderSelected : styles.border}
+          style={{ bottom: 0, width: '100%' }}
         />
         {isSelected && (
           <React.Fragment>
@@ -112,17 +117,14 @@ export default class extends Component {
             <div
               className={`${styles.bottomResize} is-control`}
               onMouseDown={this.handleResize('bottom')}
-              style={{ top: `${height}px` }}
             />
             <div
               className={`${styles.leftResize} is-control`}
               onMouseDown={this.handleResize('left')}
-              style={{ top: `${height / 2}px` }}
             />
             <div
               className={`${styles.rightResize} is-control`}
               onMouseDown={this.handleResize('right')}
-              style={{ top: `${height / 2}px` }}
             />
           </React.Fragment>
         )}

@@ -137,7 +137,7 @@ export default class Control extends Component {
           height: `${(data.row * 61) - 1}px`,
           top: `${(data.y * 61) + 1}px`,
           left: `${(data.x * 61) + 1}px`,
-          zIndex: isSelected ? 1 : 0,
+          zIndex: isSelected ? 2 : null,
         }}
       >
         {this.makeContent()}
