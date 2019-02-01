@@ -12,7 +12,17 @@ class GridTag extends Component {
   }
 
   render() {
-    const { data, onDrag, onSelect, selectedControl, unfolded, toggleGridField } = this.props;
+    const {
+      data,
+      index,
+      onDrag,
+      onSelect,
+      selectedControl,
+      unfolded,
+      toggleGridField,
+    } = this.props;
+    const halfGridFields = data.fields.length / 2;
+    const fieldsTop = index >= halfGridFields ? ((index + 0.5) - halfGridFields) * 30 : 0;
     return (
       <div>
         <FieldTag
@@ -21,39 +31,35 @@ class GridTag extends Component {
           onSelect={onSelect}
           selectedControl={selectedControl}
         />
-        <div>
-          <Icon
-            type={unfolded ? 'minus-circle' : 'plus-circle-o'}
-            className={styles.toggleButton}
-            onClick={() => {
-              toggleGridField(data.key);
-            }}
-          />
-          {unfolded && (
-            <React.Fragment>
-              <div className={styles.horizontalLine} />
-              <div className={styles.gridFields}>
-                <div className={styles.verticalLine} />
-                {data.fields.map((field) => {
-                  return (
-                    <div key={`${data.key}.${field.key}`}>
-                      <FieldTag
-                        data={field}
-                        onDrag={(p1, p2, p3) => {
-                          onDrag(p1, p2, p3, data);
-                        }}
-                        onSelect={(_) => {
-                          onSelect(_, data);
-                        }}
-                        selectedControl={selectedControl}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-            </React.Fragment>
-          )}
-        </div>
+        <Icon
+          type={unfolded ? 'minus-circle' : 'plus-circle-o'}
+          className={styles.toggleButton}
+          onClick={() => {
+            toggleGridField(data.key);
+          }}
+        />
+        {unfolded && <div className={styles.horizontalLine} />}
+        {unfolded && (
+          <div className={styles.gridFields} style={{ top: `${fieldsTop}px` }}>
+            <div className={styles.verticalLine} />
+            {data.fields.map((field) => {
+              return (
+                <div key={`${data.key}.${field.key}`}>
+                  <FieldTag
+                    data={field}
+                    onDrag={(p1, p2, p3) => {
+                      onDrag(p1, p2, p3, data);
+                    }}
+                    onSelect={(_) => {
+                      onSelect(_, data);
+                    }}
+                    selectedControl={selectedControl}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     );
   }

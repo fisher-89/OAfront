@@ -5,6 +5,7 @@
   width: @board_width + @ew_padding*2;
   position: relative;
   .scroller {
+    position: relative;
     width: 100%;
     background-color: #fefefe;
     .line {
@@ -18,6 +19,7 @@
       transition: top 0.2s ease, opacity 0.5s ease;
       .leftScale, .rightScale {
         position: absolute;
+        cursor: pointer;
         width: @ew_padding + 1px;
         line-height: @cell;
         font-size: 24px;
@@ -140,7 +142,8 @@
     }
     .controls {
       position: absolute;
-      height: 0;
+      width: 100%;
+      height: 100%;
       .control {
         position: absolute;
         background-color: #fff;

@@ -98,7 +98,7 @@ class Line extends Component {
 
     return (
       <Dropdown
-        trigger={['contextMenu']}
+        trigger={['contextMenu', 'click']}
         overlay={this.contextMenu()}
         visible={dropdownVisible}
         onVisibleChange={(visible) => {

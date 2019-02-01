@@ -204,6 +204,7 @@ class Board extends Component {
       draggingGroup,
       selectedControl,
       onSelect,
+      onCancelSelect,
     } = this.props;
     const { lines } = this.state;
     const fieldsInGroup = draggingGroup ?
@@ -216,6 +217,7 @@ class Board extends Component {
             data={item}
             onDrag={onDragGroup}
             onSelect={onSelect}
+            onCancelSelect={onCancelSelect}
             onResize={this.handleGroupResize}
             onTitleChange={this.handleEditTitle}
             selectedControl={selectedControl}

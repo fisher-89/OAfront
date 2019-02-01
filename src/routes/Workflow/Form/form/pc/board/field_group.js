@@ -2,16 +2,15 @@ import React, { Component } from 'react';
 import styles from './index.less';
 
 export default class extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      resizing: false,
-      editing: false,
-      title: props.data.title,
-    };
+  state = {
+    resizing: false,
+    editing: false,
+    title: null,
   }
 
   mouseDown = (e) => {
+    const { editing } = this.state;
+    if (editing) return false;
     if (e.type === 'mousedown' && e.button !== 0) return false;
     const { className } = e.target;
     if (className.indexOf('Resize') !== -1) return false;
@@ -82,7 +81,10 @@ export default class extends Component {
   }
 
   editTitle = () => {
-    this.setState({ editing: true });
+    const { onCancelSelect, data } = this.props;
+    this.state.editing = true;
+    this.state.title = data.title || '请输入标题';
+    onCancelSelect();
   }
 
   handleEdit = (e) => {
@@ -91,14 +93,18 @@ export default class extends Component {
 
   confirmEdit = (e) => {
     const { onTitleChange, data } = this.props;
+    let { value } = e.target;
     this.state.editing = false;
-    onTitleChange(data, e.target.value);
+    this.state.title = null;
+    if (value === '请输入标题') value = '';
+    onTitleChange(data, value);
   }
 
   render() {
     const { data, selectedControl } = this.props;
     const { resizing, editing, title } = this.state;
     const isSelected = selectedControl && selectedControl === data;
+    console.log(data.title);
     return (
       <div
         className={styles.fieldGroup}
@@ -114,14 +120,20 @@ export default class extends Component {
           onMouseDown={this.mouseDown}
           onDoubleClick={this.editTitle}
         >
-          {editing ? (
-            <input
-              value={title}
-              onChange={this.handleEdit}
-              onBlur={this.confirmEdit}
-              autoFocus // eslint-disable-line jsx-a11y/no-autofocus
-            />
-          ) : data.title}
+          {editing ?
+            (
+              <input
+                value={title}
+                onChange={this.handleEdit}
+                onBlur={this.confirmEdit}
+                autoFocus // eslint-disable-line jsx-a11y/no-autofocus
+                onFocus={function (e) {
+                  e.target.select();
+                }}
+              />
+            ) :
+            (data.title || <span style={{ color: '#ccc' }}>请输入标题</span>)
+          }
         </div>
         {!isSelected && <div className={styles.shadow} />}
         <div

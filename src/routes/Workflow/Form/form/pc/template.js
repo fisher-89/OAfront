@@ -51,7 +51,7 @@ class PCTemplate extends Component {
 
   keyboardControl = (e) => {
     const { selectedControl } = this.state;
-    if (e.keyCode === 46) {
+    if (e.keyCode === 46 && selectedControl !== null) {
       this.deleteSelectedControl(selectedControl);
     }
   }
@@ -84,12 +84,15 @@ class PCTemplate extends Component {
     });
   }
 
-  handleCancelSelect = (e) => {
-    const controlReg = /is-control/;
-    const tagReg = /ant-tag/;
-    if (controlReg.test(e.target.className)) return false;
-    if (tagReg.test(e.target.className)) return false;
-    if (e.button === 0) this.setState({ selectedControl: null });
+  handleCancelSelect = (e = null) => {
+    if (e !== null) {
+      const controlReg = /is-control/;
+      const tagReg = /ant-tag/;
+      if (controlReg.test(e.target.className)) return false;
+      if (tagReg.test(e.target.className)) return false;
+      if (e.button !== 0) return false;
+    }
+    this.setState({ selectedControl: null });
   }
 
   deleteSelectedControl = (data) => {
@@ -204,13 +207,14 @@ class PCTemplate extends Component {
   makeGridOptions = () => {
     const { grids } = this.props;
     const { selectedGrid, selectedControl } = this.state;
-    return grids.map((grid) => {
+    return grids.map((grid, index) => {
       const { key } = grid;
       const unfolded = selectedGrid === key;
       return (
         <GridTag
           key={key}
           data={grid}
+          index={index}
           unfolded={unfolded}
           onDrag={this.handleDragStart}
           onSelect={this.handleSelect}
@@ -283,6 +287,7 @@ class PCTemplate extends Component {
               form={form}
               selectedControl={selectedControl}
               onSelect={this.handleSelect}
+              onCancelSelect={this.handleCancelSelect}
               onDrag={this.handleDragStart}
               onDragGroup={handleDragGroupStart.bind(this)}
               parentGrid={parentGridIndex !== null ? grids[parentGridIndex] : null}

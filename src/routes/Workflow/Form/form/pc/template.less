@@ -18,7 +18,7 @@
     flex: 0 0 auto;
   }
   .component {
-    width: 240px;
+    width: 260px;
     max-height: 900px;
     overflow: auto;
     margin-left: -20px;
@@ -34,30 +34,28 @@
       margin-bottom: 40px;
     }
     .grids {
-      :global {
-        .ant-tag {
-          float: left;
-        }
-      }
+      position: relative;
       > div {
         height: 30px;
-      }
-      > div > div {
         .toggleButton {
-          float: left;
+          position: absolute;
+          left: 96px;
           margin-top: 9px;
           margin-right: 4px;
           color: @template_primary_color;
         }
         .horizontalLine {
-          float: left;
+          position: absolute;
+          display: inline-block;
+          left: 114px;
           margin-top: 15px;
           border-top: 1px solid #bbb;
           width: 4px;
         }
         .gridFields {
-          float: left;
-          position: relative;
+          position: absolute;
+          display: inline-block;
+          left: 118px;
           padding-left: 4px;
           > div:after {
             content: "";
@@ -87,13 +85,9 @@
   }
   .component::-webkit-scrollbar {
     width: 3px;
-    height: 100%;
   }
   .component::-webkit-scrollbar-track {
     border-right: 1px solid #eee;
-  }
-  .component::-webkit-scrollbar-thumb {
-    background-color: #eee;
   }
   .template {
     padding: 37px 0;
