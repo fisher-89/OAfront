@@ -46,6 +46,19 @@
         background-color: #fff;
         border-bottom: 1px solid #999;
         position: absolute;
+        line-height: 60px;
+        font-weight: 700;
+        text-align: center;
+        color: #000;
+        input {
+          border: none;
+          height: 100%;
+          width: 100%;
+          text-align: center;
+          &:focus {
+            outline: none;
+          }
+        }
         &:hover {
           z-index: 2;
           & + .shadow {

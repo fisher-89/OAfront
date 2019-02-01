@@ -173,6 +173,7 @@ export default class extends Component {
   }
 
   render() {
+    const { data } = this.props;
     const { left, top, right, bottom, available, isDrag } = this.state;
     return (
       <div
@@ -194,7 +195,7 @@ export default class extends Component {
                 cursor: isDrag ? 'default' : 'inherit',
               }}
             >
-              <div className={styles.header} />
+              <div className={styles.header}>{data ? data.title : ''}</div>
             </div>
           )}
         </div>

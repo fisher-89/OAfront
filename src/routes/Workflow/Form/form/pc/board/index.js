@@ -173,6 +173,12 @@ class Board extends Component {
     }
   }
 
+  handleEditTitle = (data, newTitle) => {
+    const { fieldGroups, form } = this.props;
+    data.title = newTitle;
+    form.setFieldsValue({ field_groups: fieldGroups });
+  }
+
   makeLines = () => {
     const { lines } = this.state;
     return lines.map((line, index) => {
@@ -211,6 +217,7 @@ class Board extends Component {
             onDrag={onDragGroup}
             onSelect={onSelect}
             onResize={this.handleGroupResize}
+            onTitleChange={this.handleEditTitle}
             selectedControl={selectedControl}
           />
         );

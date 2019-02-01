@@ -2,7 +2,14 @@ import React, { Component } from 'react';
 import styles from './index.less';
 
 export default class extends Component {
-  state = { resizing: false }
+  constructor(props) {
+    super(props);
+    this.state = {
+      resizing: false,
+      editing: false,
+      title: props.data.title,
+    };
+  }
 
   mouseDown = (e) => {
     if (e.type === 'mousedown' && e.button !== 0) return false;
@@ -74,9 +81,23 @@ export default class extends Component {
     return { x, y };
   }
 
+  editTitle = () => {
+    this.setState({ editing: true });
+  }
+
+  handleEdit = (e) => {
+    this.setState({ title: e.target.value });
+  }
+
+  confirmEdit = (e) => {
+    const { onTitleChange, data } = this.props;
+    this.state.editing = false;
+    onTitleChange(data, e.target.value);
+  }
+
   render() {
     const { data, selectedControl } = this.props;
-    const { resizing } = this.state;
+    const { resizing, editing, title } = this.state;
     const isSelected = selectedControl && selectedControl === data;
     return (
       <div
@@ -88,8 +109,19 @@ export default class extends Component {
           height: `${((data.bottom - data.top) * 61) + 1}px`,
         }}
       >
-        <div className={`${styles.header} is-control`} onMouseDown={this.mouseDown}>
-          {data.title}
+        <div
+          className={`${styles.header} is-control`}
+          onMouseDown={this.mouseDown}
+          onDoubleClick={this.editTitle}
+        >
+          {editing ? (
+            <input
+              value={title}
+              onChange={this.handleEdit}
+              onBlur={this.confirmEdit}
+              autoFocus // eslint-disable-line jsx-a11y/no-autofocus
+            />
+          ) : data.title}
         </div>
         {!isSelected && <div className={styles.shadow} />}
         <div
