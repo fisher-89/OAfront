@@ -17,11 +17,27 @@ body {
 
 body::-webkit-scrollbar {
   width: 5px;
-  height: 100%;
+  height: 5px;
 }
 
 body::-webkit-scrollbar-thumb {
   background-color: #666;
+}
+
+*::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+*::-webkit-scrollbar-track {
+  background-color: #fefefe;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
 }
 
 .globalSpin {
