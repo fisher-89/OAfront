@@ -7,6 +7,7 @@ export default class extends Component {
     const { data } = this.props;
     return (
       <div className={styles.gridControl}>
+        <div className={styles.border} />
         <div className={styles.gridHeader}>
           {data.name}
         </div>
