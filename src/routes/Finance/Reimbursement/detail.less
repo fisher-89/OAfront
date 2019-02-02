@@ -2,37 +2,18 @@
 
 .detailClose {
   cursor: pointer;
-  border: 0;
-  background: transparent;
   position: absolute;
-  right: 0;
-  top: 0;
+  right: 16px;
+  top: 16px;
   z-index: 10;
-  font-weight: 700;
-  line-height: 1;
-  text-decoration: none;
   transition: color .3s;
   color: @text-color-secondary;
-  outline: 0;
-  padding: 0;
-
-  span {
-    display: block;
-    font-style: normal;
-    vertical-align: baseline;
-    text-align: center;
-    text-transform: none;
-    text-rendering: auto;
-    width: 56px;
-    height: 56px;
-    line-height: 56px;
-    font-size: @font-size-lg;
-
-    &:before {
-      content: "\e633";
-      display: block;
-      font-family: "anticon" !important;
-    }
+  text-align: center;
+  width: 24px;
+  height: 24px;
+  line-height: 28px;
+  &:hover {
+    color: @text-color;
   }
 }
 

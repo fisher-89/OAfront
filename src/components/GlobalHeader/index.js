@@ -4,8 +4,8 @@ import moment from 'moment';
 import groupBy from 'lodash/groupBy';
 import Debounce from 'lodash-decorators/debounce';
 import { Link } from 'dva/router';
-import NoticeIcon from '../NoticeIcon';
-import HeaderSearch from '../HeaderSearch';
+// import NoticeIcon from '../NoticeIcon';
+// import HeaderSearch from '../HeaderSearch';
 import styles from './index.less';
 
 const { Header } = Layout;
@@ -58,8 +58,14 @@ export default class GlobalHeader extends PureComponent {
 
   render() {
     const {
-      currentUser, collapsed, fetchingNotices, isMobile, logo,
-      onNoticeVisibleChange, onMenuClick, onNoticeClear,
+      currentUser,
+      collapsed,
+      // fetchingNotices,
+      isMobile,
+      logo,
+      // onNoticeVisibleChange,
+      onMenuClick,
+      // onNoticeClear,
     } = this.props;
     const menu = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
@@ -69,7 +75,7 @@ export default class GlobalHeader extends PureComponent {
         <Menu.Item key="logout"><Icon type="logout" />退出登录</Menu.Item>
       </Menu>
     );
-    const noticeData = this.getNoticeData();
+    // const noticeData = this.getNoticeData();
     return (
       <Header className={styles.header}>
         {isMobile && (
@@ -88,7 +94,7 @@ export default class GlobalHeader extends PureComponent {
           onClick={this.toggle}
         />
         <div className={styles.right}>
-          <HeaderSearch
+          {/* <HeaderSearch
             className={`${styles.action} ${styles.search}`}
             placeholder="站内搜索"
             dataSource={['搜索提示一', '搜索提示二', '搜索提示三']}
@@ -98,8 +104,8 @@ export default class GlobalHeader extends PureComponent {
             onPressEnter={(value) => {
               console.log('enter', value); // eslint-disable-line
             }}
-          />
-          <NoticeIcon
+          /> */}
+          {/* <NoticeIcon
             className={styles.action}
             count={currentUser.notifyCount}
             onItemClick={(item, tabProps) => {
@@ -128,7 +134,7 @@ export default class GlobalHeader extends PureComponent {
               emptyText="你已完成所有待办"
               emptyImage="https://gw.alipayobjects.com/zos/rmsportal/HsIsxMZiWKrNUavQUXqx.svg"
             />
-          </NoticeIcon>
+          </NoticeIcon> */}
           {currentUser.realname ? (
             <Dropdown overlay={menu}>
               <span className={`${styles.action} ${styles.account}`}>

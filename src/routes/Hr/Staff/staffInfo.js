@@ -33,6 +33,7 @@ export default class StaffInfo extends PureComponent {
     const { dispatch, data } = this.props;
     dispatch({ type: 'staffs/fetchFormatLog', payload: { id: data.staff_sn } });
   }
+
   render() {
     const { data, loading, list } = this.props;
     const timelist = list[data.staff_sn];
@@ -64,36 +65,37 @@ export default class StaffInfo extends PureComponent {
                     }
                     description={
                       <div className={styles.flexBox}>
-                        <p>编号：{ data.staff_sn }</p>
-                        <p><Icon type="idcard" />&nbsp;&nbsp;{ data.id_card_number }</p>
+                        <p>编号：{data.staff_sn}</p>
+                        <p><Icon type="idcard" />&nbsp;&nbsp;{data.id_card_number}</p>
                       </div>
                     }
                   />
                   <div className={styles.tags}>
-                    标签: { !isEmpty(data.tags) ? (data.tags).map(item => (
+                    标签：
+                    {!isEmpty(data.tags) ? (data.tags).map(item => (
                       <Tag color={item.category.color} key={item.id}>{item.name}</Tag>
-                    )) : defaultVal }
+                    )) : defaultVal}
                   </div>
                   <Card className={styles.card} bodyStyle={{ padding: '20px' }}>
-                    <p>状态：{ data.status.name }</p>
-                    <p>品牌：{ data.brand.name }</p>
-                    <p>职位：{ data.position.name }</p>
+                    <p>状态：{data.status.name}</p>
+                    <p>品牌：{data.brand.name}</p>
+                    <p>职位：{data.position.name}</p>
                     <div className={styles.item}>
                       <label>部门：</label>
-                      <div>{ data.department.full_name || defaultVal }</div>
+                      <div>{data.department.full_name || defaultVal}</div>
                     </div>
                   </Card>
                   <Card className={styles.card} bodyStyle={{ padding: '20px' }}>
-                    <p className={styles.splitBox}>微信：{ data.wechat_number || defaultVal }</p>
-                    <p className={styles.splitBox}>生日：{ birthday || defaultVal }</p>
-                    <p className={styles.splitBox}>民族：{ data.national || defaultVal }</p>
-                    <p className={styles.splitBox}>学历：{ data.education || defaultVal }</p>
-                    <p className={styles.splitBox}>政治面貌：{ data.politics || defaultVal }</p>
-                    <p className={styles.splitBox}>籍贯：{ data.native_place || defaultVal }</p>
-                    <p className={styles.splitBox}>婚姻状况：{ data.marital_status || defaultVal }</p>
-                    <p className={styles.splitBox}>身高/体重：{ `${data.height || 0}cm` }/{ `${data.weight || 0}kg` }</p>
-                    <p>银行账户：{ data.account_number || defaultVal }</p>
-                    <p>紧急联系人：{ data.concat_name } ({ data.concat_type }) { data.concat_tel }</p>
+                    <p className={styles.splitBox}>微信：{data.wechat_number || defaultVal}</p>
+                    <p className={styles.splitBox}>生日：{birthday || defaultVal}</p>
+                    <p className={styles.splitBox}>民族：{data.national || defaultVal}</p>
+                    <p className={styles.splitBox}>学历：{data.education || defaultVal}</p>
+                    <p className={styles.splitBox}>政治面貌：{data.politics || defaultVal}</p>
+                    <p className={styles.splitBox}>籍贯：{data.native_place || defaultVal}</p>
+                    <p className={styles.splitBox}>婚姻状况：{data.marital_status || defaultVal}</p>
+                    <p className={styles.splitBox}>身高/体重：{`${data.height || 0}cm`}/{`${data.weight || 0}kg`}</p>
+                    <p>银行账户：{data.account_number || defaultVal}</p>
+                    <p>紧急联系人：{data.concat_name} ({data.concat_type}) {data.concat_tel}</p>
                     <div className={styles.item}>
                       <label>现居地址：</label>
                       <div>
@@ -134,20 +136,20 @@ export default class StaffInfo extends PureComponent {
                     </div>
                   </Card>
                   <Card className={styles.card} bodyStyle={{ padding: '20px' }}>
-                    <p>钉钉编号：{ data.dingtalk_number || defaultVal }</p>
-                    <p>招聘人员：{ data.recruiter_name || defaultVal }</p>
+                    <p>钉钉编号：{data.dingtalk_number || defaultVal}</p>
+                    <p>招聘人员：{data.recruiter_name || defaultVal}</p>
                     <div className={styles.item}>
                       <label>备注：</label>
-                      <div>{ data.remark || defaultVal }</div>
+                      <div>{data.remark || defaultVal}</div>
                     </div>
                   </Card>
                   <Card className={styles.card} bodyStyle={{ padding: '20px' }}>
-                    <p>店铺：{ (data.shop || {}).name || defaultVal }</p>
-                    <p>店长：{ (data.shop || {}).manager_name || defaultVal }</p>
-                    <p>店长手机号：{ (data.shop || {}).manager_mobile || defaultVal }</p>
+                    <p>店铺：{(data.shop || {}).name || defaultVal}</p>
+                    <p>店长：{(data.shop || {}).manager_name || defaultVal}</p>
+                    <p>店长手机号：{(data.shop || {}).manager_mobile || defaultVal}</p>
                     <div className={styles.item}>
                       <label>地址：</label>
-                      <div>{ (data.shop || {}).real_address || defaultVal }</div>
+                      <div>{(data.shop || {}).real_address || defaultVal}</div>
                     </div>
                   </Card>
                 </Card>
@@ -160,11 +162,18 @@ export default class StaffInfo extends PureComponent {
               <div key="userLog">
                 <Tabs defaultActiveKey="timeline">
                   <TabPane key="timeline" tab="时间轴" style={{ marginLeft: 10 }}>
-                    <Timeline pending="待记录..." pendingDot={<Icon type="flag" style={{ fontSize: '16px' }} />} reverse={false}>
+                    <Timeline
+                      pending="待记录..."
+                      pendingDot={<Icon type="flag" style={{ fontSize: '16px' }} />}
+                      reverse={false}
+                    >
                       {timelist && timelist.map((item) => {
                         const change = item.changes;
                         return (
-                          <Timeline.Item dot={<Icon type="clock-circle-o" style={{ fontSize: '16px' }} />} key={item.id}>
+                          <Timeline.Item
+                            dot={<Icon type="clock-circle-o" style={{ fontSize: '16px' }} />}
+                            key={item.id}
+                          >
                             {item.operation_type} {!isEmpty(change) ? ` (${change[0] ? change[0] : '无'} => ${change[1] ? change[1] : '无'})` : ''} {item.created_at}
                           </Timeline.Item>
                         );
@@ -173,16 +182,20 @@ export default class StaffInfo extends PureComponent {
                   </TabPane>
                   {
                     checkAuthority(118) ? (
-                      <TabPane key="changeLog" tab="变更记录" >
+                      <TabPane key="changeLog" tab="变更记录">
                         <ChangeLog staffSn={data.staff_sn} />
                       </TabPane>
                     ) : null
                   }
-                  <TabPane key="userAuth" tab="员工权限" >
-                    <StaffAuth data={data} />
-                  </TabPane>
+                  {
+                    checkAuthority(69) ? (
+                      <TabPane key="userAuth" tab="员工权限">
+                        <StaffAuth data={data} />
+                      </TabPane>
+                    ) : null
+                  }
                   {/* <TabPane key="relatives" tab="关系网" /> */}
-                  <TabPane key="bespoke" tab="预约操作" >
+                  <TabPane key="bespoke" tab="预约操作">
                     <Bespoke staffSn={data.staff_sn} />
                   </TabPane>
                 </Tabs>

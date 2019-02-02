@@ -424,7 +424,7 @@ export default class extends PureComponent {
     const { brand, department, position } = this.props;
     return [
       {
-        width: 90,
+        width: 91,
         sorter: true,
         title: '编号',
         fixed: 'left',

@@ -9,6 +9,7 @@ import {
   Popconfirm,
   Input,
   Modal,
+  Icon,
 } from 'antd';
 import { connect } from 'dva';
 import RcViewer from 'rc-viewer';
@@ -326,7 +327,7 @@ export default class extends Component {
       return (
         <div>
           <div>
-            <button className={styles.detailClose} onClick={onClose}><span /></button>
+            <Icon className={styles.detailClose} onClick={onClose} type="close" />
             <h2>
               {info.description}&nbsp;
               <small style={{ color: '#8c8c8c' }}>{info.reim_sn}</small>
