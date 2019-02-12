@@ -37,7 +37,7 @@ export default {
       // yield put(routerRedux.push('/user/login'));
       // Login out after permission changes to admin or user
       // The refresh will automatically redirect to the login page
-      const redirectPath = encodeURI(`${OA_PATH}oauth/authorize?client_id=${OA_CLIENT_ID}&response_type=code`);
+      const redirectPath = encodeURIComponent(`${OA_PATH}oauth/authorize?client_id=${OA_CLIENT_ID}&response_type=code`);
       window.location.href = `${OA_PATH}logout?url=${redirectPath}`;
     },
   },
