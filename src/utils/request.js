@@ -21,7 +21,7 @@ const codeMessage = {
   504: '网关超时',
 };
 
-const errorCode = [400, 401, 422];
+const errorCode = [400, 422];
 
 function checkStatus(response) {
   const { status, url, statusText } = response;
@@ -66,6 +66,7 @@ export default async function request(url, options) {
   let urlParam = url;
   const defaultOptions = {
     credentials: 'same-origin',
+    method: 'GET',
   };
 
   const newOptions = {
@@ -132,7 +133,7 @@ export default async function request(url, options) {
         return response.text();
       } else {
         const promise = response.json();
-        if (response.status === 400 || (newOptions.method === 'GET' && response.status === 401)) {
+        if (response.status === 400) {
           notificateErrorMessage(promise, response);
         }
         return promise;
