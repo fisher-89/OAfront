@@ -458,6 +458,7 @@ export default class extends React.PureComponent {
       ...initialValue,
       ...value,
       is_checkbox: isCheckbox,
+      options: value.options || [],
       available_options: value.available_options || [],
       default_value: defaultValue,
     };
