@@ -1,7 +1,6 @@
 import React from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
-import classNames from 'classnames';
 import {
   Input,
   Select,
@@ -492,54 +491,35 @@ export default class extends React.PureComponent {
   };
 
 
-  makeFieldBlockCls = (fieldType) => {
+  checkFieldVisible = (fieldType) => {
     const { getFieldValue } = this.props.form;
     const multiple = getFieldValue('is_checkbox');
     const maxAndMinIndexOf = fieldMinAndMax.indexOf(fieldType);
-    const maxAndMinCls = classNames({
-      [styles.disblock]: maxAndMinIndexOf === -1 || (
-        !multiple && maxAndMinIndexOf !== -1 && requiredCheckBox.indexOf(fieldType) === -1
-      ),
-    });
-    const scaleCls = classNames({
-      [styles.disblock]: fieldScale.indexOf(fieldType) === -1,
-    });
-    const optionsCls = classNames({
-      [styles.disblock]: fieldOptions.indexOf(fieldType) === -1,
-    });
-
-    const isCheckboxCls = classNames({
-      [styles.disblock]: fieldIsCheckbox.indexOf(fieldType) === -1,
-    });
-
-    const fieldApi = classNames({
-      [styles.disblock]: fieldType !== 'api',
-    });
-
-    const notDefaultValue = ['file'];
-    const defaultCls = classNames({
-      [styles.disblock]: !fieldType || notDefaultValue.indexOf(fieldType) !== -1,
-    });
-    const cardAble = (
-      fieldApi.length &&
-      scaleCls.length &&
-      optionsCls.length &&
-      maxAndMinCls.length &&
-      isCheckboxCls.length &&
-      defaultCls.length
+    const hasMinAndMax = maxAndMinIndexOf !== -1 && (
+      multiple || requiredCheckBox.indexOf(fieldType) !== -1
     );
-    const cardCls = classNames(styles.cardTitle, {
-      [styles.disblock]: cardAble,
-    });
+    const hasScale = fieldScale.indexOf(fieldType) !== -1;
+    const hasOptions = fieldOptions.indexOf(fieldType) !== -1;
+    const hasIsCheckbox = fieldIsCheckbox.indexOf(fieldType) !== -1;
+    const hasApi = fieldType === 'api';
+    const hasDefault = fieldType && fieldType !== 'file';
+    const hasCard = (
+      hasApi ||
+      hasScale ||
+      hasOptions ||
+      hasMinAndMax ||
+      hasIsCheckbox ||
+      hasDefault
+    );
 
     return {
-      cardCls,
-      fieldApi,
-      scaleCls,
-      defaultCls,
-      optionsCls,
-      maxAndMinCls,
-      isCheckboxCls,
+      hasCard,
+      hasApi,
+      hasScale,
+      hasDefault,
+      hasOptions,
+      hasMinAndMax,
+      hasIsCheckbox,
     };
   }
 
@@ -841,7 +821,7 @@ export default class extends React.PureComponent {
     return [render, extarRender] || null;
   }
 
-  renderMinAndMax = (maxAndMinCls) => {
+  renderMinAndMax = () => {
     const { initialValue } = this.props;
     const { getFieldValue, getFieldDecorator } = this.props.form;
     const { labelValue } = this;
@@ -849,7 +829,7 @@ export default class extends React.PureComponent {
     const format = typeValue === 'date' ? 'YYYY-MM-DD' : 'YYYY-MM-DD HH:mm:ss';
     return (
       <React.Fragment>
-        <Col {...fieldsBoxLayout} className={maxAndMinCls}>
+        <Col {...fieldsBoxLayout}>
           <FormItem label={labelValue.min} {...fieldsItemLayout}>
             {
               getFieldDecorator('min', {
@@ -869,7 +849,7 @@ export default class extends React.PureComponent {
             }
           </FormItem>
         </Col>
-        <Col {...fieldsBoxLayout} className={maxAndMinCls}>
+        <Col {...fieldsBoxLayout}>
           <FormItem label={labelValue.max} {...fieldsItemLayout}>
             {
               getFieldDecorator('max', {
@@ -919,14 +899,14 @@ export default class extends React.PureComponent {
     }
 
     const {
-      cardCls,
-      fieldApi,
-      scaleCls,
-      defaultCls,
-      optionsCls,
-      maxAndMinCls,
-      isCheckboxCls,
-    } = this.makeFieldBlockCls(fieldType);
+      hasCard,
+      hasApi,
+      hasScale,
+      hasDefault,
+      hasOptions,
+      hasMinAndMax,
+      hasIsCheckbox,
+    } = this.checkFieldVisible(fieldType);
     return (
       <OAModal
         width={800}
@@ -1018,89 +998,101 @@ export default class extends React.PureComponent {
             </Col>
           </Row>
         </Card>
-        <Card title="控件配置" className={cardCls} bordered={false}>
-          <Row>
-            <Col span={24} className={optionsCls}>
-              <FormItem label={labelValue.options} {...fieldsRowItemLayout}>
-                {
-                  getFieldDecorator('options', {
-                    initialValue: initialValue.options || [],
-                  })(
-                    <TagInput name="options" />
-                  )
-                }
-              </FormItem>
-            </Col>
-            <Col span={24} className={isCheckboxCls}>
-              <FormItem label={labelValue.is_checkbox} {...fieldsRowItemLayout} >
-                {
-                  getFieldDecorator('is_checkbox', {
-                    initialValue: initialValue.is_checkbox === 1 || false,
-                    valuePropName: 'checked',
-                  })(
-                    <Switch onChange={() => this.handleDefaultValueChange({
-                      max: undefined,
-                      min: undefined,
-                      default_value: undefined,
-                    })}
-                    />
-                  )
-                }
-              </FormItem>
-            </Col>
-            <Col span={24} className={fieldApi}>
-              <FormItem
-                label={labelValue.field_api_configuration_id}
-                {...fieldsRowItemLayout}
-                required={fieldType === 'api'}
-              >
-                {
-                  getFieldDecorator('field_api_configuration_id', {
-                    initialValue: initialValue.field_api_configuration_id ? `${initialValue.field_api_configuration_id}` : null,
-                    rules: [{
-                      validator: (_, value, callback) => {
-                        if (fieldType === 'api' && !value) {
-                          callback('必填选项!');
-                        }
-                        callback();
-                      },
-                    }],
-                  })(
-                    <Select
-                      placeholder="请选择"
-                      style={{ width: '100%' }}
-                      getPopupContainer={triggerNode => (triggerNode)}
-                      onChange={this.fetchApiSource}
-                    >
-                      {this.props.apiData.map(item => (
-                        <Option key={`${item.id}`}>{item.name}</Option>
-                      ))}
-                    </Select>
-                  )
-                }
-              </FormItem>
-            </Col>
-            {this.renderMinAndMax(maxAndMinCls)}
-            <Col {...fieldsBoxLayout} className={scaleCls}>
-              <FormItem label={labelValue.scale} {...fieldsItemLayout}>
-                {
-                  getFieldDecorator('scale', {
-                    initialValue: initialValue.scale || 0,
-                    rules: [{ validator: this.validateFiledsScale }],
-                  })(
-                    <InputNumber placeholder="请输入" min={0} style={{ width: '100%' }} />
-                  )
-                }
-              </FormItem>
-            </Col>
-            {this.renderTypeComponent()}
-            <Col span={24} className={defaultCls}>
-              <FormItem label={labelValue.default_value} {...fieldsRowItemLayout}>
-                {this.getDefaultComponent(fields, fieldType)}
-              </FormItem>
-            </Col>
-          </Row>
-        </Card>
+        {hasCard && (
+          <Card title="控件配置" className={styles.cardTitle} bordered={false}>
+            <Row>
+              {hasOptions && (
+                <Col span={24}>
+                  <FormItem label={labelValue.options} {...fieldsRowItemLayout}>
+                    {
+                      getFieldDecorator('options', {
+                        initialValue: initialValue.options || [],
+                      })(
+                        <TagInput name="options" />
+                      )
+                    }
+                  </FormItem>
+                </Col>
+              )}
+              {hasIsCheckbox && (
+                <Col span={24}>
+                  <FormItem label={labelValue.is_checkbox} {...fieldsRowItemLayout} >
+                    {
+                      getFieldDecorator('is_checkbox', {
+                        initialValue: initialValue.is_checkbox === 1 || false,
+                        valuePropName: 'checked',
+                      })(
+                        <Switch onChange={() => this.handleDefaultValueChange({
+                          max: undefined,
+                          min: undefined,
+                          default_value: undefined,
+                        })}
+                        />
+                      )
+                    }
+                  </FormItem>
+                </Col>
+              )}
+              {hasApi && (
+                <Col span={24}>
+                  <FormItem
+                    label={labelValue.field_api_configuration_id}
+                    {...fieldsRowItemLayout}
+                    required={fieldType === 'api'}
+                  >
+                    {
+                      getFieldDecorator('field_api_configuration_id', {
+                        initialValue: initialValue.field_api_configuration_id ? `${initialValue.field_api_configuration_id}` : null,
+                        rules: [{
+                          validator: (_, value, callback) => {
+                            if (fieldType === 'api' && !value) {
+                              callback('必填选项!');
+                            }
+                            callback();
+                          },
+                        }],
+                      })(
+                        <Select
+                          placeholder="请选择"
+                          style={{ width: '100%' }}
+                          getPopupContainer={triggerNode => (triggerNode)}
+                          onChange={this.fetchApiSource}
+                        >
+                          {this.props.apiData.map(item => (
+                            <Option key={`${item.id}`}>{item.name}</Option>
+                          ))}
+                        </Select>
+                      )
+                    }
+                  </FormItem>
+                </Col>
+              )}
+              {hasMinAndMax && this.renderMinAndMax()}
+              {hasScale && (
+                <Col {...fieldsBoxLayout}>
+                  <FormItem label={labelValue.scale} {...fieldsItemLayout}>
+                    {
+                      getFieldDecorator('scale', {
+                        initialValue: initialValue.scale || 0,
+                        rules: [{ validator: this.validateFiledsScale }],
+                      })(
+                        <InputNumber placeholder="请输入" min={0} style={{ width: '100%' }} />
+                      )
+                    }
+                  </FormItem>
+                </Col>
+              )}
+              {this.renderTypeComponent()}
+              {hasDefault && (
+                <Col span={24}>
+                  <FormItem label={labelValue.default_value} {...fieldsRowItemLayout}>
+                    {this.getDefaultComponent(fields, fieldType)}
+                  </FormItem>
+                </Col>
+              )}
+            </Row>
+          </Card>
+        )}
       </OAModal>
     );
   }
