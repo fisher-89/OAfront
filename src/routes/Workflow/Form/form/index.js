@@ -312,7 +312,7 @@ class addForm extends PureComponent {
                   label="启用PC模板"
                 >
                   {getFieldDecorator('pc_template', (initialFieldsValue ? {
-                    initialValue: initialFieldsValue.pc_template,
+                    initialValue: initialFieldsValue.pc_template || 0,
                     rules: [validatorRequired],
                   } : {}))(
                     <Switch />
@@ -323,7 +323,7 @@ class addForm extends PureComponent {
                   label="启用移动端模板"
                 >
                   {getFieldDecorator('mobile_template', (initialFieldsValue ? {
-                    initialValue: initialFieldsValue.mobile_template,
+                    initialValue: initialFieldsValue.mobile_template || 0,
                     rules: [validatorRequired],
                   } : {}))(
                     <Switch />
