@@ -6,7 +6,6 @@ import {
   Select,
   Row,
   Col,
-  Switch,
   Radio,
   Card,
   InputNumber,
@@ -18,7 +17,9 @@ import OAForm, {
   TreeSelect,
   SearchTable,
   DatePicker,
-} from '../../../components/OAForm';
+} from 'components/OAForm';
+import TagInput from 'components/TagInput';
+import Switch from 'components/CustomSwitch';
 import {
   RadioDate,
   RadioTime,
@@ -28,7 +29,6 @@ import {
   RadioDepartment,
 } from './ListFormComponent';
 import TimePicker from './ListFormComponent/timePicker';
-import TagInput from '../../../components/TagInput';
 import styles from './index.less';
 
 const FormItem = OAForm.Item;
@@ -429,8 +429,6 @@ export default class extends React.PureComponent {
 
   handleOk = (value) => {
     const { initialValue, config: { onOk } } = this.props;
-    const isCheckbox = value.is_checkbox ? 1 : 0;
-
     let defaultValue = value.default_value;
     const availableOptions = value.available_options || [];
     const optionsAble = defaultValue && availableOptions.length;
@@ -455,11 +453,14 @@ export default class extends React.PureComponent {
     }
     const params = {
       region_level: null,
+      options: [],
+      available_options: [],
+      is_checkbox: 0,
+      min: '',
+      max: '',
+      scale: 0,
       ...initialValue,
       ...value,
-      is_checkbox: isCheckbox,
-      options: value.options || [],
-      available_options: value.available_options || [],
       default_value: defaultValue,
     };
     params.scale = params.scale || 0;
@@ -493,8 +494,9 @@ export default class extends React.PureComponent {
 
 
   checkFieldVisible = (fieldType) => {
-    const { getFieldValue } = this.props.form;
-    const multiple = getFieldValue('is_checkbox');
+    const { form: { getFieldValue }, initialValue } = this.props;
+    let multiple = getFieldValue('is_checkbox');
+    if (multiple === undefined) multiple = initialValue.is_checkbox;
     const maxAndMinIndexOf = fieldMinAndMax.indexOf(fieldType);
     const hasMinAndMax = maxAndMinIndexOf !== -1 && (
       multiple || requiredCheckBox.indexOf(fieldType) !== -1
@@ -884,6 +886,7 @@ export default class extends React.PureComponent {
       validateFields,
       validatorRequired,
     } = this.props;
+    console.log('init', initialValue);
     const { getFieldDecorator, getFieldValue } = form;
     const fields = dataSource.map((item) => {
       return { key: item.key, name: item.name };
@@ -1020,8 +1023,7 @@ export default class extends React.PureComponent {
                   <FormItem label={labelValue.is_checkbox} {...fieldsRowItemLayout} >
                     {
                       getFieldDecorator('is_checkbox', {
-                        initialValue: initialValue.is_checkbox === 1 || false,
-                        valuePropName: 'checked',
+                        initialValue: initialValue.is_checkbox,
                       })(
                         <Switch onChange={() => this.handleDefaultValueChange({
                           max: undefined,
