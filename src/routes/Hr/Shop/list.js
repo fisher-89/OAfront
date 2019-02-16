@@ -130,8 +130,10 @@ export default class extends PureComponent {
       {
         title: '店长手机号',
         searcher: true,
-        dataIndex: 'manager_mobile',
-        render: key => OATable.renderEllipsis(key, true),
+        dataIndex: 'staff.mobile',
+        render: (_, record) => {
+          return record.manager_mobile;
+        },
         width: 60,
       },
       {
