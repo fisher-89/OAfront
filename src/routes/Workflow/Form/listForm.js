@@ -474,6 +474,7 @@ export default class extends React.PureComponent {
         params[key] = '';
       }
     });
+    console.log(params);
     onOk(params);
   }
 
@@ -1027,7 +1028,7 @@ export default class extends React.PureComponent {
                   <FormItem label={labelValue.is_checkbox} {...fieldsRowItemLayout} >
                     {
                       getFieldDecorator('is_checkbox', {
-                        initialValue: initialValue.is_checkbox,
+                        initialValue: initialValue.is_checkbox || '0',
                       })(
                         <Switch onChange={() => this.handleDefaultValueChange({
                           max: undefined,
