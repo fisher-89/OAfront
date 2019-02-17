@@ -221,6 +221,9 @@ export const getRouterData = (app) => {
     '/hr/staff/edit/:staff_sn': {
       component: dynamicWrapper(app, [], () => import('../routes/Hr/Staff/edit')),
     },
+    '/hr/roles': {
+      component: dynamicWrapper(app, ['brand', 'staffs', 'department', 'hroles'], () => import('../routes/Hr/Roles')),
+    },
     '/hr/tags/stafftags': {
       component: dynamicWrapper(app, ['stafftags'], () => import('../routes/Hr/Stafftags')),
     },
