@@ -474,7 +474,6 @@ export default class extends React.PureComponent {
         params[key] = '';
       }
     });
-    console.log(params);
     onOk(params);
   }
 
