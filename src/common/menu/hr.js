@@ -47,11 +47,11 @@ export default {
       path: 'shop',
       authority: '70',
     },
-    {
-      name: '角色管理',
-      path: 'roles',
-      authority: '70',
-    },
+    // {
+    //   name: '角色管理',
+    //   path: 'roles',
+    //   authority: '70',
+    // },
     {
       name: '标签管理',
       path: 'tags',
