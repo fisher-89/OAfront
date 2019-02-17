@@ -458,6 +458,11 @@ export default class extends React.PureComponent {
       is_checkbox: 0,
       min: '',
       max: '',
+      x: null,
+      y: null,
+      row: null,
+      col: null,
+      mobile_y: null,
       scale: 0,
       ...initialValue,
       ...value,
@@ -886,7 +891,6 @@ export default class extends React.PureComponent {
       validateFields,
       validatorRequired,
     } = this.props;
-    console.log('init', initialValue);
     const { getFieldDecorator, getFieldValue } = form;
     const fields = dataSource.map((item) => {
       return { key: item.key, name: item.name };
