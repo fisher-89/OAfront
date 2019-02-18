@@ -417,7 +417,6 @@ export default class extends React.PureComponent {
       this.handleDefaultValueChange({
         min: undefined,
         max: undefined,
-        is_checkbox: false,
       });
     }
   }
@@ -1027,13 +1026,16 @@ export default class extends React.PureComponent {
                   <FormItem label={labelValue.is_checkbox} {...fieldsRowItemLayout} >
                     {
                       getFieldDecorator('is_checkbox', {
-                        initialValue: initialValue.is_checkbox || '0',
+                        initialValue: initialValue.is_checkbox || 0,
                       })(
-                        <Switch onChange={() => this.handleDefaultValueChange({
-                          max: undefined,
-                          min: undefined,
-                          default_value: undefined,
-                        })}
+                        <Switch
+                          checkedValue={1}
+                          unCheckedValue={0}
+                          onChange={() => this.handleDefaultValueChange({
+                            max: undefined,
+                            min: undefined,
+                            default_value: undefined,
+                          })}
                         />
                       )
                     }
