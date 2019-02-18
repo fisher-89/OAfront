@@ -7,7 +7,7 @@ const RadioGroup = Radio.Group;
 export default (Component) => {
   class NewComponent extends React.PureComponent {
     handleRadioGroupChange = ({ target: { value } }) => {
-      const { onChange, type, valueType } = this.props;
+      const { onChange, type, valueType, multiple } = this.props;
       if (value === 1) {
         let changeValue = type;
         if (valueType === 'object') {
@@ -16,6 +16,7 @@ export default (Component) => {
             text: type,
           };
         }
+        if (multiple) changeValue = [changeValue];
         if (onChange) onChange(changeValue, 'radio');
       } else if (value === 2) {
         if (onChange) onChange(undefined);
@@ -57,6 +58,7 @@ export default (Component) => {
       );
     }
   }
+
   NewComponent.defaultProps = {
     valueType: 'string',
   };
