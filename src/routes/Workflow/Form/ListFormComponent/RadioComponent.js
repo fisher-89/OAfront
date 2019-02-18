@@ -24,19 +24,16 @@ export default (Component) => {
     }
 
     render() {
-      const { value, type, fieldType, valueType } = this.props;
+      const { value, type, fieldType } = this.props;
       let radioGroupValue = 2;
-      if (valueType === 'object' && value && value.value === type) {
-        radioGroupValue = 1;
-      } else if (valueType === 'string' && value === type) {
+      if (
+        value === type ||
+        (value && value.value === type) ||
+        (value && value[0] && value[0].value === type)
+      ) {
         radioGroupValue = 1;
       }
       const newProps = { ...this.props };
-      if (radioGroupValue === 1) {
-        delete newProps.value;
-      }
-      // delete newProps.type;
-      delete newProps.valueType;
       return (
         <React.Fragment>
           <RadioGroup
