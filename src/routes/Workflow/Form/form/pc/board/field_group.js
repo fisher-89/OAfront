@@ -104,7 +104,6 @@ export default class extends Component {
     const { data, selectedControl } = this.props;
     const { resizing, editing, title } = this.state;
     const isSelected = selectedControl && selectedControl === data;
-    console.log(data.title);
     return (
       <div
         className={styles.fieldGroup}

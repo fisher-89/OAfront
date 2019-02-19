@@ -24,7 +24,7 @@ export default class extends Component {
     top: null,
     right: null,
     bottom: null,
-    available: true,
+    available: false,
     isDrag: false,
   }
 
@@ -107,7 +107,6 @@ export default class extends Component {
 
   startDrawing = (e) => {
     const { clientX, clientY } = e;
-    const { fields, grids, fieldGroups } = this.props;
     const onTemplate = clientX >= this.templateLeft
       && clientX <= this.templateRight
       && clientY >= this.templateTop
@@ -117,10 +116,7 @@ export default class extends Component {
       document.addEventListener('mouseup', this.endDrawing);
       const left = Math.floor((clientX - this.templateLeft) / 61);
       const top = Math.floor((clientY - this.templateTop) / 61);
-      this.setState({ left, top, right: left, bottom: top }, () => {
-        const insideFields = fetchInsideFields(this.fetchPosition(), fields, grids, fieldGroups);
-        this.setState({ available: !!insideFields });
-      });
+      this.setState({ left, top, right: left + 1, bottom: top + 1 });
     } else {
       const { onCancel } = this.props;
       onCancel();
@@ -157,7 +153,7 @@ export default class extends Component {
         top: null,
         right: null,
         bottom: null,
-        available: true,
+        available: false,
       });
     }
   }

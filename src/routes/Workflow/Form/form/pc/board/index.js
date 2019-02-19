@@ -213,7 +213,7 @@ class Board extends Component {
       ...fieldGroups.filter(item => item !== draggingGroup).map((item) => {
         return (
           <FieldGroup
-            key={`group_${item.created_at}`}
+            key={`group_${item.top}_${item.left}`}
             data={item}
             onDrag={onDragGroup}
             onSelect={onSelect}
