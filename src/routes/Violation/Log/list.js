@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Tabs, Button, Divider } from 'antd';
+import XLSX from 'xlsx';
 import OATable from '../../../components/OATable';
 import BigLove from './form';
 import Details from './details';
@@ -224,8 +225,67 @@ export default class extends PureComponent {
     }
   }
 
+  xlsExportExcel = () => {
+    const groupheaders = [
+      '大爱名称',
+      '能推送的群',
+    ];
+    const { rule, pushgroup } = this.props;
+    const rulename = rule.map(item => item.name);
+    const groupname = pushgroup.map(item => item.flock_name);
+    const glenth = groupname.length;
+    const rlenth = rulename.length;
+    const sdata = [];
+    if (rlenth > glenth) {
+      for (let i = 0; i < rlenth; i += 1) {
+        const midkey = [rulename[i], groupname[i]];
+        sdata.push(midkey);
+      }
+    } else {
+      for (let i = 0; i < glenth; i += 1) {
+        const midkey = [rulename[i], groupname[i]];
+        sdata.push(midkey);
+      }
+    }
+    const headers = [
+      '员工姓名',
+      '开单日期',
+      '大爱名称',
+      '违纪时间',
+      '开单人编号',
+      '开单人姓名',
+      '是否付款',
+      '付款时间',
+      '备注',
+      '推送的群',
+      '同步积分制',
+    ];
+    const data = [[
+      '例：张三（被大爱姓名）',
+      '例：2018-01-01（开单时间）',
+      '例：迟到30分钟内（制度名称全写）',
+      '例：2018-01-01',
+      '例：100000（开单人编号）',
+      '例：李四',
+      '例：0（0：表示没有付款，1：表示已经付款）',
+      '例：2018-01-01（没有付款这里为空）',
+      '默认为空',
+      '例：喜歌实业重要通知群',
+      '默认不同步，1:同步',
+    ],
+    ];
+    const workbook = XLSX.utils.book_new();
+    sdata.unshift(groupheaders);
+    data.unshift(headers);
+    const fuzhuSheet = XLSX.utils.aoa_to_sheet(sdata);
+    XLSX.utils.book_append_sheet(workbook, fuzhuSheet, '辅助表');
+    const errorSheet = XLSX.utils.aoa_to_sheet(data);
+    XLSX.utils.book_append_sheet(workbook, errorSheet, '主表');
+    XLSX.writeFile(workbook, '大爱模板.xlsx');
+  }
+
   render() {
-    const { finelog, fetchFineLog, loading, department, brand } = this.props;
+    const { finelog, fetchFineLog, loading, department, brand, pushgroup } = this.props;
     const { detailsVisible,
       visible,
       initialValue,
@@ -237,18 +297,18 @@ export default class extends PureComponent {
     const extra = [];
     extra.push(
       checkAuthority(200) && (
-      <Button
-        icon="plus"
-        key="plus"
-        type="primary"
-        style={{ marginLeft: '10px' }}
-        onClick={() => {
-          this.handleModalVisible(true);
-          this.setState({ initialValue: {} });
-        }}
-      >
-        新建大爱
-      </Button>),
+        <Button
+          icon="plus"
+          key="plus"
+          type="primary"
+          style={{ marginLeft: '10px' }}
+          onClick={() => {
+            this.handleModalVisible(true);
+            this.setState({ initialValue: {} });
+          }}
+        >
+          新建大爱
+        </Button>),
       (
         <Button
           key="pushLog"
@@ -258,7 +318,7 @@ export default class extends PureComponent {
             this.pushLog();
           }}
         >
-        补充推送
+          补充推送
         </Button>
       ),
       (
@@ -266,7 +326,7 @@ export default class extends PureComponent {
           key="download-temp"
           icon="cloud-download"
         >
-          <a href="/api/violation/punish/example" style={{ color: 'rgba(0, 0, 0, 0.65)', marginLeft: 5 }}>下载模板</a>
+          <a onClick={() => this.xlsExportExcel()} style={{ color: 'rgba(0, 0, 0, 0.65)', marginLeft: 5 }}>下载模板</a>
         </Button>
       ));
 
@@ -338,6 +398,7 @@ export default class extends PureComponent {
           visible={visible}
           initialValue={initialValue}
           onCancel={this.handleModalVisible}
+          pushgroup={pushgroup}
         />
         <Details
           visible={detailsVisible}
