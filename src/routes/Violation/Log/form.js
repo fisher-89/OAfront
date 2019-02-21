@@ -76,20 +76,23 @@ export default class extends PureComponent {
       } else if ({ ...nextProps.money.money }.states === 1 &&
         { ...nextProps.score.score }.states !== 1) {
         this.setState({ moneyable: false, scoreable: true });
-        setFieldsValue({ money: nextProps.money.money.data, score: nextProps.score.score.data });
+        setFieldsValue({ money: { ...{ ...nextProps.money }.money }.data,
+          score: { ...{ ...nextProps.score }.score }.data });
       } else if ({ ...nextProps.money.money }.states !== 1 &&
         { ...nextProps.score.score }.states === 1) {
         this.setState({ moneyable: true, scoreable: false });
-        setFieldsValue({ money: nextProps.money.money.data, score: nextProps.score.score.data });
+        setFieldsValue({ money: { ...{ ...nextProps.money }.money }.data,
+          score: { ...{ ...nextProps.score }.score }.data });
       } else if ({ ...nextProps.money.money }.states === 1 &&
         { ...nextProps.score.score }.states === 1) {
         this.setState({ moneyable: false, scoreable: false });
-        setFieldsValue({ money: nextProps.money.money.data, score: nextProps.score.score.data });
+        setFieldsValue({ money: { ...{ ...nextProps.money }.money }.data,
+          score: { ...{ ...nextProps.score }.score }.data });
       } else {
         this.setState({ moneyable: true, scoreable: true });
         setFieldsValue({
-          money: { ...nextProps.money.money }.data,
-          score: { ...nextProps.score.score }.data,
+          money: { ...{ ...nextProps.money }.money }.data,
+          score: { ...{ ...nextProps.score }.score }.data,
         });
       }
     }
