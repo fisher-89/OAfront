@@ -113,7 +113,7 @@ export default class extends PureComponent {
             />
           )}
         </FormItem>
-        <FormItem {...formItemLayout} label="大爱自定义" required>
+        <FormItem {...formItemLayout} label="大爱运算结果允许修改" required>
           {getFieldDecorator('money_custom_settings', {
             initialValue: initialValue.money_custom_settings,
           })(
@@ -129,7 +129,7 @@ export default class extends PureComponent {
             />
           )}
         </FormItem>
-        <FormItem {...formItemLayout} label="扣分自定义" required>
+        <FormItem {...formItemLayout} label="扣分结果允许修改" required>
           {getFieldDecorator('score_custom_settings', {
             initialValue: initialValue.score_custom_settings,
           })(
