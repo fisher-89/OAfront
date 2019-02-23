@@ -285,7 +285,7 @@ export default class extends PureComponent {
   }
 
   render() {
-    const { finelog, fetchFineLog, loading, department, brand, pushgroup } = this.props;
+    const { finelog, fetchFineLog, loading, department, brand, pushgroup, dispatch } = this.props;
     const { detailsVisible,
       visible,
       initialValue,
@@ -387,6 +387,8 @@ export default class extends PureComponent {
                 finelog={finelog}
                 fetchFineLog={fetchFineLog}
                 loading={loading}
+                dispatch={dispatch}
+                pushgroup={pushgroup}
                 department={department}
                 brand={brand}
               />

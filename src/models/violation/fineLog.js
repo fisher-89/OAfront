@@ -6,6 +6,7 @@ import {
   editPayState,
   downloadExcelFinLog,
   paymentChange,
+  selfLogPush,
 } from '../../services/violation';
 
 const store = 'finelog';
@@ -140,6 +141,23 @@ export default {
           data: response,
         },
       });
+    } catch (err) { return err; }
+  },
+
+  *selfLogPush({ payload, onError, onSuccess }, { call, put }) {
+    try {
+      const response = yield call(selfLogPush, payload);
+      if (response.errors) {
+        return onError(response.errors);
+      }
+      yield put({
+        type: 'pushlog',
+        payload: {
+          store,
+          data: response,
+        },
+      });
+      onSuccess(response);
     } catch (err) { return err; }
   },
 };

@@ -4,15 +4,21 @@ import {
   getFiltersData,
   findRenderKey,
 } from '../../../utils/utils';
+import Form from './pushform';
 
 export default class extends PureComponent {
   state = {
     selectedRows: [],
     selectedRowKeys: [],
+    visible: false,
   }
 
   onSelectChange = (selectedRowKeys, selectedRows) => {
     this.setState({ selectedRows, selectedRowKeys });
+  }
+
+  handleModalVisible = (flag) => {
+    this.setState({ visible: !!flag });
   }
 
   makeColumns = () => {
@@ -123,8 +129,8 @@ export default class extends PureComponent {
     return columns;
   }
   render() {
-    const { loading, fetchFineLog, finelog } = this.props;
-    const { selectedRowKeys, selectedRows } = this.state;
+    const { loading, dispatch, fetchFineLog, finelog, pushgroup } = this.props;
+    const { selectedRowKeys, selectedRows, visible } = this.state;
     const rowSelection = {
       selectedRows,
       selectedRowKeys,
@@ -134,6 +140,7 @@ export default class extends PureComponent {
       {
         text: '推送',
         action: () => {
+          this.setState({ visible: true });
         },
       },
       {
@@ -144,16 +151,25 @@ export default class extends PureComponent {
       },
     ];
     return (
-      <OATable
-        loading={loading}
-        columns={this.makeColumns()}
-        fetchDataSource={fetchFineLog}
-        data={finelog.data}
-        serverSide
-        total={finelog.total}
-        rowSelection={rowSelection}
-        multiOperator={multiOperator}
-      />
+      <div>
+        <OATable
+          loading={loading}
+          columns={this.makeColumns()}
+          fetchDataSource={fetchFineLog}
+          data={finelog.data}
+          serverSide
+          total={finelog.total}
+          rowSelection={rowSelection}
+          multiOperator={multiOperator}
+        />
+        <Form
+          visible={visible}
+          dispatch={dispatch}
+          keys={selectedRowKeys}
+          onCancel={this.handleModalVisible}
+          pushgroup={pushgroup}
+        />
+      </div>
     );
   }
 }

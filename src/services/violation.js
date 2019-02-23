@@ -142,3 +142,8 @@ export async function fetchPushQun() {
 export async function editPushQun(params) {
   return request('/api/violation/push', { method: 'POST', body: params });
 }
+
+// 补充推送
+export async function selfLogPush(params) {
+  return request('/api/violation/push/image', { method: 'POST', body: params });
+}

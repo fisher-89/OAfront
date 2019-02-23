@@ -68,6 +68,11 @@ const menuData = [
         path: 'statistics',
       },
       {
+        name: '推送记录',
+        authority: '213',
+        path: 'pushlog',
+      },
+      {
         name: '权限管理',
         authority: '211',
         path: 'fineauth',

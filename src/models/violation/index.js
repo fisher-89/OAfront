@@ -38,6 +38,19 @@ export default {
   reducers: {
     ...defaultReducers,
 
+    pushlog(state, action) {
+      const { data, message } = action.payload;
+      if (data.message) {
+        return state;
+      }
+      notification.success({
+        message: message || '推送成功',
+      });
+      return {
+        ...state,
+      };
+    },
+
     groupupdate(state, action) {
       const { store, data } = action.payload;
       let group = state[store];
