@@ -183,43 +183,28 @@ export function getDepartmentAuthority(departmentId) {
   return false;
 }
 
-export function makePositionData(brandId, brand) {
-  let conditions = brandId;
-  if (brandId.in) {
-    conditions = brandId.in;
-  }
-  const selectBrand = brand.filter(item => conditions.indexOf(item.id.toString()) !== -1);
-  const pushPosition = [];
-  selectBrand.forEach((item) => {
-    if (item.positions.length > 0) {
-      item.positions.forEach((p) => {
-        const pushIndex = pushPosition.map(index => index.id);
-        if (pushIndex.indexOf(p.id) === -1) {
-          pushPosition.push(p);
-        }
-      });
-    }
-  });
-  return pushPosition;
-}
-
-
-export function undotFieldsValue(fieldsValue) {
-  const params = {};
-  Object.keys(fieldsValue).forEach((key) => {
-    const value = fieldsValue[key];
-    let fieldsValueMd = params;
+/**
+ * 将{'a.b.c':1}转为{a:{b:{c:1}}}
+ *
+ * @param object
+ * @returns {{}}
+ */
+export function undotObject(object) {
+  const newObject = {};
+  Object.keys(object).forEach((key) => {
+    const value = object[key];
+    let tmp = newObject;
     const keyGroup = key.split('.');
     keyGroup.forEach((item, index) => {
       if (index === keyGroup.length - 1) {
-        fieldsValueMd[item] = value;
+        tmp[item] = value;
       } else {
-        fieldsValueMd[item] = fieldsValueMd[item] || {};
-        fieldsValueMd = fieldsValueMd[item];
+        tmp[item] = tmp[item] || {};
+        tmp = tmp[item];
       }
     });
   });
-  return params;
+  return newObject;
 }
 
 export function dotFieldsValue(fieldsValue, parentKey) {
@@ -433,6 +418,7 @@ export function getClientRatio() {
     isBigRatio: height > 660,
   };
 }
+
 /**
  * 弹窗高度
  */
@@ -450,6 +436,7 @@ export function getModalToAndHeight() {
   }
   return style;
 }
+
 /**
  * 弹窗内容高度
  */
@@ -518,6 +505,7 @@ export function findTreeChildren(data = [], id, key = 'id', pid = 'parent_id') {
 export function countViewFontSize(width, fontSize) {
   return Math.floor(width / fontSize);
 }
+
 /**
  * str 截取字符串
  * width 容器宽度
@@ -527,39 +515,6 @@ export function getLetfEllipsis(str, width, fontSize) {
   const numberStr = countViewFontSize(width, fontSize);
   if (str.length < numberStr) return str;
   return `...${str.substr(-numberStr + 3)}`;
-}
-/**
- * 表单错误
- * @param {错误异常} temp
- * @param {是否生成错误} isUnicode
- */
-export function unicodeFieldsError(temp, isUnicode = true, values) {
-  const fieldsValue = { ...temp };
-  const params = {};
-  Object.keys(fieldsValue).forEach((key) => {
-    const value = fieldsValue[key];
-    let fieldsValueMd = params;
-    const keyGroup = key.split('.');
-    const newValues = dotFieldsValue(values);
-    keyGroup.forEach((item, index) => {
-      if (index === keyGroup.length - 1) {
-        if (Object.hasOwnProperty.call(newValues, key)) {
-          fieldsValueMd[item] = isUnicode ?
-            { value: newValues[key], errors: [new Error(value[0])] } : value;
-        } else {
-          fieldsValueMd[item] = isUnicode ?
-            { errors: [new Error(value[0])] } : value;
-        }
-      } else {
-        fieldsValueMd[item] = fieldsValueMd[item] || {};
-        fieldsValueMd = fieldsValueMd[item];
-      }
-    });
-    if (Object.hasOwnProperty.call(newValues, key) && !Object.hasOwnProperty.call(params, key)) {
-      params[key] = isUnicode ? { errors: [new Error(value[0])] } : value;
-    }
-  });
-  return params;
 }
 
 /**
@@ -744,7 +699,9 @@ export function getStatusImg(status) {
 
 export function getInitSearchProps(initialValue, cb, filterText = {}) {
   let response = {};
-  mapKeys(filterText, (_, key) => { response[key] = undefined; });
+  mapKeys(filterText, (_, key) => {
+    response[key] = undefined;
+  });
   response = { ...response, ...initialValue };
   const newInitialValue = {};
   Object.keys(response).forEach((key) => {

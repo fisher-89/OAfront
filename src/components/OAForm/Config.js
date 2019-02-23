@@ -2,7 +2,7 @@ import React from 'react';
 import { Spin, message } from 'antd';
 import Operator from './operator';
 import Create from './Create';
-import { unicodeFieldsError, dotFieldsValue } from '../../utils/utils';
+import { undotObject, dotFieldsValue } from '../../utils/utils';
 
 import './message.less';
 import styles from './index.less';
@@ -128,15 +128,28 @@ export default formCreate => (option = {}) => (Componet) => {
       return customErr;
     }
 
+    /**
+     * 表单错误
+     * @param {错误异常} errors
+     */
+    unicodeFieldsError = (errors) => {
+      const response = {};
+      Object.keys(errors).forEach((key) => {
+        const error = errors[key];
+        response[key] = { errors: [new Error(error[0])] };
+      });
+      return response;
+    }
+
     disposeErrorResult = (errResult, extraConfig, values) => {
       let customErr = {};
       const formError = {};
       Object.keys(errResult).forEach((name) => {
         if (!Object.hasOwnProperty.call(errResult[name], 'value')) {
-          customErr = {
+          customErr = undotObject({
             ...customErr,
             ...this.makeExtraError(errResult, extraConfig, values, name),
-          };
+          });
         } else {
           formError[name] = errResult[name];
         }
@@ -144,7 +157,7 @@ export default formCreate => (option = {}) => (Componet) => {
       return { customErr, formError };
     }
 
-    handleOnError = (error, extraConfig = {}, callback, isUnicode) => {
+    handleOnError = (error, extraConfig = {}, callback) => {
       if (!this.form) return;
       const { setFields, getFieldsValue } = this.form;
       if (extraConfig === false) {
@@ -152,8 +165,7 @@ export default formCreate => (option = {}) => (Componet) => {
         return;
       }
       const values = getFieldsValue();
-      const errResult = unicodeFieldsError(error, isUnicode, { ...values });
-
+      const errResult = this.unicodeFieldsError(error);
       const { customErr, formError } = this.disposeErrorResult(errResult, extraConfig, values);
       if (typeof extraConfig === 'function') extraConfig(customErr, values, error);
       if (callback) callback(customErr, values, error);

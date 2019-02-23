@@ -29,7 +29,9 @@ export default class FieldList extends React.Component {
       valueTemp.validator_id = validator.filter((item) => {
         return value.validator_id.indexOf(item.id) !== -1;
       }).map(item => item.name);
-    } else { valueTemp.validator_id = ''; }
+    } else {
+      valueTemp.validator_id = '';
+    }
 
     if (Array.isArray(value.options)) {
       valueTemp.options = value.options.length ? value.options.join('、') : '';
@@ -85,6 +87,7 @@ export default class FieldList extends React.Component {
   }
 
   render() {
+    const { value, error, onChange } = this.props;
     return (
       <React.Fragment>
         <List
@@ -93,9 +96,9 @@ export default class FieldList extends React.Component {
           height={600}
           title="表单控件"
           Component={ListForm}
-          value={this.props.value}
-          error={this.props.error}
-          onChange={this.props.onChange}
+          value={value}
+          error={error}
+          onChange={onChange}
           bodyStyle={{ minHeight: 400 }}
           listItemContent={this.makeContent}
         />
