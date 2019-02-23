@@ -67,24 +67,33 @@ export default class extends PureComponent {
       setFieldsValue({ money: nextProps.initialValue.money, score: nextProps.initialValue.score });
       this.setState({ moneyable: true, scoreable: true });
     } else if (JSON.stringify(this.props.money) !== JSON.stringify(nextProps.money) ||
-    JSON.stringify(this.props.score) !== JSON.stringify(nextProps.score)) {
+      JSON.stringify(this.props.score) !== JSON.stringify(nextProps.score)) {
       if (({ ...nextProps.money.money } || {}).errors ||
-      ({ ...nextProps.score.score } || {}).errors) {
+        ({ ...nextProps.score.score } || {}).errors) {
         setFieldsValue({ money: null, score: null });
         this.setState({ moneyable: true, scoreable: true });
         setFields({ violate_at: { value: null, errors: [new Error('违纪日期 必须早于现在!')] } });
-      } else if (nextProps.money.money === 'CustomSettings' && nextProps.score.score !== 'CustomSettings') {
+      } else if ({ ...nextProps.money.money }.states === 1 &&
+        { ...nextProps.score.score }.states !== 1) {
         this.setState({ moneyable: false, scoreable: true });
-        setFieldsValue({ money: null, score: nextProps.score.score });
-      } else if (nextProps.money.money !== 'CustomSettings' && nextProps.score.score === 'CustomSettings') {
+        setFieldsValue({ money: { ...{ ...nextProps.money }.money }.data,
+          score: { ...{ ...nextProps.score }.score }.data });
+      } else if ({ ...nextProps.money.money }.states !== 1 &&
+        { ...nextProps.score.score }.states === 1) {
         this.setState({ moneyable: true, scoreable: false });
-        setFieldsValue({ money: nextProps.money.money, score: null });
-      } else if (nextProps.money.money === 'CustomSettings' && nextProps.score.score === 'CustomSettings') {
+        setFieldsValue({ money: { ...{ ...nextProps.money }.money }.data,
+          score: { ...{ ...nextProps.score }.score }.data });
+      } else if ({ ...nextProps.money.money }.states === 1 &&
+        { ...nextProps.score.score }.states === 1) {
         this.setState({ moneyable: false, scoreable: false });
-        setFieldsValue({ money: null, score: null });
+        setFieldsValue({ money: { ...{ ...nextProps.money }.money }.data,
+          score: { ...{ ...nextProps.score }.score }.data });
       } else {
         this.setState({ moneyable: true, scoreable: true });
-        setFieldsValue({ money: nextProps.money.money, score: nextProps.score.score });
+        setFieldsValue({
+          money: { ...{ ...nextProps.money }.money }.data,
+          score: { ...{ ...nextProps.score }.score }.data,
+        });
       }
     }
   }
@@ -138,58 +147,83 @@ export default class extends PureComponent {
     }
   }
 
-   disabledDate = (current) => {
-     return current && current >= moment().endOf('day');
-   }
-   render() {
-     const longFormItemLayout = {
-       labelCol: {
-         xs: { span: 24 },
-         sm: { span: 5 },
-       },
-       wrapperCol: {
-         xs: { span: 24 },
-         sm: { span: 18 },
-       },
-     };
-     const formItemLayout = {
-       labelCol: {
-         xs: { span: 24 },
-         sm: { span: 10 },
-       },
-       wrapperCol: {
-         xs: { span: 24 },
-         sm: { span: 12 },
-       },
-     };
-     const colSpan = { xs: 24, lg: 12 };
+  disabledDate = (current) => {
+    return current && current >= moment().endOf('day');
+  }
 
-     const {
-       initialValue,
-       visible,
-       onCancel,
-       loading,
-       ruleType,
-       validateFields,
-     } = this.props;
-     const { selectrule, moneyable, scoreable } = this.state;
-     const staffChoice = !!initialValue.id;
-     const { getFieldDecorator } = this.props.form;
-     const payTrue = { ...initialValue }.has_paid === 1;
-     return (
-       <OAModal
-         title="大爱"
-         visible={visible}
-         loading={loading}
-         actionType={initialValue.id !== undefined}
-         onCancel={() => onCancel(false)}
-         onSubmit={validateFields(this.handleSubmit)}
-         afterClose={this.clear}
-       >
-         <Row>
-           <Col {...colSpan}>
-             <FormItem label="员工姓名" {...formItemLayout} required>
-               {getFieldDecorator('staff', {
+  editPushGroup = () => {
+    const { getFieldValue } = this.props.form;
+    const { pushgroup } = this.props;
+    function sortNumber(a, b) {
+      return a - b;
+    }
+    const params = getFieldValue('pushing') ? getFieldValue('pushing') : [];
+    const sGroup = pushgroup.filter(item => item.default_push === 1);
+    const SGroupId = sGroup.map(item => item.id);
+    const { dispatch } = this.props;
+    if (params.length > 0 &&
+      params.sort(sortNumber).toString() !== SGroupId.sort(sortNumber).toString()) {
+      dispatch({
+        type: 'violation/editPushQun',
+        payload: params,
+      });
+    }
+  }
+
+  render() {
+    const longFormItemLayout = {
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 5 },
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 18 },
+      },
+    };
+    const formItemLayout = {
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 10 },
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 12 },
+      },
+    };
+    const colSpan = { xs: 24, lg: 12 };
+
+    const {
+      initialValue,
+      visible,
+      onCancel,
+      loading,
+      ruleType,
+      validateFields,
+      pushgroup,
+    } = this.props;
+    const { selectrule, moneyable, scoreable } = this.state;
+    const staffChoice = !!initialValue.id;
+    const { getFieldDecorator } = this.props.form;
+    const payTrue = { ...initialValue }.has_paid === 1;
+    const sGroup = pushgroup.filter(item => item.default_push === 1);
+    const SGroupId = sGroup.map(item => item.id);
+    const selectedGroup = JSON.stringify(initialValue) !== '{}' ?
+      initialValue.pushing : SGroupId;
+    return (
+      <OAModal
+        title="大爱"
+        visible={visible}
+        loading={loading}
+        actionType={initialValue.id !== undefined}
+        onCancel={() => onCancel(false)}
+        onSubmit={validateFields(this.handleSubmit)}
+        afterClose={this.clear}
+      >
+        <Row>
+          <Col {...colSpan}>
+            <FormItem label="员工姓名" {...formItemLayout} required>
+              {getFieldDecorator('staff', {
                 initialValue: initialValue.staff || [],
               })(
                 <SearchTable.Staff
@@ -201,26 +235,26 @@ export default class extends PureComponent {
                   showName="staff_name"
                   placeholder="请选择员工"
                 />)}
-             </FormItem>
-           </Col>
-         </Row>
+            </FormItem>
+          </Col>
+        </Row>
 
-         <Row>
-           <Col {...colSpan}>
-             <FormItem label="违纪日期" {...formItemLayout} required>
-               {getFieldDecorator('violate_at', {
+        <Row>
+          <Col {...colSpan}>
+            <FormItem label="违纪日期" {...formItemLayout} required>
+              {getFieldDecorator('violate_at', {
                 initialValue: initialValue.violate_at || undefined,
               })(<DatePicker
                 disabled={staffChoice}
                 allowClear={false}
                 disabledDate={this.disabledDate}
               />)}
-             </FormItem>
-           </Col>
+            </FormItem>
+          </Col>
 
-           <Col {...colSpan}>
-             <FormItem label="大爱类型" {...formItemLayout} required>
-               {getFieldDecorator('type_id', {
+          <Col {...colSpan}>
+            <FormItem label="大爱类型" {...formItemLayout} required>
+              {getFieldDecorator('type_id', {
                 initialValue: { ...initialValue.rules }.type_id || undefined,
               })(
                 <Select
@@ -234,14 +268,14 @@ export default class extends PureComponent {
                   ))}
                 </Select>
               )}
-             </FormItem>
-           </Col>
-         </Row>
+            </FormItem>
+          </Col>
+        </Row>
 
-         <Row>
-           <Col>
-             <FormItem label="大爱原因" {...longFormItemLayout} required>
-               {getFieldDecorator('rule_id', {
+        <Row>
+          <Col>
+            <FormItem label="大爱原因" {...longFormItemLayout} required>
+              {getFieldDecorator('rule_id', {
                 initialValue: { ...initialValue }.rule_id || undefined,
               })(
                 <Select
@@ -254,77 +288,77 @@ export default class extends PureComponent {
                   ))}
                 </Select>
               )}
-             </FormItem>
-           </Col>
-         </Row>
+            </FormItem>
+          </Col>
+        </Row>
 
-         <Row>
-           <Col {...colSpan}>
-             <FormItem label="大爱金额" {...formItemLayout}>
-               {getFieldDecorator('money', {
-              initialValue: initialValue.money || null,
+        <Row>
+          <Col {...colSpan}>
+            <FormItem label="大爱金额" {...formItemLayout}>
+              {getFieldDecorator('money', {
+                initialValue: initialValue.money || null,
               })(
                 <Input
                   disabled={moneyable}
                 />
               )}
-             </FormItem>
-           </Col>
+            </FormItem>
+          </Col>
 
-           <Col {...colSpan}>
-             <FormItem label="分值" {...formItemLayout}>
-               {getFieldDecorator('score', {
-              initialValue: initialValue.score || null,
+          <Col {...colSpan}>
+            <FormItem label="分值" {...formItemLayout}>
+              {getFieldDecorator('score', {
+                initialValue: initialValue.score || null,
               })(
                 <Input
                   disabled={scoreable}
                 />
               )}
-             </FormItem>
-           </Col>
-         </Row>
+            </FormItem>
+          </Col>
+        </Row>
 
-         <Row>
-           <Col {...colSpan}>
-             <FormItem label="是否付款" {...formItemLayout}>
-               {getFieldDecorator('has_paid', {
+        <Row>
+          <Col {...colSpan}>
+            <FormItem label="是否付款" {...formItemLayout}>
+              {getFieldDecorator('has_paid', {
                 initialValue: initialValue.has_paid,
               })(<Switch
                 disabled={payTrue}
                 defaultChecked={!!initialValue.has_paid}
               />)}
-             </FormItem>
-           </Col>
+            </FormItem>
+          </Col>
 
-           <Col {...colSpan}>
-             <FormItem label="付款时间" {...formItemLayout}>
-               {getFieldDecorator('paid_at', {
+          <Col {...colSpan}>
+            <FormItem label="付款时间" {...formItemLayout}>
+              {getFieldDecorator('paid_at', {
                 initialValue: initialValue.paid_at || undefined,
               })(<DatePicker
                 disabledDate={this.disabledDate}
               />)}
-             </FormItem>
-           </Col>
-         </Row>
+            </FormItem>
+          </Col>
+        </Row>
 
-         <Row>
-           <Col {...colSpan}>
-             <FormItem label="是否同步积分制" {...formItemLayout}>
-               {getFieldDecorator('sync_point', {
+        <Row>
+          <Col {...colSpan}>
+            <FormItem label="是否同步积分制" {...formItemLayout}>
+              {getFieldDecorator('sync_point', {
                 initialValue: !!initialValue.sync_point,
               })(
                 <Switch
                   defaultChecked={!!initialValue.sync_point}
                 />
               )}
-             </FormItem>
-           </Col>
-         </Row>
+            </FormItem>
+          </Col>
+        </Row>
 
-         <Row>
-           <Col {...colSpan}>
-             <FormItem label="开单人" {...formItemLayout} required>
-               {getFieldDecorator('billing', {
+        <Row>
+          <Col {...colSpan}>
+            <FormItem label="开单人" {...formItemLayout} required>
+              {getFieldDecorator('billing', {
                 initialValue: initialValue.billing || [],
               })(
                 <SearchTable.Staff
@@ -337,34 +371,51 @@ export default class extends PureComponent {
                   placeholder="请选择员工"
                 />
               )}
-             </FormItem>
-           </Col>
+            </FormItem>
+          </Col>
 
-           <Col {...colSpan}>
-             <FormItem label="开单日期" {...formItemLayout} required>
-               {getFieldDecorator('billing_at', {
+          <Col {...colSpan}>
+            <FormItem label="开单日期" {...formItemLayout} required>
+              {getFieldDecorator('billing_at', {
                 initialValue: initialValue.billing_at || moment().format('YYYY-MM-DD'),
               })(<DatePicker
                 disabled={staffChoice}
                 allowClear={false}
                 disabledDate={this.disabledDate}
               />)}
-             </FormItem>
-           </Col>
-         </Row>
+            </FormItem>
+          </Col>
+        </Row>
 
-         <Row>
-           <Col>
-             <FormItem label="备注" {...longFormItemLayout}>
-               {getFieldDecorator('remark', {
+        <Row>
+          <Col>
+            <FormItem label="推送" {...longFormItemLayout} required>
+              {getFieldDecorator('pushing', {
+                initialValue: selectedGroup,
+              })(
+                <Select mode="multiple" onBlur={() => this.editPushGroup()}>
+                  {pushgroup.map((item) => {
+                    return (
+                      <Option value={item.id} key={item.id} >
+                        {item.flock_name}
+                      </Option>
+                    );
+                  })}
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+          <Col>
+            <FormItem label="备注" {...longFormItemLayout}>
+              {getFieldDecorator('remark', {
                 initialValue: initialValue.remark || '',
               })(
                 <TextArea />
               )}
-             </FormItem>
-           </Col>
-         </Row>
-       </OAModal>
-     );
-   }
+            </FormItem>
+          </Col>
+        </Row>
+      </OAModal>
+    );
+  }
 }

@@ -7,6 +7,7 @@ import moneyEffects from './money';
 import staffViolationEffects from './staffviolation';
 import mathEffects from './math';
 import pushAuthEffects from './pushAuth';
+import pushGroupEffects from './pushgroup';
 import defaultReducers from '../reducers';
 
 
@@ -21,6 +22,7 @@ export default {
     score: {},
     staffviolation: [],
     pushauth: [],
+    pushgroup: [],
   },
   effects: {
     ...fineLogEffects,
@@ -29,11 +31,31 @@ export default {
     ...moneyEffects,
     ...mathEffects,
     ...pushAuthEffects,
+    ...pushGroupEffects,
     ...scoreEffects,
     ...staffViolationEffects,
   },
   reducers: {
     ...defaultReducers,
+
+    groupupdate(state, action) {
+      const { store, data } = action.payload;
+      let group = state[store];
+      group = group.map((item) => {
+        return {
+          ...item,
+          default_push: null,
+        };
+      });
+      data.forEach((item) => {
+        group = group.filter(key => key.id !== item.id);
+        group.push(item);
+      });
+      return {
+        ...state,
+        [`${store}`]: group,
+      };
+    },
 
     pay(state, action) {
       const { store, id, data, message } = action.payload;

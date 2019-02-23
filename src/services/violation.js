@@ -12,10 +12,6 @@ export async function fetchFineScore(params) {
   return request('/api/violation/punish/score', { method: 'POST', body: params });
 }
 
-export async function downloadExcelTemp() {
-  return request('/api/violation/punish/example', { method: 'GET' });
-}
-
 export async function downloadExcelFinLog(params) {
   return request('/api/violation/punish/export', {
     method: 'GET',
@@ -122,17 +118,27 @@ export async function downloadStaffExcel(params) {
 
 // 大爱推送
 export async function fetchPushAuth(params) {
-  return request('/api/violation/pushing_auth', { method: 'GET', body: params });
+  return request('/api/violation/pushing-auth', { method: 'GET', body: params });
 }
 
 export async function addPushAuth(params) {
-  return request('/api/violation/pushing_auth', { method: 'POST', body: params });
+  return request('/api/violation/pushing-auth', { method: 'POST', body: params });
 }
 
 export async function editPushAuth(params, id) {
-  return request(`/api/violation/pushing_auth/${id}`, { method: 'PUT', body: params });
+  return request(`/api/violation/pushing-auth/${id}`, { method: 'PUT', body: params });
 }
 
 export async function deletePushAuth(id) {
-  return request(`/api/violation/pushing_auth/${id}`, { method: 'DELETE' });
+  return request(`/api/violation/pushing-auth/${id}`, { method: 'DELETE' });
+}
+
+// 获取当前用户可推送群
+export async function fetchPushQun() {
+  return request('/api/violation/push/auth', { method: 'GET' });
+}
+
+// 修改当前用户默认推送群
+export async function editPushQun(params) {
+  return request('/api/violation/push', { method: 'POST', body: params });
 }

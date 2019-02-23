@@ -9,6 +9,7 @@ export default type => (Component) => {
     brand: brand.brand,
     money: violation.money,
     finelog: violation.finelog,
+    pushgroup: violation.pushgroup,
     rule: violation.rule,
     ruleType: violation.ruletype,
     loading: {
@@ -23,6 +24,7 @@ export default type => (Component) => {
       this.fetchRule();
       this.fetchRuleType();
       this.fetchDepartment();
+      this.fetchPushQun();
     }
 
     fetchFineLog = (params) => {
@@ -55,6 +57,14 @@ export default type => (Component) => {
       });
       dispatch({
         type: 'violation/fetchFineScore',
+        payload: params,
+      });
+    }
+
+    fetchPushQun = (params) => {
+      const { dispatch } = this.props;
+      dispatch({
+        type: 'violation/fetchPushQun',
         payload: params,
       });
     }
