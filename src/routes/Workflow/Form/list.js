@@ -1,11 +1,13 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'dva';
 import { Link } from 'dva/router';
 import { find } from 'lodash';
-import { Button, Tooltip, Divider, Row, Col, Card, Icon } from 'antd';
+import { Button, Card, Divider, Tabs, Tooltip } from 'antd';
 import moment from 'moment';
 import OATable from '../../../components/OATable';
 import { echo } from '../../../utils/echo';
+
+const { TabPane } = Tabs;
 
 @connect(({ currentUser, workflow, loading }) => ({
   currentUserId: currentUser.currentUser.staff_sn,
@@ -22,7 +24,8 @@ import { echo } from '../../../utils/echo';
 }))
 export default class List extends PureComponent {
   state = {
-    formId: null,
+    historyKeys: [],
+    activeKey: 'list',
   }
 
   componentWillMount() {
@@ -66,12 +69,11 @@ export default class List extends PureComponent {
     dispatch({ type: 'workflow/fetchFormType' });
   }
 
-  fetchOldForm = (params) => {
+  fetchOldForm = (id) => {
     const { dispatch } = this.props;
-    const { formId } = this.state;
     dispatch({
       type: 'workflow/fetchOldForm',
-      payload: { id: formId, ...params },
+      payload: { id },
     });
   }
 
@@ -85,46 +87,16 @@ export default class List extends PureComponent {
 
   searchHistory = (id) => {
     return () => {
-      this.setState({ formId: id }, () => {
-        if (this.state.formId) this.fetchOldForm();
+      const historyKeys = [...this.state.historyKeys];
+      historyKeys.push(id);
+      this.setState({ historyKeys, activeKey: `history-${id}` }, () => {
+        this.fetchOldForm(id);
       });
     };
   }
 
-  odlColumns = () => {
-    const columns = [
-      {
-        title: 'ID',
-        dataIndex: 'id',
-      },
-      {
-        title: '名称',
-        dataIndex: 'name',
-      },
-      {
-        title: '描述',
-        dataIndex: 'description',
-      },
-      {
-        title: '生成时间',
-        dataIndex: 'created_at',
-        sorter: true,
-        render: val => (<span>{val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : ''}</span>),
-      }, {
-        title: '操作',
-        render: ({ id }) => (
-          <Fragment>
-            <Link to={`/workflow/form/list/info/${id}`}> 查看 </Link>
-          </Fragment>
-        ),
-      },
-    ];
-    return columns;
-  }
-
-  render() {
-    const { list, oldList, oldLoading, loading, formType, superData, currentUserId } = this.props;
-    const { formId } = this.state;
+  fetchBasicColumns = () => {
+    const { formType } = this.props;
     const formTypeIndexById = {};
     formType.forEach((item) => {
       formTypeIndexById[item.id] = item;
@@ -132,7 +104,7 @@ export default class List extends PureComponent {
     const columns = [
       { title: 'ID', width: 90, dataIndex: 'id', align: 'center', sorter: true, searcher: true },
       { title: '名称', dataIndex: 'name', align: 'center', searcher: true },
-      { title: '描述', dataIndex: 'description', searcher: true, width: 100, tooltip: true },
+      { title: '描述', dataIndex: 'description', searcher: true, width: 400, tooltip: true },
       {
         title: '分类',
         dataIndex: 'form_type_id',
@@ -143,57 +115,88 @@ export default class List extends PureComponent {
         render: val => (formTypeIndexById[val] || {}).name,
       },
       {
+        title: '生成时间',
+        dataIndex: 'created_at',
         sorter: true,
-        title: '更新时间',
-        dataIndex: 'updated_at',
         render: val => (val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : ''),
       },
       {
-        title: '操作',
-        render: ({ id }, text) => (
-          <Fragment>
-            {
-              superData.includes(currentUserId) ?
-                (
-                  <a onClick={this.searchHistory(id)}>历史</a>
-                )
-                : null
-            }
-            {
-              text.handle_id.includes(2) ?
-                (
-                  <span>
-                    {
-                      superData.includes(currentUserId) ?
-                        (
-                          <Divider type="vertical" />
-                        )
-                        : null
-                    }
-                    <Link to={`/workflow/form/list/edit/${id}`}> 编辑 </Link>
-                  </span>
-                )
-                : null
-            }
-            {
-              text.handle_id.includes(3) ?
-                (
-                  <span>
-                    {
-                      text.handle_id.includes(2) ?
-                        <Divider type="vertical" />
-                        : null
-                    }
-                    <a onClick={() => this.handleDelete(id)}>删除</a>
-                  </span>
-                )
-                : null
-            }
-          </Fragment>
-        ),
+        title: '更新时间',
+        dataIndex: 'updated_at',
+        sorter: true,
+        render: val => (val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : ''),
       },
     ];
+    return columns;
+  }
 
+  fetchColumns = (isAdmin) => {
+    const columns = this.fetchBasicColumns();
+    columns.push({
+      title: '操作',
+      render: ({ id }, text) => (
+        <Fragment>
+          {isAdmin ? (<a onClick={this.searchHistory(id)}>历史</a>) : null}
+          {
+            text.handle_id.includes(2) ?
+              (
+                <span>
+                  {isAdmin ? (<Divider type="vertical" />) : null}
+                  <Link to={`/workflow/form/list/edit/${id}`}> 编辑 </Link>
+                </span>
+              )
+              : null
+          }
+          {
+            text.handle_id.includes(3) ?
+              (
+                <span>
+                  {
+                    text.handle_id.includes(2) ?
+                      <Divider type="vertical" />
+                      : null
+                  }
+                  <a onClick={() => this.handleDelete(id)}>删除</a>
+                </span>
+              )
+              : null
+          }
+        </Fragment>
+      ),
+    });
+    return columns;
+  }
+
+  fetchHistoryColumns = () => {
+    const columns = this.fetchBasicColumns();
+    columns.push({
+      title: '操作',
+      render: ({ id }) => (
+        <Fragment>
+          <Link to={`/workflow/form/list/info/${id}`}> 查看 </Link>
+        </Fragment>
+      ),
+    });
+    return columns;
+  }
+
+  closeHistoryTab = (targetKey, action) => {
+    if (action === 'remove') {
+      let { activeKey } = this.state;
+      const historyKeys = [...this.state.historyKeys];
+      const key = targetKey.match(/^history-(\d+)$/)[1];
+      historyKeys.splice(historyKeys.indexOf(key), 1);
+      if (activeKey === targetKey) activeKey = 'list';
+      this.setState({ historyKeys, activeKey });
+    }
+  }
+
+  render() {
+    const { list, oldList, oldLoading, loading, superData, currentUserId } = this.props;
+    const { historyKeys, activeKey } = this.state;
+
+    const isAdmin = superData.includes(currentUserId);
+    const columns = this.fetchColumns(isAdmin);
     const extraOperator = [
       <Link to="/workflow/form/list/type" key="addType">
         <Button type="primary" icon="folder">
@@ -201,7 +204,7 @@ export default class List extends PureComponent {
         </Button>
       </Link>,
     ];
-    if (superData.includes(currentUserId)) {
+    if (isAdmin) {
       const add = (
         <Tooltip title="新建表单" key="add">
           <Link to="/workflow/form/list/add">
@@ -211,13 +214,16 @@ export default class List extends PureComponent {
       );
       extraOperator.push(add);
     }
-
-    const span = formId ? 12 : 24;
-    const oldData = oldList[formId] || [];
     return (
-      <Row type="flex" justify="space-around">
-        <Col span={span} key="1">
-          <Card bordered={false}>
+      <Card bordered={false}>
+        <Tabs
+          activeKey={activeKey}
+          onChange={key => this.setState({ activeKey: key })}
+          type="editable-card"
+          hideAdd
+          onEdit={this.closeHistoryTab}
+        >
+          <TabPane tab="列表" key="list" closable={false}>
             <OATable
               data={list}
               columns={columns}
@@ -225,33 +231,21 @@ export default class List extends PureComponent {
               extraOperator={extraOperator}
               fetchDataSource={this.fetchForm}
             />
-          </Card>
-        </Col>
-        {formId && (
-          <Col span={10} key="2">
-            <Card
-              bordered={false}
-              title={(
-                <Row type="flex" justify="space-around">
-                  <Col span={12}>
-                    {find(list, ['id', formId]).name}
-                  </Col>
-                  <Col span={12} style={{ textAlign: 'right' }}>
-                    <Icon type="close" style={{ cursor: 'pointer' }} onClick={() => this.setState({ formId: null })} />
-                  </Col>
-                </Row>
-              )}
-            >
-              <OATable
-                data={oldData}
-                loading={oldLoading}
-                columns={this.odlColumns()}
-                fetchDataSource={this.fetchOldForm}
-              />
-            </Card>
-          </Col>
-        )}
-      </Row>
+          </TabPane>
+          {historyKeys.map((key) => {
+            return (
+              <TabPane tab={`${find(list, ['id', key]).name}-历史`} key={`history-${key}`}>
+                <OATable
+                  data={oldList[key]}
+                  loading={oldLoading}
+                  columns={this.fetchHistoryColumns()}
+                  fetchDataSource={() => this.fetchOldForm(key)}
+                />
+              </TabPane>
+            );
+          })}
+        </Tabs>
+      </Card>
     );
   }
 }
