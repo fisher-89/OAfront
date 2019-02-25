@@ -8,6 +8,8 @@ import staffViolationEffects from './staffviolation';
 import mathEffects from './math';
 import pushAuthEffects from './pushAuth';
 import pushGroupEffects from './pushgroup';
+import pushLogEffects from './pushlog';
+import myPushLogEffects from './mypushlog';
 import defaultReducers from '../reducers';
 
 
@@ -15,14 +17,16 @@ export default {
   namespace: 'violation',
   state: {
     finelog: [],
-    rule: [],
-    ruletype: [],
-    money: {},
     math: [],
-    score: {},
-    staffviolation: [],
+    money: {},
+    mypushlog: [],
     pushauth: [],
     pushgroup: [],
+    pushlog: [],
+    rule: [],
+    ruletype: [],
+    score: {},
+    staffviolation: [],
   },
   effects: {
     ...fineLogEffects,
@@ -30,8 +34,10 @@ export default {
     ...ruleTypeEffects,
     ...moneyEffects,
     ...mathEffects,
+    ...myPushLogEffects,
     ...pushAuthEffects,
     ...pushGroupEffects,
+    ...pushLogEffects,
     ...scoreEffects,
     ...staffViolationEffects,
   },

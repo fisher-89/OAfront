@@ -147,3 +147,13 @@ export async function editPushQun(params) {
 export async function selfLogPush(params) {
   return request('/api/violation/push/image', { method: 'POST', body: params });
 }
+
+// 推送记录
+export async function fetchPushLog(params) {
+  return request('/api/violation/push/log', { method: 'GET', body: params });
+}
+
+// 我的推送记录
+export async function fetchMyPushLog(params) {
+  return request('/api/violation/push/my-log', { method: 'GET', body: params });
+}

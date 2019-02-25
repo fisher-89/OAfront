@@ -244,6 +244,9 @@ export const getRouterData = (app) => {
     '/violation/fineauth': {
       component: dynamicWrapper(app, ['violation'], () => import('../routes/Violation/Fauth')),
     },
+    '/violation/pushlog': {
+      component: dynamicWrapper(app, ['violation'], () => import('../routes/Violation/PushLog')),
+    },
 
     /**  系统 */
     '/system/authority': {
