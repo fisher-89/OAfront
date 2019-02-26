@@ -344,7 +344,7 @@ export default class EditStaff extends PureComponent {
                         filterOption={this.handleSelectFilter}
                       >
                         <Option value="0">无</Option>
-                        <Option value="1">108将</Option>
+                        <Option value="1">109将</Option>
                         <Option value="2">36天罡</Option>
                         <Option value="3">24金刚</Option>
                         <Option value="4">18罗汉</Option>
