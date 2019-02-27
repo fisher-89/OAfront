@@ -58,12 +58,13 @@ const status = [
   department: department.department,
   staffInfo: staffs.staffDetails,
   staffLoading: loading.models.staffs,
-  staffInfoLoading: loading.effects['staffs/fetchStaff'],
+  staffInfoLoading: loading.effects['staffs/fetchStaff'] || loading.effects['staffs/fetchStaffInfo'],
 }))
 
 export default class extends PureComponent {
   state = {
     panes: [],
+    staffSn: '',
     filters: {},
     editStaff: {},
     addVisible: false,
@@ -132,6 +133,11 @@ export default class extends PureComponent {
       this.fetchStaffInfo({ staff_sn: info.staff_sn });
     }
     this.setState({ panes: [...panes], activeKey: info.staff_sn.toString() });
+  }
+
+  showEditModal = (info, visibleName) => {
+    this.fetchStaffInfo({ staff_sn: info.staff_sn });
+    this.setState({ staffSn: info.staff_sn }, () => this.setState({ [visibleName]: true }));
   }
 
   remove = (targetKey) => {
@@ -256,7 +262,7 @@ export default class extends PureComponent {
           dataauthid={58}
           key="again-entry"
           onClick={() => {
-            this.showModal(rowData, 'entryVisible');
+            this.showEditModal(rowData, 'entryVisible');
           }}
         >
           再入职
@@ -353,7 +359,7 @@ export default class extends PureComponent {
           key="edit"
           dataauthid={82}
           onClick={() => {
-            this.showModal(rowData, 'editVisible');
+            this.showEditModal(rowData, 'editVisible');
           }}
         >
           编辑
@@ -589,7 +595,7 @@ export default class extends PureComponent {
   }
 
   render() {
-    const { panes, activeKey, filters } = this.state;
+    const { panes, activeKey, filters, staffSn } = this.state;
     const { staffLoading, staffInfo, staffInfoLoading, staff } = this.props;
     const columns = this.makeColumns();
     return (
@@ -641,17 +647,33 @@ export default class extends PureComponent {
             );
           })}
         </Tabs>
+        {staffInfo[staffSn] && (
+          <EditStaff
+            loading={staffInfoLoading}
+            visible={this.state.editVisible}
+            editStaff={staffInfo[staffSn]}
+            onCancel={() => {
+              this.setState({ editVisible: false, editStaff: {} });
+            }}
+          />
+        )}
+        {staffInfo[staffSn] && (
+          <AgainEntry
+            loading={staffInfoLoading}
+            visible={this.state.entryVisible}
+            editStaff={staffInfo[staffSn]}
+            onCancel={() => {
+              this.setState({
+                entryVisible: false,
+                editStaff: {},
+              });
+            }}
+          />
+        )}
         <AddStaff
           visible={this.state.addVisible}
           onCancel={() => {
             this.setState({ addVisible: false, editStaff: {} });
-          }}
-        />
-        <EditStaff
-          visible={this.state.editVisible}
-          editStaff={this.state.editStaff}
-          onCancel={() => {
-            this.setState({ editVisible: false, editStaff: {} });
           }}
         />
         <EditTransfer
@@ -680,16 +702,6 @@ export default class extends PureComponent {
           onCancel={() => {
             this.setState({
               leavingVisible: false,
-              editStaff: {},
-            });
-          }}
-        />
-        <AgainEntry
-          visible={this.state.entryVisible}
-          editStaff={this.state.editStaff}
-          onCancel={() => {
-            this.setState({
-              entryVisible: false,
               editStaff: {},
             });
           }}
