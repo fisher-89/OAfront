@@ -58,7 +58,7 @@ const status = [
   department: department.department,
   staffInfo: staffs.staffDetails,
   staffLoading: loading.models.staffs,
-  staffInfoLoading: loading.effects['staffs/fetchStaff'] || loading.effects['staffs/fetchStaffInfo'],
+  staffInfoLoading: loading.effects['staffs/fetchStaff'],
 }))
 
 export default class extends PureComponent {
