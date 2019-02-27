@@ -90,7 +90,7 @@ export default class extends PureComponent {
       {
         title: '对公转账',
         dataIndex: 'payee_is_public',
-        filters: [{ text: '是', value: 1 }, { text: '否', value: 0 }],
+        filters: [{ text: '是', value: 1 }, { text: '否', value: '0' }],
         render: (cellData) => {
           return cellData ? '是' : '否';
         },
