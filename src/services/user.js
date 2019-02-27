@@ -7,6 +7,12 @@ export async function loginByTelephone(params) {
   });
 }
 
+export async function clearlogin() {
+  return request('/api/login/clear', {
+    method: 'POST',
+  });
+}
+
 export async function query() {
   return request('/api/users');
 }
