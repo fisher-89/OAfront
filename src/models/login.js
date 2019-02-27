@@ -1,4 +1,4 @@
-import { loginByTelephone } from '../services/user';
+import { loginByTelephone, clearlogin } from '../services/user';
 import { setAuthority } from '../utils/authority';
 
 export default {
@@ -24,7 +24,8 @@ export default {
         window.location.reload();
       }
     },
-    * logout(_, { put }) {
+    * logout(_, { call, put }) {
+      yield call(clearlogin);
       yield put({
         type: 'changeLoginStatus',
         payload: {
