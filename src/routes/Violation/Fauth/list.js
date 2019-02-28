@@ -72,7 +72,7 @@ export default class extends PureComponent {
   }
 
   render() {
-    const { fetchPushAuth, setPushAuth, pushauth, loading } = this.props;
+    const { dinggroup, fetchDingGroup, fetchPushAuth, setPushAuth, pushauth, loading } = this.props;
     const { initialValue, visible } = this.state;
     return (
       <Fragment>
@@ -84,6 +84,8 @@ export default class extends PureComponent {
           extraOperator={this.makeExtraOperator()}
         />
         <NewForm
+          fetchDingGroup={fetchDingGroup}
+          dinggroup={dinggroup}
           initialValue={initialValue}
           visible={visible}
           setPushAuth={setPushAuth}

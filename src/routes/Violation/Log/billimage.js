@@ -73,7 +73,7 @@ export default class extends PureComponent {
     return columns;
   }
   render() {
-    const { billimage } = this.props;
+    const { billimage, fetchBillImage, loading } = this.props;
     const extra = [];
     extra.push(
       (
@@ -95,12 +95,24 @@ export default class extends PureComponent {
         >
           我录入的
         </Button>
+      ),
+      (
+        <Button
+          key="reset"
+          type="primary"
+          icon="redo"
+          onClick={() => fetchBillImage()}
+        >
+          重置
+        </Button>
       )
     );
     return (
       <OATable
         columns={this.makeColumns()}
         dataSource={billimage}
+        loading={loading}
+        fetchDataSource={fetchBillImage}
         extraOperator={extra}
       />
     );

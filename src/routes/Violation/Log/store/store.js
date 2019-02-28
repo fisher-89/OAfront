@@ -14,6 +14,7 @@ export default type => (Component) => {
     ruleType: violation.ruletype,
     score: violation.score,
     loading: {
+      fetchBillImage: loading.effects['violation/fetchBillImage'],
       fetchRuleType: loading.effects['violation/fetchRuleType'],
       fetchRule: loading.effects['violation/fetchRule'],
       fetchFineLog: loading.effects['violation/fetchFineLog'],
@@ -28,8 +29,13 @@ export default type => (Component) => {
       this.fetchPushQun();
     }
 
-    fetchBillImage = (params) => {
+    fetchBillImage = (keys) => {
       const { dispatch } = this.props;
+      const params = {
+        own: 0,
+        overdued: 0,
+        ...keys,
+      };
       dispatch({ type: 'violation/fetchBillImage', payload: params });
     }
 

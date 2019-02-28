@@ -5,6 +5,7 @@ import { makeProps } from '../../../../utils/utils';
 export default type => (Component) => {
   @connect(({ violation, loading }) => ({
     pushauth: violation.pushauth,
+    dinggroup: violation.dinggroup,
     loading: {
       fetchPushAuth: loading.effects['violation/fetchPushAuth'],
       deletePushAuth: loading.effects['violation/deletePushAuth'],
@@ -19,6 +20,11 @@ export default type => (Component) => {
         onSuccess,
         onError,
       });
+    }
+
+    fetchDingGroup = () => {
+      const { dispatch } = this.props;
+      dispatch({ type: 'violation/fetchDingGroup' });
     }
 
     deletePushAuth = (id) => {

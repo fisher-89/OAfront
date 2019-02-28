@@ -374,7 +374,7 @@ export default class extends PureComponent {
     excelExport = { actionType: 'violation/downloadExcelFinLog', fileName: '大爱记录.xlsx' };
     const multiOperator = [
       {
-        text: '已支付',
+        text: '支付',
         action: (selectedRowsReal) => {
           this.sendPay(selectedRowsReal);
         },
@@ -440,6 +440,7 @@ export default class extends PureComponent {
                 <TabPane tab={pane.title} key={pane.key} >
                   <BillImage
                     billimage={billimage}
+                    loading={loading}
                     fetchBillImage={fetchBillImage}
                   />
                 </TabPane>

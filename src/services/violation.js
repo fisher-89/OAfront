@@ -158,6 +158,12 @@ export async function fetchMyPushLog(params) {
   return request('/api/violation/push/my-log', { method: 'GET', body: params });
 }
 
+// 月末清真
 export async function fetchBillImage(params) {
   return request('/api/violation/bill-image', { method: 'POST', body: params });
+}
+
+//  丁丁群
+export async function fetchDingGroup() {
+  return request('/api/violation/ding-group', { method: 'GET' });
 }
