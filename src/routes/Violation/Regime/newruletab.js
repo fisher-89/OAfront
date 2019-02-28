@@ -24,7 +24,7 @@ export default class extends PureComponent {
   }
 
   ruleSubmit = (values) => {
-    const { dispatch, onError } = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: values.id ? 'violation/editRule' : 'violation/addRule',
       payload: {
@@ -33,7 +33,15 @@ export default class extends PureComponent {
         score_custom_settings: values.score_custom_settings ? 1 : 0,
       },
       onSuccess: () => this.props.remove(),
-      onError,
+      onError: this.handleError,
+    });
+  }
+
+  handleError = (error) => {
+    const { onError } = this.props;
+    onError(error, {
+      money: 'money',
+      score: 'score',
     });
   }
 

@@ -5,6 +5,7 @@ import OATable from '../../../components/OATable';
 import BigLove from './form';
 import Details from './details';
 import PushLog from './logpush';
+import BillImage from './billimage';
 import {
   getFiltersData,
   findRenderKey,
@@ -35,18 +36,34 @@ export default class extends PureComponent {
 
   pushLog = () => {
     const { panes } = this.state;
-    if (JSON.stringify(panes) !== JSON.stringify([{ title: '补充推送', key: '2' }])) {
+    if (JSON.stringify(panes) !== JSON.stringify([{ title: '补充推送', key: '2' }]) ||
+      JSON.stringify(panes) !== JSON.stringify([{ title: '补充推送', key: '2' }, { title: '月末清账', key: '3' }]) ||
+      JSON.stringify(panes) !== JSON.stringify([{ title: '月末清账', key: '3' }, { title: '补充推送', key: '2' }])
+    ) {
       panes.push({ title: '补充推送', key: '2' });
     }
     this.setState({ panes: [...panes], activeKey: '2' });
+  }
+
+  Bills = () => {
+    const { panes } = this.state;
+    if (JSON.stringify(panes) !== JSON.stringify([{ title: '月末清账', key: '3' }]) ||
+      JSON.stringify(panes) !== JSON.stringify([{ title: '补充推送', key: '2' }, { title: '月末清账', key: '3' }]) ||
+      JSON.stringify(panes) !== JSON.stringify([{ title: '月末清账', key: '3' }, { title: '补充推送', key: '2' }])
+    ) {
+      panes.push({ title: '月末清账', key: '3' });
+    }
+    this.setState({ panes: [...panes], activeKey: '3' });
   }
 
   tabsChange = (activeKey) => {
     this.setState({ activeKey });
   }
 
-  remove = () => {
-    this.setState({ panes: [], activeKey: '1' });
+  remove = (key) => {
+    const { panes } = this.state;
+    const rest = panes.filter(item => item.key !== key);
+    this.setState({ panes: rest, activeKey: '1' });
   }
 
   handleModalVisible = (flag) => {
@@ -85,7 +102,7 @@ export default class extends PureComponent {
         width: 50,
         fixed: 'left',
         sorter: (a, b) => a.id - b.id,
-        defaultSortOrder: 'ascend',
+        defaultSortOrder: 'descend',
       },
       {
         title: '姓名',
@@ -195,8 +212,8 @@ export default class extends PureComponent {
               </a>
               {checkAuthority(204) && <Divider type="vertical" />}
               {checkAuthority(204) && <a onClick={() => this.handleEdit(rowData)}>编辑</a>}
-              {checkAuthority(203) && <Divider type="vertical" />}
-              {checkAuthority(203) &&
+              {checkAuthority(203) && !rowData.has_paid && <Divider type="vertical" />}
+              {checkAuthority(203) && !rowData.has_paid &&
                 <a onClick={() => this.paychange(rowData.id, payOrRefunder)}>{payOrRefunder}</a>}
               {checkAuthority(202) && <Divider type="vertical" />}
               {checkAuthority(202) && <a onClick={() => deleted(rowData.id)}>删除</a>}
@@ -285,7 +302,17 @@ export default class extends PureComponent {
   }
 
   render() {
-    const { finelog, fetchFineLog, loading, department, brand, pushgroup, dispatch } = this.props;
+    const {
+      billimage,
+      fetchBillImage,
+      finelog,
+      fetchFineLog,
+      loading,
+      department,
+      brand,
+      pushgroup,
+      dispatch,
+    } = this.props;
     const { detailsVisible,
       visible,
       initialValue,
@@ -319,6 +346,18 @@ export default class extends PureComponent {
           }}
         >
           补充推送
+        </Button>
+      ),
+      (
+        <Button
+          key="BillImage"
+          type="primary"
+          icon="snippets"
+          onClick={() => {
+            this.Bills();
+          }}
+        >
+          月末清算
         </Button>
       ),
       (
@@ -381,19 +420,32 @@ export default class extends PureComponent {
               excelExport={checkAuthority(205) && excelExport}
             />
           </TabPane>
-          {panes.map(pane => (
-            <TabPane tab={pane.title} key={pane.key} >
-              <PushLog
-                finelog={finelog}
-                fetchFineLog={fetchFineLog}
-                loading={loading}
-                dispatch={dispatch}
-                pushgroup={pushgroup}
-                department={department}
-                brand={brand}
-              />
-            </TabPane>
-          ))
+          {panes.map((pane) => {
+            if (pane.title === '补充推送') {
+              return (
+                <TabPane tab={pane.title} key={pane.key} >
+                  <PushLog
+                    finelog={finelog}
+                    fetchFineLog={fetchFineLog}
+                    loading={loading}
+                    dispatch={dispatch}
+                    pushgroup={pushgroup}
+                    department={department}
+                    brand={brand}
+                  />
+                </TabPane>
+              );
+            } else {
+              return (
+                <TabPane tab={pane.title} key={pane.key} >
+                  <BillImage
+                    billimage={billimage}
+                    fetchBillImage={fetchBillImage}
+                  />
+                </TabPane>
+              );
+            }
+          })
           }
         </Tabs>
         <BigLove

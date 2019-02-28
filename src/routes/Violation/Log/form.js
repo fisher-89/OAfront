@@ -76,18 +76,24 @@ export default class extends PureComponent {
       } else if ({ ...nextProps.money.money }.states === 1 &&
         { ...nextProps.score.score }.states !== 1) {
         this.setState({ moneyable: false, scoreable: true });
-        setFieldsValue({ money: { ...{ ...nextProps.money }.money }.data,
-          score: { ...{ ...nextProps.score }.score }.data });
+        setFieldsValue({
+          money: { ...{ ...nextProps.money }.money }.data,
+          score: { ...{ ...nextProps.score }.score }.data,
+        });
       } else if ({ ...nextProps.money.money }.states !== 1 &&
         { ...nextProps.score.score }.states === 1) {
         this.setState({ moneyable: true, scoreable: false });
-        setFieldsValue({ money: { ...{ ...nextProps.money }.money }.data,
-          score: { ...{ ...nextProps.score }.score }.data });
+        setFieldsValue({
+          money: { ...{ ...nextProps.money }.money }.data,
+          score: { ...{ ...nextProps.score }.score }.data,
+        });
       } else if ({ ...nextProps.money.money }.states === 1 &&
         { ...nextProps.score.score }.states === 1) {
         this.setState({ moneyable: false, scoreable: false });
-        setFieldsValue({ money: { ...{ ...nextProps.money }.money }.data,
-          score: { ...{ ...nextProps.score }.score }.data });
+        setFieldsValue({
+          money: { ...{ ...nextProps.money }.money }.data,
+          score: { ...{ ...nextProps.score }.score }.data,
+        });
       } else {
         this.setState({ moneyable: true, scoreable: true });
         setFieldsValue({
@@ -103,10 +109,13 @@ export default class extends PureComponent {
     onError(error, {
       staff_name: 'staff',
       staff_sn: 'staff',
+      sync_point: 'sync_point',
       billing_name: 'billing',
       billing_sn: 'billing',
+      billing_at: 'billing_at',
       score: 'score',
       money: 'money',
+      pushing: 'pushing',
 
     });
   }
@@ -205,11 +214,11 @@ export default class extends PureComponent {
     const { selectrule, moneyable, scoreable } = this.state;
     const staffChoice = !!initialValue.id;
     const { getFieldDecorator } = this.props.form;
-    const payTrue = { ...initialValue }.has_paid === 1;
     const sGroup = pushgroup.filter(item => item.default_push === 1);
     const SGroupId = sGroup.map(item => item.id);
     const selectedGroup = JSON.stringify(initialValue) !== '{}' ?
       initialValue.pushing : SGroupId;
+    const pointdefault = JSON.stringify(initialValue) !== '{}' ? initialValue.sync_point : true;
     return (
       <OAModal
         title="大爱"
@@ -245,7 +254,6 @@ export default class extends PureComponent {
               {getFieldDecorator('violate_at', {
                 initialValue: initialValue.violate_at || undefined,
               })(<DatePicker
-                disabled={staffChoice}
                 allowClear={false}
                 disabledDate={this.disabledDate}
               />)}
@@ -258,7 +266,6 @@ export default class extends PureComponent {
                 initialValue: { ...initialValue.rules }.type_id || undefined,
               })(
                 <Select
-                  disabled={staffChoice}
                   onSelect={this.selectRuleType}
                 >
                   {ruleType.map(item => (
@@ -278,9 +285,7 @@ export default class extends PureComponent {
               {getFieldDecorator('rule_id', {
                 initialValue: { ...initialValue }.rule_id || undefined,
               })(
-                <Select
-                  disabled={staffChoice}
-                >
+                <Select >
                   {(selectrule || []).map(item => (
                     <Option key={item.id} value={item.id}>
                       {item.name}
@@ -324,7 +329,6 @@ export default class extends PureComponent {
               {getFieldDecorator('has_paid', {
                 initialValue: initialValue.has_paid,
               })(<Switch
-                disabled={payTrue}
                 defaultChecked={!!initialValue.has_paid}
               />)}
             </FormItem>
@@ -334,9 +338,7 @@ export default class extends PureComponent {
             <FormItem label="付款时间" {...formItemLayout}>
               {getFieldDecorator('paid_at', {
                 initialValue: initialValue.paid_at || undefined,
-              })(<DatePicker
-                disabledDate={this.disabledDate}
-              />)}
+              })(<DatePicker />)}
             </FormItem>
           </Col>
         </Row>
@@ -344,11 +346,9 @@ export default class extends PureComponent {
         <Row>
           <Col {...colSpan}>
             <FormItem label="是否同步积分制" {...formItemLayout}>
-              {getFieldDecorator('sync_point', {
-                initialValue: !!initialValue.sync_point,
-              })(
+              {getFieldDecorator('sync_point')(
                 <Switch
-                  defaultChecked={!!initialValue.sync_point}
+                  defaultChecked={!!pointdefault}
                 />
               )}
             </FormItem>
@@ -362,7 +362,6 @@ export default class extends PureComponent {
                 initialValue: initialValue.billing || [],
               })(
                 <SearchTable.Staff
-                  disabled={staffChoice}
                   name={{
                     billing_sn: 'staff_sn',
                     billing_name: 'realname',
@@ -379,7 +378,6 @@ export default class extends PureComponent {
               {getFieldDecorator('billing_at', {
                 initialValue: initialValue.billing_at || moment().format('YYYY-MM-DD'),
               })(<DatePicker
-                disabled={staffChoice}
                 allowClear={false}
                 disabledDate={this.disabledDate}
               />)}
@@ -391,7 +389,7 @@ export default class extends PureComponent {
           <Col>
             <FormItem label="推送" {...longFormItemLayout} required>
               {getFieldDecorator('pushing', {
-                initialValue: selectedGroup,
+                initialValue: selectedGroup || [],
               })(
                 <Select mode="multiple" onBlur={() => this.editPushGroup()}>
                   {pushgroup.map((item) => {

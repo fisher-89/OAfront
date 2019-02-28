@@ -4,14 +4,15 @@ import { makeProps } from '../../../../utils/utils';
 
 export default type => (Component) => {
   @connect(({ violation, department, brand, loading }) => ({
-    department: department.department,
-    score: violation.score,
+    billimage: violation.billimage,
     brand: brand.brand,
-    money: violation.money,
+    department: department.department,
     finelog: violation.finelog,
+    money: violation.money,
     pushgroup: violation.pushgroup,
     rule: violation.rule,
     ruleType: violation.ruletype,
+    score: violation.score,
     loading: {
       fetchRuleType: loading.effects['violation/fetchRuleType'],
       fetchRule: loading.effects['violation/fetchRule'],
@@ -25,6 +26,11 @@ export default type => (Component) => {
       this.fetchRuleType();
       this.fetchDepartment();
       this.fetchPushQun();
+    }
+
+    fetchBillImage = (params) => {
+      const { dispatch } = this.props;
+      dispatch({ type: 'violation/fetchBillImage', payload: params });
     }
 
     fetchFineLog = (params) => {

@@ -1,4 +1,5 @@
 import { notification } from 'antd';
+import billimageEffect from './billimage';
 import fineLogEffects from './fineLog';
 import ruleEffects from './rule';
 import ruleTypeEffects from './rule-type';
@@ -16,6 +17,7 @@ import defaultReducers from '../reducers';
 export default {
   namespace: 'violation',
   state: {
+    billimage: [],
     finelog: [],
     math: [],
     money: {},
@@ -29,6 +31,7 @@ export default {
     staffviolation: [],
   },
   effects: {
+    ...billimageEffect,
     ...fineLogEffects,
     ...ruleEffects,
     ...ruleTypeEffects,

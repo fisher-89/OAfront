@@ -157,3 +157,7 @@ export async function fetchPushLog(params) {
 export async function fetchMyPushLog(params) {
   return request('/api/violation/push/my-log', { method: 'GET', body: params });
 }
+
+export async function fetchBillImage(params) {
+  return request('/api/violation/bill-image', { method: 'POST', body: params });
+}
