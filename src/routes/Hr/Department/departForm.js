@@ -99,10 +99,12 @@ export default class extends PureComponent {
             initialValue: initialValue.parent_id.toString(),
           } : { initialValue: '' })(
             <TreeSelect
-              placeholder="上级部门默认为空"
-              treeDefaultExpandAll
+              showSearch
               treeData={newTreeData}
               dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+              filterTreeNode={(inputValue, treeNode) => {
+                return treeNode.props.title.indexOf(inputValue) !== -1;
+              }}
             />
           )}
         </FormItem>

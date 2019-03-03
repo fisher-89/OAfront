@@ -35,7 +35,10 @@ export default class TreeSorter extends PureComponent {
   constructor(props) {
     super(props);
     const { dataSource, rootPid } = props;
-    const treeData = this.markTreeData(dataSource || [], rootPid);
+    const treeData = this.markTreeData(dataSource || [], rootPid).sort((x, y) => {
+      return x.sort - y.sort;
+    });
+
     this.state = {
       treeData: treeData || [],
     };
@@ -44,7 +47,9 @@ export default class TreeSorter extends PureComponent {
   componentWillReceiveProps(nextProps) {
     const { dataSource, rootPid } = nextProps;
     if (JSON.stringify(dataSource) !== JSON.stringify(this.props.dataSource)) {
-      const treeData = this.markTreeData(dataSource || [], rootPid);
+      const treeData = this.markTreeData(dataSource || [], rootPid).sort((x, y) => {
+        return x.sort - y.sort;
+      });
       this.setState({ treeData: [...treeData] });
     }
   }
@@ -58,7 +63,9 @@ export default class TreeSorter extends PureComponent {
           ...item,
           key: `${item[value]}`,
         };
-        const children = this.markTreeData(data, item[value]);
+        const children = this.markTreeData(data, item[value]).sort((x, y) => {
+          return x.sort - y.sort;
+        });
         if (children.length > 0) {
           temp.children = children;
         }

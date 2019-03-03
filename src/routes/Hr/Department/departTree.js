@@ -74,28 +74,32 @@ export default class extends PureComponent {
       const temp = {
         id: item.id,
         name: item.name,
-        parent_id: pid || null,
+        parent_id: pid || 0,
         sort,
       };
       if (item.children && item.children.length > 0) {
         this.undotTreeData(item.children, newData, item.id);
         delete temp.children;
       }
-      newData.push(temp);
+      const { department } = this.props;
+      const dept = department.filter(key => (key.id === temp.id))[0];
+      if ((temp.sort !== dept.sort) || (temp.parent_id !== dept.parent_id)) {
+        newData.push(temp);
+      }
     });
   }
 
   handleOnchange = (newTree) => {
     const newDataSource = [];
     this.undotTreeData(newTree, newDataSource);
-    const { department, dispatch } = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: 'department/sortDepartment',
       payload: {
-        old_data: department,
+        // old_data: department,
         new_data: newDataSource,
       },
-      onSuccess: this.handleSuccess,
+      // onSuccess: this.handleSuccess,
       onError: this.handleSorterError,
     });
   }
@@ -134,15 +138,16 @@ export default class extends PureComponent {
           ) : null}
         </React.Fragment>
       );
+      const hasChangeAuth = checkAuthority(65);
       if (item.children && item.children.length) {
         return (
-          <TreeNode title={content} key={item.key} >
+          <TreeNode title={content} key={item.key} disabled={!hasChangeAuth}>
             {this.renderTreeNodes(item.children)}
           </TreeNode>
         );
       }
       return (
-        <TreeNode key={item.key} title={content} />
+        <TreeNode key={item.key} title={content} disabled={!hasChangeAuth} />
       );
     });
   }

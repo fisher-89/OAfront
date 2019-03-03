@@ -74,14 +74,20 @@ export default {
       return error;
     }
   },
-  * sortDepartment({ payload, onSuccess, onError }, { call }) {
+  * sortDepartment({ payload, onError }, { call, put }) {
     try {
       const params = { ...payload };
       const response = yield call(sortDepartment, params);
       if (response.errors && onError) {
         onError(response.errors);
       } else {
-        onSuccess(response);
+        yield put({
+          type: 'multiupdate',
+          payload: {
+            store,
+            data: response,
+          },
+        });
       }
     } catch (error) {
       return error;
