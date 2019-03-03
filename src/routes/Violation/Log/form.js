@@ -5,6 +5,7 @@ import {
   Col,
   Select,
   Switch,
+  InputNumber,
 } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
@@ -26,7 +27,7 @@ const { Option } = Select;
   onValuesChange(props, changedValues, allValues) {
     const { fetchMoneyAndScore, onError } = props;
     const [midkey] = Object.keys(changedValues);
-    if (midkey === 'staff' || midkey === 'rule_id' || midkey === 'violate_at') {
+    if (midkey === 'staff' || midkey === 'rule_id' || midkey === 'violate_at' || midkey === 'quantity') {
       if ((allValues.staff || {}).staff_sn && allValues.rule_id && allValues.violate_at) {
         if (props.initialValue.id) {
           const params = {
@@ -34,6 +35,7 @@ const { Option } = Select;
             staff_sn: allValues.staff.staff_sn,
             rule_id: allValues.rule_id,
             violate_at: allValues.violate_at,
+            quantity: allValues.quantity,
           };
           fetchMoneyAndScore(params, onError);
         } else {
@@ -41,6 +43,7 @@ const { Option } = Select;
             staff_sn: allValues.staff.staff_sn,
             rule_id: allValues.rule_id,
             violate_at: allValues.violate_at,
+            quantity: allValues.quantity,
           };
           fetchMoneyAndScore(params, onError);
         }
@@ -64,19 +67,24 @@ export default class extends PureComponent {
       this.setState({ selectrule: midkey ? rule.filter(item => `${item.type_id}` === `${midkey}`) : [] });
     }
     if (JSON.stringify(this.props.initialValue) !== JSON.stringify(nextProps.initialValue)) {
-      setFieldsValue({ money: nextProps.initialValue.money, score: nextProps.initialValue.score });
+      setFieldsValue({
+        money: nextProps.initialValue.money,
+        score: nextProps.initialValue.score,
+        quantity: nextProps.initialValue.quantity,
+      });
       this.setState({ moneyable: true, scoreable: true });
     } else if (JSON.stringify(this.props.money) !== JSON.stringify(nextProps.money) ||
       JSON.stringify(this.props.score) !== JSON.stringify(nextProps.score)) {
       if (({ ...nextProps.money.money } || {}).errors ||
         ({ ...nextProps.score.score } || {}).errors) {
-        setFieldsValue({ money: null, score: null });
+        setFieldsValue({ money: null, score: null, quantity: null });
         this.setState({ moneyable: true, scoreable: true });
         setFields({ violate_at: { value: null, errors: [new Error('违纪日期 必须早于现在!')] } });
       } else if ({ ...nextProps.money.money }.states === 1 &&
         { ...nextProps.score.score }.states !== 1) {
         this.setState({ moneyable: false, scoreable: true });
         setFieldsValue({
+          quantity: { ...{ ...nextProps.money }.money }.quantity,
           money: { ...{ ...nextProps.money }.money }.data,
           score: { ...{ ...nextProps.score }.score }.data,
         });
@@ -84,6 +92,7 @@ export default class extends PureComponent {
         { ...nextProps.score.score }.states === 1) {
         this.setState({ moneyable: true, scoreable: false });
         setFieldsValue({
+          quantity: { ...{ ...nextProps.money }.money }.quantity,
           money: { ...{ ...nextProps.money }.money }.data,
           score: { ...{ ...nextProps.score }.score }.data,
         });
@@ -91,12 +100,14 @@ export default class extends PureComponent {
         { ...nextProps.score.score }.states === 1) {
         this.setState({ moneyable: false, scoreable: false });
         setFieldsValue({
+          quantity: { ...{ ...nextProps.money }.money }.quantity,
           money: { ...{ ...nextProps.money }.money }.data,
           score: { ...{ ...nextProps.score }.score }.data,
         });
       } else {
         this.setState({ moneyable: true, scoreable: true });
         setFieldsValue({
+          quantity: { ...{ ...nextProps.money }.money }.quantity,
           money: { ...{ ...nextProps.money }.money }.data,
           score: { ...{ ...nextProps.score }.score }.data,
         });
@@ -299,11 +310,11 @@ export default class extends PureComponent {
 
         <Row>
           <Col {...colSpan}>
-            <FormItem label="大爱金额" {...formItemLayout}>
+            <FormItem label="大爱金额" {...formItemLayout} required>
               {getFieldDecorator('money', {
                 initialValue: initialValue.money || null,
               })(
-                <Input
+                <InputNumber
                   disabled={moneyable}
                 />
               )}
@@ -311,11 +322,11 @@ export default class extends PureComponent {
           </Col>
 
           <Col {...colSpan}>
-            <FormItem label="分值" {...formItemLayout}>
+            <FormItem label="分值" {...formItemLayout} required>
               {getFieldDecorator('score', {
                 initialValue: initialValue.score || null,
               })(
-                <Input
+                <InputNumber
                   disabled={scoreable}
                 />
               )}
@@ -325,6 +336,16 @@ export default class extends PureComponent {
 
         <Row>
           <Col {...colSpan}>
+            <FormItem label="当月次数" {...formItemLayout} required>
+              {getFieldDecorator('quantity', {
+                initialValue: initialValue.quantity || null,
+              })(<InputNumber
+                disabled={scoreable || moneyable}
+              />)}
+            </FormItem>
+          </Col>
+
+          <Col {...colSpan}>
             <FormItem label="是否付款" {...formItemLayout}>
               {getFieldDecorator('has_paid', {
                 initialValue: initialValue.has_paid,
@@ -333,24 +354,25 @@ export default class extends PureComponent {
               />)}
             </FormItem>
           </Col>
+        </Row>
+
+        <Row>
+          <Col {...colSpan}>
+            <FormItem label="是否同步积分制" {...formItemLayout}>
+              {getFieldDecorator('sync_point',
+                { initialValue: initialValue.paid_at || 1 })(
+                  <Switch
+                    defaultChecked={!!pointdefault}
+                  />
+                )}
+            </FormItem>
+          </Col>
 
           <Col {...colSpan}>
             <FormItem label="付款时间" {...formItemLayout}>
               {getFieldDecorator('paid_at', {
                 initialValue: initialValue.paid_at || undefined,
               })(<DatePicker />)}
-            </FormItem>
-          </Col>
-        </Row>
-
-        <Row>
-          <Col {...colSpan}>
-            <FormItem label="是否同步积分制" {...formItemLayout}>
-              {getFieldDecorator('sync_point')(
-                <Switch
-                  defaultChecked={!!pointdefault}
-                />
-              )}
             </FormItem>
           </Col>
         </Row>

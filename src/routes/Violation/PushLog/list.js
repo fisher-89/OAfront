@@ -77,11 +77,11 @@ export default class extends PureComponent {
         render: (key) => {
           switch (key) {
             case 1:
-              return '群';
+              return '群推送';
             case 2:
-              return '个人';
+              return '个人推送';
             case 3:
-              return '定时';
+              return '定时推送';
             default:
               return null;
           }
@@ -118,12 +118,18 @@ export default class extends PureComponent {
         width: 150,
         render: key => OATable.renderEllipsis(key, true),
       },
+      {
+        title: '创建时间',
+        dataIndex: 'created_at',
+        width: 150,
+        render: key => OATable.renderEllipsis(key, true),
+      },
     ];
     return columns;
   }
 
   render() {
-    const { pushlog } = this.props;
+    const { pushlog, fetchPushLog, loading } = this.props;
     const { activeKey, panes } = this.state;
     const extra = [];
     extra.push((
@@ -148,7 +154,9 @@ export default class extends PureComponent {
           <OATable
             columns={this.makeColumns()}
             dataSource={pushlog}
+            loading={loading}
             extraOperator={extra}
+            fetchDataSource={fetchPushLog}
           />
         </TabPane>
         {panes.map(pane => (
