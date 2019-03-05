@@ -462,6 +462,8 @@ export default class extends PureComponent {
           finelog={finelog}
         />
         <Modal
+          maskClosable
+          onCancel={() => this.setState({ paybutton: false })}
           visible={paybutton}
           closable={false}
           footer={null}
