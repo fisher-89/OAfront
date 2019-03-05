@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Button, Tooltip } from 'antd';
+import { Button, Tooltip, Input, message } from 'antd';
 import OAForm, { OAModal } from '../../../components/OAForm';
 import { checkAuthority } from '../../../utils/utils';
 import style from './details.less';
@@ -8,6 +8,7 @@ import style from './details.less';
 export default class extends PureComponent {
   state = {
     value: {},
+    inputdisable: true,
   }
   componentWillReceiveProps(nextProps) {
     const midkey = Object.keys(this.state.value);
@@ -23,17 +24,39 @@ export default class extends PureComponent {
     }
   }
 
+  keyEnter = (e, id) => {
+    const { payFine } = this.props;
+    const params = e.target.value;
+    if (params < 5) {
+      message.error('扣款金额应不少于五元');
+    } else {
+      payFine(id, params);
+      this.setState({ inputdisable: true });
+    }
+  }
+
   render() {
     const {
+      payFine,
       visible,
       onCancel,
-      paymentChange,
+      refund,
     } = this.props;
-    const { value } = this.state;
+    const { value, inputdisable } = this.state;
     const payment = value.has_paid ? '已支付' : '未支付';
-    const pay = value.has_paid ? '退款' : '支付';
     const rulename = { ...value.rules }.name;
     const typename = { ...{ ...value.rules }.rule_types }.name;
+    const payButton = value.has_paid ?
+      <Button onClick={() => refund(value.id)} type="danger" size="small">退款</Button> :
+      (
+        <div>
+          <Button onClick={() => payFine(value.id, '1')} icon="alipay" />
+          <Button onClick={() => payFine(value.id, '2')} icon="wechat" />
+          <Button onClick={() => this.setState({ inputdisable: false })} icon="dingding">工资扣款</Button>
+          <Input disabled={inputdisable} type="number" style={{ position: 'relative', width: '80px', height: '31px' }} onPressEnter={e => this.keyEnter(e, value.id)} />
+        </div>
+      );
+    const paidtime = value.paid_at ? value.paid_at : '当前未支付';
     return (
       <OAModal
         visible={visible}
@@ -76,9 +99,16 @@ export default class extends PureComponent {
 
         <div className={style.score}>分值：{value.score}</div>
 
-        <div className={style.simple}><div className={style.payment}>支付状态：{payment}</div>{checkAuthority(203) && <div className={style.paychange}><Button onClick={() => paymentChange(value.id, pay)} type="danger" size="small">{pay}</Button></div>}</div>
+        <div className={style.simple}>
+          <div className={style.payment}>支付状态：{payment}</div>
+          {checkAuthority(203) && (
+            <div className={style.paychange}>
+              {payButton}
+            </div>
+          )}
+        </div>
 
-        <div className={style.normal}>支付时间：{value.paid_at}</div>
+        <div className={style.normal}>支付时间：{paidtime}</div>
 
         <div className={style.bill}>开单人：{value.billing_name}</div>
 

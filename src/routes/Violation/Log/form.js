@@ -344,16 +344,6 @@ export default class extends PureComponent {
               />)}
             </FormItem>
           </Col>
-
-          <Col {...colSpan}>
-            <FormItem label="是否付款" {...formItemLayout}>
-              {getFieldDecorator('has_paid', {
-                initialValue: initialValue.has_paid,
-              })(<Switch
-                defaultChecked={!!initialValue.has_paid}
-              />)}
-            </FormItem>
-          </Col>
         </Row>
 
         <Row>
@@ -365,14 +355,6 @@ export default class extends PureComponent {
                     defaultChecked={!!pointdefault}
                   />
                 )}
-            </FormItem>
-          </Col>
-
-          <Col {...colSpan}>
-            <FormItem label="付款时间" {...formItemLayout}>
-              {getFieldDecorator('paid_at', {
-                initialValue: initialValue.paid_at || undefined,
-              })(<DatePicker />)}
             </FormItem>
           </Col>
         </Row>

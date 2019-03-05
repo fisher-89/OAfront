@@ -81,11 +81,6 @@ export default type => (Component) => {
       });
     }
 
-    paymentChange = (params) => {
-      const { dispatch } = this.props;
-      dispatch({ type: 'violation/paymentChange', payload: params });
-    }
-
     refund = (params) => {
       const { dispatch } = this.props;
       dispatch({ type: 'violation/refund', payload: params });
@@ -101,11 +96,16 @@ export default type => (Component) => {
       });
     }
 
-    payFine = (values, onError, onSuccess) => {
+    payFine = (values, paidtype, onSuccess, onError) => {
       const { dispatch } = this.props;
+      const ids = Array.isArray(values) ? values : [values];
+      const params = {
+        id: ids,
+        paid_type: paidtype,
+      };
       dispatch({
         type: 'violation/editPayState',
-        payload: values,
+        payload: params,
         onSuccess,
         onError,
       });

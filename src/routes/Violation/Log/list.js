@@ -1,11 +1,12 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Tabs, Button, Divider } from 'antd';
+import { Tabs, Button, Divider, Modal } from 'antd';
 import XLSX from 'xlsx';
 import OATable from '../../../components/OATable';
 import BigLove from './form';
 import Details from './details';
 import PushLog from './logpush';
 import BillImage from './billimage';
+import PayDom from './paydom';
 import {
   getFiltersData,
   findRenderKey,
@@ -24,6 +25,7 @@ export default class extends PureComponent {
     selectedRowKeys: [],
     panes: [],
     activeKey: '1',
+    paybutton: false,
   }
 
   onEdit = (targetKey, action) => {
@@ -202,7 +204,7 @@ export default class extends PureComponent {
         width: 180,
         fixed: 'right',
         render: (rowData) => {
-          const payOrRefunder = rowData.has_paid ? '退款' : '支付';
+          const { payFine } = this.props;
           return (
             <Fragment>
               <a onClick={() => this.setState({
@@ -214,7 +216,7 @@ export default class extends PureComponent {
               {checkAuthority(204) && <a onClick={() => this.handleEdit(rowData)}>编辑</a>}
               {checkAuthority(203) && !rowData.has_paid && <Divider type="vertical" />}
               {checkAuthority(203) && !rowData.has_paid &&
-                <a onClick={() => this.paychange(rowData.id, payOrRefunder)}>{payOrRefunder}</a>}
+                <PayDom id={rowData.id} payFine={payFine} paytext="支付" />}
               {checkAuthority(202) && <Divider type="vertical" />}
               {checkAuthority(202) && <a onClick={() => deleted(rowData.id)}>删除</a>}
             </Fragment>
@@ -225,21 +227,12 @@ export default class extends PureComponent {
     return columns;
   }
 
-  sendPay = (payload, onError) => {
+  sendPay = (types) => {
     const { payFine } = this.props;
-    let selectId = [];
-    selectId = payload.map(item => item.id);
-    payFine(selectId, onError);
+    const { selectedRowKeys } = this.state;
+    payFine(selectedRowKeys, types);
+    this.setState({ paybutton: false });
     this.onSelectChange([], []);
-  }
-
-  paychange = (id, choice) => {
-    const { paymentChange, refund } = this.props;
-    if (choice === '支付') {
-      paymentChange(id);
-    } else if (choice === '退款') {
-      refund(id);
-    }
   }
 
   xlsExportExcel = () => {
@@ -310,16 +303,21 @@ export default class extends PureComponent {
       loading,
       department,
       brand,
+      payFine,
+      refund,
       pushgroup,
       dispatch,
     } = this.props;
-    const { detailsVisible,
+    const {
+      detailsVisible,
       visible,
       initialValue,
       selectedRowKeys,
       selectedRows,
       panes,
-      activeKey } = this.state;
+      activeKey,
+      paybutton,
+    } = this.state;
     let excelExport = null;
     const extra = [];
     extra.push(
@@ -375,8 +373,8 @@ export default class extends PureComponent {
     const multiOperator = [
       {
         text: '支付',
-        action: (selectedRowsReal) => {
-          this.sendPay(selectedRowsReal);
+        action: () => {
+          this.setState({ paybutton: true });
         },
       },
       {
@@ -459,10 +457,22 @@ export default class extends PureComponent {
           visible={detailsVisible}
           initialValue={initialValue}
           onCancel={this.handleDetailsVisible}
-          paymentChange={this.paychange}
+          refund={refund}
+          payFine={payFine}
           finelog={finelog}
         />
-      </Fragment>
+        <Modal
+          visible={paybutton}
+          closable={false}
+          footer={null}
+          centered
+          mask={false}
+          width="283px"
+        >
+          <Button onClick={() => this.sendPay('1')} type="primary" icon="alipay" >支付宝支付</Button>
+          <Button onClick={() => this.sendPay('2')} type="primary" style={{ marginLeft: '1px' }} icon="wechat" >微信支付</Button>
+        </Modal>
+      </Fragment >
     );
   }
 }
