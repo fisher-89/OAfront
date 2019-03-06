@@ -27,7 +27,7 @@ const { Option } = Select;
   onValuesChange(props, changedValues, allValues) {
     const { fetchMoneyAndScore, onError } = props;
     const [midkey] = Object.keys(changedValues);
-    if (midkey === 'staff' || midkey === 'rule_id' || midkey === 'violate_at' || midkey === 'quantity') {
+    if (midkey === 'staff' || midkey === 'rule_id' || midkey === 'violate_at' || (midkey === 'quantity' && allValues.quantity)) {
       if ((allValues.staff || {}).staff_sn && allValues.rule_id && allValues.violate_at) {
         if (props.initialValue.id) {
           const params = {
@@ -84,33 +84,53 @@ export default class extends PureComponent {
         { ...nextProps.score.score }.states !== 1) {
         this.setState({ moneyable: false, scoreable: true });
         setFieldsValue({
-          quantity: { ...{ ...nextProps.money }.money }.quantity,
           money: { ...{ ...nextProps.money }.money }.data,
           score: { ...{ ...nextProps.score }.score }.data,
         });
+        if ({ ...{ ...(this.props).money }.money }.quantity !==
+          { ...{ ...nextProps.money }.money }.quantity) {
+          setFieldsValue({
+            quantity: { ...{ ...nextProps.money }.money }.quantity,
+          });
+        }
       } else if ({ ...nextProps.money.money }.states !== 1 &&
         { ...nextProps.score.score }.states === 1) {
         this.setState({ moneyable: true, scoreable: false });
         setFieldsValue({
-          quantity: { ...{ ...nextProps.money }.money }.quantity,
           money: { ...{ ...nextProps.money }.money }.data,
           score: { ...{ ...nextProps.score }.score }.data,
         });
+        if ({ ...{ ...(this.props).money }.money }.quantity !==
+          { ...{ ...nextProps.money }.money }.quantity) {
+          setFieldsValue({
+            quantity: { ...{ ...nextProps.money }.money }.quantity,
+          });
+        }
       } else if ({ ...nextProps.money.money }.states === 1 &&
         { ...nextProps.score.score }.states === 1) {
         this.setState({ moneyable: false, scoreable: false });
         setFieldsValue({
-          quantity: { ...{ ...nextProps.money }.money }.quantity,
           money: { ...{ ...nextProps.money }.money }.data,
           score: { ...{ ...nextProps.score }.score }.data,
         });
+        if ({ ...{ ...(this.props).money }.money }.quantity !==
+          { ...{ ...nextProps.money }.money }.quantity) {
+          setFieldsValue({
+            quantity: { ...{ ...nextProps.money }.money }.quantity,
+          });
+        }
       } else {
         this.setState({ moneyable: true, scoreable: true });
         setFieldsValue({
-          quantity: { ...{ ...nextProps.money }.money }.quantity,
           money: { ...{ ...nextProps.money }.money }.data,
           score: { ...{ ...nextProps.score }.score }.data,
         });
+        if ({ ...{ ...(this.props).money }.money }.quantity !==
+          { ...{ ...nextProps.money }.money }.quantity) {
+          setFieldsValue({
+            quantity: { ...{ ...nextProps.money }.money }.quantity,
+          });
+        }
       }
     }
   }
@@ -227,8 +247,9 @@ export default class extends PureComponent {
     const { getFieldDecorator } = this.props.form;
     const sGroup = pushgroup.filter(item => item.default_push === 1);
     const SGroupId = sGroup.map(item => item.id);
+    const pg = ({ ...initialValue }.pushing || []).map(item => item.id);
     const selectedGroup = JSON.stringify(initialValue) !== '{}' ?
-      initialValue.pushing : SGroupId;
+      pg : SGroupId;
     const pointdefault = JSON.stringify(initialValue) !== '{}' ? initialValue.sync_point : true;
     return (
       <OAModal
@@ -342,6 +363,19 @@ export default class extends PureComponent {
               })(<InputNumber
                 disabled={scoreable || moneyable}
               />)}
+            </FormItem>
+          </Col>
+
+          <Col {...colSpan}>
+            <FormItem label="地区" {...formItemLayout} required>
+              {getFieldDecorator('area',
+                { initialValue: initialValue.area || '1' })(
+                  <Select>
+                    <Option key="1" value="1">成都</Option>
+                    <Option key="2" value="2">濮院</Option>
+                    <Option key="3" value="3">市场</Option>
+                  </Select>
+                )}
             </FormItem>
           </Col>
         </Row>
