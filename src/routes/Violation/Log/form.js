@@ -147,6 +147,7 @@ export default class extends PureComponent {
       score: 'score',
       money: 'money',
       pushing: 'pushing',
+      area: 'area',
 
     });
   }
