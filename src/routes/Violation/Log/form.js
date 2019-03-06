@@ -360,7 +360,8 @@ export default class extends PureComponent {
           <Col {...colSpan}>
             <FormItem label="当月次数" {...formItemLayout} required>
               {getFieldDecorator('quantity', {
-                initialValue: initialValue.quantity || null,
+                initialValue: initialValue.quantity ||
+                  { ...{ ...(this.props).money }.money }.quantity || null,
               })(<InputNumber
                 disabled={scoreable || moneyable}
               />)}
