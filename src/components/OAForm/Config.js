@@ -128,17 +128,31 @@ export default formCreate => (option = {}) => (Componet) => {
       return customErr;
     }
 
-    /**
-     * 表单错误
-     * @param {错误异常} errors
-     */
-    unicodeFieldsError = (errors) => {
-      const response = {};
+    unicodeFieldsError = (errors, values) => {
+      const params = {};
       Object.keys(errors).forEach((key) => {
         const error = errors[key];
-        response[key] = { errors: [new Error(error[0])] };
+        let fieldsValueMd = params;
+        const keyGroup = key.split('.');
+        const dottedValues = dotFieldsValue(values);
+        keyGroup.forEach((item, index) => {
+          if (index === keyGroup.length - 1) {
+            if (Object.hasOwnProperty.call(dottedValues, key)) {
+              fieldsValueMd[item] = { value: dottedValues[key], errors: [new Error(error[0])] };
+            } else {
+              fieldsValueMd[item] = { errors: [new Error(error[0])] };
+            }
+          } else {
+            fieldsValueMd[item] = fieldsValueMd[item] || {};
+            fieldsValueMd = fieldsValueMd[item];
+          }
+        });
+        if (Object.hasOwnProperty.call(dottedValues, key) &&
+          !Object.hasOwnProperty.call(params, key)) {
+          params[key] = { errors: [new Error(error[0])] };
+        }
       });
-      return response;
+      return params;
     }
 
     disposeErrorResult = (errResult, extraConfig, values) => {
@@ -165,7 +179,7 @@ export default formCreate => (option = {}) => (Componet) => {
         return;
       }
       const values = getFieldsValue();
-      const errResult = this.unicodeFieldsError(error);
+      const errResult = this.unicodeFieldsError(error, values);
       const { customErr, formError } = this.disposeErrorResult(errResult, extraConfig, values);
       if (typeof extraConfig === 'function') extraConfig(customErr, values, error);
       if (callback) callback(customErr, values, error);
