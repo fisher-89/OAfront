@@ -23,6 +23,7 @@ import StaffAuth from './infoTabs/staffAuth';
 
 const { Meta } = Card;
 const { TabPane } = Tabs;
+const staffProperty = ['无', '109将', '36天罡', '24金刚', '18罗汉'];
 
 @connect(({ staffs, loading }) => ({
   list: staffs.formatLogDetails,
@@ -136,6 +137,7 @@ export default class StaffInfo extends PureComponent {
                     </div>
                   </Card>
                   <Card className={styles.card} bodyStyle={{ padding: '20px' }}>
+                    <p>员工属性：{staffProperty[data.property] || defaultVal}</p>
                     <p>钉钉编号：{data.dingtalk_number || defaultVal}</p>
                     <p>招聘人员：{data.recruiter_name || defaultVal}</p>
                     <div className={styles.item}>

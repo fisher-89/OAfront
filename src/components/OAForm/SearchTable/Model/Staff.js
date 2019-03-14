@@ -200,7 +200,7 @@ export default class Staff extends PureComponent {
         width: 110,
         filters: newStatus,
         render: (val) => {
-          const data = status.find(item => item.value === val);
+          const data = status.find(item => `${item.value}` === `${val}`);
           return data ? data.text : '';
         },
       },

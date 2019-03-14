@@ -31,6 +31,7 @@ export default class extends PureComponent {
       onCancel,
       editStaff,
       validateFields,
+      validatorRequired,
       form: { getFieldDecorator },
     } = this.props;
 
@@ -58,6 +59,7 @@ export default class extends PureComponent {
           <FormItem label="离职" {...formItemLayout} required>
             {getFieldDecorator('operate_at', {
               initialValue: '',
+              rules: [validatorRequired],
             })(
               <DatePicker />
             )}

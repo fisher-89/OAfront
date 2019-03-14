@@ -38,7 +38,7 @@ import EditTransfer from './editTransfer';
 
 const { TabPane } = Tabs;
 
-const staffProperty = ['无', '108将', '36天罡', '24金刚', '18罗汉'];
+const staffProperty = ['无', '109将', '36天罡', '24金刚', '18罗汉'];
 const gender = [{ value: '男', text: '男' }, { value: '女', text: '女' }];
 const status = [
   { value: '0', text: '离职中' },
@@ -136,10 +136,7 @@ export default class extends PureComponent {
   }
 
   showEditModal = (info, visibleName) => {
-    const { staffSn } = this.state;
-    if (!staffSn || !this.props.staffInfo[staffSn]) {
-      this.fetchStaffInfo({ staff_sn: info.staff_sn });
-    }
+    this.fetchStaffInfo({ staff_sn: info.staff_sn });
     this.setState({ staffSn: info.staff_sn }, () => this.setState({ [visibleName]: true }));
   }
 

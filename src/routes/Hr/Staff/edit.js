@@ -16,7 +16,6 @@ import { omit, assign } from 'lodash';
 import { markTreeData } from 'utils/utils';
 import OAForm, { SearchTable, Address, OAModal } from 'components/OAForm';
 import RelativeList from './relativeList';
-import NextForm from './nextForm';
 
 const FormItem = OAForm.Item;
 const RadioButton = Radio.Button;
@@ -57,10 +56,6 @@ const fieldsBoxLayout = { xs: 24, lg: 12 };
   staffLoading: loading.models.staffs,
 }))
 export default class EditStaff extends PureComponent {
-  state = {
-    visible: false,
-  }
-
   handleSubmit = (params) => {
     const { dispatch, onError, onCancel } = this.props;
     const body = {
@@ -77,21 +72,15 @@ export default class EditStaff extends PureComponent {
     dispatch({
       type: 'staffs/editStaff',
       payload: newBody,
-      onSuccess: () => {
-        this.setState({ visible: false }, onCancel());
-      },
+      onSuccess: () => onCancel(),
       onError: (errors) => {
-        this.setState({ visible: false }, onError(errors, {
+        onError(errors, {
           household_address: 'household',
           living_address: 'living',
-        }));
+        });
         notification.error({ message: '表单错误，请重新填写。' });
       },
     });
-  }
-
-  handleNextForm = () => {
-    this.setState({ visible: true });
   }
 
   handleSelectFilter = (input, option) => {
@@ -114,26 +103,18 @@ export default class EditStaff extends PureComponent {
       form: { getFieldDecorator } } = this.props;
     const newTreeData = markTreeData(department, { value: 'id', label: 'name', parentId: 'parent_id' }, 0);
     const style = { maxHeight: 600, overflowY: 'auto', overflowX: 'hidden' };
-    const renderTitle = title => <div style={{ width: 118, textAlign: 'center' }}>{title}</div>;
+    const renderTitle = title => <div style={{ width: 90, textAlign: 'center' }}>{title}</div>;
     const tags = (editStaff.tags || []).map(item => item.id.toString());
     return (
       <React.Fragment>
-        <NextForm
-          isEdit={1}
-          form={form}
-          visible={this.state.visible}
-          onSubmit={validateFields(this.handleSubmit)}
-          onCancel={() => { this.setState({ visible: false }); }}
-        />
         <OAModal
           width={800}
           title="编辑"
-          okText="下一步"
           visible={visible}
           style={{ top: 30 }}
           onCancel={onCancel}
           loading={staffLoading}
-          onSubmit={validateFields(this.handleNextForm)}
+          onSubmit={validateFields(this.handleSubmit)}
         >
           <Tabs defaultActiveKey="1">
             <TabPane forceRender tab={renderTitle('基础资料')} key="1" style={style}>
@@ -269,7 +250,7 @@ export default class EditStaff extends PureComponent {
                     })(
                       <Select OptionFilterProp="children">
                         <Option value={0}>无</Option>
-                        <Option value={1}>108将</Option>
+                        <Option value={1}>109将</Option>
                         <Option value={2}>36天罡</Option>
                         <Option value={3}>24金刚</Option>
                         <Option value={4}>18罗汉</Option>
@@ -680,6 +661,21 @@ export default class EditStaff extends PureComponent {
                 validatorRequired={validatorRequired}
                 initialValue={editStaff.relatives || []}
               />
+            </TabPane>
+            <TabPane forceRender tab={renderTitle('操作设置')} key="5" style={style}>
+              <FormItem label="操作说明" {...formItemLayout} >
+                {getFieldDecorator('operation_remark', {
+                  initialValue: '',
+                })(
+                  <Input.TextArea
+                    placeholder="最大长度100个字符"
+                    autosize={{
+                      minRows: 4,
+                      maxRows: 6,
+                    }}
+                  />
+                )}
+              </FormItem>
             </TabPane>
           </Tabs>
         </OAModal>

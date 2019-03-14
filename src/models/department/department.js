@@ -66,13 +66,19 @@ export default {
       }
     } catch (error) { return error; }
   },
-  * sortDepartment({ payload, onSuccess, onError }, { call }) {
+  * sortDepartment({ payload, onError }, { call, put }) {
     try {
       const response = yield call(sortDepartment, payload);
       if (response.errors && onError) {
         onError(response.errors);
       } else {
-        onSuccess(response);
+        yield put({
+          type: 'multiupdate',
+          payload: {
+            store,
+            data: response,
+          },
+        });
       }
     } catch (error) { return error; }
   },

@@ -39,7 +39,7 @@ export default class Picker extends DatePicker {
     const { onChange } = this.props;
     return (
       <DatePicker
-        getCalendarContainer={trigger => (trigger)}
+        // getCalendarContainer={trigger => (trigger)}
         {...this.makeProps()}
         onChange={(_, dateString) => {
           onChange(dateString);

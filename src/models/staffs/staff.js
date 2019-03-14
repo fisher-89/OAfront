@@ -127,38 +127,20 @@ export default {
       if (staffSn !== undefined || oldResponse === undefined || payload.update) {
         let response = [];
         response = yield call(fetchStaff, params);
-        if (staffSn) {
-          yield put({
-            type: 'save',
-            payload: {
-              store,
-              staffSn,
-              data: response,
-            },
-          });
-        } else {
-          yield put({
-            type: 'addTableResult',
-            payload: {
-              params,
-              data: response.data,
-            },
-          });
-          yield put({
-            type: 'setTalbleTotal',
-            payload: {
-              params,
-              total: response.total,
-            },
-          });
-          yield put({
-            type: 'combine',
-            payload: {
-              store,
-              data: response.data,
-            },
-          });
-        }
+        yield put({
+          type: 'addTableResult',
+          payload: {
+            params,
+            data: response.data,
+          },
+        });
+        yield put({
+          type: 'setTalbleTotal',
+          payload: {
+            params,
+            total: response.total,
+          },
+        });
       }
     } catch (err) {
       return err;
