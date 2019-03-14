@@ -34,12 +34,12 @@ const formItemLayout = {
   },
 };
 
+@OAForm.create()
 @connect(({ brand, department, loading }) => ({
   brand: brand.brand,
   categories: department.category,
   loading: loading.models.department,
 }))
-@OAForm.create()
 export default class extends PureComponent {
   constructor(props) {
     super(props);
@@ -52,7 +52,6 @@ export default class extends PureComponent {
       personnel_manager_sn: false,
     };
   }
-
   componentDidMount() {
     const { form, bindForm } = this.props;
     bindForm(form);
@@ -133,12 +132,10 @@ export default class extends PureComponent {
         onCancel={() => onCancel(false)}
         afterClose={onClose}
       >
-        {initialValue.id ? getFieldDecorator('id', {
-          initialValue: initialValue.id,
-        })(
-          <Input placeholder="请输入" type="hidden" />
-        ) : null}
         <Row>
+          {initialValue.id ? getFieldDecorator('id', {
+            initialValue: initialValue.id,
+          })(<Input type="hidden" />) : null}
           <Col {...colSpan}>
             <FormItem label="名称" {...formItemLayout} required>
               {getFieldDecorator('name', {
@@ -149,7 +146,6 @@ export default class extends PureComponent {
               )}
             </FormItem>
           </Col>
-
           <Col {...colSpan}>
             <FormItem label="上级部门" {...formItemLayout} >
               {getFieldDecorator('parent_id', initialValue.parent_id ? {
@@ -223,7 +219,7 @@ export default class extends PureComponent {
             <FormItem label="省份" {...longFormItemLayout}>
               {getFieldDecorator('province', {
                 initialValue: {
-                  province_id: initialValue.province_id || null,
+                  province_id: initialValue.province_id || 0,
                 },
               })(
                 <Address visibles={{ city: true, county: true, address: true }} />
