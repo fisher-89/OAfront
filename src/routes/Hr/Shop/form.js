@@ -273,8 +273,8 @@ export default class extends PureComponent {
                   })(
                     <DatePicker
                       mode="time"
-                      format="HH:mm:ss"
-                      showTime={{ format: 'HH:mm:ss' }}
+                      format="HH:mm"
+                      showTime={{ format: 'HH:mm' }}
                       style={{ width: '100%' }}
                       onChange={(time) => {
                         setFieldsValue({ clock_in: time });
@@ -292,8 +292,8 @@ export default class extends PureComponent {
                   })(
                     <DatePicker
                       mode="time"
-                      format="HH:mm:ss"
-                      showTime={{ format: 'HH:mm:ss' }}
+                      format="HH:mm"
+                      showTime={{ format: 'HH:mm' }}
                       style={{ width: '100%' }}
                       onChange={(time) => {
                         setFieldsValue({ clock_out: time });
