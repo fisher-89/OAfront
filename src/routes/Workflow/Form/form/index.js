@@ -75,7 +75,6 @@ class addForm extends PureComponent {
       gridsError[`grids.${index}.key`] = `grids[${index}].key`;
       gridsError[`grids.${index}.fields`] = `grids[${index}].fields`;
     });
-    alert(JSON.stringify(errors));
     onError(errors, gridsError, (err) => {
       this.setState({ listError: err });
     });
