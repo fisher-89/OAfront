@@ -7,6 +7,7 @@ import Details from './details';
 import PushLog from './logpush';
 import BillImage from './billimage';
 import PayDom from './paydom';
+import MultiInput from './multiinput';
 import {
   getFiltersData,
   findRenderKey,
@@ -36,26 +37,25 @@ export default class extends PureComponent {
     this.setState({ selectedRows, selectedRowKeys });
   }
 
-  pushLog = () => {
+  changeTab = (pane) => {
     const { panes } = this.state;
-    if (JSON.stringify(panes) !== JSON.stringify([{ title: '补充推送', key: '2' }]) ||
-      JSON.stringify(panes) !== JSON.stringify([{ title: '补充推送', key: '2' }, { title: '月末清账', key: '3' }]) ||
-      JSON.stringify(panes) !== JSON.stringify([{ title: '月末清账', key: '3' }, { title: '补充推送', key: '2' }])
-    ) {
-      panes.push({ title: '补充推送', key: '2' });
+    if (panes.length) {
+      const keys = Object.values(panes);
+      let pushable = true;
+      keys.forEach((item) => {
+        if (JSON.stringify(pane) === JSON.stringify(item)
+        ) {
+          pushable = false;
+        }
+      });
+      if (pushable) {
+        panes.push(pane);
+      }
+      this.setState({ panes: [...panes], activeKey: pane.key });
+    } else {
+      panes.push(pane);
+      this.setState({ panes: [...panes], activeKey: pane.key });
     }
-    this.setState({ panes: [...panes], activeKey: '2' });
-  }
-
-  Bills = () => {
-    const { panes } = this.state;
-    if (JSON.stringify(panes) !== JSON.stringify([{ title: '月末清账', key: '3' }]) ||
-      JSON.stringify(panes) !== JSON.stringify([{ title: '补充推送', key: '2' }, { title: '月末清账', key: '3' }]) ||
-      JSON.stringify(panes) !== JSON.stringify([{ title: '月末清账', key: '3' }, { title: '补充推送', key: '2' }])
-    ) {
-      panes.push({ title: '月末清账', key: '3' });
-    }
-    this.setState({ panes: [...panes], activeKey: '3' });
   }
 
   tabsChange = (activeKey) => {
@@ -307,6 +307,7 @@ export default class extends PureComponent {
       refund,
       pushgroup,
       dispatch,
+      rule,
     } = this.props;
     const {
       detailsVisible,
@@ -324,9 +325,20 @@ export default class extends PureComponent {
       checkAuthority(200) && (
         <Button
           icon="plus"
-          key="plus"
+          key="multi"
           type="primary"
           style={{ marginLeft: '10px' }}
+          onClick={() => {
+            this.changeTab({ title: '批量录入', key: '4' });
+          }}
+        >
+          批量录入
+        </Button>),
+      checkAuthority(200) && (
+        <Button
+          icon="plus"
+          key="plus"
+          type="primary"
           onClick={() => {
             this.handleModalVisible(true);
             this.setState({ initialValue: {} });
@@ -340,7 +352,7 @@ export default class extends PureComponent {
           type="primary"
           icon="mail"
           onClick={() => {
-            this.pushLog();
+            this.changeTab({ title: '补充推送', key: '2' });
           }}
         >
           补充推送
@@ -352,10 +364,10 @@ export default class extends PureComponent {
           type="primary"
           icon="snippets"
           onClick={() => {
-            this.Bills();
+            this.changeTab({ title: '月末清账', key: '3' });
           }}
         >
-          月末清算
+          月末清帐
         </Button>
       ),
       (
@@ -419,7 +431,7 @@ export default class extends PureComponent {
             />
           </TabPane>
           {panes.map((pane) => {
-            if (pane.title === '补充推送') {
+            if (pane.key === '2') {
               return (
                 <TabPane tab={pane.title} key={pane.key} >
                   <PushLog
@@ -433,13 +445,23 @@ export default class extends PureComponent {
                   />
                 </TabPane>
               );
-            } else {
+            } else if (pane.key === '3') {
               return (
                 <TabPane tab={pane.title} key={pane.key} >
                   <BillImage
                     billimage={billimage}
                     loading={loading}
                     fetchBillImage={fetchBillImage}
+                  />
+                </TabPane>
+              );
+            } else {
+              return (
+                <TabPane tab={pane.title} key={pane.key} >
+                  <MultiInput
+                    fetchFineLog={fetchFineLog}
+                    rule={rule}
+                    pushgroup={pushgroup}
                   />
                 </TabPane>
               );

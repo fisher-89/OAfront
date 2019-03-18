@@ -47,6 +47,12 @@ export async function deleteFineLog(id) {
   return request(`/api/violation/punish/${id}`, { method: 'DELETE' });
 }
 
+/**
+ * 大爱批量录入
+ */
+export async function multiAddFineLog(params) {
+  return request('/api/violation/punish/batch', { method: 'POST', body: params });
+}
 
 /*  大爱制度 */
 export async function fetchRuleType() {
@@ -166,4 +172,9 @@ export async function fetchBillImage(params) {
 //  丁丁群
 export async function fetchDingGroup() {
   return request('/api/violation/ding-group', { method: 'GET' });
+}
+
+// 获取当月被大爱部门
+export async function fetchFineDepartment(params) {
+  return request('/api/violation/show-department', { method: 'GET', body: params });
 }

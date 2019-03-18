@@ -1,6 +1,7 @@
 import { notification } from 'antd';
 import billimageEffect from './billimage';
 import dinggroupEffect from './dinggroup';
+import finedepartmentEffect from './finedepartment';
 import fineLogEffects from './fineLog';
 import ruleEffects from './rule';
 import ruleTypeEffects from './rule-type';
@@ -12,6 +13,8 @@ import pushAuthEffects from './pushAuth';
 import pushGroupEffects from './pushgroup';
 import pushLogEffects from './pushlog';
 import myPushLogEffects from './mypushlog';
+import multiMoney from './multimoney';
+import multiScore from './multiscore';
 import defaultReducers from '../reducers';
 
 
@@ -20,6 +23,9 @@ export default {
   state: {
     billimage: [],
     dinggroup: [],
+    multimoney: {},
+    multiscore: {},
+    finedepartment: [],
     finelog: [],
     math: [],
     money: {},
@@ -35,8 +41,11 @@ export default {
   effects: {
     ...billimageEffect,
     ...dinggroupEffect,
+    ...finedepartmentEffect,
     ...fineLogEffects,
     ...ruleEffects,
+    ...multiMoney,
+    ...multiScore,
     ...ruleTypeEffects,
     ...moneyEffects,
     ...mathEffects,
