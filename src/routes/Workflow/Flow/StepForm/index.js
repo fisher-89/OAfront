@@ -374,9 +374,9 @@ export default class StepForm extends React.PureComponent {
                 }}
               >
                 <Option value={0}>全部</Option>
-                <Option value={1}>审批</Option>
+                <Option value={1}>固定人员</Option>
                 <Option value={2}>审批模板</Option>
-                <Option value={3}>当前管理员</Option>
+                <Option value={3}>直属上级</Option>
               </Select>
             )}
           </FormItem>
@@ -384,7 +384,7 @@ export default class StepForm extends React.PureComponent {
             <FormItem
               labelCol={{ span: 5 }}
               wrapperCol={{ span: 15 }}
-              label="审批类型"
+              label="审批模板"
             >
               {getFieldDecorator('step_approver_id', {
                 initialValue: dataCommit.step_approver_id ? `${dataCommit.step_approver_id}` : null,

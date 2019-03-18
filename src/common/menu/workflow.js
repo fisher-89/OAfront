@@ -10,11 +10,6 @@ export default {
       // authority: '100',
     },
     {
-      name: '流程运行记录',
-      path: 'flow-log',
-      // authority: '100',
-    },
-    {
       name: '流程分类',
       path: 'flow/type',
       hideInMenu: true,
@@ -61,14 +56,19 @@ export default {
           path: 'urlSource',
         },
         {
-          name: '审批模板',
-          path: 'approver',
-        },
-        {
           name: '验证规则',
           path: 'validator',
         },
       ],
+    },
+    {
+      name: '审批模板',
+      path: 'form/approver',
+    },
+    {
+      name: '流程运行记录',
+      path: 'flow-log',
+      // authority: '100',
     },
     {
       name: '消息管理',
