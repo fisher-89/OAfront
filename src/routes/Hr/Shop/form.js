@@ -73,7 +73,7 @@ export default class extends PureComponent {
       { key: 'B3', val: 10 },
       { key: 'C', val: 5 },
     ].filter(item => item.key === v);
-    form.setFieldsValue({ staff_deploy: '' });
+    form.setFieldsValue({ staff_deploy: null });
     if (!isEmpty(deploy)) {
       form.setFieldsValue({
         staff_deploy: deploy[0].val,
@@ -273,8 +273,8 @@ export default class extends PureComponent {
                   })(
                     <DatePicker
                       mode="time"
-                      format="HH:mm:ss"
-                      showTime={{ format: 'HH:mm:ss' }}
+                      format="HH:mm"
+                      showTime={{ format: 'HH:mm' }}
                       style={{ width: '100%' }}
                       onChange={(time) => {
                         setFieldsValue({ clock_in: time });
@@ -292,8 +292,8 @@ export default class extends PureComponent {
                   })(
                     <DatePicker
                       mode="time"
-                      format="HH:mm:ss"
-                      showTime={{ format: 'HH:mm:ss' }}
+                      format="HH:mm"
+                      showTime={{ format: 'HH:mm' }}
                       style={{ width: '100%' }}
                       onChange={(time) => {
                         setFieldsValue({ clock_out: time });
@@ -391,7 +391,7 @@ export default class extends PureComponent {
               <Col>
                 <FormItem label="人员配置" {...longFormItemLayout}>
                   {getFieldDecorator('staff_deploy', {
-                    initialValue: initialValue.staff_deploy || '',
+                    initialValue: initialValue.staff_deploy || null,
                   })(
                     <InputNumber placeholder="店铺人员配置数量" style={{ width: '100%' }} />
                   )}
