@@ -1,4 +1,3 @@
-import { notification } from 'antd';
 import {
   flowRunFormVersion,
   flowClone,
@@ -125,11 +124,8 @@ export default {
     try {
       const { id } = payload;
       const response = yield call(deleteFlow, id);
-      if (response.error) {
-        notification.error({
-          message: '删除失败',
-          description: response.error,
-        });
+      if (response.message) {
+        return;
       } else {
         yield put({
           type: 'delete',

@@ -165,29 +165,31 @@ export default class Flow extends PureComponent {
       },
       {
         title: '操作',
-        render: ({ id }, text) => (
+        render: row => (
           <Fragment>
-            <Popconfirm onConfirm={this.fetchClone(id)} title="确定要克隆该流程？">
+            <Popconfirm onConfirm={this.fetchClone(row.id)} title="确定要克隆该流程？">
               <a>克隆</a>
             </Popconfirm>
             {
-              text.handle_id.includes(2) ?
+              row.handle_id.includes(2) ?
                 (
                   <span>
                     <Divider type="vertical" />
-                    <Link to={`/workflow/flow/edit/${id}`}>编辑</Link>
+                    <Link to={`/workflow/flow/edit/${row.id}`}>编辑</Link>
                   </span>
                 )
                 : null
             }
             {
-              text.handle_id.includes(3) ?
+              row.handle_id.includes(3) ?
                 (
                   <span>
                     <Divider type="vertical" />
-                    <Popconfirm onConfirm={() => this.deleteFlows(id)} title="确定要删除该流程？">
-                      <a>删除</a>
-                    </Popconfirm>
+                    {row.is_active ? (<a disabled >删除</a>) : (
+                      <Popconfirm onConfirm={() => this.deleteFlows(row.id)} title="确定要删除该流程？">
+                        <a>删除</a>
+                      </Popconfirm>
+                    )}
                   </span>
                 )
                 : null
