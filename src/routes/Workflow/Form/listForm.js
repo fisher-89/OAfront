@@ -346,7 +346,12 @@ export default class extends React.PureComponent {
     } else if (type === 'shop') {
       return this.getShopComponent(value, type);
     } else if (type === 'region') {
-      const defaultValue = value || {};
+      const defaultValue = value || {
+        province_id: null,
+        city_id: null,
+        county_id: null,
+        address: '',
+      };
       const regionLevel = getFieldValue('region_level');
       let disabled = {};
       if (regionLevel === '1') {
