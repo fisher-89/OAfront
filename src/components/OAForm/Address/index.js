@@ -26,10 +26,10 @@ export default class Address extends PureComponent {
       county,
       province,
       value: {
-        province_id: value.province_id || undefined,
-        city_id: value.city_id || undefined,
-        county_id: value.county_id || undefined,
-        address: value.address || undefined,
+        province_id: value.province_id || null,
+        city_id: value.city_id || null,
+        county_id: value.county_id || null,
+        address: value.address || null,
       },
     };
   }
@@ -65,9 +65,9 @@ export default class Address extends PureComponent {
     const city = district.filter(item => `${item.parent_id}` === `${provinceId}`);
     const newValue = {
       province_id: provinceId,
-      city_id: undefined,
-      county_id: undefined,
-      address: value.address || undefined,
+      city_id: null,
+      county_id: null,
+      address: value.address || null,
     };
     this.setState({ city, value: newValue }, this.setPropsValue);
   };
@@ -80,8 +80,8 @@ export default class Address extends PureComponent {
       value: {
         ...value,
         city_id: cityId,
-        county_id: undefined,
-        address: value.address || undefined,
+        county_id: null,
+        address: value.address || null,
       },
     }, this.setPropsValue);
   };
@@ -144,7 +144,7 @@ export default class Address extends PureComponent {
                   value: {
                     ...value,
                     county_id: countyId,
-                    address: value.address || undefined,
+                    address: value.address || null,
                   },
                 }, this.setPropsValue);
               }}
