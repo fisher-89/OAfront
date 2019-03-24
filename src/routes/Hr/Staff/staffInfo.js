@@ -165,18 +165,26 @@ export default class StaffInfo extends PureComponent {
                 <Tabs defaultActiveKey="timeline">
                   <TabPane key="timeline" tab="时间轴" style={{ marginLeft: 10 }}>
                     <Timeline
-                      pending="待记录..."
                       pendingDot={<Icon type="flag" style={{ fontSize: '16px' }} />}
                       reverse={false}
+                      style={{ marginTop: 20 }}
                     >
                       {timelist && timelist.map((item) => {
                         const change = item.changes;
                         return (
                           <Timeline.Item
-                            dot={<Icon type="clock-circle-o" style={{ fontSize: '16px' }} />}
+                            dot={<Icon type="clock-circle-o" style={{ fontSize: '18px' }} />}
                             key={item.id}
                           >
-                            {item.operation_type} {!isEmpty(change) ? ` (${change[0] ? change[0] : '无'} => ${change[1] ? change[1] : '无'})` : ''} {item.created_at}
+                            <div style={{ paddingLeft: 20, color: '#333' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <span>{item.operate_at} &nbsp;&nbsp; {item.operation_type}</span>
+                                <span style={{ color: '#AAA' }}>操作时间 &nbsp;&nbsp; {item.created_at}</span>
+                              </div>
+                              <div style={{ fontSize: '12px', lineHeight: '25px' }}>
+                                {!isEmpty(change) ? `${change[0] ? change[0] : '无'} => ${change[1] ? change[1] : '无'}` : ''}
+                              </div>
+                            </div>
                           </Timeline.Item>
                         );
                       })}
