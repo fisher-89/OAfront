@@ -2,6 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import { Tabs, Divider, DatePicker } from 'antd';
 import moment from 'moment';
 import OATable from '../../../components/OATable';
+import PayDom from './paydom';
 import StaffInfo from './singlestaff';
 
 
@@ -105,7 +106,7 @@ export default class extends PureComponent {
             <Fragment>
               <a onClick={() => this.staffInfo(rowData)}>查看</a>
               <Divider type="vertical" />
-              <a disabled={disable} onClick={() => singleStaffPay(rowData.id)}>全部支付</a>
+              <PayDom disabled={disable} id={rowData.id} payFine={singleStaffPay} paytext="全部支付" />
             </Fragment>
           );
         },

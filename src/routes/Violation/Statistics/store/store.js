@@ -6,6 +6,7 @@ export default type => (Component) => {
   @connect(({ department, violation, brand, loading }) => ({
     brand: brand.brand,
     department: department.department,
+    finedepartment: violation.finedepartment,
     rule: violation.rule,
     ruleType: violation.ruletype,
     staffviolation: violation.staffviolation,
@@ -22,6 +23,11 @@ export default type => (Component) => {
       this.fetchBrand();
       this.fetchDepartment();
       this.fetchRuleType();
+    }
+
+    fetchFineDepartment = (params) => {
+      const { dispatch } = this.props;
+      dispatch({ type: 'violation/fetchFineDepartment', payload: params });
     }
 
     fetchRule = (params) => {
@@ -49,14 +55,23 @@ export default type => (Component) => {
       dispatch({ type: 'violation/fetchStaffViolation', payload: params });
     }
 
-    singleStaffPay = (params) => {
+    singleStaffPay = (values, paidtype, onSuccess) => {
       const { dispatch } = this.props;
-      dispatch({ type: 'violation/editSinglePayment', payload: params });
+      const ids = Array.isArray(values) ? values : [values];
+      const params = {
+        id: ids,
+        paid_type: paidtype,
+      };
+      dispatch({
+        type: 'violation/editSinglePayment',
+        payload: params,
+        onSuccess,
+      });
     }
 
-    staffMultiPay= (params) => {
+    staffMultiPay= (params, onError) => {
       const { dispatch } = this.props;
-      dispatch({ type: 'violation/singleStaffPay', payload: params });
+      dispatch({ type: 'violation/singleStaffPay', params, onError });
     }
 
     render() {

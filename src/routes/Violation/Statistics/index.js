@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
-import { Row, Col, Tabs, Card } from 'antd';
+import { Row, Col, Tabs, Card, DatePicker, Select } from 'antd';
+import moment from 'moment';
 import style from './index.less';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 import Allstaff from './allstaff';
@@ -8,17 +9,30 @@ import DepartmentTree from './departmentlist';
 import store from './store/store';
 
 const { TabPane } = Tabs;
+const { MonthPicker } = DatePicker;
+const { Option } = Select;
 @store()
 export default class extends PureComponent {
-  state= {
+  state = {
     panes: [],
     activeKey: 'alldepartment',
+    month: moment().format('YYYYMM'),
+    area: '1',
+  }
+
+  componentWillMount() {
+    const { fetchFineDepartment } = this.props;
+    const { month, area } = this.state;
+    const params = {
+      month,
+      area,
+    };
+    fetchFineDepartment(params);
   }
 
   onEdit = (targetKey, action) => {
     this[action](targetKey);
   }
-
 
   setDepartment = (params) => {
     const { panes } = this.state;
@@ -59,8 +73,45 @@ export default class extends PureComponent {
     this.setState({ panes: [...newPanes], activeKey });
   }
 
+  filterDepart = (value, sub) => {
+    const { department } = this.props;
+    const [midkey] = department.filter(item => item.id === value);
+    sub.push(midkey);
+    if ((midkey || []).parent_id) {
+      this.filterDepart(midkey.parent_id, sub);
+    }
+  }
+
+  fineDepart = () => {
+    const sub = [];
+    const { finedepartment } = this.props;
+    if (finedepartment.length) {
+      finedepartment.forEach((item) => {
+        this.filterDepart(item, sub);
+      });
+    }
+    return sub;
+  }
+
+  selectMonth= (time) => {
+    const { fetchFineDepartment } = this.props;
+    const month = time.format('YYYYMM');
+    const { area } = this.state;
+    const item = { month, area };
+    this.setState({ month });
+    fetchFineDepartment(item);
+  }
+
+  selectArea = (area) => {
+    const { fetchFineDepartment } = this.props;
+    const { month } = this.state;
+    const params = { month, area };
+    this.setState({ area });
+    fetchFineDepartment(params);
+  }
+
   render() {
-    const { panes, activeKey } = this.state;
+    const { panes, activeKey, area, month } = this.state;
     const { department,
       fetchStaffViolation,
       staffviolation,
@@ -69,16 +120,28 @@ export default class extends PureComponent {
       rule,
       ruleType,
       loading } = this.props;
+    const finedepart = this.fineDepart();
     return (
       <PageHeaderLayout>
         <Row gutter={10} className={style.full}>
           <Col span={4} >
             <Card className={style.departTree} bordered={false}>
-              <p className={style.biaoti}>选择部门</p>
+              <Select onChange={this.selectArea} style={{ width: 80 }} value={area} >
+                <Option value="1" key="1">成都</Option>
+                <Option value="2" key="2">濮院</Option>
+                <Option value="3" key="3">市场</Option>
+              </Select>
+              <MonthPicker
+                allowClear={false}
+                key="monthPicker"
+                defaultValue={moment()}
+                style={{ width: 120 }}
+                onChange={this.selectMonth}
+              />
               <div className={style.xuxian} />
               <DepartmentTree
                 setDepartment={this.setDepartment}
-                department={department}
+                finedepart={finedepart}
               />
             </Card>
           </Col>
@@ -112,6 +175,7 @@ export default class extends PureComponent {
                 {panes.map(pane => (
                   <TabPane tab={pane.title} key={pane.key}>
                     <SingleDepart
+                      defaultMonth={month}
                       rule={rule}
                       ruleType={ruleType}
                       staffMultiPay={staffMultiPay}
