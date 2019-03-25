@@ -177,7 +177,7 @@ export default class extends PureComponent {
         dataIndex: 'has_paid',
         filters: [
           { text: '已支付', value: 1 },
-          { text: '未支付', value: 0 },
+          { text: '未支付', value: '0' },
         ],
         width: 50,
         render: key => (key ? '已支付' : '未支付'),

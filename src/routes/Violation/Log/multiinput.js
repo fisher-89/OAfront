@@ -1,5 +1,15 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Table, Button, Input, DatePicker, Select, InputNumber, Switch, message, notification } from 'antd';
+import {
+  Table,
+  Button,
+  Input,
+  DatePicker,
+  Select,
+  InputNumber,
+  Switch,
+  // message,
+  // notification
+} from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import SelectStaff from './selectstaff';
@@ -16,12 +26,12 @@ export default class extends PureComponent {
     area: '1',
     point: 1,
     pushing: [],
-    changeId: undefined,
     dataSource: [{
       ids: 1,
       staff_sn: undefined,
       staff_name: undefined,
       violate_at: undefined,
+      month: undefined,
       rule_id: undefined,
       quantity: null,
       money: null,
@@ -32,72 +42,75 @@ export default class extends PureComponent {
       billing_name: undefined,
       billing_at: undefined,
       remark: '',
+      token: '',
     }],
   }
 
-  componentWillReceiveProps(nextProps) {
-    const { changeId, dataSource } = this.state;
-    if (JSON.stringify(this.props.multimoney) !== JSON.stringify(nextProps.multimoney)) {
-      const [step1] = dataSource.filter(item => item.ids === changeId.ids);
-      const step2 = {
-        ...step1,
-        money: nextProps.multimoney.data,
-        moneystate: nextProps.multimoney.states,
-        quantity: nextProps.multimoney.quantity,
-      };
-      const step3 = dataSource.filter(item => item.ids !== changeId.ids);
-      step3.push(step2);
-      step3.sort((a, b) => {
-        const x = a.ids;
-        const y = b.ids;
-        return x - y;
-      });
-      this.setState({ dataSource: step3 });
-    }
-    if (JSON.stringify(this.props.multiscore) !== JSON.stringify(nextProps.multiscore)) {
-      const [step1] = dataSource.filter(item => item.ids === changeId.ids);
-      const step2 = {
-        ...step1,
-        score: nextProps.multiscore.data,
-        scorestate: nextProps.multiscore.states,
-        quantity: nextProps.multiscore.quantity,
-      };
-      const step3 = dataSource.filter(item => item.ids !== changeId.ids);
-      step3.push(step2);
-      step3.sort((a, b) => {
-        const x = a.ids;
-        const y = b.ids;
-        return x - y;
-      });
-      this.setState({ dataSource: step3 });
-    }
-  }
+  // componentWillReceiveProps(nextProps) {
+  //   const { changeId, dataSource } = this.state;
+  //   if (JSON.stringify(this.props.multimoney) !== JSON.stringify(nextProps.multimoney)) {
+  //     const [step1] = dataSource.filter(item => item.ids === changeId.ids);
+  //     const step2 = {
+  //       ...step1,
+  //       money: nextProps.multimoney.data,
+  //       moneystate: nextProps.multimoney.states,
+  //       quantity: nextProps.multimoney.quantity,
+  //       token: nextProps.multimoney.token,
+  //     };
+  //     const step3 = dataSource.filter(item => item.ids !== changeId.ids);
+  //     step3.push(step2);
+  //     step3.sort((a, b) => {
+  //       const x = a.ids;
+  //       const y = b.ids;
+  //       return x - y;
+  //     });
+  //     this.setState({ dataSource: step3 });
+  //   }
+  //   if (JSON.stringify(this.props.multiscore) !== JSON.stringify(nextProps.multiscore)) {
+  //     const [step1] = dataSource.filter(item => item.ids === changeId.ids);
+  //     const step2 = {
+  //       ...step1,
+  //       score: nextProps.multiscore.data,
+  //       scorestate: nextProps.multiscore.states,
+  //       quantity: nextProps.multiscore.quantity,
+  //       token: nextProps.multimoney.token,
+  //     };
+  //     const step3 = dataSource.filter(item => item.ids !== changeId.ids);
+  //     step3.push(step2);
+  //     step3.sort((a, b) => {
+  //       const x = a.ids;
+  //       const y = b.ids;
+  //       return x - y;
+  //     });
+  //     this.setState({ dataSource: step3 });
+  //   }
+  // }
 
-  onSubmit = () => {
-    const { dispatch } = this.props;
-    const { area, pushing, point, dataSource } = this.state;
-    const params = {
-      area,
-      pushing,
-      sync_point: point,
-      data: dataSource,
-    };
-    dispatch({
-      type: 'violation/multiAddFineLog',
-      payload: params,
-      onSuccess: () => this.succeed(),
-      onError: e => message.error(e),
-    });
-  }
+  // onSubmit = () => {
+  //   const { dispatch } = this.props;
+  //   const { area, pushing, point, dataSource } = this.state;
+  //   const params = {
+  //     area,
+  //     pushing,
+  //     sync_point: point,
+  //     data: dataSource,
+  //   };
+  //   dispatch({
+  //     type: 'violation/multiAddFineLog',
+  //     payload: params,
+  //     onSuccess: () => this.succeed(),
+  //     onError: e => message.error(e),
+  //   });
+  // }
 
-  succeed = () => {
-    const { fetchFineLog } = this.props;
-    this.reset();
-    notification.success({
-      message: '添加成功',
-    });
-    fetchFineLog();
-  }
+  // succeed = () => {
+  //   const { fetchFineLog } = this.props;
+  //   this.reset();
+  //   notification.success({
+  //     message: '添加成功',
+  //   });
+  //   fetchFineLog();
+  // }
 
   fetchMoneyAndScore = (params) => {
     const { dispatch } = this.props;
@@ -128,6 +141,7 @@ export default class extends PureComponent {
       billing_name: undefined,
       billing_at: undefined,
       remark: '',
+      token: '',
     });
     this.setState({ index: index + 1 });
   }
@@ -138,7 +152,6 @@ export default class extends PureComponent {
       area: '1',
       point: 1,
       pushing: [],
-      changeId: undefined,
       dataSource: [],
     }, () => this.add());
   }
@@ -160,56 +173,64 @@ export default class extends PureComponent {
     this.setState({ dataSource: step3 });
   }
 
-  infoOnChange = (data, allValue, indexName) => { // 影响因子录入信息改变
-    const { dataSource } = this.state;
-    const [step1] = dataSource.filter(item => item.ids === allValue.ids);
-    const step2 = {
-      ...step1,
-      [indexName]: data,
-    };
-    const step3 = dataSource.filter(item => item.ids !== allValue.ids);
-    step3.push(step2);
-    step3.sort((a, b) => {
-      const x = a.ids;
-      const y = b.ids;
-      return x - y;
-    });
-    if (indexName === 'violate_at') {
-      if (allValue.staff_sn && data && allValue.rule_id) {
-        const params = {
-          staff_sn: allValue.staff_sn,
-          violate_at: data,
-          rule_id: allValue.rule_id,
-          quantity: allValue.quantity,
-        };
-        this.setState({ dataSource: step3, changeId: allValue },
-          () => this.fetchMoneyAndScore(params));
-      } else {
-        this.setState({ dataSource: step3 });
-      }
-    } else if (indexName === 'rule_id') {
-      if (allValue.staff_sn && allValue.violate_at && data) {
-        const params = {
-          staff_sn: allValue.staff_sn,
-          violate_at: allValue.violate_at,
-          rule_id: data,
-          quantity: allValue.quantity,
-        };
-        this.setState({ dataSource: step3, changeId: allValue },
-          () => this.fetchMoneyAndScore(params));
-      } else {
-        this.setState({ dataSource: step3 });
-      }
-    } else if (allValue.staff_sn && allValue.violate_at && allValue.rule_id && data) {
-      const params = {
-        staff_sn: allValue.staff_sn,
-        violate_at: allValue.violate_at,
-        rule_id: allValue.rule_id,
-        quantity: data,
-      };
-      this.setState({ dataSource: step3, changeId: allValue },
-        () => this.fetchMoneyAndScore(params));
-    } else { this.setState({ dataSource: step3 }); }
+  // infoOnChange = (data, allValue, indexName, month) => { // 影响因子录入信息改变
+  //   const { dataSource } = this.state;
+  //   const [step1] = dataSource.filter(item => item.ids === allValue.ids);
+  //   const step2 = month ? {
+  //     ...step1,
+  //     [indexName]: data,
+  //     month,
+  //   } : {
+  //     ...step1,
+  //     [indexName]: data,
+  //   };
+  //   const step3 = dataSource.filter(item => item.ids !== allValue.ids);
+  //   step3.push(step2);
+  //   step3.sort((a, b) => {
+  //     const x = a.ids;
+  //     const y = b.ids;
+  //     return x - y;
+  //   });
+  //   if (indexName === 'violate_at') {
+  //     if (allValue.staff_sn && data && allValue.rule_id) {
+  //       const params = {
+  //         staff_sn: allValue.staff_sn,
+  //         violate_at: data,
+  //         rule_id: allValue.rule_id,
+  //         quantity: allValue.quantity,
+  //       };
+  //       this.setState({ dataSource: step3, changeId: allValue },
+  //         () => this.fetchMoneyAndScore(params));
+  //     } else {
+  //       this.setState({ dataSource: step3 });
+  //     }
+  //   } else if (indexName === 'rule_id') {
+  //     if (allValue.staff_sn && allValue.violate_at && data) {
+  //       const params = {
+  //         staff_sn: allValue.staff_sn,
+  //         violate_at: allValue.violate_at,
+  //         rule_id: data,
+  //         quantity: allValue.quantity,
+  //       };
+  //       this.setState({ dataSource: step3, changeId: allValue },
+  //         () => this.fetchMoneyAndScore(params));
+  //     } else {
+  //       this.setState({ dataSource: step3 });
+  //     }
+  //   } else if (allValue.staff_sn && allValue.violate_at && allValue.rule_id && data) {
+  //     const params = {
+  //       staff_sn: allValue.staff_sn,
+  //       violate_at: allValue.violate_at,
+  //       rule_id: allValue.rule_id,
+  //       quantity: data,
+  //     };
+  //     this.setState({ dataSource: step3, changeId: allValue },
+  //       () => this.fetchMoneyAndScore(params));
+  //   } else { this.setState({ dataSource: step3 }); }
+  // }
+
+  infoChange = () => {
+
   }
 
   billOnChange = (sn, name, allValue) => { // 开单人改变
@@ -230,23 +251,23 @@ export default class extends PureComponent {
     this.setState({ dataSource: step3 });
   }
 
-  staffOnChange = (sn, name, allValue) => { // 大爱人员信息改变
-    const { dataSource } = this.state;
-    const [step1] = dataSource.filter(item => item.ids === allValue.ids);
-    const step2 = {
-      ...step1,
-      staff_sn: sn,
-      staff_name: name,
-    };
-    const step3 = dataSource.filter(item => item.ids !== allValue.ids);
-    step3.push(step2);
-    step3.sort((a, b) => {
-      const x = a.ids;
-      const y = b.ids;
-      return x - y;
-    });
-    this.setState({ dataSource: step3 });
-  }
+  // staffOnChange = (sn, name, allValue) => { // 大爱人员信息改变
+  //   const { dataSource } = this.state;
+  //   const [step1] = dataSource.filter(item => item.ids === allValue.ids);
+  //   const step2 = {
+  //     ...step1,
+  //     staff_sn: sn,
+  //     staff_name: name,
+  //   };
+  //   const step3 = dataSource.filter(item => item.ids !== allValue.ids);
+  //   step3.push(step2);
+  //   step3.sort((a, b) => {
+  //     const x = a.ids;
+  //     const y = b.ids;
+  //     return x - y;
+  //   });
+  //   this.setState({ dataSource: step3 });
+  // }
 
   pointSwitch = (e) => { // 是否同步积分制
     if (e) {
@@ -296,7 +317,7 @@ export default class extends PureComponent {
         render: (_, record) => {
           return (
             <SelectStaff
-              onChange={this.staffOnChange}
+              // onChange={this.staffOnChange}
               values={record}
               staffname={record.staff_name}
             />
@@ -311,8 +332,8 @@ export default class extends PureComponent {
           return (
             <DatePicker
               value={date}
-              allowClear="false"
-              onChange={e => this.infoOnChange(moment(e).format('YYYY-MM-DD'), record, 'violate_at')}
+              allowClear={false}
+              onChange={e => this.infoOnChange(moment(e).format('YYYY-MM-DD'), record, 'violate_at', moment(e).format('YYYY-MM'))}
               style={{ width: 120 }}
               disabledDate={this.disabledDate}
             />
@@ -328,7 +349,7 @@ export default class extends PureComponent {
             <Select
               value={record.rule_id}
               style={{ minWidth: 140 }}
-              onChange={e => this.infoOnChange(e, record, 'rule_id')}
+            // onChange={e => this.infoOnChange(e, record, 'rule_id')}
             >
               {rule.map((item) => {
                 return (
@@ -346,7 +367,7 @@ export default class extends PureComponent {
           return (
             <InputNumber
               value={record.quantity}
-              onChange={e => this.infoOnChange(e, record, 'quantity')}
+              // onChange={e => this.infoOnChange(e, record, 'quantity')}
               disabled={!(record.moneystate || record.scorestate)}
             />
           );
@@ -400,7 +421,7 @@ export default class extends PureComponent {
             <DatePicker
               style={{ width: 120 }}
               value={date}
-              allowClear="false"
+              allowClear={false}
               onChange={e => this.tableOnChange(moment(e).format('YYYY-MM-DD'), record, 'billing_at')}
               disabledDate={this.disabledDate}
             />
@@ -412,7 +433,11 @@ export default class extends PureComponent {
         dataIndex: 'remark',
         render: (_, record) => {
           return (
-            <TextArea value={record.remark} onChange={e => this.tableOnChange(e.target.value, record, 'remark')} autosize />
+            <TextArea
+              value={record.remark}
+              onChange={e => this.tableOnChange(e.target.value, record, 'remark')}
+              autosize
+            />
           );
         },
       },

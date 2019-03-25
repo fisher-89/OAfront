@@ -60,10 +60,10 @@ export default {
     } catch (err) { return err; }
   },
 
-  *editSinglePayment({ payload, onError }, { call, put }) {
+  *editSinglePayment({ payload, onSuccess, onError }, { call, put }) {
     try {
-      const params = Array.isArray(payload) ? payload : [payload];
-      const response = yield call(editStaffPayment, params);
+      const params = payload.id;
+      const response = yield call(editStaffPayment, payload);
       if (response.errors && onError) {
         onError(response.errors);
       } else {
@@ -75,15 +75,19 @@ export default {
             data: response,
           },
         });
+        onSuccess();
       }
     } catch (err) { return err; }
   },
 
-  *singleStaffPay({ payload, onError }, { call, put }) {
+  *singleStaffPay({ params, onError }, { call, put }) {
     try {
-      const response = yield call(editPayState, payload);
+      const payload = params.id;
+      const response = yield call(editPayState, params);
       if (response.errors && onError) {
-        onError(response.errors);
+        if (response.errors.id) {
+          onError(response.errors.id);
+        }
       } else {
         yield put({
           type: 'singleStaffMultiPay',
