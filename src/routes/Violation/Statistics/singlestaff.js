@@ -1,5 +1,5 @@
-import React, { PureComponent, Fragment } from 'react';
-import { DatePicker, Modal, Button, message } from 'antd';
+import React, { PureComponent } from 'react';
+import { DatePicker } from 'antd';
 import moment from 'moment';
 import OATable from '../../../components/OATable';
 
@@ -11,7 +11,6 @@ export default class extends PureComponent {
       month: props.time,
       selectedRows: [],
       selectedRowKeys: [],
-      paybutton: false,
     };
   }
 
@@ -82,7 +81,7 @@ export default class extends PureComponent {
     return columns;
   }
 
-  selectMonth = (time) => {
+  selectMonth= (time) => {
     const { fetchStaffViolation, departmentId, id } = this.props;
     const month = time.format('YYYYMM');
     const item = { filters: '', department_id: departmentId, staff_sn: id, month };
@@ -90,16 +89,11 @@ export default class extends PureComponent {
     fetchStaffViolation(item);
   }
 
-  sendPay = (types) => {
+  sendPay = (payload, onError) => {
     const { staffMultiPay } = this.props;
-    const { selectedRowKeys } = this.state;
-    function onError(aa) { message(aa); }
-    const params = {
-      id: selectedRowKeys,
-      paid_type: types,
-    };
-    staffMultiPay(params, onError);
-    this.setState({ paybutton: false });
+    let selectId = [];
+    selectId = payload.map(item => item.id);
+    staffMultiPay(selectId, onError);
     this.onSelectChange([], []);
   }
 
@@ -134,7 +128,7 @@ export default class extends PureComponent {
 
   render() {
     const { dataSource, departmentId, id, staffname, loading } = this.props;
-    const { month, selectedRows, selectedRowKeys, paybutton } = this.state;
+    const { month, selectedRows, selectedRowKeys } = this.state;
 
     const data = dataSource[departmentId.toString()];
     let realData = [];
@@ -149,17 +143,15 @@ export default class extends PureComponent {
     const staffFine = staffInfo ? (staffInfo.count_has_punish || []).map(item => item.punish) : [];
 
     let excelExport = null;
-    excelExport = {
-      actionType: 'violation/downloadStaffExcel',
+    excelExport = { actionType: 'violation/downloadStaffExcel',
       fileName: `${staffname}${month}月大爱记录.xlsx`,
-      filter: `month=${month};staff_sn=${id}`,
-    };
+      filter: `month=${month};staff_sn=${id}` };
 
     const multiOperator = [
       {
         text: '已支付',
-        action: () => {
-          this.setState({ paybutton: true });
+        action: (selectedRowsReal) => {
+          this.sendPay(selectedRowsReal);
         },
       },
       {
@@ -179,31 +171,16 @@ export default class extends PureComponent {
       }),
     };
     return (
-      <Fragment>
-        <OATable
-          columns={this.makeColumns()}
-          dataSource={staffFine}
-          fetchDataSource={this.fetchDataSource}
-          loading={loading}
-          multiOperator={multiOperator}
-          rowSelection={rowSelection}
-          excelExport={excelExport}
-          extraOperator={this.makeExtraOperator()}
-        />
-        <Modal
-          maskClosable
-          onCancel={() => this.setState({ paybutton: false })}
-          visible={paybutton}
-          closable={false}
-          footer={null}
-          centered
-          mask={false}
-          width="283px"
-        >
-          <Button onClick={() => this.sendPay('1')} type="primary" icon="alipay" >支付宝支付</Button>
-          <Button onClick={() => this.sendPay('2')} type="primary" style={{ marginLeft: '1px' }} icon="wechat" >微信支付</Button>
-        </Modal>
-      </Fragment>
+      <OATable
+        columns={this.makeColumns()}
+        dataSource={staffFine}
+        fetchDataSource={this.fetchDataSource}
+        loading={loading}
+        multiOperator={multiOperator}
+        rowSelection={rowSelection}
+        excelExport={excelExport}
+        extraOperator={this.makeExtraOperator()}
+      />
     );
   }
 }

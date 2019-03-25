@@ -25,14 +25,14 @@ export default class extends PureComponent {
     });
   }
   render() {
-    const { finedepart } = this.props;
+    const { department } = this.props;
     return (
       <TreeSort
         showLine
         rootPid={0}
         key="treeSort"
         renderTreeNodes={this.renderTreeNodes}
-        dataSource={finedepart}
+        dataSource={department}
       />
     );
   }

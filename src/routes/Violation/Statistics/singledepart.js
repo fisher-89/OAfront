@@ -1,21 +1,19 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Tabs, Divider, DatePicker, Modal, Button } from 'antd';
+import { Tabs, Divider, DatePicker } from 'antd';
 import moment from 'moment';
 import OATable from '../../../components/OATable';
 import StaffInfo from './singlestaff';
-import PayDom from './paydom';
 
 
 const { TabPane } = Tabs;
 const { MonthPicker } = DatePicker;
 export default class extends PureComponent {
-  state = {
+  state= {
     panes: [],
     month: moment().format('YYYYMM'),
     activeKey: 'allstaff',
     selectedRows: [],
     selectedRowKeys: [],
-    paybutton: false,
   }
 
   onEdit = (targetKey, action) => {
@@ -26,10 +24,6 @@ export default class extends PureComponent {
     this.setState({ selectedRows, selectedRowKeys });
   }
 
-  onSuccess = () => {
-    this.setState({ paybutton: false });
-    this.onSelectChange([], []);
-  }
   tabsChange = (activeKey) => {
     this.setState({ activeKey });
   }
@@ -116,7 +110,7 @@ export default class extends PureComponent {
             <Fragment>
               <a onClick={() => this.staffInfo(rowData)}>查看</a>
               <Divider type="vertical" />
-              <PayDom disabled={disable} id={rowData.id} payFine={singleStaffPay} paytext="全部支付" />
+              <a disabled={disable} onClick={() => singleStaffPay(rowData.id)}>全部支付</a>
             </Fragment>
           );
         },
@@ -125,7 +119,7 @@ export default class extends PureComponent {
     return columns;
   }
 
-  selectMonth = (time) => {
+  selectMonth= (time) => {
     const { fetchStaffViolation, departmentId } = this.props;
     const month = time.format('YYYYMM');
     const item = { filters: '', page: 1, pagesize: 10, month, department_id: departmentId };
@@ -133,12 +127,13 @@ export default class extends PureComponent {
     fetchStaffViolation(item);
   }
 
-  sendPay = (types) => {
+  sendPay = (payload, onError) => {
     const { singleStaffPay } = this.props;
-    const { selectedRowKeys } = this.state;
-    singleStaffPay(selectedRowKeys, types, this.onSuccess);
+    let selectId = [];
+    selectId = payload.map(item => item.id);
+    singleStaffPay(selectId, onError);
+    this.onSelectChange([], []);
   }
-
 
   fetchDataSource = (item) => {
     const { fetchStaffViolation, departmentId } = this.props;
@@ -153,13 +148,12 @@ export default class extends PureComponent {
   }
 
   makeExtraOperator = () => {
-    const { defaultMonth } = this.props;
     const extra = [];
     extra.push((
       <MonthPicker
         allowClear={false}
         key="monthPicker"
-        defaultValue={moment(defaultMonth, 'YYYY-MM')}
+        defaultValue={moment()}
         placeholder="Select month"
         onChange={this.selectMonth}
       />
@@ -177,14 +171,12 @@ export default class extends PureComponent {
       loading,
       staffMultiPay,
       fetchStaffViolation } = this.props;
-    const { panes, month, activeKey, selectedRowKeys, selectedRows, paybutton } = this.state;
+    const { panes, month, activeKey, selectedRowKeys, selectedRows } = this.state;
     const realData = ({ ...dataSource }[departmentId] || {})[month];
     let excelExport = null;
-    excelExport = {
-      actionType: 'violation/downloadDepartmentExcel',
+    excelExport = { actionType: 'violation/downloadDepartmentExcel',
       fileName: `${month}月${departname}大爱记录.xlsx`,
-      filter: `month=${month};department_id=${departmentId}`,
-    };
+      filter: `month=${month};department_id=${departmentId}` };
     let wholeMoney = 0;
     let paidMoney = 0;
     let wholeScore = 0;
@@ -199,8 +191,8 @@ export default class extends PureComponent {
     const multiOperator = [
       {
         text: '已支付',
-        action: () => {
-          this.setState({ paybutton: true });
+        action: (selectedRowsReal) => {
+          this.sendPay(selectedRowsReal);
         },
       },
       {
@@ -261,19 +253,6 @@ export default class extends PureComponent {
             />
           </TabPane>
         ))}
-        <Modal
-          maskClosable
-          onCancel={() => this.setState({ paybutton: false })}
-          visible={paybutton}
-          closable={false}
-          footer={null}
-          centered
-          mask={false}
-          width="283px"
-        >
-          <Button onClick={() => this.sendPay('1')} type="primary" icon="alipay" >支付宝支付</Button>
-          <Button onClick={() => this.sendPay('2')} type="primary" style={{ marginLeft: '1px' }} icon="wechat" >微信支付</Button>
-        </Modal>
       </Tabs>
     );
   }

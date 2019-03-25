@@ -55,7 +55,7 @@ export default class TreeSorter extends PureComponent {
     const tree = [];
     const { dataType: { parentId, value } } = this.props;
     data.forEach((item) => {
-      if ((item || {})[parentId] === pid) {
+      if (item[parentId] === pid) {
         const temp = {
           ...item,
           key: `${item[value]}`,
