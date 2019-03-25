@@ -29,7 +29,7 @@ export default class Address extends PureComponent {
         province_id: value.province_id || null,
         city_id: value.city_id || null,
         county_id: value.county_id || null,
-        address: value.address || null,
+        address: value.address || '',
       },
     };
   }
@@ -67,7 +67,7 @@ export default class Address extends PureComponent {
       province_id: provinceId,
       city_id: null,
       county_id: null,
-      address: value.address || null,
+      address: value.address || '',
     };
     this.setState({ city, value: newValue }, this.setPropsValue);
   };
@@ -81,7 +81,7 @@ export default class Address extends PureComponent {
         ...value,
         city_id: cityId,
         county_id: null,
-        address: value.address || null,
+        address: value.address || '',
       },
     }, this.setPropsValue);
   };
@@ -144,7 +144,7 @@ export default class Address extends PureComponent {
                   value: {
                     ...value,
                     county_id: countyId,
-                    address: value.address || null,
+                    address: value.address || '',
                   },
                 }, this.setPropsValue);
               }}
