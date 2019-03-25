@@ -169,8 +169,8 @@ export default class StaffInfo extends PureComponent {
                       reverse={false}
                       style={{ marginTop: 20 }}
                     >
-                      {timelist && timelist.map((item) => {
-                        const change = item.changes;
+                      {!isEmpty(timelist) && timelist.map((item) => {
+                        const changes = item.transfer;
                         return (
                           <Timeline.Item
                             dot={<Icon type="clock-circle-o" style={{ fontSize: '18px' }} />}
@@ -182,7 +182,9 @@ export default class StaffInfo extends PureComponent {
                                 <span style={{ color: '#AAA' }}>操作时间 &nbsp;&nbsp; {item.created_at}</span>
                               </div>
                               <div style={{ fontSize: '12px', lineHeight: '25px' }}>
-                                {!isEmpty(change) ? `${change[0] ? change[0] : '无'} => ${change[1] ? change[1] : '无'}` : ''}
+                                {!isEmpty(changes) && changes.map((change) => {
+                                  return (<div key={change}>{change[0]} {'=>'} {change[1]}</div>);
+                                })}
                               </div>
                             </div>
                           </Timeline.Item>
