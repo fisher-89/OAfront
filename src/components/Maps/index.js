@@ -13,6 +13,7 @@ export default class extends PureComponent {
     const value = props.value || {};
     this.mapPlugins = ['ToolBar'];
     this.state = {
+      zoom: 15,
       address: value.address || '',
       center: {
         longitude: value.lng || 120,
@@ -28,10 +29,11 @@ export default class extends PureComponent {
       lat: null,
     };
     this.setState({
+      zoom: 5,
       address: '',
       center: {
-        longitude: 0,
-        latitude: 0,
+        longitude: 110.892028,
+        latitude: 31.802344,
       },
     }, () => this.props.onChange(position));
   }
@@ -61,7 +63,7 @@ export default class extends PureComponent {
         <div style={{ width: '100%', height: '500px', position: 'relative' }} >
           <Map
             amapkey="9a54ee2044c8fdd03b3d953d4ace2b4d"
-            zoom={15}
+            zoom={this.state.zoom}
             loading={Loading}
             center={center}
             plugins={this.mapPlugins}
