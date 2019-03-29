@@ -45,8 +45,8 @@ export default class extends PureComponent {
           poiAddress = `${item.pname}${item.cityname}${item.adname}${item.address}`;
         }
         this.props.dragPosition({
+          ...item.location,
           address: poiAddress,
-          position: item.location,
         });
         document.getElementById('address').value = item.name;
         __map__.panTo([item.location.lng, item.location.lat]);
@@ -73,15 +73,14 @@ export default class extends PureComponent {
         geocoder.getAddress([center.lng, center.lat], (status, result) => {
           if (status === 'complete' && result.info === 'OK') {
             this.props.dragPosition({
+              ...center,
               address: result.regeocode.formattedAddress,
-              position: center,
             });
           }
         });
       });
     });
   }
-
   render() {
     return (
       <Fragment>
@@ -89,6 +88,7 @@ export default class extends PureComponent {
           <img alt="send" style={poiIcon} src={SendIcon} />
           <input id="address" className={styles.poiSearch} placeholder="搜索位置" />
           <Icon type="search" className={styles.searchIcon} />
+          <button onClick={this.props.handleClear} className={styles.clear}>清除定位</button>
         </div>
       </Fragment>
     );

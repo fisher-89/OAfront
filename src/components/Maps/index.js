@@ -14,37 +14,35 @@ export default class extends PureComponent {
     this.mapPlugins = ['ToolBar'];
     this.state = {
       address: value.address || '',
-      position: {
+      center: {
         longitude: value.lng || 120,
         latitude: value.lat || 30,
       },
     };
   }
 
-  handlePosition = (position) => {
-    const value = {
-      address: position.address,
-      position: { longitude: position.position.lng, latitude: position.position.lat },
+  handleClear = () => {
+    const position = {
+      address: '',
+      lng: null,
+      lat: null,
     };
-    const completeValue = {
-      address: position.address,
-      lng: position.position.lng,
-      lat: position.position.lat,
-    };
-    this.setState({ ...value }, () => this.props.onChange(completeValue));
+    this.setState({
+      address: '',
+      center: {
+        longitude: 0,
+        latitude: 0,
+      },
+    }, () => this.props.onChange(position));
   }
 
   dragPosition = (position) => {
+    const { lng, lat } = position;
     const value = {
       address: position.address,
-      position: { longitude: position.position.lng, latitude: position.position.lat },
+      position: { longitude: lng, latitude: lat },
     };
-    const completeValue = {
-      address: position.address,
-      lng: position.position.lng,
-      lat: position.position.lat,
-    };
-    this.setState({ ...value }, () => this.props.onChange(completeValue));
+    this.setState({ ...value }, () => this.props.onChange(position));
   }
 
   render() {
@@ -57,7 +55,7 @@ export default class extends PureComponent {
       alignItems: 'center',
     };
     const Loading = <div style={loadingStyle}>Loading Map...</div>;
-    const { position, address } = this.state;
+    const { center, address } = this.state;
     return (
       <React.Fragment>
         <div style={{ width: '100%', height: '500px', position: 'relative' }} >
@@ -65,13 +63,13 @@ export default class extends PureComponent {
             amapkey="9a54ee2044c8fdd03b3d953d4ace2b4d"
             zoom={15}
             loading={Loading}
-            center={position}
+            center={center}
             plugins={this.mapPlugins}
             useAMapUI
           >
             <SP
-              value={{ ...position, address }}
-              handlePosition={this.handlePosition}
+              value={{ ...center, address }}
+              handleClear={this.handleClear}
               dragPosition={this.dragPosition}
             />
           </Map>
