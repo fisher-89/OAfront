@@ -12,6 +12,15 @@ export async function fetchFineScore(params) {
   return request('/api/violation/punish/score', { method: 'POST', body: params });
 }
 
+export async function deletePreMoney(params) {
+  return request('/api/violation/punish/del-money', { method: 'GET', body: params });
+}
+
+/** 清除缓存 次数表 */
+export async function cleanPreTable() {
+  return request('/api/violation/punish/eliminate', { method: 'GET' });
+}
+
 export async function downloadExcelFinLog(params) {
   return request('/api/violation/punish/export', {
     method: 'GET',

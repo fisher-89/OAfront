@@ -86,6 +86,14 @@ export default type => (Component) => {
       dispatch({ type: 'violation/refund', payload: params });
     }
 
+    cleanPreTable = (params) => {
+      const { dispatch } = this.props;
+      dispatch({
+        type: 'violation/cleanPreTable',
+        payload: params,
+      });
+    }
+
     deleted = (id, onError, onSuccess) => {
       const { dispatch } = this.props;
       dispatch({

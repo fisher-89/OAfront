@@ -308,6 +308,7 @@ export default class extends PureComponent {
       pushgroup,
       dispatch,
       rule,
+      cleanPreTable,
     } = this.props;
     const {
       detailsVisible,
@@ -330,6 +331,7 @@ export default class extends PureComponent {
           style={{ marginLeft: '10px' }}
           onClick={() => {
             this.changeTab({ title: '批量录入', key: '4' });
+            cleanPreTable();
           }}
         >
           批量录入
