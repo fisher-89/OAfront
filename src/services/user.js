@@ -181,3 +181,8 @@ export async function fetchBespokeStaff(id) {
 export async function deleteBespokeStaff(id) {
   return request(`/api/hr/staff/reserve/${id}`, { method: 'DELETE' });
 }
+
+// 获取员工关系数据
+export async function relations(id) {
+  return request(`/api/hr/staff/${id}/relations`, { method: 'GET' });
+}

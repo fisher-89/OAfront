@@ -14,6 +14,7 @@ import {
   transfer,
   leave,
   leaving,
+  relations,
   fetchStaffLog,
   fetchFormatLog,
   fetchBespokeStaff,
@@ -23,6 +24,21 @@ import {
 const store = 'staff';
 
 export default {
+  * relations({ payload }, { call, put }) {
+    try {
+      const response = yield call(relations, payload.id);
+      yield put({
+        type: 'save',
+        payload: {
+          data: response,
+          store: 'relative',
+          staffSn: payload.id,
+        },
+      });
+    } catch (err) {
+      return err;
+    }
+  },
   * fetchFormatLog({ payload }, { call, put }) {
     try {
       const params = { ...payload };

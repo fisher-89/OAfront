@@ -20,6 +20,7 @@ import styles from './index.less';
 import ChangeLog from './infoTabs/changeLog';
 import Bespoke from './infoTabs/bespoke';
 import StaffAuth from './infoTabs/staffAuth';
+import Relative from './infoTabs/relative';
 
 const { Meta } = Card;
 const { TabPane } = Tabs;
@@ -27,17 +28,20 @@ const staffProperty = ['无', '109将', '36天罡', '24金刚', '18罗汉'];
 
 @connect(({ staffs, loading }) => ({
   list: staffs.formatLogDetails,
+  relations: staffs.relativeDetails,
   loading: loading.effects['staffs/fetchFormatLog'],
 }))
 export default class StaffInfo extends PureComponent {
   componentWillMount() {
     const { dispatch, data } = this.props;
     dispatch({ type: 'staffs/fetchFormatLog', payload: { id: data.staff_sn } });
+    dispatch({ type: 'staffs/relations', payload: { id: data.staff_sn } });
   }
 
   render() {
-    const { data, loading, list } = this.props;
+    const { data, loading, list, relations } = this.props;
     const timelist = list[data.staff_sn];
+    const relationMaps = relations[data.staff_sn];
     // const relatives = data.relatives ? data.relatives.map((item) => {
     //   return `${item.realname}   (${item.relative_type.name})   编号(${item.staff_sn})`;
     // }).join('') : '  ';
@@ -79,12 +83,15 @@ export default class StaffInfo extends PureComponent {
                   </div>
                   <Card className={styles.card} bodyStyle={{ padding: '20px' }}>
                     <p>状态：{data.status.name}</p>
-                    <p>品牌：{data.brand.name}</p>
                     <p>职位：{data.position.name}</p>
                     <div className={styles.item}>
                       <label>部门：</label>
                       <div>{data.department.full_name || defaultVal}</div>
                     </div>
+                    <p className={styles.splitBox}>品牌：{data.brand.name || defaultVal}</p>
+                    <p className={styles.splitBox}>
+                      费用品牌：{(data.cost_brands || {}).map(brand => brand.name) || defaultVal}
+                    </p>
                   </Card>
                   <Card className={styles.card} bodyStyle={{ padding: '20px' }}>
                     <p className={styles.splitBox}>微信：{data.wechat_number || defaultVal}</p>
@@ -210,6 +217,9 @@ export default class StaffInfo extends PureComponent {
                   {/* <TabPane key="relatives" tab="关系网" /> */}
                   <TabPane key="bespoke" tab="预约操作">
                     <Bespoke staffSn={data.staff_sn} />
+                  </TabPane>
+                  <TabPane key="relation" tab="关系图">
+                    <Relative relation={relationMaps} staffSn={data.staff_sn} />
                   </TabPane>
                 </Tabs>
               </div>
