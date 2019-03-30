@@ -380,7 +380,14 @@ export default class extends PureComponent {
                       <Option value={null}>请选择</Option>
                       <Option value="0.8">0.8</Option>
                       <Option value="1">1</Option>
+                      <Option value="1.1">1.1</Option>
                       <Option value="1.2">1.2</Option>
+                      <Option value="1.3">1.3</Option>
+                      <Option value="1.4">1.4</Option>
+                      <Option value="1.5">1.5</Option>
+                      <Option value="1.6">1.6</Option>
+                      <Option value="1.7">1.7</Option>
+                      <Option value="1.8">1.8</Option>
                     </Select>
                   )}
                 </FormItem>
