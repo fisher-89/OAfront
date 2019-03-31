@@ -343,6 +343,7 @@ export default class extends PureComponent {
           type="primary"
           onClick={() => {
             this.handleModalVisible(true);
+            cleanPreTable();
             this.setState({ initialValue: {} });
           }}
         >

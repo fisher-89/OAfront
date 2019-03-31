@@ -9,7 +9,7 @@ export default {
       const response = yield call(fetchFineMoney, payload);
       const now = new Date();
       const time = now.getTime();
-      const money = { money: response, time };
+      const money = { ...response, time };
       yield put({
         type: 'save',
         payload: {

@@ -9,7 +9,7 @@ export default {
       const response = yield call(fetchFineScore, payload);
       const now = new Date();
       const time = now.getTime();
-      const score = { score: response, time };
+      const score = { ...response, time };
       yield put({
         type: 'save',
         payload: {

@@ -6,6 +6,7 @@ import {
   Select,
   Switch,
   InputNumber,
+  Tooltip,
 } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
@@ -27,7 +28,7 @@ const { Option } = Select;
   onValuesChange(props, changedValues, allValues) {
     const { fetchMoneyAndScore, onError } = props;
     const [midkey] = Object.keys(changedValues);
-    if (midkey === 'staff' || midkey === 'rule_id' || midkey === 'violate_at' || (midkey === 'quantity' && allValues.quantity)) {
+    if (midkey === 'staff' || midkey === 'rule_id' || midkey === 'violate_at') {
       if ((allValues.staff || {}).staff_sn && allValues.rule_id && allValues.violate_at) {
         if (props.initialValue.id) {
           const params = {
@@ -36,6 +37,7 @@ const { Option } = Select;
             rule_id: allValues.rule_id,
             violate_at: allValues.violate_at,
             quantity: allValues.quantity,
+            token: allValues.token,
           };
           fetchMoneyAndScore(params, onError);
         } else {
@@ -44,6 +46,7 @@ const { Option } = Select;
             rule_id: allValues.rule_id,
             violate_at: allValues.violate_at,
             quantity: allValues.quantity,
+            token: allValues.token,
           };
           fetchMoneyAndScore(params, onError);
         }
@@ -73,63 +76,31 @@ export default class extends PureComponent {
         quantity: nextProps.initialValue.quantity,
       });
       this.setState({ moneyable: true, scoreable: true });
-    } else if (JSON.stringify(this.props.money) !== JSON.stringify(nextProps.money) ||
-      JSON.stringify(this.props.score) !== JSON.stringify(nextProps.score)) {
-      if (({ ...nextProps.money.money } || {}).errors ||
-        ({ ...nextProps.score.score } || {}).errors) {
-        setFieldsValue({ money: null, score: null, quantity: null });
-        this.setState({ moneyable: true, scoreable: true });
-        setFields({ violate_at: { value: null, errors: [new Error('违纪日期 必须早于现在!')] } });
-      } else if ({ ...nextProps.money.money }.states === 1 &&
-        { ...nextProps.score.score }.states !== 1) {
-        this.setState({ moneyable: false, scoreable: true });
-        setFieldsValue({
-          money: { ...{ ...nextProps.money }.money }.data,
-          score: { ...{ ...nextProps.score }.score }.data,
-        });
-        if ({ ...{ ...(this.props).money }.money }.quantity !==
-          { ...{ ...nextProps.money }.money }.quantity) {
+    } else {
+      if (JSON.stringify(this.props.money) !== JSON.stringify(nextProps.money)) {
+        if (({ ...nextProps.money } || {}).errors) {
+          setFieldsValue({ money: null, quantity: null });
+          this.setState({ moneyable: true });
+          setFields({ violate_at: { value: null, errors: [new Error('违纪日期 必须早于现在!')] } });
+        } else {
           setFieldsValue({
-            quantity: { ...{ ...nextProps.money }.money }.quantity,
+            money: nextProps.money.data,
+            quantity: nextProps.money.quantity,
+            token: nextProps.money.token,
           });
+          this.setState({ moneyable: !nextProps.money.state });
         }
-      } else if ({ ...nextProps.money.money }.states !== 1 &&
-        { ...nextProps.score.score }.states === 1) {
-        this.setState({ moneyable: true, scoreable: false });
-        setFieldsValue({
-          money: { ...{ ...nextProps.money }.money }.data,
-          score: { ...{ ...nextProps.score }.score }.data,
-        });
-        if ({ ...{ ...(this.props).money }.money }.quantity !==
-          { ...{ ...nextProps.money }.money }.quantity) {
+      }
+      if (JSON.stringify(this.props.score) !== JSON.stringify(nextProps.score)) {
+        if (({ ...nextProps.score } || {}).errors) {
+          setFieldsValue({ score: null });
+          this.setState({ scoreable: true });
+          setFields({ violate_at: { value: null, errors: [new Error('违纪日期 必须早于现在!')] } });
+        } else {
           setFieldsValue({
-            quantity: { ...{ ...nextProps.money }.money }.quantity,
+            score: nextProps.score.data,
           });
-        }
-      } else if ({ ...nextProps.money.money }.states === 1 &&
-        { ...nextProps.score.score }.states === 1) {
-        this.setState({ moneyable: false, scoreable: false });
-        setFieldsValue({
-          money: { ...{ ...nextProps.money }.money }.data,
-          score: { ...{ ...nextProps.score }.score }.data,
-        });
-        if ({ ...{ ...(this.props).money }.money }.quantity !==
-          { ...{ ...nextProps.money }.money }.quantity) {
-          setFieldsValue({
-            quantity: { ...{ ...nextProps.money }.money }.quantity,
-          });
-        }
-      } else {
-        this.setState({ moneyable: true, scoreable: true });
-        setFieldsValue({
-          money: { ...{ ...nextProps.money }.money }.data,
-          score: { ...{ ...nextProps.score }.score }.data,
-        });
-        if ({ ...{ ...(this.props).money }.money }.quantity !==
-          { ...{ ...nextProps.money }.money }.quantity) {
-          setFieldsValue({
-            quantity: { ...{ ...nextProps.money }.money }.quantity,
-          });
+          this.setState({ scoreable: !nextProps.score.state });
         }
       }
     }
@@ -211,6 +182,29 @@ export default class extends PureComponent {
     }
   }
 
+  quantityOnEnter = (data) => {
+    const { getFieldsValue } = this.props.form;
+    const { fetchMoneyAndScore } = this.props;
+    const allValues = getFieldsValue();
+    if (allValues.violate_at && (allValues.staff || {}).staff_sn && allValues.rule_id) {
+      const params = allValues.id ? {
+        id: allValues.id,
+        staff_sn: allValues.staff.staff_sn,
+        rule_id: allValues.rule_id,
+        violate_at: allValues.violate_at,
+        quantity: data,
+        token: allValues.token,
+      } : {
+        staff_sn: allValues.staff.staff_sn,
+        rule_id: allValues.rule_id,
+        violate_at: allValues.violate_at,
+        quantity: data,
+        token: allValues.token,
+      };
+      fetchMoneyAndScore(params);
+    }
+  }
+
   render() {
     const longFormItemLayout = {
       labelCol: {
@@ -252,6 +246,13 @@ export default class extends PureComponent {
     const selectedGroup = JSON.stringify(initialValue) !== '{}' ?
       pg : SGroupId;
     const pointdefault = JSON.stringify(initialValue) !== '{}' ? initialValue.sync_point : true;
+    const quantityInput = moneyable ? (<InputNumber disabled />) : (
+      <Tooltip title="回车键计算">
+        <Input
+          style={{ width: 90 }}
+          onPressEnter={e => this.quantityOnEnter(e.target.value)}
+        />
+      </Tooltip>);
     return (
       <OAModal
         title="大爱"
@@ -264,6 +265,9 @@ export default class extends PureComponent {
       >
         <Row>
           <Col {...colSpan}>
+            {getFieldDecorator('id', {
+              initialValue: initialValue.id || undefined,
+            })(<input type="hidden" />)}
             <FormItem label="员工姓名" {...formItemLayout} required>
               {getFieldDecorator('staff', {
                 initialValue: initialValue.staff || [],
@@ -346,7 +350,7 @@ export default class extends PureComponent {
           <Col {...colSpan}>
             <FormItem label="分值" {...formItemLayout} required>
               {getFieldDecorator('score', {
-                initialValue: initialValue.score || null,
+                initialValue: initialValue.score || undefined,
               })(
                 <InputNumber
                   disabled={scoreable}
@@ -358,20 +362,20 @@ export default class extends PureComponent {
 
         <Row>
           <Col {...colSpan}>
+            {getFieldDecorator('token', {
+              initialValue: '',
+            })(<input type="hidden" />)}
             <FormItem label="当月次数" {...formItemLayout} required>
               {getFieldDecorator('quantity', {
-                initialValue: initialValue.quantity ||
-                  { ...{ ...(this.props).money }.money }.quantity || null,
-              })(<InputNumber
-                disabled={scoreable || moneyable}
-              />)}
+                initialValue: initialValue.quantity || undefined,
+              })(quantityInput)}
             </FormItem>
           </Col>
 
           <Col {...colSpan}>
             <FormItem label="地区" {...formItemLayout} required>
               {getFieldDecorator('area',
-                { initialValue: initialValue.area || '1' })(
+                { initialValue: initialValue.area ? initialValue.area.toString() : '1' })(
                   <Select>
                     <Option key="1" value="1">成都</Option>
                     <Option key="2" value="2">濮院</Option>
